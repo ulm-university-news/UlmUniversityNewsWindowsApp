@@ -1,0 +1,8 @@
+<XamlCompilerSaveState>
+  <ReferenceAssemblyList>
+    <ReferenceAssembly PathName="c:\users\philipp\documents\visual studio 2013\projects\mobileapplicationengineering\ulmuniversitynews\datahandlinglayer\bin\x86\debug\datahandlinglayer.dll" HashGuid="2f5d1d5a-56b5-40b7-ce4b-443d81457da2" />
+    <ReferenceAssembly PathName="c:\users\philipp\documents\visual studio 2013\projects\mobileapplicationengineering\ulmuniversitynews\packages\drawerlayout.1.0.4\lib\drawerlayout.dll" HashGuid="b0d3b3f8-90b7-6a66-b416-66f64dcf26fa" />
+    <ReferenceAssembly PathName="c:\users\philipp\documents\visual studio 2013\projects\mobileapplicationengineering\ulmuniversitynews\pushnotificationmanagerbackground\bin\debug\pushnotificationmanagerbackground.winmd" HashGuid="2935910c-63f5-5cf4-894a-5ebec3ed6ed4" />
+    <ReferenceAssembly PathName="c:\users\philipp\documents\visual studio 2013\projects\mobileapplicationengineering\ulmuniversitynews\packages\sqlitepcl.3.8.7.2\lib\wpa81\sqlitepcl.dll" HashGuid="a405761a-bd1d-dc16-54b5-36df2e9981c5" />
+  </ReferenceAssemblyList>
+</XamlCompilerSaveState>

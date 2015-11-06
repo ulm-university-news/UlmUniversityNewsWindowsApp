@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Machine>PHILIPP-UNI-PC</Machine>
+    <WindowsUser>Philipp</WindowsUser>
+    <TargetPlatformIdentifier>WindowsPhoneApp</TargetPlatformIdentifier>
+    <SolutionConfiguration>Debug|ARM</SolutionConfiguration>
+    <PackageArchitecture>arm</PackageArchitecture>
+    <PackageIdentityName>495084a5-e14d-4057-9f30-02f91b4fad2d</PackageIdentityName>
+    <IntermediateOutputPath>C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\</IntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <AppXManifest Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\AppxManifest.xml">
+      <PackagePath>AppxManifest.xml</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppXManifest>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\UlmUniversityNews.exe">
+      <PackagePath>UlmUniversityNews.exe</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\DataHandlingLayer\bin\ARM\Debug\DataHandlingLayer.dll">
+      <PackagePath>DataHandlingLayer.dll</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\packages\DrawerLayout.1.0.4\lib\DrawerLayout.dll">
+      <PackagePath>DrawerLayout.dll</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\packages\SQLitePCL.3.8.7.2\lib\wpa81\SQLitePCL.dll">
+      <PackagePath>SQLitePCL.dll</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\DataHandlingLayer\bin\ARM\Debug\Newtonsoft.Json.dll">
+      <PackagePath>Newtonsoft.Json.dll</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\PushNotificationManagerBackground\bin\ARM\Debug\PushNotificationManagerBackground.winmd">
+      <PackagePath>PushNotificationManagerBackground.winmd</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\packages\SQLitePCL.3.8.7.2\build\wpa81\SQLitePCL.Ext.dll">
+      <PackagePath>SQLitePCL.Ext.dll</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\packages\SQLitePCL.3.8.7.2\build\wpa81\SQLitePCL.Ext.dll">
+      <PackagePath>DataHandlingLayer\SQLitePCL.Ext.dll</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\Logo-Uni.png">
+      <PackagePath>Assets\AppIcons\Logo-Uni.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\welcome_screen.png">
+      <PackagePath>Assets\AppIcons\welcome_screen.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\Assets\Drawer\drawer_icon.png">
+      <PackagePath>Assets\Drawer\drawer_icon.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\Assets\Logo.scale-240.png">
+      <PackagePath>Assets\Logo.scale-240.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\Assets\SmallLogo.scale-240.png">
+      <PackagePath>Assets\SmallLogo.scale-240.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\Assets\SplashScreen.scale-240.png">
+      <PackagePath>Assets\SplashScreen.scale-240.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\Assets\Square71x71Logo.scale-240.png">
+      <PackagePath>Assets\Square71x71Logo.scale-240.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\Assets\StoreLogo.scale-240.png">
+      <PackagePath>Assets\StoreLogo.scale-240.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\Assets\WideLogo.scale-240.png">
+      <PackagePath>Assets\WideLogo.scale-240.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\Common\ReadMe.txt">
+      <PackagePath>Common\ReadMe.txt</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\DataModel\SampleData.json">
+      <PackagePath>DataModel\SampleData.json</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\App.xbf">
+      <PackagePath>App.xbf</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\ItemPage.xbf">
+      <PackagePath>ItemPage.xbf</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\PivotPage.xbf">
+      <PackagePath>PivotPage.xbf</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Homescreen\Homescreen.xbf">
+      <PackagePath>Views\Homescreen\Homescreen.xbf</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\StartPage.xbf">
+      <PackagePath>Views\StartPage.xbf</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\UlmUniversityNews.xr.xml">
+      <PackagePath>UlmUniversityNews.xr.xml</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\WindowsPhoneApp\v8.1\ExtensionSDKs\SQLite.WP81\3.9.1\Redist\Debug\ARM\sqlite3.dll">
+      <PackagePath>sqlite3.dll</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\resources.pri">
+      <PackagePath>resources.pri</PackagePath>
+    </AppxPackagedFile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResolvedSDKReference Include="C:\Program Files %28x86%29\Microsoft SDKs\WindowsPhoneApp\v8.1\ExtensionSDKs\Microsoft.VCLibs\12.0\">
+      <Name>Microsoft.VCLibs.120.00.Phone.Debug</Name>
+      <Version>12.0.30113.0</Version>
+      <Architecture>ARM</Architecture>
+      <FrameworkIdentity>Name = Microsoft.VCLibs.120.00.Phone.Debug, MinVersion = 12.0.30113.0</FrameworkIdentity>
+      <AppxLocation>C:\Program Files %28x86%29\Microsoft SDKs\WindowsPhoneApp\v8.1\ExtensionSDKs\Microsoft.VCLibs\12.0\.\AppX\Debug\ARM\Microsoft.VCLibs.ARM.Debug.12.00.Phone.appx</AppxLocation>
+      <MoreInfo></MoreInfo>
+    </ResolvedSDKReference>
+    <ResolvedSDKReference Include="C:\Program Files %28x86%29\Microsoft SDKs\WindowsPhoneApp\v8.1\ExtensionSDKs\Microsoft.VCLibs\12.0\">
+      <Name>Microsoft.VCLibs.120.00.Phone.Debug</Name>
+      <Version>12.0.30113.0</Version>
+      <Architecture>x86</Architecture>
+      <FrameworkIdentity>Name = Microsoft.VCLibs.120.00.Phone.Debug, MinVersion = 12.0.30113.0</FrameworkIdentity>
+      <AppxLocation>C:\Program Files %28x86%29\Microsoft SDKs\WindowsPhoneApp\v8.1\ExtensionSDKs\Microsoft.VCLibs\12.0\.\AppX\Debug\x86\Microsoft.VCLibs.x86.Debug.12.00.Phone.appx</AppxLocation>
+      <MoreInfo></MoreInfo>
+    </ResolvedSDKReference>
+  </ItemGroup>
+</Project>
