@@ -154,7 +154,7 @@ namespace UlmUniversityNews.Views
                         // Zeige Fehler in einem MessageDialog an.
                         string errorDescription = ErrorHandling.ErrorDescriptionMapper.GetInstance().GetErrorDescription(ex.ErrorCode); ;
                         string title = "Error";
-                        showErrorMessageDialog(errorDescription, title);
+                        showErrorMessageDialogAsync(errorDescription, title);
 
                         //Flyout flyout = (Flyout) this.Resources["ErrorFlyout"];
                         //ErrorFlyoutMessage.Text = ErrorHandling.ErrorDescriptionMapper.GetInstance().GetErrorDescription(ex.ErrorCode);
@@ -167,7 +167,7 @@ namespace UlmUniversityNews.Views
 
                     string errorDescription = ErrorHandling.ErrorDescriptionMapper.GetInstance().GetErrorDescription(ErrorCodes.WnsChannelInitializationFailed); ;
                     string title = "Error";
-                    showErrorMessageDialog(errorDescription, title);
+                    showErrorMessageDialogAsync(errorDescription, title);
                 }
 
                 if(forwardToHomescreen)
@@ -183,7 +183,7 @@ namespace UlmUniversityNews.Views
         /// </summary>
         /// <param name="content">Der Inhalt des MessageDialog Elements, d.h. die Beschreibung des Fehlers.</param>
         /// <param name="title">Der Titel des MessageDialog Elements.</param>
-        private async void showErrorMessageDialog(string content, string title)
+        private async void showErrorMessageDialogAsync(string content, string title)
         {
             var dialog = new Windows.UI.Popups.MessageDialog(content, title);
             dialog.Commands.Add(new Windows.UI.Popups.UICommand("Ok") { Id = 0 });

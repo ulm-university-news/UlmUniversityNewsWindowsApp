@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using DataHandlingLayer.Database;
 using DataHandlingLayer.DataModel;
 using DataHandlingLayer.ViewModel;
+using DataHandlingLayer.Exceptions;
 
 // Die Vorlage "Pivotanwendung" ist unter http://go.microsoft.com/fwlink/?LinkID=391641 dokumentiert.
 
@@ -73,7 +74,7 @@ namespace UlmUniversityNews
             bool localUserExists = checkLocalUserExistence();
 
             // Registriere die Hintergrundaufgaben.
-            await registerBackgroundTasks();
+            await registerBackgroundTasksAsnyc();
 
             // App-Initialisierung nicht wiederholen, wenn das Fenster bereits Inhalte enthält.
             // Nur sicherstellen, dass das Fenster aktiv ist.
@@ -137,14 +138,6 @@ namespace UlmUniversityNews
                         throw new Exception("Failed to create start page");
                     }
                 }
-
-                //// Wenn der Navigationsstapel nicht wiederhergestellt wird, zur ersten Seite navigieren
-                //// und die neue Seite konfigurieren, indem die erforderlichen Informationen als Navigationsparameter
-                //// Parameter.
-                //if (!rootFrame.Navigate(typeof(PivotPage), e.Arguments))
-                //{
-                //    throw new Exception("Failed to create initial page");
-                //}
             }
 
             // Sicherstellen, dass das aktuelle Fenster aktiv ist.
@@ -169,7 +162,7 @@ namespace UlmUniversityNews
         /// Hintergrundaufgaben registriert. Wird der Zugriff abgelehnt, so speichert die Methode dies in the lokalen Anwendungseinstellungen
         /// und führt die Registrierung nicht durch.
         /// </summary>
-        private async Task registerBackgroundTasks()
+        private async Task registerBackgroundTasksAsnyc()
         {
             Debug.WriteLine("Starting registerBackgroundTasks.");
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
@@ -203,7 +196,16 @@ namespace UlmUniversityNews
         /// <returns>Liefert true zurück wenn bereits ein lokaler Nutzeraccount existiert, ansonsten false.</returns>
         private bool checkLocalUserExistence()
         {
-            User localUser = localUserViewModel.GetLocalUser();
+            User localUser = null;
+            try
+            {
+                localUser = localUserViewModel.GetLocalUser();
+            }
+            catch(ClientException ex){
+                // TODO - How to handle this error?
+                Debug.WriteLine("Error while trying to retrieve local user account.");
+            }
+
             if(localUser == null){
                 return false;
             }

@@ -56,7 +56,7 @@ namespace DataHandlingLayer.ViewModel
             string responseString;
             try
             {
-                responseString = await userAPI.SendCreateUserRequest(jsonContent);
+                responseString = await userAPI.SendCreateUserRequestAsync(jsonContent);
             }
             catch (APIException e) {
                 Debug.WriteLine("Error occured. The creation of the user account has failed.");
@@ -109,10 +109,20 @@ namespace DataHandlingLayer.ViewModel
         /// Nutzer definiert ist.
         /// </summary>
         /// <returns>Instanz der User Klasse, oder null wenn kein lokaler Nutzer definiert ist.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn beim Ermitteln des lokalen Nutzers ein Fehler aufgetreten ist.</exception>
         public User GetLocalUser()
         {
             Debug.WriteLine("Get the local user.");
-            User localUser = localUserDB.GetLocalUser();
+            User localUser = null;
+            try
+            {
+                localUser = localUserDB.GetLocalUser();
+            }
+            catch(DatabaseException ex){
+                Debug.WriteLine("Database exception occurred in GetLocalUser(). Message of exception is: " + ex.Message);
+                // Abbilden des aufgetretenen Fehlers auf eine ClientException.
+                throw new ClientException(ErrorCodes.LocalDatabaseException, "Retrieval of local user account has failed.");
+            }
             return localUser;
         }
 
@@ -152,7 +162,7 @@ namespace DataHandlingLayer.ViewModel
                     string responseString;
                     try
                     {
-                        responseString = await userAPI.SendUpdateUserRequest(localUser.Id, localUser.ServerAccessToken, jsonContent);
+                        responseString = await userAPI.SendUpdateUserRequestAsync(localUser.Id, localUser.ServerAccessToken, jsonContent);
                     }
                     catch (APIException e)
                     {

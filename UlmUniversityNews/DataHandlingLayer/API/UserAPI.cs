@@ -20,7 +20,7 @@ namespace DataHandlingLayer.API
         /// <param name="jsonContent">Der JSON String mit den Daten für den Request.</param>
         /// <returns>Die Antwort des Servers im JSON Format bei erfolgreichem Request.</returns>
         /// <exception cref="APIException">Bei vom Server übermittelten Fehler-Nachricht.</exception>
-        public async Task<String> SendCreateUserRequest(String jsonContent)
+        public async Task<String> SendCreateUserRequestAsync(String jsonContent)
         {
             // Erstelle einen Http-Request.
             HttpClient httpClient = new HttpClient();
@@ -80,7 +80,7 @@ namespace DataHandlingLayer.API
         /// <param name="serverAccessToken">Das Zugriffstoken des Anfragers mittels dem er auf dem Server identifiziert wird.</param>
         /// <param name="jsonContent">Das Json Patch Dokument.</param>
         /// <returns></returns>
-        public async Task<String> SendUpdateUserRequest(int userId, string serverAccessToken, string jsonContent)
+        public async Task<String> SendUpdateUserRequestAsync(int userId, string serverAccessToken, string jsonContent)
         {
             // Erstelle einen Http-Request.
             HttpClient httpClient = new HttpClient();
