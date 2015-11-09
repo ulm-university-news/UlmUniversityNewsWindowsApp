@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using DataHandlingLayer.Database;
 using DataHandlingLayer.DataModel;
+using DataHandlingLayer.ViewModel;
 
 // Die Vorlage "Pivotanwendung" ist unter http://go.microsoft.com/fwlink/?LinkID=391641 dokumentiert.
 
@@ -32,7 +33,7 @@ namespace UlmUniversityNews
     public sealed partial class App : Application
     {
         private TransitionCollection transitions;
-        private LocalUserDatabaseManager localUserDBManager;
+        private LocalUserViewModel localUserViewModel;
 
         /// <summary>
         /// Initialisiert das Singletonanwendungsobjekt. Dies ist die erste Zeile von erstelltem Code
@@ -44,8 +45,8 @@ namespace UlmUniversityNews
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
             this.Resuming += App_Resuming;
-            // Erstelle Instanz des LocalUserDatabaseManager.
-            localUserDBManager = new LocalUserDatabaseManager();
+            // Erstelle Instanz des LocalUserViewModel.
+            localUserViewModel = new LocalUserViewModel();
             Debug.WriteLine("Finished App constructor.");
         }
 
@@ -202,7 +203,7 @@ namespace UlmUniversityNews
         /// <returns>Liefert true zurück wenn bereits ein lokaler Nutzeraccount existiert, ansonsten false.</returns>
         private bool checkLocalUserExistence()
         {
-            User localUser = localUserDBManager.getLocalUser();
+            User localUser = localUserViewModel.GetLocalUser();
             if(localUser == null){
                 return false;
             }

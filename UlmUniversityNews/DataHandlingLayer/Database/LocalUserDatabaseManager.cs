@@ -18,7 +18,7 @@ namespace DataHandlingLayer.Database
         /// </summary>
         /// <param name="localUser">Das Nutzer Objekt mit den Nutzerdaten.</param>
         /// <exception cref="DatabaseException">Wirft eine DatabaseException, wenn bei der Ausführung der Operation ein Fehler auftritt.</exception>
-        public void storeLocalUser(User localUser)
+        public void StoreLocalUser(User localUser)
         {
             if(localUser == null){
                 Debug.WriteLine("No valid user object passed to the storeLocalUser method.");
@@ -61,7 +61,7 @@ namespace DataHandlingLayer.Database
         /// </summary>
         /// <returns>Ein Objekt der Klasse User.</returns>
         /// <exception cref="DatabaseException">Wirft eine DatabaseException, wenn bei der Ausführung der Operation ein Fehler auftritt.</exception>
-        public User getLocalUser()
+        public User GetLocalUser()
         {
             SQLiteConnection conn = DatabaseManager.GetConnection();
 
@@ -106,7 +106,7 @@ namespace DataHandlingLayer.Database
         /// </summary>
         /// <param name="localUser">Das User Objekt mit den aktualisierten Daten des lokalen Nutzers.</param>
         /// <exception cref="DatabaseException">Wirft eine DatabaseException, wenn bei der Ausführung der Operation ein Fehler auftritt.</exception>
-        public void updateLocalUser(User localUser)
+        public void UpdateLocalUser(User localUser)
         {
             if(localUser == null){
                 Debug.WriteLine("No valid user object passed to the updateLocalUser method.");

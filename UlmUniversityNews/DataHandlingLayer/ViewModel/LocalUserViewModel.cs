@@ -72,7 +72,7 @@ namespace DataHandlingLayer.ViewModel
             if(localUser != null){
                 try
                 {
-                    localUserDB.storeLocalUser(localUser);
+                    localUserDB.StoreLocalUser(localUser);
                 }
                 catch(DatabaseException ex)
                 {
@@ -96,12 +96,24 @@ namespace DataHandlingLayer.ViewModel
             Debug.WriteLine("Retrieve the push access token of the local user.");
             String pushToken = null;
 
-            User localUser = localUserDB.getLocalUser();
+            User localUser = localUserDB.GetLocalUser();
             if(localUser != null){
                 pushToken = localUser.PushAccessToken;
             }
 
             return pushToken;
+        }
+
+        /// <summary>
+        /// Gibt den lokalen Nutzer zurück. Liefert null zurück wenn kein lokaler
+        /// Nutzer definiert ist.
+        /// </summary>
+        /// <returns>Instanz der User Klasse, oder null wenn kein lokaler Nutzer definiert ist.</returns>
+        public User GetLocalUser()
+        {
+            Debug.WriteLine("Get the local user.");
+            User localUser = localUserDB.GetLocalUser();
+            return localUser;
         }
 
         /// <summary>
@@ -115,7 +127,7 @@ namespace DataHandlingLayer.ViewModel
         public async Task UpdateLocalUserAsync(string name, string pushAccessToken)
         {
             bool doUpdate = false;
-            User localUser = localUserDB.getLocalUser();
+            User localUser = localUserDB.GetLocalUser();
             if (localUserDB != null){
                 // Prüfe, ob der Name aktualisiert werden muss.
                 if(!(String.Compare(localUser.Name, name) == 0)){
@@ -157,7 +169,7 @@ namespace DataHandlingLayer.ViewModel
                     if(localUser != null){
                         try
                         {
-                            localUserDB.updateLocalUser(localUser);
+                            localUserDB.UpdateLocalUser(localUser);
                         }
                         catch(DatabaseException ex)
                         {
