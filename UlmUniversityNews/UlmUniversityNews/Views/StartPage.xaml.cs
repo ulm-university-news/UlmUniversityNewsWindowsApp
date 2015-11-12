@@ -124,16 +124,32 @@ namespace UlmUniversityNews.Views
         /// <param name="e">Eventparameter.</param>
         private async void CreateAccount_Click(object sender, RoutedEventArgs e)
         {
+            ErrorText.Text = "";    // Setze Fehlertext zurück.
+            UserName.BorderBrush = new SolidColorBrush(Colors.Black);
+
+            var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+
             // Validiere die eingegebenen Daten.
             string name = UserName.Text;
+            name = name.Trim();
             if(name.Length < 3 || name.Length > 35){
-                UserName.SelectionHighlightColor = new SolidColorBrush(Colors.Red);
-                ErrorText.Text = "Bitte geben Sie einen gültigen Nutzernamen ein. Der Nutzername muss mindestens 3 Zeichen " +
-                    " umfassen und darf nicht mehr als 35 Zeichen enthalten. Der Name darf zudem keine Leerzeichen und Sonderzeichen enthalten.";
+                UserName.BorderBrush = new SolidColorBrush(Colors.Red);
+                ErrorText.Text = loader.GetString("UserNameLengthInvalid"); ;
+            }
+            else if (!System.Text.RegularExpressions.Regex.IsMatch(name, @"^[-_a-zA-Z0-9]+$"))
+            {
+                UserName.BorderBrush = new SolidColorBrush(Colors.Red);
+                ErrorText.Text = loader.GetString("UserNameTextInvalid");
             }
             else
             {
+                // Beginne mit der Account Erstellung.
                 bool forwardToHomescreen = true;
+
+                // Starte den Fortschrittsindikator
+                await Windows.UI.ViewManagement.StatusBar.GetForCurrentView().ShowAsync();
+                var progInd = Windows.UI.ViewManagement.StatusBar.GetForCurrentView().ProgressIndicator;
+                await progInd.ShowAsync();
 
                 // Initialisiere den Push Notification Manager.
                 PushNotificationManager pushManager = PushNotificationManager.GetInstance();
@@ -153,12 +169,7 @@ namespace UlmUniversityNews.Views
 
                         // Zeige Fehler in einem MessageDialog an.
                         string errorDescription = ErrorHandling.ErrorDescriptionMapper.GetInstance().GetErrorDescription(ex.ErrorCode); ;
-                        string title = "Error";
-                        showErrorMessageDialogAsync(errorDescription, title);
-
-                        //Flyout flyout = (Flyout) this.Resources["ErrorFlyout"];
-                        //ErrorFlyoutMessage.Text = ErrorHandling.ErrorDescriptionMapper.GetInstance().GetErrorDescription(ex.ErrorCode);
-                        //flyout.ShowAt(this.LayoutRoot);
+                        showErrorMessageDialogAsync(errorDescription);
                     }
                 }
                 else
@@ -166,9 +177,11 @@ namespace UlmUniversityNews.Views
                     forwardToHomescreen = false;
 
                     string errorDescription = ErrorHandling.ErrorDescriptionMapper.GetInstance().GetErrorDescription(ErrorCodes.WnsChannelInitializationFailed); ;
-                    string title = "Error";
-                    showErrorMessageDialogAsync(errorDescription, title);
+                    showErrorMessageDialogAsync(errorDescription);
                 }
+
+                // Stoppe den Fortschrittsindikator.
+                await progInd.HideAsync();
 
                 if(forwardToHomescreen)
                 {
@@ -183,8 +196,11 @@ namespace UlmUniversityNews.Views
         /// </summary>
         /// <param name="content">Der Inhalt des MessageDialog Elements, d.h. die Beschreibung des Fehlers.</param>
         /// <param name="title">Der Titel des MessageDialog Elements.</param>
-        private async void showErrorMessageDialogAsync(string content, string title)
+        private async void showErrorMessageDialogAsync(string content)
         {
+            var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+            string title = loader.GetString("ErrorDialogBoxTitle");
+
             var dialog = new Windows.UI.Popups.MessageDialog(content, title);
             dialog.Commands.Add(new Windows.UI.Popups.UICommand("Ok") { Id = 0 });
             dialog.DefaultCommandIndex = 0;

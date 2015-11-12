@@ -117,11 +117,15 @@
     </RootType>
     <RootType FullName="UlmUniversityNews.Views.Homescreen.Homescreen" />
     <RootType FullName="Windows.UI.Xaml.Controls.Flyout">
-      <RootProperty Name="Placement" />
       <RootProperty Name="Content" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.TextBox">
+      <RootProperty Name="Header" />
       <RootProperty Name="InputScope" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.Primitives.FlyoutBase">
+      <RootMethod Name="GetAttachedFlyout" />
+      <RootMethod Name="SetAttachedFlyout" />
     </RootType>
     <RootType FullName="UlmUniversityNews.Views.StartPage" />
   </Roots.RootTypes>

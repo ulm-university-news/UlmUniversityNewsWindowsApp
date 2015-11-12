@@ -70,6 +70,12 @@ namespace UlmUniversityNews
 
             // Lade die Datenbank.
             DatabaseManager.LoadDatabase();
+
+            // Test start
+            // Lösche lokalen Nutzer testweise:
+            LocalUserDatabaseManager.DeleteLocalUser();
+            // Test end
+
             // Prüfe, ob bereits ein lokaler Nutzer angelegt ist.
             bool localUserExists = checkLocalUserExistence();
 

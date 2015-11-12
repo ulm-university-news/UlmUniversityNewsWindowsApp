@@ -124,6 +124,9 @@
   <data name="BadRequestError" xml:space="preserve">
     <value>Der Request wurde vom Server als ungültig abgelehnt.</value>
   </data>
+  <data name="ErrorDialogBoxTitle" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
   <data name="Header.Text" xml:space="preserve">
     <value>MEINE ANWENDUNG</value>
     <comment>TODO delete this resource string</comment>
@@ -169,6 +172,9 @@
     <value>Sekundärer Befehl 2</value>
     <comment>TODO delete this resource string</comment>
   </data>
+  <data name="ServerUnreachableError" xml:space="preserve">
+    <value>Der Server konnte nicht erreicht werden. Bitte stellen Sie sicher, dass eine Internetverbindung besteht.</value>
+  </data>
   <data name="UnsupportedMediaTypeError" xml:space="preserve">
     <value>Der Request wurde abgelehnt aufgrund einer falschen Angabe beim Media Type.</value>
   </data>
@@ -180,6 +186,12 @@
   </data>
   <data name="UserNameInvalidError" xml:space="preserve">
     <value>Der von Ihnen angegebene Nutzername ist nicht gültig.</value>
+  </data>
+  <data name="UserNameLengthInvalid" xml:space="preserve">
+    <value>Der Nutzername muss mindestens 3 Zeichen umfassen und darf maximal 35 Zeichen lang sein.</value>
+  </data>
+  <data name="UserNameTextInvalid" xml:space="preserve">
+    <value>Bitte verwenden Sie für den Nutzernamen keine Leerzeichen und Sonderzeichen.</value>
   </data>
   <data name="UserNotFoundError" xml:space="preserve">
     <value>Der angegebene Nutzer konnte nicht gefunden werden.</value>

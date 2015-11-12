@@ -143,5 +143,25 @@ namespace DataHandlingLayer.Database
             }
 
         }
+
+        /// <summary>
+        /// Ausschließlich für Testzwecke!
+        /// </summary>
+        public static void DeleteLocalUser()
+        {
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+
+            try
+            {
+                using (var deleteStmt = conn.Prepare("DELETE FROM LocalUser"))
+                {
+                    deleteStmt.Step();
+                }
+            }
+            catch (SQLiteException sqlEx){
+                Debug.WriteLine("SQLException occured in DeleteLocalUser.");
+                Debug.WriteLine("SQLException: " + sqlEx.HResult + " and message: " + sqlEx.Message);
+            }
+        }
     }
 }
