@@ -59,7 +59,7 @@
     <build:Item Name="Microsoft.Build.AppxPackage.dll" Version="12.0.40629.0" />
     <build:Item Name="ProjectGUID" Value="{B48DF0A4-6B9A-4FEE-9011-C013120B3725}" />
     <build:Item Name="Microsoft.Windows.UI.Xaml.Build.Tasks.dll" Version="12.0.30501.0" />
-    <build:Item Name="SQLite.WP81" Version="3.9.1" />
+    <build:Item Name="SQLite.WP81" Version="3.9.2" />
     <build:Item Name="MakePri.exe" Version="6.3.9600.17336 (winblue.150226-1500)" />
   </build:Metadata>
 </Package>

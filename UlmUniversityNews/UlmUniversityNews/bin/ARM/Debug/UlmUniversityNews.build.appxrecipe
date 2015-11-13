@@ -73,8 +73,23 @@
       <PackagePath>Assets\WideLogo.scale-240.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Toolkit.Content\ApplicationBar.Cancel.png">
+      <PackagePath>Toolkit.Content\ApplicationBar.Cancel.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Toolkit.Content\ApplicationBar.Check.png">
+      <PackagePath>Toolkit.Content\ApplicationBar.Check.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Toolkit.Content\ApplicationBar.Delete.png">
+      <PackagePath>Toolkit.Content\ApplicationBar.Delete.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Toolkit.Content\ApplicationBar.Select.png">
+      <PackagePath>Toolkit.Content\ApplicationBar.Select.png</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Common\ReadMe.txt">
       <PackagePath>Common\ReadMe.txt</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\README_FIRST.txt">
+      <PackagePath>README_FIRST.txt</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\DataModel\SampleData.json">
       <PackagePath>DataModel\SampleData.json</PackagePath>

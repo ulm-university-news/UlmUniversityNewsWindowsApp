@@ -50,45 +50,6 @@ namespace UlmUniversityNews.Views.Homescreen
         }
 
         /// <summary>
-        /// Erstellt und initiiert eine CommandBar.
-        /// </summary>
-        private void initializeAppBar()
-        {
-            Debug.WriteLine("Creating AppBar.");
-            CommandBar commandBar = HomescreenCommandBar;
-
-            // Erstelle einen AppBarButton.
-            AppBarButton testButton = new AppBarButton();
-            testButton.Label = "hinzufügen";
-            testButton.IsEnabled = true;
-            testButton.Icon = new SymbolIcon(Symbol.Add);
-            testButton.Click += testButton_Click;
-
-            // Füge ihn als Primary Command hinzu.
-            commandBar.PrimaryCommands.Add(testButton);
-
-            // Erstelle noch einen AppBarButton.
-            AppBarButton secondaryButtonTest = new AppBarButton();
-            secondaryButtonTest.Label = "secondary Element";
-            secondaryButtonTest.IsEnabled = true;
-            secondaryButtonTest.Click += secondaryButtonTest_Click;
-
-            // Füge den zweiten Button als Secondary Element hinzu.
-            commandBar.SecondaryCommands.Add(secondaryButtonTest);
-            Debug.WriteLine("AppBar created.");
-        }
-
-        void secondaryButtonTest_Click(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine("Secondary Element clicked!");
-        }
-
-        void testButton_Click(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine("Button clicked!");
-        }
-
-        /// <summary>
         /// Ruft den <see cref="NavigationHelper"/> ab, der mit dieser <see cref="Page"/> verknüpft ist.
         /// </summary>
         public NavigationHelper NavigationHelper
@@ -174,6 +135,64 @@ namespace UlmUniversityNews.Views.Homescreen
             else
             {
                 DrawerLayout.OpenDrawer();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt und initiiert eine CommandBar.
+        /// </summary>
+        private void initializeAppBar()
+        {
+            Debug.WriteLine("Creating AppBar.");
+            CommandBar commandBar = HomescreenCommandBar;
+
+            // Erstelle einen AppBarButton.
+            AppBarButton testButton = new AppBarButton();
+            testButton.Label = "hinzufügen";
+            testButton.IsEnabled = true;
+            testButton.Icon = new SymbolIcon(Symbol.Add);
+            testButton.Click += testButton_Click;
+
+            // Füge ihn als Primary Command hinzu.
+            commandBar.PrimaryCommands.Add(testButton);
+
+            // Erstelle noch einen AppBarButton.
+            AppBarButton secondaryButtonTest = new AppBarButton();
+            secondaryButtonTest.Label = "secondary Element";
+            secondaryButtonTest.IsEnabled = true;
+            secondaryButtonTest.Click += secondaryButtonTest_Click;
+
+            // Füge den zweiten Button als Secondary Element hinzu.
+            commandBar.SecondaryCommands.Add(secondaryButtonTest);
+            Debug.WriteLine("AppBar created.");
+        }
+
+        void secondaryButtonTest_Click(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("Secondary Element clicked!");
+        }
+
+        void testButton_Click(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("Button clicked!");
+        }
+
+        private void checkLockScreenAccessPermission(){
+            Debug.WriteLine("Start checking LockScreen access permission in local settings.");
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+
+            // Prüfe, ob der Zugriff abgelehnt wurde.
+            string accessToLockScreenValue = localSettings.Values[Constants.Constants.AccessToLockScreenKey] as string;
+            string accessDenied = Constants.Constants.AccessToLockScreenDenied;
+            if (String.Compare(accessToLockScreenValue, accessDenied) == 0)
+            {
+                // Prüfe, ob der Nachrichtendialog noch angezeigt werden soll.
+                string showLockScreenValue = localSettings.Values[Constants.Constants.ShowLockScreenMessageKey] as string;
+                string showMessage = Constants.Constants.ShowLockScreenMessageYes;
+                if (String.Compare(showLockScreenValue, showMessage) == 0){
+                    // Zeige Dialog mit Hinweis an.
+                    //CustomMessageBox messageBox = new CustomMessageBox();
+                }
             }
         }
     }

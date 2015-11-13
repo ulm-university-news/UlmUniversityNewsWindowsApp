@@ -17,3 +17,8 @@ Views\Homescreen\Homescreen.xbf
 Views\StartPage.xbf
 Common\ReadMe.txt
 DataModel\SampleData.json
+README_FIRST.txt
+Toolkit.Content\ApplicationBar.Cancel.png
+Toolkit.Content\ApplicationBar.Check.png
+Toolkit.Content\ApplicationBar.Delete.png
+Toolkit.Content\ApplicationBar.Select.png

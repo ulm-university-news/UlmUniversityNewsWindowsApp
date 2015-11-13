@@ -80,9 +80,6 @@
                 <TextBlock Text="Um diese Anwendung zu nutzen, müssen sie einen Nutzernamen angeben. Der Nutzername wird verwendet, um von Ihnen erstellte Nachrichten für andere Nutzer identifzierbar zu machen." 
                            TextWrapping="Wrap"
                            FontSize="16" />
-                <TextBlock Margin="0,10,0,0"
-                           Text="Bitte geben Sie einen Nutzernamen an:"
-                           FontSize="16" />
                 <TextBox x:Name="UserName"
                          Header="Nutzername"
                          InputScope="AlphanumericFullWidth"

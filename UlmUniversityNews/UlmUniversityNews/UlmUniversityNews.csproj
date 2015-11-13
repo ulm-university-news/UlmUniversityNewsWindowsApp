@@ -141,6 +141,11 @@
     <Content Include="Assets\StoreLogo.scale-240.png" />
     <Content Include="Assets\WideLogo.scale-240.png" />
     <Content Include="Common\ReadMe.txt" />
+    <Content Include="README_FIRST.txt" />
+    <Content Include="Toolkit.Content\ApplicationBar.Cancel.png" />
+    <Content Include="Toolkit.Content\ApplicationBar.Check.png" />
+    <Content Include="Toolkit.Content\ApplicationBar.Delete.png" />
+    <Content Include="Toolkit.Content\ApplicationBar.Select.png" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

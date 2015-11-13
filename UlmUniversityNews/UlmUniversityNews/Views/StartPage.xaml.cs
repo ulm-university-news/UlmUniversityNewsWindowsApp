@@ -25,7 +25,9 @@ using UlmUniversityNews.PushNotifications;
 namespace UlmUniversityNews.Views
 {
     /// <summary>
-    /// Eine leere Seite, die eigenständig verwendet werden kann oder auf die innerhalb eines Frames navigiert werden kann.
+    /// Die Startseite der App. Auf diese Seite wird navigiert, wenn noch kein lokaler Nutzeraccount vorhanden ist.
+    /// Die Startseite bietet die Möglichkeit einen Account zu erstellen. Wurde ein Account erfolgreich erstellt, so 
+    /// wird automatisch auf den Homescreen navigiert.
     /// </summary>
     public sealed partial class StartPage : Page
     {
@@ -195,7 +197,6 @@ namespace UlmUniversityNews.Views
         /// Zeigt eine Fehlernachricht innerhalb eines MessageDialog Elements an.
         /// </summary>
         /// <param name="content">Der Inhalt des MessageDialog Elements, d.h. die Beschreibung des Fehlers.</param>
-        /// <param name="title">Der Titel des MessageDialog Elements.</param>
         private async void showErrorMessageDialogAsync(string content)
         {
             var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
