@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -38,6 +39,8 @@ namespace UlmUniversityNews.Views.Homescreen
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
 
+            HomescreenPivot.Loaded += HomescreenPivot_Loaded;
+
             // Initialisiere das Drawer Layout.
             DrawerLayout.InitializeDrawerLayout();
             string[] menuItems = new string[5] { "Test Item 1", "Test Item 2", "Test Item 3", "Test Item 4", "Test Item 5" };
@@ -47,6 +50,19 @@ namespace UlmUniversityNews.Views.Homescreen
             initializeAppBar();
 
             Debug.WriteLine("Finished constructor of Homescreen.");
+        }
+
+        /// <summary>
+        /// Event-Handler für das Loaded Event des Pivot-Elements. Wird aufgerufen wenn das Pivot UI Element geladen wurde.
+        /// Wird hier genutzt um zu prüfen, ob der Zugriff auf den LockScreen gewährt wurde.
+        /// </summary>
+        /// <param name="sender">Quelle des Events.</param>
+        /// <param name="e">Eventparameter.</param>
+        async void HomescreenPivot_Loaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("Homescreen_Pivot Loaded");
+            // Prüfe, ob Zugriff auf LockScreen gewährt ist, um Hintergrundaufgaben ausführen zu dürfen.
+            await checkLockScreenAccessPermissionAsync();
         }
 
         /// <summary>
@@ -79,6 +95,7 @@ namespace UlmUniversityNews.Views.Homescreen
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            Debug.WriteLine("LoadState Homescreen");
         }
 
         /// <summary>
@@ -138,6 +155,7 @@ namespace UlmUniversityNews.Views.Homescreen
             }
         }
 
+        # region commandBar
         /// <summary>
         /// Erstellt und initiiert eine CommandBar.
         /// </summary>
@@ -176,8 +194,15 @@ namespace UlmUniversityNews.Views.Homescreen
         {
             Debug.WriteLine("Button clicked!");
         }
+        # endregion commandBar
 
-        private void checkLockScreenAccessPermission(){
+        # region checkLockScreenAccessContentDialog
+        /// <summary>
+        /// Prüft, ob der Zugriff auf den LockScreen durch das System gewährt wurde. Falls das nicht der Fall ist wird
+        /// ein Dialog mit einem Warnhinweis angezeigt. Der Nutzer kann jedoch bestimmen, dass der Dialog nicht mehr angezeigt 
+        /// werden soll. In diesem Fall wird der Dialog auch nicht mehr angezeigt.
+        /// </summary>
+        private async Task checkLockScreenAccessPermissionAsync(){
             Debug.WriteLine("Start checking LockScreen access permission in local settings.");
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
 
@@ -190,10 +215,70 @@ namespace UlmUniversityNews.Views.Homescreen
                 string showLockScreenValue = localSettings.Values[Constants.Constants.ShowLockScreenMessageKey] as string;
                 string showMessage = Constants.Constants.ShowLockScreenMessageYes;
                 if (String.Compare(showLockScreenValue, showMessage) == 0){
-                    // Zeige Dialog mit Hinweis an.
-                    //CustomMessageBox messageBox = new CustomMessageBox();
+                    // Zeige die Warnung an.
+                    await showLockScreenAccessDeniedWarningAsync();
                 }
             }
         }
+
+        /// <summary>
+        /// Zeigt einen ContentDialog mit einer Warnung bezüglich der Ablehnung des LockScreen Zugriffs an.
+        /// Der Nutzer hat die Möglichkeit das zukünftige Anzeigen dieses Dialogs zu unterbinden.
+        /// </summary>
+        private async Task showLockScreenAccessDeniedWarningAsync()
+        {
+            var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+            try
+            {
+                // Generiere den Inhalt des ContentDialog.
+                StackPanel sp = new StackPanel();
+                TextBlock contentDialogTxt = new TextBlock()
+                {
+                    Text = loader.GetString("lockScreenAccessDeniedContentDialogText"),
+                    Style = App.Current.Resources["ContentDialogTextStyle"] as Style
+                };
+                CheckBox doNotShowAgainCheckBox = new CheckBox() 
+                {
+                    Content = loader.GetString("doNotShowAgainCheckBoxText")
+                };
+                sp.Children.Add(contentDialogTxt);
+                sp.Children.Add(doNotShowAgainCheckBox);
+
+                // Erzeuge Dialog und zeige ihn mit Inhalt an.
+                ContentDialog lockAccessDeniedCD = new ContentDialog()
+                {
+                    Title = loader.GetString("lockScreenAccessDeniedContentDialogTitle"),
+                    PrimaryButtonText = "OK",
+                    FullSizeDesired = false,
+                    Content = sp
+                };
+
+                var result = await lockAccessDeniedCD.ShowAsync();
+                if (result == ContentDialogResult.Primary)
+                {
+                    // Prüfe, ob der Dialog in Zukunft nicht mehr angezeigt werden soll.
+                    if(doNotShowAgainCheckBox.IsChecked == true){
+                        Debug.WriteLine("Disable the lockAccessDeniedCD so that it is not shown in the future.");
+                        disableLockScreenAccessDeniedWarning();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Exception occured: Message is: {0}, Hresult is: {1} and stack-trace is: {2}.", ex.Message, ex.HResult, ex.StackTrace);
+            }
+        }
+
+        /// <summary>
+        /// Aktualisiert die lokalen Einstellungen, so dass der Warnhinweis bezüglich der Ablehnung des Zugriffs
+        /// auf den LockScreen nicht mehr angezeigt wird. 
+        /// </summary>
+        private void disableLockScreenAccessDeniedWarning()
+        {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            localSettings.Values[Constants.Constants.ShowLockScreenMessageKey] = Constants.Constants.ShowLockScreenMessageNo;
+        }
+        # endregion checkLockScreenAccessContentDialog
+
     }
 }

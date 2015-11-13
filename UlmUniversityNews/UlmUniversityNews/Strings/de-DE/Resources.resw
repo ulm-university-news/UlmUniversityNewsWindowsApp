@@ -134,6 +134,15 @@
   <data name="LocalDatabaseError" xml:space="preserve">
     <value>Es ist ein Fehler bei einer Operation auf der lokalen Datenbank aufgetreten.</value>
   </data>
+  <data name="doNotShowAgainCheckBoxText" xml:space="preserve">
+    <value>Nicht mehr anzeigen</value>
+  </data>
+  <data name="lockScreenAccessDeniedContentDialogText" xml:space="preserve">
+    <value>Es ist der Anwendung aktuell nicht erlaubt Hintergrundaufgaben auszuführen. Bitte beachten Sie, dass die Aktualisierungen von Inhalten per Push Nachrichten somit nicht funktioniert. Der Inhalt muss manuell aktualisiert werden. Sie können der Anwendung die Ausführung von Hintergrundaufgaben erlauben unter Einstellungen-Stromsparmodus-Nutzung.</value>
+  </data>
+  <data name="lockScreenAccessDeniedContentDialogTitle" xml:space="preserve">
+    <value>Hintergrundaufgaben</value>
+  </data>
   <data name="MethodNotAllowedError" xml:space="preserve">
     <value>Der Server hat den Request abgelehnt aufgrund einer falschen HTTP Methode.</value>
   </data>

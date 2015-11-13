@@ -126,6 +126,15 @@
   <data name="LocalDatabaseError" xml:space="preserve">
     <value>An error occurred during an operation on the local database.</value>
   </data>
+  <data name="doNotShowAgainCheckBoxText" xml:space="preserve">
+    <value>Don't show this again</value>
+  </data>
+  <data name="lockScreenAccessDeniedContentDialogText" xml:space="preserve">
+    <value>The application does not have the permission to run background tasks. Please be aware that the delivery of content updates via push notifications does not work without background tasks. The content thus needs to be updated manually. You can grant the permission for background tasks in settings-battery saver-usage.</value>
+  </data>
+  <data name="lockScreenAccessDeniedContentDialogTitle" xml:space="preserve">
+    <value>Background Tasks</value>
+  </data>
   <data name="MethodNotAllowedError" xml:space="preserve">
     <value>The request was rejected from the server due to a wrong HTTP-method.</value>
   </data>

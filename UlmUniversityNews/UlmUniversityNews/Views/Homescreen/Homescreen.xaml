@@ -8,14 +8,15 @@
     xmlns:drawerLayout="using:DrawerLayout"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <!-- CommandBar - Die CommandBar wird per Code initialisiert. -->
     <Page.BottomAppBar>
         <CommandBar x:Name="HomescreenCommandBar">
-
         </CommandBar>
     </Page.BottomAppBar>
-
+    
+    
+    <!-- Layout Root -->   
     <Grid x:Name="LayoutRoot">
-
         <Grid.ChildrenTransitions>
             <TransitionCollection>
                 <EntranceThemeTransition/>
@@ -53,6 +54,7 @@
 
         <!--Inhalt der Seite und Inhalt des Drawer Menü-->
         <drawerLayout:DrawerLayout Grid.Row="1" x:Name="DrawerLayout">
+            
             <!-- Inhalt der Seite -->
             <Grid x:Name="MainFragment" Background="{StaticResource PhoneBackgroundBrush}">
                 <Pivot x:Uid="HomescreenPivot" x:Name="HomescreenPivot">
@@ -61,6 +63,10 @@
                            Margin="19,14.5,0,0"
                            Header="Meine Kanäle">
                         <!-- TODO -->
+                        <TextBlock x:Name="Test"
+                                   FontSize="25"
+                                   Text="Jo Servus, das ist ein Test Text. Den schreib ich extra groß, damit man ihn auch sieht."
+                                   TextWrapping="Wrap"/>
                     </PivotItem>
                     <!-- Pivotelement 2-->
                     <PivotItem x:Uid="MyGroups"

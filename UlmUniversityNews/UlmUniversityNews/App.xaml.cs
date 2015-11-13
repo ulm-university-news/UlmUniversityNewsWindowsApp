@@ -73,7 +73,7 @@ namespace UlmUniversityNews
 
             // Test start
             // Lösche lokalen Nutzer testweise:
-            LocalUserDatabaseManager.DeleteLocalUser();
+            // LocalUserDatabaseManager.DeleteLocalUser();
             // Test end
 
             // Prüfe, ob bereits ein lokaler Nutzer angelegt ist.

@@ -3,5 +3,16 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:UlmUniversityNews">
+    
+    <Application.Resources>
+        <!-- Definiere den Stype für TextBlock Elemente innerhalb von einem ContentDialog.-->
+        <Style 
+            x:Key="ContentDialogTextStyle"
+            TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>    
+    </Application.Resources>
 
 </Application>

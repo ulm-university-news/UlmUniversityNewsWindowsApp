@@ -121,6 +121,8 @@ namespace UlmUniversityNews.Views
 
         /// <summary>
         /// Event-Handler für die Behandlung des Klicks auf den Create Account Button.
+        /// Die Eingabe des Nutzers wird geprüft. Ist die Eingabe in Ordnung wird die 
+        /// Erstellung eines lokalen Nutzeraccounts angestoßen.
         /// </summary>
         /// <param name="sender">Der Auslöser des Events.</param>
         /// <param name="e">Eventparameter.</param>
