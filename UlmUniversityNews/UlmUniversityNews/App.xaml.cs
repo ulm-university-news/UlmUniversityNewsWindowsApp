@@ -156,10 +156,18 @@ namespace UlmUniversityNews
         /// </summary>
         /// <param name="sender">Die Quelle der Anforderung.</param>
         /// <param name="e">Details über das Fortsetzen der App.</param>
-        void App_Resuming(object sender, object e)
+        async void App_Resuming(object sender, object e)
         {
             Debug.WriteLine("In AppResuming EventHandler.");
-            // TODO
+            
+            // Prüfe, ob PushNotificationManager initialisiert ist.
+            PushNotifications.PushNotificationManager pushManager = PushNotifications.PushNotificationManager.GetInstance();
+            if (pushManager.IsInitialized() == false){
+                Debug.WriteLine("Need to initialize the push manager.");
+                await pushManager.InitializeAsync();
+                await pushManager.UpdateRemoteChannelURIAsync();
+            }
+
             Debug.WriteLine("Finished AppResuming EventHandler.");
         }
 

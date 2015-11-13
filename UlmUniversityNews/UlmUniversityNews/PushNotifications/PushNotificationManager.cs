@@ -171,6 +171,9 @@ namespace UlmUniversityNews.PushNotifications
             if (args.NotificationType == PushNotificationType.Raw){
                 Debug.WriteLine("RawNotification received within the app.");
                 // TODO
+
+                // Spezifiziere das Event als behandelt, so dass es nicht an die Background Task geht.
+                args.Cancel = true;
             }
         }
     }

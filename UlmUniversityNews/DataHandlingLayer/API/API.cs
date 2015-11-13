@@ -10,6 +10,11 @@ using Windows.Web.Http;
 
 namespace DataHandlingLayer.API
 {
+    /// <summary>
+    /// Stellt die abstrakte Basisklasse aller API Klassen dar. Bietet Funktionalitäten an, die in jeder
+    /// API Implementierungsklasse benötigt werden. Hat zudem die Basis-URL, die je nach Anfrage erweitert 
+    /// werden kann.
+    /// </summary>
     public abstract class API
     {
         private string baseURL;

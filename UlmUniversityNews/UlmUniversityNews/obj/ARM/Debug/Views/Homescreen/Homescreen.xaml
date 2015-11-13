@@ -15,33 +15,7 @@
     </Page.BottomAppBar>
     
     
-    <!--Definition der seitenspezifischen Ressourcen.-->
-    <!--
-    <Page.Resources>
-        <ContentDialog x:Key="lockScreenAccessDeniedContentDialog"
-                       x:Name="lockScreenAccessDeniedCD"
-                       PrimaryButtonClick="lockScreenAccessDeniedCD_PrimaryButtonClick"
-                       Opened="lockScreenAccessDeniedCD_Opened">
-            <StackPanel>
-                <TextBlock x:Uid="lockScreenAccessDeniedMessage" 
-                           x:Name="lockScreenAccessDeniedMessage"
-                           TextWrapping="WrapWholeWords"
-                           FontSize="16"
-                           Foreground="White">
-                    Es ist der Anwendung aktuell nicht erlaubt Hintergrundaufgaben auszuführen. 
-                    Bitte beachten Sie, dass die Aktualisierungen von Inhalten per Push Nachrichten somit nicht funktioniert.
-                    Sie müssen die Inhalte manuell aktualisieren. Sie können der Anwendung die Ausführung von Hintergrundaufgaben erlauben unter Einstellungen-Stromsparmodus-Nutzung.
-                </TextBlock>
-                <CheckBox x:Uid="doNotShowAccessDeniedWarningAgainCheckBox"
-                          x:Name="doNotShowAccessDeniedWarningAgainCheckBox">
-                    Nicht mehr anzeigen
-                </CheckBox>
-            </StackPanel>
-        </ContentDialog>
-    </Page.Resources>
-        -->
-
-    
+    <!-- Layout Root -->   
     <Grid x:Name="LayoutRoot">
         <Grid.ChildrenTransitions>
             <TransitionCollection>

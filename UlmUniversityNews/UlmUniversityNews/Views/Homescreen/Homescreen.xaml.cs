@@ -60,9 +60,18 @@ namespace UlmUniversityNews.Views.Homescreen
         /// <param name="e">Eventparameter.</param>
         async void HomescreenPivot_Loaded(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Homescreen_Pivot Loaded");
+            Debug.WriteLine("Homescreen_Pivot Loaded.");
             // Prüfe, ob Zugriff auf LockScreen gewährt ist, um Hintergrundaufgaben ausführen zu dürfen.
             await checkLockScreenAccessPermissionAsync();
+
+            // Prüfe, ob der Push Notification Manager bereits initialisiert ist.
+            PushNotifications.PushNotificationManager pushManager = PushNotifications.PushNotificationManager.GetInstance();
+            if (pushManager.IsInitialized() == false){
+                Debug.WriteLine("PushNotificationManager not initialized. Start initialization.");
+                await pushManager.InitializeAsync();
+                await pushManager.UpdateRemoteChannelURIAsync();
+            }
+            Debug.WriteLine("Finished Homescreen_Pivot Loaded Event Handler.");
         }
 
         /// <summary>
