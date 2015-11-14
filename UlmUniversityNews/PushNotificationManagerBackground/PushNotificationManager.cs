@@ -16,7 +16,7 @@ namespace PushNotificationManagerBackground
 
         public void Run(IBackgroundTaskInstance taskInstance)
         {
-            Debug.WriteLine("Started background task.");
+            Debug.WriteLine("Started RawNotificationReceiver background task.");
 
             // Füge einen CancelationHandler hinzu, der gerufen wird sollte die BackgroundTask abgebrochen werden.
             taskInstance.Canceled += new BackgroundTaskCanceledEventHandler(OnCanceled);

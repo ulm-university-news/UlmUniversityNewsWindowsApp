@@ -69,7 +69,12 @@ namespace UlmUniversityNews.Views.Homescreen
             if (pushManager.IsInitialized() == false){
                 Debug.WriteLine("PushNotificationManager not initialized. Start initialization.");
                 await pushManager.InitializeAsync();
-                await pushManager.UpdateRemoteChannelURIAsync();
+                bool successful = await pushManager.UpdateRemoteChannelURIAsync();
+                if (!successful)
+                {
+                    Debug.WriteLine("Updating the push token of the local user has failed.");
+                    // TODO Wie mit diesem Fall umgehen?
+                }
             }
             Debug.WriteLine("Finished Homescreen_Pivot Loaded Event Handler.");
         }

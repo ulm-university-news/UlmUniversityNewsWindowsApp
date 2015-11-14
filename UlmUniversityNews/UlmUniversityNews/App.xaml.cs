@@ -165,7 +165,12 @@ namespace UlmUniversityNews
             if (pushManager.IsInitialized() == false){
                 Debug.WriteLine("Need to initialize the push manager.");
                 await pushManager.InitializeAsync();
-                await pushManager.UpdateRemoteChannelURIAsync();
+                bool successful = await pushManager.UpdateRemoteChannelURIAsync();
+                if (!successful)
+                {
+                    Debug.WriteLine("Updating the push token for the local user has failed.");
+                    // TODO Wie mit diesem Fall umgehen?
+                }
             }
 
             Debug.WriteLine("Finished AppResuming EventHandler.");
@@ -199,6 +204,8 @@ namespace UlmUniversityNews
                 // Hintergrundaufgaben dürfen hinzu gefügt werden und erhalten das volle Ressourcen-Quota.
                 // Registriere den BackgroundTask, der beim Empfang von RawPushNotifications gestartet wird.
                 PushNotificationManagerBackground.PushNotificationManager.Register();
+                // Registriere den BackgroundTask, der in einem bestimmten Wartungsintervall den Kanal aktualisiert.
+                PushNotificationManagerBackground.PushNotificationMaintenanceTask.Register();
                 localSettings.Values[Constants.Constants.AccessToLockScreenKey] = Constants.Constants.AccessToLockScreenGranted;
             }
             Debug.WriteLine("Finished registerBackgroundTasks.");

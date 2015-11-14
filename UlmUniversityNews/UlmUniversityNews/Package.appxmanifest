@@ -27,6 +27,11 @@
             <Task Type="pushNotification" />
           </BackgroundTasks>
         </Extension>
+        <Extension Category="windows.backgroundTasks" EntryPoint="PushNotificationManagerBackground.PushNotificationMaintenanceTask">
+          <BackgroundTasks>
+            <Task Type="systemEvent" />
+          </BackgroundTasks>
+        </Extension>
       </Extensions>
     </Application>
   </Applications>

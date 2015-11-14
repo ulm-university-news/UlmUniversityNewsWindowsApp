@@ -80,8 +80,13 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <ProjectReference Include="..\DataHandlingLayer\DataHandlingLayer.csproj">
+      <Project>{911769f1-63de-4e9e-a7c0-7a3fdc03b7bf}</Project>
+      <Name>DataHandlingLayer</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PushNotificationMaintenanceTask.cs" />
     <Compile Include="PushNotificationManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

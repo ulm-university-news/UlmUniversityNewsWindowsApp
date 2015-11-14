@@ -27,7 +27,7 @@ namespace UlmUniversityNews.PushNotifications
         /// <summary>
         /// Erzeugt eine Instanz der PushNotificationManager Klasse.
         /// </summary>
-        public PushNotificationManager(){
+        private PushNotificationManager(){
             localUserViewModel = new LocalUserViewModel();
         }
 
