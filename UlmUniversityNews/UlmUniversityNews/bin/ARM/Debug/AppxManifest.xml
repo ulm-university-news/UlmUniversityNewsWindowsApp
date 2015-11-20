@@ -34,6 +34,11 @@
             <Task Type="pushNotification" />
           </BackgroundTasks>
         </Extension>
+        <Extension Category="windows.backgroundTasks" EntryPoint="PushNotificationManagerBackground.PushNotificationMaintenanceTask">
+          <BackgroundTasks>
+            <Task Type="systemEvent" />
+          </BackgroundTasks>
+        </Extension>
       </Extensions>
     </Application>
   </Applications>
@@ -47,6 +52,7 @@
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
         <Path>CLRHost.dll</Path>
+        <ActivatableClass ActivatableClassId="PushNotificationManagerBackground.PushNotificationMaintenanceTask" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="PushNotificationManagerBackground.PushNotificationManager" ThreadingModel="both" />
       </InProcessServer>
     </Extension>

@@ -1,3 +1,4 @@
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\DataHandlingLayer\DataHandlingLayer.csproj;arm
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\DataHandlingLayer\DataHandlingLayer.csproj;arm
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\PushNotificationManagerBackground.csproj;arm
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\UlmUniversityNews.csproj;arm

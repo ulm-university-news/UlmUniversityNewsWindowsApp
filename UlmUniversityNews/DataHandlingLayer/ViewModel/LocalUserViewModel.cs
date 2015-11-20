@@ -129,7 +129,9 @@ namespace DataHandlingLayer.ViewModel
         /// <summary>
         /// Aktualisiert den Datensatz des lokalen Nutzeraccounts falls Änderungen notwendig sind. 
         /// Es können die Attribute Name und Push Access Token aktualisiert werden. Ist eines 
-        /// der Attribute geändert worden, so wird ein Request an den Server geschickt.
+        /// der Attribute geändert worden, so wird ein Request an den Server geschickt. Will man nur eines
+        /// der beiden Attribute ändern, so kann für das andere ein leerer String übergeben werden. Ein 
+        /// Attribut, das nur einen leeren String enthält wird bei der Aktualisierung ignoriert.
         /// </summary>
         /// <param name="name">Der neue Name des Nutzers.</param>
         /// <param name="pushAccessToken">Das Push Access Token, d.h. die Kanal-URI des Benachrichtigungskanals.</param>
@@ -140,15 +142,15 @@ namespace DataHandlingLayer.ViewModel
             User localUser = localUserDB.GetLocalUser();
             if (localUserDB != null){
                 // Prüfe, ob der Name aktualisiert werden muss.
-                if(!(String.Compare(localUser.Name, name) == 0)){
-                    Debug.WriteLine("Need to update the user name.");
+                if(name != string.Empty && (String.Compare(localUser.Name, name) != 0)){
+                    Debug.WriteLine("Name differs from current username, need to update the user name.");
                     doUpdate = true;
                     localUser.Name = name;
                 }
 
                 // Prüfe, ob das PushToken aktualisiert werden muss.
-                if (!(String.Compare(localUser.PushAccessToken, pushAccessToken) == 0)){
-                    Debug.WriteLine("Need to update the push access token.");
+                if (pushAccessToken != string.Empty && (String.Compare(localUser.PushAccessToken, pushAccessToken) != 0)){
+                    Debug.WriteLine("Push token differs from current push token, need to update the push access token.");
                     doUpdate = true;
                     localUser.PushAccessToken = pushAccessToken;
                 }
@@ -162,6 +164,7 @@ namespace DataHandlingLayer.ViewModel
                     string responseString;
                     try
                     {
+                        // Sende Aktualisierungs-Request an den Server.
                         responseString = await userAPI.SendUpdateUserRequestAsync(localUser.Id, localUser.ServerAccessToken, jsonContent);
                     }
                     catch (APIException e)

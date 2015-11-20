@@ -142,7 +142,7 @@ namespace UlmUniversityNews.PushNotifications
                 }
                 else
                 {
-                    Debug.WriteLine("Need to update the channel URI.");
+                    Debug.WriteLine("Need to update the channel URI, i.e. the push token of the local user. Starting updating process.");
                     // Aktualisierung des Push Access Token des lokalen Nutzers erforderlich.
                     try
                     {

@@ -221,6 +221,10 @@ namespace UlmUniversityNews
             try
             {
                 localUser = localUserViewModel.GetLocalUser();
+                // Start Test (TODO Remove after testing)
+                if(localUser != null)
+                    Debug.WriteLine("Just for test reasons: The current push token is: {0}", localUser.PushAccessToken);
+                // Ende Test
             }
             catch(ClientException ex){
                 // TODO - How to handle this error?
