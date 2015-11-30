@@ -39,6 +39,38 @@ namespace DataHandlingLayer.Database
                 // Erstelle LocalUser Tabelle.
                 createLocalUserTable(conn);
 
+                // Erstelle User Tabelle.
+                createUserTable(conn);
+
+                // Erstelle Moderator Tabelle.
+                createModeratorTable(conn);
+
+                // Erstelle Channel Tabelle und zugehörige Sub-Tabellen.
+                createChannelTable(conn);
+                createLectureTable(conn);
+                createEventTable(conn);
+                createSportsTable(conn);
+                createSubscribedChannelsTable(conn);
+                createModerartorChannelTable(conn);
+
+                // Erstelle Group Tabelle und zugehörige Sub-Tabellen.
+                createGroupTable(conn);
+                createBallotTable(conn);
+                createOptionTable(conn);
+                createUserOptionTable(conn);
+                createUserGroupTable(conn);
+
+                // Erstelle Conversation Tabelle.
+                createConversationTable(conn);
+
+                // Erstelle Message Tabelle und zugehörige Sub-Tabellen.
+                createMessageTable(conn);
+                createAnnouncementTable(conn);
+                createConversationMessageTable(conn);
+
+                // Erstelle Reminder Tabelle.
+                createReminderTable(conn);
+
                 // Schalte Foreign-Key Constraints ein.
                 string sql = @"PRAGMA foreign_keys = ON";
                 using (var statement = conn.Prepare(sql))
@@ -53,6 +85,39 @@ namespace DataHandlingLayer.Database
             }
             
             Debug.WriteLine("Finished loading the SQLite database.");
+        }
+
+        /// <summary>
+        /// Löscht das Datenbank Schema und alle zugehörigen Daten. Anschließend wird das Datenbank-Schema neu erstellt, so dass Änderungen am Datenbank Schema übernommen werden. 
+        /// </summary>
+        public void UpgradeDatabase()
+        {
+            Debug.WriteLine("Start upgrading the database. This will remove all data and recreate the database schema.");
+            try
+            {
+                SQLiteConnection conn = GetConnection();
+
+                string[] tableNames = { "User", "LocalUser", "Moderator", "Channel", "Lecture", "Event", "Sports", "SubscribedChannels", "ModeratorChannel",
+                                          "Group", "UserGroup", "Ballot", "Option", "UserOption", "Message", "Conversation", "ConversationMessage", "Announcement", "Reminder"};
+                for (int i = 0; i < tableNames.Length; i++)
+                {
+                    // Drop tables.
+                    string sql = @"DROP TABLE IF EXISTS " + tableNames[i] + ";";
+                    using (var statement = conn.Prepare(sql))
+                    {
+                        statement.Step();
+                    }
+                }
+
+                // Recreate the database scheme.
+                LoadDatabase();                              
+            } 
+            catch(Exception e)
+            {
+                Debug.WriteLine("Failed to upgrade database.");
+                Debug.WriteLine("Exception e: " + e.Message + " and HResult: " + e.HResult + "source: " + e.Source + " stack trace: " + e.StackTrace);
+            }
+            Debug.WriteLine("Finished upgrading the database.");
         }
 
         /// <summary>
@@ -139,22 +204,22 @@ namespace DataHandlingLayer.Database
             }
         }
 
-        /// <summary>
-        /// Erstellt die Tabelle SubscribedChannel.
-        /// </summary>
-        /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
-        private static void createSubscribedChannelsTable(SQLiteConnection conn)
-        {
-            string sql = @"CREATE TABLE IF NOT EXISTS 
-                            SubscribedChannels  (Id         INTEGER NOT NULL,
-                                                Channel_Id  INTEGER NOT NULL,
-                                                PRIMARY KEY(Id, Channel_Id)
-                            );";
-            using (var statement = conn.Prepare(sql))
-            {
-                statement.Step();
-            }
-        }
+        ///// <summary>
+        ///// Erstellt die Tabelle SubscribedChannel.
+        ///// </summary>
+        ///// <param name="conn">Aktive Verbindung zur Datenbank.</param>
+//        private static void createSubscribedChannelsTable(SQLiteConnection conn)
+//        {
+//            string sql = @"CREATE TABLE IF NOT EXISTS 
+//                            SubscribedChannels  (Id         INTEGER NOT NULL,
+//                                                Channel_Id  INTEGER NOT NULL,
+//                                                PRIMARY KEY(Id, Channel_Id)
+//                            );";
+//            using (var statement = conn.Prepare(sql))
+//            {
+//                statement.Step();
+//            }
+//        }
 
         /// <summary>
         /// Erstellt die Tabelle Lecture.
@@ -209,6 +274,267 @@ namespace DataHandlingLayer.Database
                                     NumberOfParticipants    TEXT,
                                     PRIMARY KEY(Channel_Id),
                                     FOREIGN KEY(Channel_Id) REFERENCES Channel(Id)
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle ModeratorChannel.
+        /// </summary>
+        /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
+        private static void createModerartorChannelTable(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            ModeratorChannel (Channel_Id    INTEGER NOT NULL,
+                                              Moderator_Id  INTEGER NOT NULL,
+                                              Active        INTEGER NOT NULL,
+                                              PRIMARY KEY(Channel_Id, Moderator_Id),
+                                              FOREIGN KEY(Channel_Id) REFERENCES Channel(Id),
+                                              FOREIGN KEY(Moderator_Id) REFERENCES Moderator(Id)
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle SubscribedChannels.
+        /// </summary>
+        /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
+        private static void createSubscribedChannelsTable(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            SubscribedChannels (Channel_Id  INTEGER NOT NULL,
+                                                PRIMARY KEY(Channel_Id),
+                                                FOREIGN KEY(Channel_Id) REFERENCES Channel(Id)
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle Group.
+        /// </summary>
+        /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
+        private static void createGroupTable(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            ""Group""   (Id                 INTEGER NOT NULL,
+                                        Name                TEXT NOT NULL,
+                                        Description         TEXT,
+                                        Type                INTEGER NOT NULL,
+                                        CreationDate        INTEGER NOT NULL,
+                                        ModificationDate    INTEGER NOT NULL,
+                                        Term                TEXT,
+                                        Deleted             INTEGER NOT NULL,
+                                        GroupAdmin_User_Id  INTEGER NOT NULL,
+                                        PRIMARY KEY(Id),
+                                        FOREIGN KEY(GroupAdmin_User_Id) REFERENCES User(Id)
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle UserGroup.
+        /// </summary>
+        /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
+        private static void createUserGroupTable(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            UserGroup   (Group_Id       INTEGER NOT NULL,
+                                        User_Id         INTEGER NOT NULL,
+                                        Active          INTEGER NOT NULL,
+                                        PRIMARY KEY(Group_Id, User_Id),
+                                        FOREIGN KEY(Group_Id) REFERENCES ""Group""(Id),
+                                        FOREIGN KEY(User_Id) REFERENCES User(Id)
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle Ballot.
+        /// </summary>
+        /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
+        private static void createBallotTable(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            Ballot  (Id                 INTEGER NOT NULL,
+                                    Title               TEXT NOT NULL,
+                                    Description         TEXT,
+                                    Closed              INTEGER NOT NULL,
+                                    MultipleChoice      INTEGER NOT NULL,
+                                    Public              INTEGER NOT NULL,
+                                    Group_Id            INTEGER NOT NULL,
+                                    BallotAdmin_User_Id INTEGER,
+                                    PRIMARY KEY(Id),
+                                    FOREIGN KEY(Group_Id) REFERENCES ""Group""(Id),
+                                    FOREIGN KEY(BallotAdmin_User_Id) REFERENCES User(Id)
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle Option.
+        /// </summary>
+        /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
+        private static void createOptionTable(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            Option  (Id         INTEGER NOT NULL,
+                                    Text        TEXT NOT NULL,
+                                    Ballot_Id   INTEGER NOT NULL,
+                                    PRIMARY KEY(Id),
+                                    FOREIGN KEY(Ballot_Id) REFERENCES Ballot(Id)
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle UserOption.
+        /// </summary>
+        /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
+        private static void createUserOptionTable(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            UserOption  (Option_Id  INTEGER NOT NULL,
+                                        User_Id     INTEGER NOT NULL,
+                                        PRIMARY KEY(Option_Id, User_Id),
+                                        FOREIGN KEY(Option_Id) REFERENCES Option(Id),
+                                        FOREIGN KEY(User_Id) REFERENCES User(Id)
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle Message.
+        /// </summary>
+        /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
+        private static void createMessageTable(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            Message (Id             INTEGER NOT NULL,
+                                    Text            TEXT    NOT NULL,
+                                    CreationDate    INTEGER NOT NULL,
+                                    Priority        INTEGER NOT NULL,
+                                    Read            INTEGER NOT NULL,
+                                    PRIMARY KEY(Id)
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle Announcement.
+        /// </summary>
+        /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
+        private static void createAnnouncementTable(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            Announcement    (MessageNumber      INTEGER NOT NULL,
+                                            Channel_Id          INTEGER NOT NULL,
+                                            Title               TEXT NOT NULL,
+                                            Author_Moderator_Id INTEGER NOT NULL,
+                                            Message_Id          INTEGER NOT NULL,
+                                            PRIMARY KEY(MessageNumber, Channel_Id),
+                                            FOREIGN KEY(Channel_Id) REFERENCES Channel(Id),
+                                            FOREIGN KEY(Author_Moderator_Id) REFERENCES Moderator(Id),
+                                            FOREIGN KEY(Message_Id) REFERENCES Message(Id)
+                            );";
+            using (var statment = conn.Prepare(sql))
+            {
+                statment.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle Conversation.
+        /// </summary>
+        /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
+        private static void createConversationTable(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            Conversation    (Id                         INTEGER NOT NULL,
+                                            Title                       TEXT    NOT NULL,
+                                            Closed                      INTEGER NOT NULL,
+                                            Group_Id                    INTEGER NOT NULL,
+                                            ConversationAdmin_User_Id   INTEGER NOT NULL,
+                                            PRIMARY KEY(Id),
+                                            FOREIGN KEY(Group_Id) REFERENCES ""Group""(Id),
+                                            FOREIGN KEY(ConversationAdmin_User_Id) REFERENCES User(Id)
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle ConversationMessage.
+        /// </summary>
+        /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
+        private static void createConversationMessageTable(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            ConversationMessage (MessageNumber          INTEGER NOT NULL,
+                                                Conversation_Id         INTEGER NOT NULL,
+                                                Author_User_Id          INTEGER NOT NULL,
+                                                Message_Id              INTEGER NOT NULL,
+                                                PRIMARY KEY(MessageNumber, Conversation_Id),
+                                                FOREIGN KEY(Conversation_Id) REFERENCES Conversation(Id),
+                                                FOREIGN KEY(Author_User_Id) REFERENCES User(Id),
+                                                FOREIGN KEY(Message_Id) REFERENCES Message(Id)
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle Reminder.
+        /// </summary>
+        /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
+        private static void createReminderTable(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            Reminder    (Id                 INTEGER NOT NULL,
+                                        Channel_Id          INTEGER NOT NULL,
+                                        StartDate           INTEGER NOT NULL,
+                                        EndDate             INTEGER NOT NULL,    
+                                        CreationDate        INTEGER NOT NULL,
+                                        ModificationDate    INTEGER NOT NULL,
+                                        Interval            INTEGER,
+                                        Ignore              INTEGER,
+                                        Title               TEXT NOT NULL,
+                                        Text                TEXT NOT NULL,
+                                        Priority            INTEGER NOT NULL,
+                                        Author_Moderator_Id INTEGER NOT NULL,
+                                        PRIMARY KEY(Id),
+                                        FOREIGN KEY(Channel_Id) REFERENCES Channel(Id),
+                                        FOREIGN KEY(Author_Moderator_Id) REFERENCES Moderator(Id)                                        
                             );";
             using (var statement = conn.Prepare(sql))
             {
