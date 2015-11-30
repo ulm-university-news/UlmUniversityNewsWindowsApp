@@ -204,7 +204,7 @@ namespace UlmUniversityNews
                 // Hintergrundaufgaben dürfen hinzu gefügt werden und erhalten das volle Ressourcen-Quota.
                 // Registriere den BackgroundTask, der beim Empfang von RawPushNotifications gestartet wird.
                 PushNotificationManagerBackground.PushNotificationManager.Register();
-                // Registriere den BackgroundTask, der in einem bestimmten Wartungsintervall den Kanal aktualisiert.
+                // Registriere den BackgroundTask, der in einem bestimmten Wartungsintervall das Push Access Token (Kanal-URI) aktualisiert.
                 PushNotificationManagerBackground.PushNotificationMaintenanceTask.Register();
                 localSettings.Values[Constants.Constants.AccessToLockScreenKey] = Constants.Constants.AccessToLockScreenGranted;
             }

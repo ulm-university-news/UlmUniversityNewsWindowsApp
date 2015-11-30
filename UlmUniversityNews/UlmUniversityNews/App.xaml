@@ -5,7 +5,8 @@
     xmlns:local="using:UlmUniversityNews">
     
     <Application.Resources>
-        <!-- Definiere den Stype für TextBlock Elemente innerhalb von einem ContentDialog.-->
+        <!-- ContentDialog:-->
+        <!-- Definiere den Style für TextBlock Elemente innerhalb von einem ContentDialog.-->
         <Style 
             x:Key="ContentDialogTextStyle"
             TargetType="TextBlock">
@@ -13,6 +14,41 @@
             <Setter Property="Foreground" Value="White" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>    
+        
+        <!-- Drawer Menü:-->
+        <!-- Definiere den Style für den Text im Drawer Menü. -->
+        <Style
+            x:Key="DrawerTextStyle"
+            TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="10,0,0,0" />
+        </Style>
+        <!-- Definiere den Style für das Drawer Icon. -->
+        <Style
+            x:Key="DrawerIconStyle"
+            TargetType="Image" >
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Source" Value="/Assets/Drawer/drawer_icon.png" />
+        </Style>
+        <!-- Definiere die Hintergrundfarbe und die Größe für die Drawer Menü Leiste am oberen Bildschirmrand.-->
+        <Style
+            x:Key="DrawerMenuTitleBar"
+            TargetType="Grid" >
+            <Setter Property="Background" Value="#7D9AAA" />
+            <Setter Property="Margin" Value="0,0,0,0" />
+            <Setter Property="Height" Value="60" />
+        </Style>
+        
+        <!-- Command Bar:-->
+        <!-- Definiere die Hintergrundfarbe für die CommandBar. -->
+        <!--<Style BasedOn="{ThemeResource CommandBarStyle}"
+            x:Key="CommandBarStyle"
+            TargetType="CommandBar">
+            <Setter Property="Background" Value="#7D9AAA" />
+        </Style>-->
     </Application.Resources>
 
 </Application>

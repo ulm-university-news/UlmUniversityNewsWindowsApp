@@ -16,3 +16,6 @@ C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineer
 C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\PushNotificationManagerBackground\obj\Debug\qualifiers.txt
 C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\PushNotificationManagerBackground\obj\Debug\qualifiers.txt.intermediate
 C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\PushNotificationManagerBackground\obj\Debug\MultipleQualifiersPerDimensionFound.txt
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\Debug\PushNotificationManagerBackground.csprojResolveAssemblyReference.cache
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\Debug\PushNotificationManagerBackground.winmdobj
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\Debug\PushNotificationManagerBackground.compile.pdb

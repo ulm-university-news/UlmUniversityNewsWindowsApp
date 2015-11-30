@@ -97,18 +97,26 @@ namespace DataHandlingLayer.Database
             {
                 SQLiteConnection conn = GetConnection();
 
+                // Schalte Foreign-Key Constraints aus.
+                string sqlFK = @"PRAGMA foreign_keys = OFF";
+                using (var statement = conn.Prepare(sqlFK))
+                {
+                    statement.Step();
+                }
+
                 string[] tableNames = { "User", "LocalUser", "Moderator", "Channel", "Lecture", "Event", "Sports", "SubscribedChannels", "ModeratorChannel",
                                           "Group", "UserGroup", "Ballot", "Option", "UserOption", "Message", "Conversation", "ConversationMessage", "Announcement", "Reminder"};
                 for (int i = 0; i < tableNames.Length; i++)
                 {
                     // Drop tables.
-                    string sql = @"DROP TABLE IF EXISTS " + tableNames[i] + ";";
+                    string sql = "DROP TABLE IF EXISTS \"" + tableNames[i] + "\";";
                     using (var statement = conn.Prepare(sql))
                     {
                         statement.Step();
                     }
                 }
 
+                // Foreign Key Constraints werden bei der Erstellung der Datenbank Tabellen wieder eingeschaltet.
                 // Recreate the database scheme.
                 LoadDatabase();                              
             } 
@@ -395,11 +403,11 @@ namespace DataHandlingLayer.Database
         private static void createOptionTable(SQLiteConnection conn)
         {
             string sql = @"CREATE TABLE IF NOT EXISTS 
-                            Option  (Id         INTEGER NOT NULL,
-                                    Text        TEXT NOT NULL,
-                                    Ballot_Id   INTEGER NOT NULL,
-                                    PRIMARY KEY(Id),
-                                    FOREIGN KEY(Ballot_Id) REFERENCES Ballot(Id)
+                            ""Option""  (Id         INTEGER NOT NULL,
+                                        Text        TEXT NOT NULL,
+                                        Ballot_Id   INTEGER NOT NULL,
+                                        PRIMARY KEY(Id),
+                                        FOREIGN KEY(Ballot_Id) REFERENCES Ballot(Id)
                             );";
             using (var statement = conn.Prepare(sql))
             {
@@ -417,7 +425,7 @@ namespace DataHandlingLayer.Database
                             UserOption  (Option_Id  INTEGER NOT NULL,
                                         User_Id     INTEGER NOT NULL,
                                         PRIMARY KEY(Option_Id, User_Id),
-                                        FOREIGN KEY(Option_Id) REFERENCES Option(Id),
+                                        FOREIGN KEY(Option_Id) REFERENCES ""Option""(Id),
                                         FOREIGN KEY(User_Id) REFERENCES User(Id)
                             );";
             using (var statement = conn.Prepare(sql))
@@ -526,8 +534,8 @@ namespace DataHandlingLayer.Database
                                         EndDate             INTEGER NOT NULL,    
                                         CreationDate        INTEGER NOT NULL,
                                         ModificationDate    INTEGER NOT NULL,
-                                        Interval            INTEGER,
-                                        Ignore              INTEGER,
+                                        ""Interval""            INTEGER,
+                                        ""Ignore""              INTEGER,
                                         Title               TEXT NOT NULL,
                                         Text                TEXT NOT NULL,
                                         Priority            INTEGER NOT NULL,

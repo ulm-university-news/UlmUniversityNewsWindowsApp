@@ -36,20 +36,16 @@
             </Grid.ColumnDefinitions>
             
             <!-- Drawer Icon -->
-            <Image x:ConnectionId='1' Margin="5" 
-                   x:Name="DrawerIcon" 
+            <Image x:ConnectionId='1' x:Name="DrawerIcon" 
                    Grid.Column="0"
-                   Source="/Assets/Drawer/drawer_icon.png"
-                   HorizontalAlignment="Left"
+                   Style="{StaticResource DrawerIconStyle}"
                                               />
             
             <!-- Drawer Text -->
             <TextBlock Grid.Column="1"
                        x:Uid="HomescreenTitle"
-                       Text="Homescreen"
-                       Foreground="White"
-                       VerticalAlignment="Center"
-                       FontSize="18" />
+                       Style="{StaticResource DrawerTextStyle}"
+                       Text="Homescreen" />
         </Grid>
 
         <!--Inhalt der Seite und Inhalt des Drawer Menü-->

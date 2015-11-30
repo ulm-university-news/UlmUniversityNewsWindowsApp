@@ -171,4 +171,16 @@
   <data name="WnsChannelInitializationFailed" xml:space="preserve">
     <value>The initialization of the push notification service has failed. Please make sure that your device is connected to the internet.</value>
   </data>
+  <data name="StartPageCreateAccountButton.Label" xml:space="preserve">
+    <value>create account</value>
+  </data>
+  <data name="StartPageUsernameDescription" xml:space="preserve">
+    <value>To use this app, you need to provide a username. The username enables other users of the app to identify your messages.</value>
+  </data>
+  <data name="StartPageUsernameTextBox.Header" xml:space="preserve">
+    <value>username</value>
+  </data>
+  <data name="StartPageWelcomeText" xml:space="preserve">
+    <value>Welcome to University News.</value>
+  </data>
 </root>

@@ -211,4 +211,16 @@
   <data name="WnsChannelInitializationFailed" xml:space="preserve">
     <value>Die Initialisierung des Push Nachrichten Dienstes ist fehlgeschlagen. Bitte stellen Sie sicher, dass eine Internetverbindung besteht.</value>
   </data>
+  <data name="StartPageCreateAccountButton.Label" xml:space="preserve">
+    <value>erstelle account</value>
+  </data>
+  <data name="StartPageUsernameDescription" xml:space="preserve">
+    <value>Um diese Anwendung zu nutzen, müssen sie einen Nutzernamen angeben. Der Nutzername wird verwendet, um von Ihnen erstellte Nachrichten für andere Nutzer identifzierbar zu machen.</value>
+  </data>
+  <data name="StartPageUsernameTextBox.Header" xml:space="preserve">
+    <value>Nutzername</value>
+  </data>
+  <data name="StartPageWelcomeText" xml:space="preserve">
+    <value>Willkommen bei University News.</value>
+  </data>
 </root>
