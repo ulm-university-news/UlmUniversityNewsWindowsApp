@@ -92,15 +92,15 @@ namespace DataHandlingLayer.ViewModel
         /// <summary>
         /// Liefert die Kanal-URI des Kanals für eingehende Push Nachrichten zurück, die dem
         /// lokalen Nutzer aktuell zugeordnet ist. Die Kanal-URI wird im Folgenden auch als 
-        /// Push Access Token. 
+        /// Push Access Token bezeichnet. 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Die URI des aktuellen Kanals vom WNS als String. Null, wenn gerade kein Kanal offen ist.</returns>
         public String GetPushChannelURIOfLocalUser()
         {
             Debug.WriteLine("Retrieve the push access token of the local user.");
             String pushToken = null;
 
-            User localUser = localUserDB.GetLocalUser();
+            User localUser = base.getLocalUser();
             if(localUser != null){
                 pushToken = localUser.PushAccessToken;
             }
@@ -121,7 +121,7 @@ namespace DataHandlingLayer.ViewModel
         public async Task UpdateLocalUserAsync(string name, string pushAccessToken)
         {
             bool doUpdate = false;
-            User localUser = localUserDB.GetLocalUser();
+            User localUser = base.getLocalUser();
             if (localUserDB != null){
                 // Prüfe, ob der Name aktualisiert werden muss.
                 if(name != string.Empty && (String.Compare(localUser.Name, name) != 0)){
