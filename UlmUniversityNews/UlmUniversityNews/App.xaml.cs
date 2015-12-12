@@ -249,15 +249,18 @@ namespace UlmUniversityNews
             {
                 Debug.WriteLine("Need to initialize the push manager.");
                 await pushManager.InitializeAsync();
-                try
-                {
-                    // Aktualisiere das PushAccessToken falls notwendig.
-                    await localUserViewModel.UpdateLocalUserAsync(string.Empty, pushManager.GetChannelURIAsString());
-                }
-                catch (ClientException ex)
-                {
-                    Debug.WriteLine("Updating the push token of the local user has failed. Exception is with error code: " + ex.ErrorCode);
-                    //  TODO Wie mit diesem Fall umgehen?
+                String channelURI = pushManager.GetChannelURIAsString();
+                if(channelURI != null){
+                    try
+                    {
+                        // Aktualisiere das PushAccessToken falls notwendig.
+                        await localUserViewModel.UpdateLocalUserAsync(string.Empty, channelURI);
+                    }
+                    catch (ClientException ex)
+                    {
+                        Debug.WriteLine("Updating the push token of the local user has failed. Exception is with error code: " + ex.ErrorCode);
+                        //  TODO Wie mit diesem Fall umgehen?
+                    }
                 }
             }
         }
