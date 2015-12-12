@@ -137,6 +137,25 @@ namespace UlmUniversityNews
 
                 // Navigiere zum Homescreen, wenn der lokale Nutzeraccount bereits existiert.
                 if (localUserExists) {
+                    // Prüfe, ob der Push Notification Manager bereits initialisiert ist.
+                    PushNotifications.PushNotificationManager pushManager = PushNotifications.PushNotificationManager.GetInstance();
+                    if (pushManager.IsInitialized() == false)
+                    {
+                        Debug.WriteLine("PushNotificationManager not initialized. Start initialization.");
+                        await pushManager.InitializeAsync();
+                        try
+                        {
+                            // Aktualisiere das PushAccessToken falls notwendig.
+                            await localUserViewModel.UpdateLocalUserAsync(string.Empty, pushManager.GetChannelURIAsString());
+                        }
+                        catch(ClientException ex)
+                        {
+                            Debug.WriteLine("Updating the push token of the local user has failed. Exception is with error code: " + ex.ErrorCode);
+                            //  TODO Wie mit diesem Fall umgehen?
+                        }
+                    }
+
+                    // Navigiere zum Homescreen.
                     if (!rootFrame.Navigate(typeof(Views.Homescreen.Homescreen), e.Arguments))
                     {
                         throw new Exception("Failed to create homepage");
@@ -171,11 +190,15 @@ namespace UlmUniversityNews
             if (pushManager.IsInitialized() == false){
                 Debug.WriteLine("Need to initialize the push manager.");
                 await pushManager.InitializeAsync();
-                bool successful = await pushManager.UpdateRemoteChannelURIAsync();
-                if (!successful)
+                try
                 {
-                    Debug.WriteLine("Updating the push token for the local user has failed.");
-                    // TODO Wie mit diesem Fall umgehen?
+                    // Aktualisiere das PushAccessToken falls notwendig.
+                    await localUserViewModel.UpdateLocalUserAsync(string.Empty, pushManager.GetChannelURIAsString());
+                }
+                catch (ClientException ex)
+                {
+                    Debug.WriteLine("Updating the push token of the local user has failed. Exception is with error code: " + ex.ErrorCode);
+                    //  TODO Wie mit diesem Fall umgehen?
                 }
             }
 

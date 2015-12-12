@@ -64,18 +64,6 @@ namespace UlmUniversityNews.Views.Homescreen
             // Prüfe, ob Zugriff auf LockScreen gewährt ist, um Hintergrundaufgaben ausführen zu dürfen.
             await checkLockScreenAccessPermissionAsync();
 
-            // Prüfe, ob der Push Notification Manager bereits initialisiert ist.
-            PushNotifications.PushNotificationManager pushManager = PushNotifications.PushNotificationManager.GetInstance();
-            if (pushManager.IsInitialized() == false){
-                Debug.WriteLine("PushNotificationManager not initialized. Start initialization.");
-                await pushManager.InitializeAsync();
-                bool successful = await pushManager.UpdateRemoteChannelURIAsync();
-                if (!successful)
-                {
-                    Debug.WriteLine("Updating the push token of the local user has failed.");
-                    // TODO Wie mit diesem Fall umgehen?
-                }
-            }
             Debug.WriteLine("Finished Homescreen_Pivot Loaded Event Handler.");
         }
 

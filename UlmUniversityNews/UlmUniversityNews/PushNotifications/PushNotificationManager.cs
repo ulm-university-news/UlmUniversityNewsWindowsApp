@@ -10,6 +10,11 @@ using Windows.Networking.PushNotifications;
 
 namespace UlmUniversityNews.PushNotifications
 {
+    /// <summary>
+    /// Die PushNotificationManager Klasse ist eine Singleton-Klasse, die die notwendige Interaktion mit dem WNS
+    /// kapselt. Die Klasse bietet Funktionalität an, um eine Kanal für PushNachrichten vom WNS zu erhalten.
+    /// Zudem werden PushNotificiations, die zur Laufzeit der Anwendung eintreffen, in dieser Klasse behandelt.
+    /// </summary>
     public class PushNotificationManager
     {
         private static PushNotificationManager _instance = null;
@@ -22,13 +27,13 @@ namespace UlmUniversityNews.PushNotifications
         /// <summary>
         /// Eine Instanz der LocalUserViewModel Klasse.
         /// </summary>
-        private LocalUserViewModel localUserViewModel;
+        //private LocalUserViewModel localUserViewModel;
 
         /// <summary>
         /// Erzeugt eine Instanz der PushNotificationManager Klasse.
         /// </summary>
         private PushNotificationManager(){
-            localUserViewModel = new LocalUserViewModel();
+            //localUserViewModel = new LocalUserViewModel();
         }
 
         /// <summary>
@@ -121,44 +126,44 @@ namespace UlmUniversityNews.PushNotifications
             return channelURI;
         }
 
-        /// <summary>
-        /// Aktualisiert die Kanal-URI lokal in der Anwendung und auf dem Server falls notwendig.
-        /// Eine Aktualisierung ist nur dann erforderlich, wenn die Kanal-URI sich seit der letzten
-        /// Aktualisierung geändert hat. Ist keine Aktualisierung erforderlich, so wird keine Aktion
-        /// durchgeführt.
-        /// </summary>
-        /// <returns>Liefert true zurück, wenn die Aktualisierung erfolgreich war, sonst false.</returns>
-        public async Task<bool> UpdateRemoteChannelURIAsync()
-        {
-            bool successful = false;
+        ///// <summary>
+        ///// Aktualisiert die Kanal-URI lokal in der Anwendung und auf dem Server falls notwendig.
+        ///// Eine Aktualisierung ist nur dann erforderlich, wenn die Kanal-URI sich seit der letzten
+        ///// Aktualisierung geändert hat. Ist keine Aktualisierung erforderlich, so wird keine Aktion
+        ///// durchgeführt.
+        ///// </summary>
+        ///// <returns>Liefert true zurück, wenn die Aktualisierung erfolgreich war, sonst false.</returns>
+        //public async Task<bool> UpdateRemoteChannelURIAsync()
+        //{
+        //    bool successful = false;
 
-            String localUserChannelURI = localUserViewModel.GetPushChannelURIOfLocalUser();
-            if(localUserChannelURI != null && _pushChannel != null){
-                String currentChannelURI = _pushChannel.Uri;
-                if(String.Compare(localUserChannelURI,currentChannelURI) == 0){
-                    Debug.WriteLine("Channel URI hasn't changed. No update required.");
-                    // Keine Aktualisierung erforderlich.
-                    successful = true;
-                }
-                else
-                {
-                    Debug.WriteLine("Need to update the channel URI, i.e. the push token of the local user. Starting updating process.");
-                    // Aktualisierung des Push Access Token des lokalen Nutzers erforderlich.
-                    try
-                    {
-                        await localUserViewModel.UpdateLocalUserAsync(string.Empty, currentChannelURI);
-                        successful = true;
-                        Debug.WriteLine("Updated channel URI (push access token) successfully.");
-                    }
-                    catch(ClientException ex)
-                    {
-                        Debug.WriteLine("Client exception occurred. Updating channel URI (push access token) has failed. Error code is: " + ex.ErrorCode);
-                    }
-                }
-            }
+        //    String localUserChannelURI = localUserViewModel.GetPushChannelURIOfLocalUser();
+        //    if(localUserChannelURI != null && _pushChannel != null){
+        //        String currentChannelURI = _pushChannel.Uri;
+        //        if(String.Compare(localUserChannelURI,currentChannelURI) == 0){
+        //            Debug.WriteLine("Channel URI hasn't changed. No update required.");
+        //            // Keine Aktualisierung erforderlich.
+        //            successful = true;
+        //        }
+        //        else
+        //        {
+        //            Debug.WriteLine("Need to update the channel URI, i.e. the push token of the local user. Starting updating process.");
+        //            // Aktualisierung des Push Access Token des lokalen Nutzers erforderlich.
+        //            try
+        //            {
+        //                await localUserViewModel.UpdateLocalUserAsync(string.Empty, currentChannelURI);
+        //                successful = true;
+        //                Debug.WriteLine("Updated channel URI (push access token) successfully.");
+        //            }
+        //            catch(ClientException ex)
+        //            {
+        //                Debug.WriteLine("Client exception occurred. Updating channel URI (push access token) has failed. Error code is: " + ex.ErrorCode);
+        //            }
+        //        }
+        //    }
 
-            return successful;
-        }
+        //    return successful;
+        //}
 
         /// <summary>
         /// Handler Methode, die das PushNotificationReceived Event behandelt. Bei einer eingehenden Push Nachricht wird dieses Event gefeuert
