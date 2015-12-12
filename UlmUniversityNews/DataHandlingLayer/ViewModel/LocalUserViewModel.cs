@@ -13,12 +13,8 @@ using System.Threading.Tasks;
 
 namespace DataHandlingLayer.ViewModel
 {
-    public class LocalUserViewModel
+    public class LocalUserViewModel : ViewModel
     {
-        /// <summary>
-        /// Verweis auf eine Instanz der LocalUserDatabaseManager Klasse.
-        /// </summary>
-        private LocalUserDatabaseManager localUserDB;
         /// <summary>
         /// Verweis auf eine Instanz der UserAPI Klasse.
         /// </summary>
@@ -27,9 +23,8 @@ namespace DataHandlingLayer.ViewModel
         /// <summary>
         /// Erzeugt eine Instanz der LocalUserViewModel Klasse.
         /// </summary>
-        public LocalUserViewModel()
+        public LocalUserViewModel() : base()
         {
-            localUserDB = new LocalUserDatabaseManager();
             userAPI = new UserAPI();
         }
 
@@ -86,6 +81,15 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Liefert das lokale Nutzerobjekt zurück.
+        /// </summary>
+        /// <returns>Eine Instanz der Klasse User. Liefert null zurück, wenn noch kein lokaler Nutzer angelegt wurde.</returns>
+        public User GetLocalUser()
+        {
+            return base.getLocalUser();
+        }
+
+        /// <summary>
         /// Liefert die Kanal-URI des Kanals für eingehende Push Nachrichten zurück, die dem
         /// lokalen Nutzer aktuell zugeordnet ist. Die Kanal-URI wird im Folgenden auch als 
         /// Push Access Token. 
@@ -102,28 +106,6 @@ namespace DataHandlingLayer.ViewModel
             }
 
             return pushToken;
-        }
-
-        /// <summary>
-        /// Gibt den lokalen Nutzer zurück. Liefert null zurück wenn kein lokaler
-        /// Nutzer definiert ist.
-        /// </summary>
-        /// <returns>Instanz der User Klasse, oder null wenn kein lokaler Nutzer definiert ist.</returns>
-        /// <exception cref="ClientException">Wirft ClientException, wenn beim Ermitteln des lokalen Nutzers ein Fehler aufgetreten ist.</exception>
-        public User GetLocalUser()
-        {
-            Debug.WriteLine("Get the local user.");
-            User localUser = null;
-            try
-            {
-                localUser = localUserDB.GetLocalUser();
-            }
-            catch(DatabaseException ex){
-                Debug.WriteLine("Database exception occurred in GetLocalUser(). Message of exception is: " + ex.Message);
-                // Abbilden des aufgetretenen Fehlers auf eine ClientException.
-                throw new ClientException(ErrorCodes.LocalDatabaseException, "Retrieval of local user account has failed.");
-            }
-            return localUser;
         }
 
         /// <summary>

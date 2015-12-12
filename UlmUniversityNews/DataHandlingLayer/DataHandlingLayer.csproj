@@ -87,6 +87,7 @@
     <Compile Include="Database\DatabaseManager.cs" />
     <Compile Include="Database\LocalUserDatabaseManager.cs" />
     <Compile Include="DataModel\Enums\Platform.cs" />
+    <Compile Include="DataModel\LocalUser.cs" />
     <Compile Include="DataModel\User.cs" />
     <Compile Include="Exceptions\APIException.cs" />
     <Compile Include="Exceptions\ClientException.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="Exceptions\ErrorCodes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\LocalUserViewModel.cs" />
+    <Compile Include="ViewModel\ViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">

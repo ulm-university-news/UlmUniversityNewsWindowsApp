@@ -163,5 +163,31 @@ namespace DataHandlingLayer.Database
                 Debug.WriteLine("SQLException: " + sqlEx.HResult + " and message: " + sqlEx.Message);
             }
         }
+
+        /// <summary>
+        /// Ausschließlich für Testzwecke!
+        /// </summary>
+        public static void InsertTestLocalUser()
+        {
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+
+            try
+            {
+                using (var insertStmt = conn.Prepare("INSERT INTO LocalUser (Id, Name, ServerAccessToken, PushAccessToken, Platform) VALUES (?,?,?,?,?);"))
+                {
+                    insertStmt.Bind(1, 40);
+                    insertStmt.Bind(2, "PhilippTestUser");
+                    insertStmt.Bind(3, "b9bafa4d28938fde58a764c9a4428a896b3f161ab4906dc9f5e3391e");
+                    insertStmt.Bind(4, "https://db5.notify.windows.com/?token=AwYAAAAywJk9ydbphz7nG%2fEUTU09P5CMOeLYKMSCTyl81uUx0FbQolUhvVeQGNFRpvuHkk4jCP0zEJqlytbjbXVklj7atyMWZIaoFYc%2fOycixTbnjDzOBmTVLrNV9Sa1wDdKSEk%3d");
+                    insertStmt.Bind(5, (int) DataModel.Enums.Platform.WINDOWS);
+
+                    insertStmt.Step();
+                }
+            }
+            catch (SQLiteException sqlEx)
+            {
+
+            }
+        }
     }
 }

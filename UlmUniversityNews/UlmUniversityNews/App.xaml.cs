@@ -46,6 +46,7 @@ namespace UlmUniversityNews
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
             this.Resuming += App_Resuming;
+
             // Erstelle Instanz des LocalUserViewModel.
             localUserViewModel = new LocalUserViewModel();
             Debug.WriteLine("Finished App constructor.");
@@ -71,9 +72,14 @@ namespace UlmUniversityNews
             // Lade die Datenbank.
             DatabaseManager.LoadDatabase();
 
-            // Test start
+            // TODO Test start
             // Lösche lokalen Nutzer testweise:
             // LocalUserDatabaseManager.DeleteLocalUser();
+            // Test end
+
+            // TODO Test start
+            // Füge lokalen Nutzer wieder ein.
+            // LocalUserDatabaseManager.InsertTestLocalUser();
             // Test end
 
             // Prüfe, ob bereits ein lokaler Nutzer angelegt ist.
@@ -172,6 +178,8 @@ namespace UlmUniversityNews
                     // TODO Wie mit diesem Fall umgehen?
                 }
             }
+
+            Debug.WriteLine("Test: Im aktuellen lokalen Nutzerobjekt Cache steht folgendes: " + LocalUser.GetInstance().GetCachedLocalUserObject().Name);
 
             Debug.WriteLine("Finished AppResuming EventHandler.");
         }

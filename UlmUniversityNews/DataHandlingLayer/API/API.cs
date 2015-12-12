@@ -30,7 +30,7 @@ namespace DataHandlingLayer.API
         /// <summary>
         /// Konstruktor zur Initialisierung der API Klasse.
         /// </summary>
-        public API(){
+        protected API(){
             baseURL = "http://134.60.71.137/ulm-university-news";
             //baseURL = "http://localhost:8080/";
         }
