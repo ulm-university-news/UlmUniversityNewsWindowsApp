@@ -34,7 +34,9 @@ namespace UlmUniversityNews.Views
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
-        private LocalUserViewModel localUserViewModel;
+        //private LocalUserViewModel localUserViewModel;
+
+        private StartPageViewModel startPageViewModel;
 
         public StartPage()
         {
@@ -45,7 +47,11 @@ namespace UlmUniversityNews.Views
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
 
             // Erzeuge Instanz auf das ViewModel für den lokalen Nutzer.
-            localUserViewModel = new LocalUserViewModel();
+            //localUserViewModel = new LocalUserViewModel();
+
+            // Erzeuge Referenz auf das ViewModel für die Startseite.
+            startPageViewModel = new StartPageViewModel(App.NavigationService, App.ErrorMapper);
+            this.DataContext = startPageViewModel;
         }
 
         /// <summary>
@@ -119,96 +125,97 @@ namespace UlmUniversityNews.Views
 
         #endregion
 
-        /// <summary>
-        /// Event-Handler für die Behandlung des Klicks auf den Create Account Button.
-        /// Die Eingabe des Nutzers wird geprüft. Ist die Eingabe in Ordnung wird die 
-        /// Erstellung eines lokalen Nutzeraccounts angestoßen.
-        /// </summary>
-        /// <param name="sender">Der Auslöser des Events.</param>
-        /// <param name="e">Eventparameter.</param>
-        private async void CreateAccount_Click(object sender, RoutedEventArgs e)
-        {
-            ErrorText.Text = "";    // Setze Fehlertext zurück.
-            UserName.BorderBrush = new SolidColorBrush(Colors.Black);
+        ///// <summary>
+        ///// Event-Handler für die Behandlung des Klicks auf den Create Account Button.
+        ///// Die Eingabe des Nutzers wird geprüft. Ist die Eingabe in Ordnung wird die 
+        ///// Erstellung eines lokalen Nutzeraccounts angestoßen.
+        ///// </summary>
+        ///// <param name="sender">Der Auslöser des Events.</param>
+        ///// <param name="e">Eventparameter.</param>
+        //private async void CreateAccount_Click(object sender, RoutedEventArgs e)
+        //{
+        //    ErrorText.Text = "";    // Setze Fehlertext zurück.
+        //    UserName.BorderBrush = new SolidColorBrush(Colors.Black);
 
-            var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+        //    var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
 
-            // Validiere die eingegebenen Daten.
-            string name = UserName.Text;
-            name = name.Trim();
-            if(name.Length < 3 || name.Length > 35){
-                UserName.BorderBrush = new SolidColorBrush(Colors.Red);
-                ErrorText.Text = loader.GetString("UserNameLengthInvalid"); ;
-            }
-            else if (!System.Text.RegularExpressions.Regex.IsMatch(name, @"^[-_a-zA-Z0-9]+$"))
-            {
-                UserName.BorderBrush = new SolidColorBrush(Colors.Red);
-                ErrorText.Text = loader.GetString("UserNameTextInvalid");
-            }
-            else
-            {
-                // Beginne mit der Account Erstellung.
-                bool forwardToHomescreen = true;
+        //    // Validiere die eingegebenen Daten.
+        //    string name = UserName.Text;
+        //    name = name.Trim();
+        //    if(name.Length < 3 || name.Length > 35){
+        //        UserName.BorderBrush = new SolidColorBrush(Colors.Red);
+        //        ErrorText.Text = loader.GetString("UserNameLengthInvalid"); ;
+        //    }
+        //    else if (!System.Text.RegularExpressions.Regex.IsMatch(name, @"^[-_a-zA-Z0-9]+$"))
+        //    {
+        //        UserName.BorderBrush = new SolidColorBrush(Colors.Red);
+        //        ErrorText.Text = loader.GetString("UserNameTextInvalid");
+        //    }
+        //    else
+        //    {
+        //        // Beginne mit der Account Erstellung.
+        //        bool forwardToHomescreen = true;
 
-                // Starte den Fortschrittsindikator
-                await Windows.UI.ViewManagement.StatusBar.GetForCurrentView().ShowAsync();
-                var progInd = Windows.UI.ViewManagement.StatusBar.GetForCurrentView().ProgressIndicator;
-                await progInd.ShowAsync();
+        //        // Starte den Fortschrittsindikator
+        //        await Windows.UI.ViewManagement.StatusBar.GetForCurrentView().ShowAsync();
+        //        var progInd = Windows.UI.ViewManagement.StatusBar.GetForCurrentView().ProgressIndicator;
+        //        await progInd.ShowAsync();
 
-                // Initialisiere den Push Notification Manager.
-                PushNotificationManager pushManager = PushNotificationManager.GetInstance();
-                await pushManager.InitializeAsync();
+        //        // Initialisiere den Push Notification Manager.
+        //        PushNotificationManager pushManager = PushNotificationManager.GetInstance();
+        //        await pushManager.InitializeAsync();
 
-                // Frage die Kanal-URI des Kanals für Push Nachrichten ab. Dieser dient als push access token für den lokalen Nutzer.
-                String pushAccessToken = pushManager.GetChannelURIAsString();
-                if(pushAccessToken != null){
-                    // Erstelle einen lokalen Nutzeraccount.
-                    try
-                    {
-                        await localUserViewModel.CreateLocalUserAsync(name, pushAccessToken);
-                    }
-                    catch (ClientException ex)
-                    {
-                        forwardToHomescreen = false;
+        //        // Frage die Kanal-URI des Kanals für Push Nachrichten ab. Dieser dient als push access token für den lokalen Nutzer.
+        //        String pushAccessToken = pushManager.GetChannelURIAsString();
+        //        if(pushAccessToken != null){
+        //            // Erstelle einen lokalen Nutzeraccount.
+        //            try
+        //            {
+        //                await localUserViewModel.CreateLocalUserAsync(name, pushAccessToken);
+        //            }
+        //            catch (ClientException ex)
+        //            {
+        //                forwardToHomescreen = false;
 
-                        // Zeige Fehler in einem MessageDialog an.
-                        string errorDescription = ErrorHandling.ErrorDescriptionMapper.GetInstance().GetErrorDescription(ex.ErrorCode); ;
-                        showErrorMessageDialogAsync(errorDescription);
-                    }
-                }
-                else
-                {
-                    forwardToHomescreen = false;
+        //                // Zeige Fehler in einem MessageDialog an.
+        //                string errorDescription = ErrorHandling.ErrorDescriptionMapper.GetInstance().GetErrorDescription(ex.ErrorCode); ;
+        //                showErrorMessageDialogAsync(errorDescription);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            forwardToHomescreen = false;
 
-                    string errorDescription = ErrorHandling.ErrorDescriptionMapper.GetInstance().GetErrorDescription(ErrorCodes.WnsChannelInitializationFailed); ;
-                    showErrorMessageDialogAsync(errorDescription);
-                }
+        //            string errorDescription = ErrorHandling.ErrorDescriptionMapper.GetInstance().GetErrorDescription(ErrorCodes.WnsChannelInitializationFailed); ;
+        //            showErrorMessageDialogAsync(errorDescription);
+        //        }
 
-                // Stoppe den Fortschrittsindikator.
-                await progInd.HideAsync();
+        //        // Stoppe den Fortschrittsindikator.
+        //        await progInd.HideAsync();
 
-                if(forwardToHomescreen)
-                {
-                    // Navigiere auf den Homescreen.
-                    Frame.Navigate(typeof(Views.Homescreen.Homescreen));
-                }
-            }
-        }
+        //        if(forwardToHomescreen)
+        //        {
+        //            // Navigiere auf den Homescreen.
+        //            Frame.Navigate(typeof(Views.Homescreen.Homescreen));
+        //        }
+        //    }
+        //}
 
-        /// <summary>
-        /// Zeigt eine Fehlernachricht innerhalb eines MessageDialog Elements an.
-        /// </summary>
-        /// <param name="content">Der Inhalt des MessageDialog Elements, d.h. die Beschreibung des Fehlers.</param>
-        private async void showErrorMessageDialogAsync(string content)
-        {
-            var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
-            string title = loader.GetString("ErrorDialogBoxTitle");
+        ///// <summary>
+        ///// Zeigt eine Fehlernachricht innerhalb eines MessageDialog Elements an.
+        ///// </summary>
+        ///// <param name="content">Der Inhalt des MessageDialog Elements, d.h. die Beschreibung des Fehlers.</param>
+        //private async void showErrorMessageDialogAsync(string content)
+        //{
+        //    var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+        //    string title = loader.GetString("ErrorDialogBoxTitle");
 
-            var dialog = new Windows.UI.Popups.MessageDialog(content, title);
-            dialog.Commands.Add(new Windows.UI.Popups.UICommand("Ok") { Id = 0 });
-            dialog.DefaultCommandIndex = 0;
+        //    var dialog = new Windows.UI.Popups.MessageDialog(content, title);
+        //    dialog.Commands.Add(new Windows.UI.Popups.UICommand("Ok") { Id = 0 });
+        //    dialog.DefaultCommandIndex = 0;
 
-            var result = await dialog.ShowAsync();
-        }
+        //    var result = await dialog.ShowAsync();
+        //}
+
     }
 }

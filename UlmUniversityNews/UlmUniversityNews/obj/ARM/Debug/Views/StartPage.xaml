@@ -32,12 +32,12 @@
     <!-- Command Bar -->
     <Page.BottomAppBar>
         <CommandBar Background="#7D9AAA">
-            <AppBarButton x:ConnectionId='1' 
+            <AppBarButton 
                 x:Name="CreateAccount"
                 x:Uid="StartPageCreateAccountButton"
                 Icon="Accept"
                 Label="create account"
-                                           />
+                Command="{Binding CreateUserCommand}"/>
         </CommandBar>
     </Page.BottomAppBar>
 
@@ -90,7 +90,8 @@
                 <TextBox x:Name="UserName"
                          x:Uid="StartPageUsernameTextBox"
                          Header="Nutzername"
-                         InputScope="AlphanumericFullWidth" />
+                         InputScope="AlphanumericFullWidth"
+                         Text="{Binding UserName, Mode=TwoWay}"/>
                 <TextBlock x:Name="ErrorText" 
                            Style="{StaticResource StartPageTextStyle}"
                            Foreground="Red"  />
