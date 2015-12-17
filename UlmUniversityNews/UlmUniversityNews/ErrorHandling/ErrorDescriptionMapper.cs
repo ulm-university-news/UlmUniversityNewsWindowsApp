@@ -1,6 +1,8 @@
-﻿using DataHandlingLayer.Exceptions;
+﻿using DataHandlingLayer.ErrorMapperInterface;
+using DataHandlingLayer.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,30 +10,23 @@ using System.Threading.Tasks;
 namespace UlmUniversityNews.ErrorHandling
 {
     /// <summary>
-    /// Die ErrorDescriptionMapper Klasse ist eine Singleton-Klasse, die Funktionalität zur Abbildung von
-    /// Fehlercodes auf entsprechende Fehlernachrichten bereitstellt. Die Fehlernachricht wird dann abhängig von
-    /// der eingestellten bevorzugten Sprache des Nutzers zurückgeliefert.
+    /// Die ErrorDescriptionMapper Klasse ist eine Klasse, die Funktionalität zur Abbildung von
+    /// Fehlercodes auf entsprechende Fehlernachrichten beinhaltet und das Anzeigen von Fehlernachrichten
+    /// übernimmt. Die Fehlernachricht wird abhängig von der eingestellten bevorzugten Sprache des Nutzers angezeigt.
     /// </summary>
-    public class ErrorDescriptionMapper
+    public class ErrorDescriptionMapper : IErrorMapper
     {
-        private static ErrorDescriptionMapper _instance;
-
         /// <summary>
-        /// Liefert eine Instanz der ErrorDescriptionMapper Klasse zurück.
-        /// Diese Klasse kann dazu genutzt werden, Fehlercodes auf die entsprechende Fehlerbeschreibung abzubilden.
-        /// Die Fehlerbeschreibung wird dabei abhängig von der eingestellten Sprache zurückgeliefert.
+        /// Zeigt eine Fehlernachricht auf dem Bildschirm in Form einer MessageBox an. Die Fehlernachricht wird unter
+        /// Verwendung des ErrorCodes und der eingestellten Sprache der Anwendung generiert.
         /// </summary>
-        /// <returns>Eine Instanz der ErrorDescriptionMapper Klasse.</returns>
-        public static ErrorDescriptionMapper GetInstance()
+        /// <param name="errorCode">Der Fehlercode des aufgetretenen Fehlers.</param>
+        public void DisplayErrorMessage(int errorCode)
         {
-            lock (typeof(ErrorDescriptionMapper))
-            {
-                if (_instance == null)
-                {
-                    _instance = new ErrorDescriptionMapper();
-                }
-            }
-            return _instance;
+            Debug.WriteLine("Received displaying request. Error code is: " + errorCode);
+            string errorMessage = getErrorDescription(errorCode);
+
+            showErrorMessageDialogAsync(errorMessage);
         }
 
         /// <summary>
@@ -40,7 +35,7 @@ namespace UlmUniversityNews.ErrorHandling
         /// </summary>
         /// <param name="errorCode">Der Fehlercode, zu dem die Fehlerbeschreibung zurückgegeben werden soll.</param>
         /// <returns>Eine Fehlerbeschreibung.</returns>
-        public string GetErrorDescription(int errorCode)
+        private string getErrorDescription(int errorCode)
         {
             var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
             string errorDescription = string.Empty;
@@ -88,6 +83,22 @@ namespace UlmUniversityNews.ErrorHandling
             }
 
             return errorDescription;
+        }
+
+        /// <summary>
+        /// Zeigt eine Fehlernachricht innerhalb eines MessageDialog Elements an.
+        /// </summary>
+        /// <param name="content">Der Inhalt des MessageDialog Elements, d.h. die Beschreibung des Fehlers.</param>
+        private async void showErrorMessageDialogAsync(string content)
+        {
+            var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+            string title = loader.GetString("ErrorDialogBoxTitle");
+
+            var dialog = new Windows.UI.Popups.MessageDialog(content, title);
+            dialog.Commands.Add(new Windows.UI.Popups.UICommand("Ok") { Id = 0 });
+            dialog.DefaultCommandIndex = 0;
+
+            var result = await dialog.ShowAsync();
         }
 
     }

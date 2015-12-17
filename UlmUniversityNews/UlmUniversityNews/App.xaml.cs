@@ -23,6 +23,9 @@ using DataHandlingLayer.Database;
 using DataHandlingLayer.DataModel;
 using DataHandlingLayer.ViewModel;
 using DataHandlingLayer.Exceptions;
+using UlmUniversityNews.Views;
+using UlmUniversityNews.ErrorHandling;
+using DataHandlingLayer.Controller;
 
 // Die Vorlage "Pivotanwendung" ist unter http://go.microsoft.com/fwlink/?LinkID=391641 dokumentiert.
 
@@ -34,7 +37,17 @@ namespace UlmUniversityNews
     public sealed partial class App : Application
     {
         private TransitionCollection transitions;
-        private LocalUserViewModel localUserViewModel;
+        private LocalUserController localUserController;
+
+        /// <summary>
+        /// Referenz auf den Navigationsdienst der Anwendung.
+        /// </summary>
+        public static UlmUniversityNews.NavigationService.NavigationService NavigationService;
+
+        /// <summary>
+        /// Referenz auf den ErrorMapper der Anwendung.
+        /// </summary>
+        public static ErrorDescriptionMapper ErrorMapper;
 
         /// <summary>
         /// Initialisiert das Singletonanwendungsobjekt. Dies ist die erste Zeile von erstelltem Code
@@ -47,8 +60,12 @@ namespace UlmUniversityNews
             this.Suspending += this.OnSuspending;
             this.Resuming += App_Resuming;
 
-            // Erstelle Instanz des LocalUserViewModel.
-            localUserViewModel = new LocalUserViewModel();
+            // Erstelle Instanz des ErrorMapper.
+            ErrorMapper = new ErrorDescriptionMapper();
+
+            // Erstelle Instanz des LocalUserController.
+            localUserController = new LocalUserController();
+
             Debug.WriteLine("Finished App constructor.");
         }
 
@@ -74,7 +91,7 @@ namespace UlmUniversityNews
 
             // TODO Test start
             // Lösche lokalen Nutzer testweise:
-            // LocalUserDatabaseManager.DeleteLocalUser();
+            LocalUserDatabaseManager.DeleteLocalUser();
             // Test end
 
             // TODO Test start
@@ -134,6 +151,11 @@ namespace UlmUniversityNews
 
                 rootFrame.ContentTransitions = null;
                 rootFrame.Navigated += this.RootFrame_FirstNavigated;
+
+                // Erzeuge Instanz des Navigationsdiensts und lade die Seiten.
+                NavigationService = new UlmUniversityNews.NavigationService.NavigationService(rootFrame);
+                NavigationService.RegisterPage("StartPage", typeof(StartPage));
+                NavigationService.RegisterPage("Homescreen", typeof(Views.Homescreen.Homescreen));
 
                 // Navigiere zum Homescreen, wenn der lokale Nutzeraccount bereits existiert.
                 if (localUserExists) {
@@ -219,7 +241,7 @@ namespace UlmUniversityNews
             User localUser = null;
             try
             {
-                localUser = localUserViewModel.GetLocalUser();
+                localUser = localUserController.GetLocalUser();
                 // Start Test (TODO Remove after testing)
                 if(localUser != null)
                     Debug.WriteLine("Just for test reasons: The current push token is: {0}", localUser.PushAccessToken);
@@ -254,7 +276,7 @@ namespace UlmUniversityNews
                     try
                     {
                         // Aktualisiere das PushAccessToken falls notwendig.
-                        await localUserViewModel.UpdateLocalUserAsync(string.Empty, channelURI);
+                        await localUserController.UpdateLocalUserAsync(string.Empty, channelURI);
                     }
                     catch (ClientException ex)
                     {
