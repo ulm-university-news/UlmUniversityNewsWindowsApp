@@ -1,10 +1,14 @@
 ﻿using DataHandlingLayer.Database;
 using DataHandlingLayer.DataModel;
+using DataHandlingLayer.ErrorMapperInterface;
 using DataHandlingLayer.Exceptions;
+using DataHandlingLayer.NavigationService;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,53 +16,76 @@ namespace DataHandlingLayer.ViewModel
 {
     /// <summary>
     /// Abstrakte Klasse ViewModel stellt Funktionalitäten bereit, die von allen ViewModel Klassen benötigt werden.
+    /// Dazu gehört die Implementierung von INotifyPropertyChanged und Zugriff auf häufig benötigte Objekte, wie das lokale Nutzerobjekt.
+    /// Zudem bietet die Klasse Zugriff auf den Navigationsdienst und den ErrorMapper.
     /// </summary>
-    public abstract class ViewModel
+    public abstract class ViewModel : INotifyPropertyChanged
     {
         /// <summary>
-        /// Verweis auf eine Instanz der LocalUserDatabaseManager Klasse.
+        ///  Eine Referenz auf den Navigationsdienst, über den die Seitennavigation erfolgt.
         /// </summary>
-        protected LocalUserDatabaseManager localUserDB;
+        protected INavigationService _navService;
+
+        /// <summary>
+        /// Eine Referenz auf den ErrorMapper, über den Fehlercodes auf Fehlernachrichten abgebildet und angezeigt werden können.
+        /// </summary>
+        private IErrorMapper _errorMapper;
+
+        /// <summary>
+        /// PropertyChanged Event wird gefeuert, wenn sich Werte von bestimmten Properties geändert haben.
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Konstruktor zur Initialisierung der ViewModel Klasse.
         /// </summary>
-        protected ViewModel()
+        protected ViewModel(INavigationService navService, IErrorMapper errorMapper)
         {
-            localUserDB = new LocalUserDatabaseManager();
+            _navService = navService;
+            _errorMapper = errorMapper;
+        }
+
+        // Property Change Logik:
+        protected bool setProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
+        {
+            if(object.Equals(storage, value))
+            {
+                return false;
+            }
+            storage = value;
+            this.onPropertyChanged(propertyName);
+            return true;
+        }
+
+        protected void onPropertyChanged([CallerMemberName] String propertyName = null)
+        {
+            var eventHandler = this.PropertyChanged;
+            if(eventHandler != null){
+                eventHandler(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
 
         /// <summary>
-        /// Gibt den lokalen Nutzer zurück. Liefert null zurück wenn kein lokaler
-        /// Nutzer definiert ist. Da diese Methode in allen ViewModel Klassen benötigt wird
-        /// ist sie in der abstrakten Basisklasse implementiert.
+        /// Informiert den Nutzer über einen aufgetretenen Fehler, indem der Fehler auf dem Display angezeigt wird.
         /// </summary>
-        /// <returns>Instanz der User Klasse, oder null wenn kein lokaler Nutzer definiert ist.</returns>
-        /// <exception cref="ClientException">Wirft ClientException, wenn beim Ermitteln des lokalen Nutzers ein Fehler aufgetreten ist.</exception>
-        protected User getLocalUser()
+        /// <param name="errorCode">Der Fehlercode des aufgetretenen Fehlers.</param>
+        protected void displayError(int errorCode)
         {
-            Debug.WriteLine("Get the local user.");
-            // Frage zuerst das lokale Nutzerobjekt aus dem Cache ab.
-            User localUser = LocalUser.GetInstance().GetCachedLocalUserObject();
-            if (localUser == null)
-            {
-                // Lokales Nutzerobjekt noch nicht im Cache. Frage es aus der DB ab.
-                try
-                {
-                    localUser = localUserDB.GetLocalUser();
+            _errorMapper.DisplayErrorMessage(errorCode);
+        }
 
-                    // Speichere Objekt im Cache.
-                    LocalUser.GetInstance().CacheLocalUserObject(localUser);
-                }
-                catch (DatabaseException ex)
-                {
-                    Debug.WriteLine("Database exception occurred in GetLocalUser(). Message of exception is: " + ex.Message);
-                    // Abbilden des aufgetretenen Fehlers auf eine ClientException.
-                    throw new ClientException(ErrorCodes.LocalDatabaseException, "Retrieval of local user account has failed.");
-                }
-            }
+        protected async void displayProgressBar()
+        {
+            Windows.UI.ViewManagement.StatusBarProgressIndicator progressbar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView().ProgressIndicator;
 
-            return localUser;
+            await progressbar.ShowAsync();
+        }
+
+        protected async void hideProgressBar()
+        {
+            Windows.UI.ViewManagement.StatusBarProgressIndicator progressbar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView().ProgressIndicator;
+
+            await progressbar.HideAsync();
         }
 
     }
