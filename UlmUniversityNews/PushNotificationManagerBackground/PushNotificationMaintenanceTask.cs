@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DataHandlingLayer.Controller;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -35,8 +36,8 @@ namespace PushNotificationManagerBackground
             try
             {
                 // Hole eine Instanz des lokalen Nutzers.
-                DataHandlingLayer.ViewModel.LocalUserViewModel localUserViewModel = new DataHandlingLayer.ViewModel.LocalUserViewModel();
-                DataHandlingLayer.DataModel.User localUser = localUserViewModel.GetLocalUser();
+                LocalUserController localUserController = new LocalUserController();
+                DataHandlingLayer.DataModel.User localUser = localUserController.GetLocalUser();
                 
                 // Frage einen neuen PushNotificationChannel an.
                 pushChannel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
@@ -52,7 +53,7 @@ namespace PushNotificationManagerBackground
                     else
                     {
                         Debug.WriteLine("Updating the push access token.");
-                        await localUserViewModel.UpdateLocalUserAsync(string.Empty, pushChannel.Uri);
+                        await localUserController.UpdateLocalUserAsync(string.Empty, pushChannel.Uri);
                     }
                 }
             }
