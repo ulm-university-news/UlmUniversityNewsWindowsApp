@@ -58,6 +58,14 @@ namespace DataHandlingLayer.Controller
             localUser.PushAccessToken = pushChannel.Uri;
             localUser.Platform = DataHandlingLayer.DataModel.Enums.Platform.WINDOWS;
 
+            // Führe Datenvalidierung auf Property Name aus.
+            localUser.ValidateProperty("Name");
+            if(localUser.HasValidationMessages("Name")){
+                // Melde Valdiationsfehler.
+
+                return;
+            }
+
             // Generiere Json String aus dem Objekt.
             string jsonContent = JsonConvert.SerializeObject(localUser);
             Debug.WriteLine("The json String is: " + jsonContent);

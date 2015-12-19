@@ -6,10 +6,16 @@ using System.Threading.Tasks;
 using DataHandlingLayer.DataModel.Enums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Sullinger.ValidatableBase.Models;
+using Sullinger.ValidatableBase.Models.ValidationRules;
+using System.Reflection;
 
 namespace DataHandlingLayer.DataModel
 {
-    public class User
+    /// <summary>
+    /// Die Klasse User repräsentiert einen Nutzer der Anwendung.
+    /// </summary>
+    public class User : Sullinger.ValidatableBase.Models.ValidatableBase
     {
         #region properties
 
@@ -28,6 +34,18 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Der Name des Nutzers.
         /// </summary>
+        [ValidateStringIsGreaterThan(
+            GreaterThanValue = 3,
+            FailureMessage = "Name needs to be at least 3 characters long.",
+            ValidationMessageType = typeof(ValidationErrorMessage))]
+        [ValidateStringIsLessThan(
+            LessThanValue = 35,
+            FailureMessage = "Name must not exceed 35 characters.",
+            ValidationMessageType = typeof(ValidationErrorMessage))]
+        [ValidateWithCustomHandler(
+            DelegateName = "IsNameCorrectlyFormatted",
+            FailureMessage = "Name does not match the expected format. Please avoid special characters.",
+            ValidationMessageType = typeof(ValidationErrorMessage))]
         [JsonProperty("name")]
         public string Name
         {
@@ -110,6 +128,18 @@ namespace DataHandlingLayer.DataModel
             this.active = active;
         }
 
+        /// <summary>
+        /// Validierungsmethode, die prüft, ob ein Name dem gegebenen Format entspricht.
+        /// </summary>
+        /// <param name="failureMessage">Eine Fehlernachricht, die ausgegeben werden soll, falls das Format nicht erfüllt wird.</param>
+        /// <param name="property">Die zu validierende Property.</param>
+        /// <returns>Instanz vom Typ IValidationMessage. Liefert null falls Format eingehalten wird, ansonsten die Fehlermeldung.</returns>
+        [ValidationCustomHandlerDelegate(DelegateName = "IsNameCorrectlyFormatted")]
+        private IValidationMessage ValidateNameFormat(IValidationMessage failureMessage, PropertyInfo property)
+        {
+            string regExp = @"^[-_a-zA-Z0-9]+$";
 
+            return System.Text.RegularExpressions.Regex.IsMatch(this.Name, regExp) ? null : failureMessage;
+        }
     }
 }

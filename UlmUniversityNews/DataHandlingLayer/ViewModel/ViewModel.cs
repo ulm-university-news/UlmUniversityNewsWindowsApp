@@ -1,4 +1,5 @@
-﻿using DataHandlingLayer.Database;
+﻿using DataHandlingLayer.Controller.ValidationErrorReportInterface;
+using DataHandlingLayer.Database;
 using DataHandlingLayer.DataModel;
 using DataHandlingLayer.ErrorMapperInterface;
 using DataHandlingLayer.Exceptions;
@@ -19,7 +20,7 @@ namespace DataHandlingLayer.ViewModel
     /// Dazu gehört die Implementierung von INotifyPropertyChanged und Zugriff auf häufig benötigte Objekte, wie das lokale Nutzerobjekt.
     /// Zudem bietet die Klasse Zugriff auf den Navigationsdienst und den ErrorMapper.
     /// </summary>
-    public abstract class ViewModel : INotifyPropertyChanged
+    public abstract class ViewModel : INotifyPropertyChanged, IValidationErrorReport
     {
         /// <summary>
         ///  Eine Referenz auf den Navigationsdienst, über den die Seitennavigation erfolgt.
@@ -37,12 +38,19 @@ namespace DataHandlingLayer.ViewModel
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
+        /// Ein Verzeichnis, welches aufgetretene Valdierungsfehler auf die entsprechenden Properties abbildet.
+        /// </summary>
+        public Dictionary<string, string> ValidationFailures;
+
+        /// <summary>
         /// Konstruktor zur Initialisierung der ViewModel Klasse.
         /// </summary>
         protected ViewModel(INavigationService navService, IErrorMapper errorMapper)
         {
             _navService = navService;
             _errorMapper = errorMapper;
+
+            ValidationFailures = new Dictionary<string, string>();
         }
 
         // Property Change Logik:
@@ -88,5 +96,23 @@ namespace DataHandlingLayer.ViewModel
             await progressbar.HideAsync();
         }
 
+
+        public void ReportValidationError(string property, string failureMessage)
+        {
+            ValidationFailures.Add(property, failureMessage);
+            onPropertyChanged("ValidationFailures");
+        }
+
+        public void RemoveFailureMessagesForProperty(string property)
+        {
+            ValidationFailures.Remove(property);
+            onPropertyChanged("ValidationFailures");
+        }
+
+        public void RemoveAllFailureMessages()
+        {
+            ValidationFailures.Clear();
+            onPropertyChanged("ValidationFailures");
+        }
     }
 }
