@@ -101,7 +101,6 @@
     <Compile Include="Exceptions\ErrorCodes.cs" />
     <Compile Include="NavigationService\INavigationService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModel\LocalUserViewModel.cs" />
     <Compile Include="ViewModel\StartPageViewModel.cs" />
     <Compile Include="ViewModel\ViewModel.cs" />
   </ItemGroup>

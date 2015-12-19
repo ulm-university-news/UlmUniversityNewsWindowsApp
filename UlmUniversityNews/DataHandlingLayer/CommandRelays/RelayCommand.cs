@@ -19,7 +19,7 @@ namespace DataHandlingLayer.CommandRelays
         protected readonly Action<object> _execute;                  // Action kapselt eine Methode, die keinen Wert zurückliefert.
 
         /// <summary>
-        /// Erzeugt ein RelayCommand.
+        /// Erzeugt eine Instanz der RelayCommand Klasse.
         /// </summary>
         /// <param name="executeMethod">Die Methode, die durch das Kommando ausgelöst werden soll.</param>
         /// <param name="canExecuteMethod">Die Methode, die bestimmt, ob das Kommando aktiviert oder deaktiviert ist.</param>
@@ -27,6 +27,15 @@ namespace DataHandlingLayer.CommandRelays
         {
             _execute = executeMethod;
             _canExecute = canExecuteMethod;
+        }
+
+        /// <summary>
+        /// Erzeugt eine Instanz der RelayCommand Klasse.
+        /// </summary>
+        /// <param name="executeMethod">Die Methode, die durch das Kommando ausgelöst werden soll.</param>
+        public RelayCommand(Action<object> executeMethod)
+        {
+            _execute = executeMethod;
         }
 
         public bool CanExecute(object parameter)

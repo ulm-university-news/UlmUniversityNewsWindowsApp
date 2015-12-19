@@ -52,6 +52,7 @@ namespace DataHandlingLayer.Controller
                 {
                     Debug.WriteLine("Database exception occurred in GetLocalUser(). Message of exception is: " + ex.Message);
                     // Abbilden des aufgetretenen Fehlers auf eine ClientException.
+                    // TODO - hier Exception werfen?
                     //throw new ClientException(ErrorCodes.LocalDatabaseException, "Retrieval of local user account has failed.");
                 }
             }

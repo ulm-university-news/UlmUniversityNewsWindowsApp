@@ -34,8 +34,6 @@ namespace UlmUniversityNews.Views
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
-        //private LocalUserViewModel localUserViewModel;
-
         private StartPageViewModel startPageViewModel;
 
         public StartPage()
@@ -45,9 +43,6 @@ namespace UlmUniversityNews.Views
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
-
-            // Erzeuge Instanz auf das ViewModel für den lokalen Nutzer.
-            //localUserViewModel = new LocalUserViewModel();
 
             // Erzeuge Referenz auf das ViewModel für die Startseite.
             startPageViewModel = new StartPageViewModel(App.NavigationService, App.ErrorMapper);

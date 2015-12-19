@@ -37,6 +37,10 @@ namespace UlmUniversityNews
     public sealed partial class App : Application
     {
         private TransitionCollection transitions;
+
+        /// <summary>
+        /// Referenz auf den Controller, der Funktionalität bezüglich des lokalen Nutzerobjekts bereitstellt.
+        /// </summary>
         private LocalUserController localUserController;
 
         /// <summary>
@@ -91,7 +95,7 @@ namespace UlmUniversityNews
 
             // TODO Test start
             // Lösche lokalen Nutzer testweise:
-            LocalUserDatabaseManager.DeleteLocalUser();
+            // LocalUserDatabaseManager.DeleteLocalUser();
             // Test end
 
             // TODO Test start
