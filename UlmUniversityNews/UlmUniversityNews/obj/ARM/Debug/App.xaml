@@ -2,9 +2,14 @@
     x:Class="UlmUniversityNews.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:UlmUniversityNews">
+    xmlns:local="using:UlmUniversityNews"
+    xmlns:valueconverter="using:UlmUniversityNews.Converters"
+    RequestedTheme="Light">
     
     <Application.Resources>
+        <!-- Converters -->
+        <valueconverter:ValidationMessageOnLocalizedStringConverter x:Key="ValidationMessageOnLocalizedStringConverter" />
+        
         <!-- ContentDialog:-->
         <!-- Definiere den Style für TextBlock Elemente innerhalb von einem ContentDialog.-->
         <Style 

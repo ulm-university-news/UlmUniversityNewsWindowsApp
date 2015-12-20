@@ -8,18 +8,6 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
-        <Flyout x:Key="ErrorFlyout">
-            <Grid Background="Black">
-                <TextBlock 
-                    FontSize="14"
-                    Foreground="White"
-                    TextWrapping="Wrap" 
-                    x:Name="ErrorFlyoutMessage"
-                    x:Uid="ErrorFyloutMessageKey"
-                    Text="" />
-            </Grid>
-        </Flyout>
-        
         <!-- Style für die Texte auf der Startseite. -->
         <Style
             x:Key="StartPageTextStyle"
@@ -40,9 +28,9 @@
                 Command="{Binding CreateUserCommand}"/>
         </CommandBar>
     </Page.BottomAppBar>
-
+    
+    <!-- Layout Root-->
     <Grid x:Name="LayoutRoot">
-
         <Grid.ChildrenTransitions>
             <TransitionCollection>
                 <EntranceThemeTransition/>
@@ -91,10 +79,11 @@
                          x:Uid="StartPageUsernameTextBox"
                          Header="Nutzername"
                          InputScope="AlphanumericFullWidth"
-                         Text="{Binding UserName, Mode=TwoWay}"/>
+                         Text="{Binding Name, Mode=TwoWay}"/>
                 <TextBlock x:Name="ErrorText" 
                            Style="{StaticResource StartPageTextStyle}"
-                           Foreground="Red"  />
+                           Foreground="Red"
+                           Text="{Binding ValidationMessages[Name], FallbackValue={x:Null} , Converter={StaticResource ValidationMessageOnLocalizedStringConverter}}"/>
             </StackPanel>
         </Grid>
     </Grid>

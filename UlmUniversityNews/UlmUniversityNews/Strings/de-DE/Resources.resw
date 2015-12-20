@@ -196,10 +196,10 @@
   <data name="UserNameInvalidError" xml:space="preserve">
     <value>Der von Ihnen angegebene Nutzername ist nicht gültig.</value>
   </data>
-  <data name="UserNameLengthInvalid" xml:space="preserve">
-    <value>Der Nutzername muss mindestens 3 Zeichen umfassen und darf maximal 35 Zeichen lang sein.</value>
+  <data name="ValidationErrorStartPageUserNameLengthInvalid" xml:space="preserve">
+    <value>Der Nutzername muss mindestens 3 Zeichen und darf maximal 35 Zeichen umfassen.</value>
   </data>
-  <data name="UserNameTextInvalid" xml:space="preserve">
+  <data name="ValidationErrorStartPAgeUserNameTextInvalid" xml:space="preserve">
     <value>Bitte verwenden Sie für den Nutzernamen keine Leerzeichen und Sonderzeichen.</value>
   </data>
   <data name="UserNotFoundError" xml:space="preserve">

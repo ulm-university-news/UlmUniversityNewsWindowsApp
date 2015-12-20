@@ -79,10 +79,11 @@
                          x:Uid="StartPageUsernameTextBox"
                          Header="Nutzername"
                          InputScope="AlphanumericFullWidth"
-                         Text="{Binding UserName, Mode=TwoWay}"/>
+                         Text="{Binding Name, Mode=TwoWay}"/>
                 <TextBlock x:Name="ErrorText" 
                            Style="{StaticResource StartPageTextStyle}"
-                           Foreground="Red"  />
+                           Foreground="Red"
+                           Text="{Binding ValidationMessages[Name], FallbackValue={x:Null} , Converter={StaticResource ValidationMessageOnLocalizedStringConverter}}"/>
             </StackPanel>
         </Grid>
     </Grid>

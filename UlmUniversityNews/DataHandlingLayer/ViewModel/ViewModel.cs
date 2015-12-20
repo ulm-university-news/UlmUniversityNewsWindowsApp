@@ -37,10 +37,21 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
+        # region properties
+        private Dictionary<string, string> validationMessages;
         /// <summary>
         /// Ein Verzeichnis, welches aufgetretene Valdierungsfehler auf die entsprechenden Properties abbildet.
         /// </summary>
-        public Dictionary<string, string> ValidationFailures;
+        public Dictionary<string, string> ValidationMessages
+        {
+            get { return validationMessages; }
+            set
+            {
+                validationMessages = value;
+                onPropertyChanged("ValidationMessages");
+            }
+        }
+        #endregion properties
 
         /// <summary>
         /// Konstruktor zur Initialisierung der ViewModel Klasse.
@@ -50,7 +61,7 @@ namespace DataHandlingLayer.ViewModel
             _navService = navService;
             _errorMapper = errorMapper;
 
-            ValidationFailures = new Dictionary<string, string>();
+            ValidationMessages = new Dictionary<string, string>();
         }
 
         // Property Change Logik:
@@ -97,22 +108,28 @@ namespace DataHandlingLayer.ViewModel
         }
 
 
-        public void ReportValidationError(string property, string failureMessage)
+        public void ReportValidationError(string property, string validationMessage)
         {
-            ValidationFailures.Add(property, failureMessage);
-            onPropertyChanged("ValidationFailures");
+            if(validationMessages.ContainsKey(property)){
+                validationMessages[property] = validationMessage;
+            }
+            else
+            {
+                ValidationMessages.Add(property, validationMessage);
+            }
+            onPropertyChanged("ValidationMessages");
         }
 
         public void RemoveFailureMessagesForProperty(string property)
         {
-            ValidationFailures.Remove(property);
-            onPropertyChanged("ValidationFailures");
+            if(validationMessages.ContainsKey(property)){
+                ValidationMessages.Remove(property);
+            }
         }
 
         public void RemoveAllFailureMessages()
         {
-            ValidationFailures.Clear();
-            onPropertyChanged("ValidationFailures");
+            ValidationMessages.Clear();
         }
     }
 }

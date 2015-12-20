@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Roots >
+  <Roots.Interfaces>
+    <RootInterface FullName="Windows.UI.Xaml.Data.IValueConverter" />
+  </Roots.Interfaces>
   <Roots.PropertyPathNames>
     <RootPropertyPathName Name="DefaultViewModel" />
     <RootPropertyPathName Name="Item" />
@@ -9,12 +12,15 @@
     <RootPropertyPathName Name="Description" />
     <RootPropertyPathName Name="FirstGroup" />
     <RootPropertyPathName Name="CreateUserCommand" />
-    <RootPropertyPathName Name="UserName" />
+    <RootPropertyPathName Name="ValidationMessages" />
+    <RootPropertyPathName Name="Name" />
   </Roots.PropertyPathNames>
   <Roots.RootTypes>
     <RootType FullName="Windows.UI.Xaml.Application">
+      <RootProperty Name="RequestedTheme" />
       <RootProperty Name="Resources" />
     </RootType>
+    <RootType FullName="UlmUniversityNews.Converters.ValidationMessageOnLocalizedStringConverter" />
     <RootType FullName="Windows.UI.Xaml.Controls.TextBlock">
       <RootProperty Name="FontSize" />
       <RootProperty Name="Foreground" />
@@ -68,6 +74,8 @@
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Data.Binding">
       <RootProperty Name="RelativeSource" />
+      <RootProperty Name="FallbackValue" />
+      <RootProperty Name="Converter" />
       <RootProperty Name="Mode" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Data.RelativeSource" />
@@ -136,14 +144,12 @@
       <RootProperty Name="Width" />
     </RootType>
     <RootType FullName="UlmUniversityNews.Views.Homescreen.Homescreen" />
-    <RootType FullName="Windows.UI.Xaml.Controls.Flyout">
-      <RootProperty Name="Content" />
-    </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.TextBox">
       <RootProperty Name="Header" />
       <RootProperty Name="InputScope" />
       <RootProperty Name="Text" />
     </RootType>
+    <RootType FullName="Microsoft.Xaml.Tools.DirectUI.ProxyTypes.NullExtension" />
     <RootType FullName="UlmUniversityNews.Views.StartPage" />
   </Roots.RootTypes>
 </Roots>

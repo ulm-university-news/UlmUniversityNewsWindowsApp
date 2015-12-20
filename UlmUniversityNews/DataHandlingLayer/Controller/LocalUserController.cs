@@ -1,4 +1,5 @@
 ﻿using DataHandlingLayer.API;
+using DataHandlingLayer.Controller.ValidationErrorReportInterface;
 using DataHandlingLayer.Database;
 using DataHandlingLayer.DataModel;
 using DataHandlingLayer.Exceptions;
@@ -28,7 +29,19 @@ namespace DataHandlingLayer.Controller
         /// <summary>
         /// Erzeuge eine Instanz der Klasse LocalUserController Klasse.
         /// </summary>
-        public LocalUserController() : base()
+        public LocalUserController() 
+            : base()
+        {
+            localUserDB = new LocalUserDatabaseManager();
+            userAPI = new UserAPI();
+        }
+
+        /// <summary>
+        /// Erzeuge eine Instanz der Klasse LocalUserController Klasse mit Validierungsbehandlung.
+        /// </summary>
+        /// <param name="validationErrorReporter">Eine Referenz auf die Realsierung des IValidationErrorReport Interfaces.</param>
+        public LocalUserController(IValidationErrorReport validationErrorReporter)
+            : base(validationErrorReporter)
         {
             localUserDB = new LocalUserDatabaseManager();
             userAPI = new UserAPI();
@@ -38,8 +51,9 @@ namespace DataHandlingLayer.Controller
         /// Erstelle einen lokalen Nutzeraccount.
         /// </summary>
         /// <param name="name">Der Name für den Nutzer.</param>
-        /// <exception cref="ClientException">Wirft eine ClientException, wenn die Erstellung des Nutzeraccounts fehlschlägt.</exception>
-        public async Task CreateLocalUserAsync(string name)
+        /// <returns>Liefert true zurück, wenn der Account erfolgreich angelegt wurde. False, wenn die Validierung fehlgeschlagen hat.</returns>
+        /// <exception cref="ClientException">Wirft eine ClientException, wenn die Erstellung des Nutzeraccounts wegen eines aufgetretenen Fehlers fehlschlägt.</exception>
+        public async Task<bool> CreateLocalUserAsync(string name)
         {
             Debug.WriteLine("Starting createLocalUser().");
 
@@ -59,11 +73,16 @@ namespace DataHandlingLayer.Controller
             localUser.Platform = DataHandlingLayer.DataModel.Enums.Platform.WINDOWS;
 
             // Führe Datenvalidierung auf Property Name aus.
-            localUser.ValidateProperty("Name");
-            if(localUser.HasValidationMessages("Name")){
-                // Melde Valdiationsfehler.
-
-                return;
+            localUser.ValidateNameProperty();
+            if(localUser.HasValidationError("Name"))
+            {
+                reportValidationErrors(localUser.GetValidationErrors());
+                return false;
+            }
+            else
+            {
+                localUser.ClearValidationErrors();
+                clearValidationErrorForProperty("Name");
             }
 
             // Generiere Json String aus dem Objekt.
@@ -103,6 +122,7 @@ namespace DataHandlingLayer.Controller
             }
 
             Debug.WriteLine("Finished createLocalUser().");
+            return true;
         }
 
         /// <summary>

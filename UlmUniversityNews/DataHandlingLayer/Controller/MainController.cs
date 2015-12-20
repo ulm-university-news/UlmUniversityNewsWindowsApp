@@ -1,4 +1,5 @@
-﻿using DataHandlingLayer.Database;
+﻿using DataHandlingLayer.Controller.ValidationErrorReportInterface;
+using DataHandlingLayer.Database;
 using DataHandlingLayer.DataModel;
 using DataHandlingLayer.Exceptions;
 using System;
@@ -12,17 +13,71 @@ namespace DataHandlingLayer.Controller
 {
     /// <summary>
     /// Die MainController Klassen enthält Funktionalität, die von allen Controllern benötigt wird.
-    /// Dazu gehört die Bereitstellung des lokalen Nutzerobjekts.
+    /// Dazu gehört die Bereitstellung des lokalen Nutzerobjekts. Zudem wird Funktionalität bereitgestellt,
+    /// die bei der Validierung der Daten im Model aufgetretenen Validierungsfehler an die ViewModels zurückzumelden.
     /// </summary>
     public class MainController
     {
 
         /// <summary>
+        /// Referenz auf eine Realisierung des IValidationErrorReport Interface mittels dem Fehler an den Aufrufer zurückgemeldet werden.
+        /// </summary>
+        private IValidationErrorReport _validationErrorReporter;
+
+        /// <summary>
         /// Konstruktor zur Initialisierung des MainController.
+        /// </summary>
+        protected MainController(IValidationErrorReport validationErrorReporter)
+        {
+            this._validationErrorReporter = validationErrorReporter;
+        }
+
+        /// <summary>
+        /// Konstruktor für MainController.
         /// </summary>
         protected MainController()
         {
 
+        }
+
+        /// <summary>
+        /// Liest die vom Model gelieferten Validierungsfehler aus und meldet sie gesammelt für jede fehlerhafte Property 
+        /// zurück an das ViewModel.
+        /// </summary>
+        /// <param name="validationMessages">Das vom Model überlieferte Verzeichnis von Fehlernachrichten.</param>
+        protected void reportValidationErrors(Dictionary<string, string> validationMessages)
+        {
+            if (_validationErrorReporter != null)
+            {
+                foreach (KeyValuePair<string, string> entry in validationMessages)
+                {
+                    // Informiere ViewModel über Validierungsfehler bezüglich dieser Property.
+                    _validationErrorReporter.ReportValidationError(entry.Key, entry.Value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Meldet an das ViewModel zurück, dass alle Validierungsfehler entfernt werden sollen.
+        /// </summary>
+        protected void clearValidationErrors()
+        {
+            if(_validationErrorReporter != null)
+            {
+                _validationErrorReporter.RemoveAllFailureMessages();
+            }
+        }
+
+        /// <summary>
+        /// Meldet an das ViewModel zurück, dass der Validierungsfehler zum angegebenen Property entfernt werden soll.
+        /// </summary>
+        /// <param name="property">Die betroffene Property.</param>
+        protected void clearValidationErrorForProperty(string property)
+        {
+            if (_validationErrorReporter != null)
+            {
+                _validationErrorReporter.RemoveFailureMessagesForProperty(property);
+            }
         }
 
         /// <summary>

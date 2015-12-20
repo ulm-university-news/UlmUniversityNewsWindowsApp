@@ -95,6 +95,7 @@
     <Compile Include="DataModel\Enums\Platform.cs" />
     <Compile Include="DataModel\LocalUser.cs" />
     <Compile Include="DataModel\User.cs" />
+    <Compile Include="DataModel\Validator\ModelValidatorBase.cs" />
     <Compile Include="ErrorMapperInterface\IErrorMapper.cs" />
     <Compile Include="Exceptions\APIException.cs" />
     <Compile Include="Exceptions\ClientException.cs" />
@@ -114,10 +115,6 @@
       <HintPath>..\packages\SQLitePCL.3.8.7.2\lib\wpa81\SQLitePCL.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ValidatableBase, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ValidatableBasePortable.2.2.0\lib\ValidatableBase.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -130,7 +127,6 @@
       <Name>SQLite for Windows Phone 8.1 %28SQLite.WP81, Version=3.9.2%29</Name>
     </SDKReference>
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>

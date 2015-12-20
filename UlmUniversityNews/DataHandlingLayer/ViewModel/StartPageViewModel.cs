@@ -20,11 +20,11 @@ namespace DataHandlingLayer.ViewModel
         #region Properties
         private string userName;
 
-        public string UserName
+        public string Name
         {
             get { return userName; }
             set { this.setProperty(ref this.userName, value); }
-        }        
+        }  
         #endregion Properties
 
         #region Commands
@@ -44,8 +44,7 @@ namespace DataHandlingLayer.ViewModel
         public StartPageViewModel(INavigationService navService, IErrorMapper errorMapper) 
             : base(navService, errorMapper)
         {
-            localUserController = new LocalUserController();
-
+            localUserController = new LocalUserController(this);    // Liefere Referenz auf IValidationErrorReport mit.
             // Erstelle Commands
             CreateUserCommand = new AsyncRelayCommand(param => createLocalUser(), param => canCreateLocalUser());
         }
@@ -67,18 +66,23 @@ namespace DataHandlingLayer.ViewModel
         {
             try
             {
+                Debug.WriteLine("In create local user method. The current userName is: " + userName);
                 displayProgressBar();
 
-                Debug.WriteLine("In create local user method. The current userName is: " + userName);
-                await localUserController.CreateLocalUserAsync(userName);
-
-                // Navigiere zum Homescreen.
-                _navService.Navigate("Homescreen");
+                bool successful = await localUserController.CreateLocalUserAsync(userName);
+                if(successful){
+                    // Navigiere zum Homescreen.
+                    _navService.Navigate("Homescreen");
+                }
             }
             catch (ClientException e)
             {
                 Debug.WriteLine("Exception occured in createLocalUser. Error code is: " + e.ErrorCode + ".");
                 displayError(e.ErrorCode);
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.StackTrace);
             }
             finally
             {

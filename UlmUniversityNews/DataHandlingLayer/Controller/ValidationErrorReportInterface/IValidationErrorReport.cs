@@ -8,7 +8,7 @@ namespace DataHandlingLayer.Controller.ValidationErrorReportInterface
 {
     public interface IValidationErrorReport
     {
-        void ReportValidationError(string property, string failureMessage);
+        void ReportValidationError(string property, string validationMessage);
         void RemoveFailureMessagesForProperty(string property);
         void RemoveAllFailureMessages();
     }

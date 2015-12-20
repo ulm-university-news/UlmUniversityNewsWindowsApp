@@ -31,9 +31,6 @@
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\DataHandlingLayer\bin\ARM\Debug\Newtonsoft.Json.dll">
       <PackagePath>Newtonsoft.Json.dll</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\packages\ValidatableBasePortable.2.2.0\lib\ValidatableBase.dll">
-      <PackagePath>ValidatableBase.dll</PackagePath>
-    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\bin\ARM\Debug\PushNotificationManagerBackground.winmd">
       <PackagePath>PushNotificationManagerBackground.winmd</PackagePath>
     </AppxPackagedFile>

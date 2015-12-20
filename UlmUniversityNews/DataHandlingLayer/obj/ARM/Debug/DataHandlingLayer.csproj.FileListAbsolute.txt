@@ -42,4 +42,3 @@ C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\Data
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\DataHandlingLayer\obj\ARM\Debug\qualifiers.txt
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\DataHandlingLayer\obj\ARM\Debug\qualifiers.txt.intermediate
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\DataHandlingLayer\obj\ARM\Debug\MultipleQualifiersPerDimensionFound.txt
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\DataHandlingLayer\bin\ARM\Debug\ValidatableBase.dll
