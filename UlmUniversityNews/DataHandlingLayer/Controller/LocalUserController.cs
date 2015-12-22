@@ -57,12 +57,16 @@ namespace DataHandlingLayer.Controller
         {
             Debug.WriteLine("Starting createLocalUser().");
 
+            // TODO: Platziere diesen Code woanders und gebe ihn über einen Parameter an diese Methode.
             // Frage eine Kanal-URI vom WNS ab, die dann als PushAccessToken für diesen Nutzer dient.
-            PushNotificationChannel pushChannel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
-            Debug.WriteLine("Received a channel URI: " + pushChannel.Uri);
-
-            if(pushChannel == null)
+            PushNotificationChannel pushChannel = null;
+            try {
+                pushChannel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
+                Debug.WriteLine("Received a channel URI: " + pushChannel.Uri);
+            }
+            catch (Exception ex)
             {
+                Debug.WriteLine("Exception occurred in CreateLocalUserAsync during WNS initialization. The message is: {0}.", ex.Message);
                 // Abbilden auf ClientException.
                 throw new ClientException(ErrorCodes.WnsChannelInitializationFailed, "Initialization of channel to WNS has failed.");
             }
@@ -168,7 +172,7 @@ namespace DataHandlingLayer.Controller
         {
             bool doUpdate = false;
             User localUser = base.getLocalUser();
-            if (localUserDB != null)
+            if (localUserDB != null && localUser != null)
             {
                 // Prüfe, ob der Name aktualisiert werden muss.
                 if (name != string.Empty && (String.Compare(localUser.Name, name) != 0))

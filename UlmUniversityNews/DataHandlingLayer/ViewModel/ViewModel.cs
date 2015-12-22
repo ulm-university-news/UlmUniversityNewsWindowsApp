@@ -38,11 +38,11 @@ namespace DataHandlingLayer.ViewModel
         public event PropertyChangedEventHandler PropertyChanged;
 
         # region properties
-        private Dictionary<string, string> validationMessages;
+        private DataHandlingLayer.Common.ObservableDictionary validationMessages;
         /// <summary>
         /// Ein Verzeichnis, welches aufgetretene Valdierungsfehler auf die entsprechenden Properties abbildet.
         /// </summary>
-        public Dictionary<string, string> ValidationMessages
+        public DataHandlingLayer.Common.ObservableDictionary ValidationMessages
         {
             get { return validationMessages; }
             set
@@ -61,7 +61,7 @@ namespace DataHandlingLayer.ViewModel
             _navService = navService;
             _errorMapper = errorMapper;
 
-            ValidationMessages = new Dictionary<string, string>();
+            ValidationMessages = new DataHandlingLayer.Common.ObservableDictionary();
         }
 
         // Property Change Logik:
@@ -93,6 +93,9 @@ namespace DataHandlingLayer.ViewModel
             _errorMapper.DisplayErrorMessage(errorCode);
         }
 
+        /// <summary>
+        /// Blende eine Fortschrittsanzeige ein, die für eine nicht vorher definierte Zeit sichtbar bleibt.
+        /// </summary>
         protected async void displayProgressBar()
         {
             Windows.UI.ViewManagement.StatusBarProgressIndicator progressbar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView().ProgressIndicator;
@@ -100,6 +103,9 @@ namespace DataHandlingLayer.ViewModel
             await progressbar.ShowAsync();
         }
 
+        /// <summary>
+        /// Blende eine angezeigte Fortschrittsanzeige wieder aus.
+        /// </summary>
         protected async void hideProgressBar()
         {
             Windows.UI.ViewManagement.StatusBarProgressIndicator progressbar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView().ProgressIndicator;
@@ -107,7 +113,13 @@ namespace DataHandlingLayer.ViewModel
             await progressbar.HideAsync();
         }
 
-
+        /// <summary>
+        /// Meldet einen Validierungsfehler für eine gegebene Property an die View.
+        /// Der Validierungsfehler wird mit seiner Nachricht bzw. einem Ressourcenschlüssel zu einer Nachricht
+        /// in einem Verzeichnis abgelegt und die View wird informiert.
+        /// </summary>
+        /// <param name="property">Die Property, für die der Validierungsfehler aufgetreten ist.</param>
+        /// <param name="validationMessage">Die Fehlernachricht, bzw. ein Ressourcenschlüssel auf eine Fehlernachricht in den sprachenabhängigen Ressourcendateien.</param>
         public void ReportValidationError(string property, string validationMessage)
         {
             if(validationMessages.ContainsKey(property)){
@@ -117,9 +129,12 @@ namespace DataHandlingLayer.ViewModel
             {
                 ValidationMessages.Add(property, validationMessage);
             }
-            onPropertyChanged("ValidationMessages");
         }
 
+        /// <summary>
+        /// Entfernt einen Validierungsfehler zu dem gegebenen Property aus dem Verzeichnis.
+        /// </summary>
+        /// <param name="property">Die Property, für die der Fehler aufgetreten ist.</param>
         public void RemoveFailureMessagesForProperty(string property)
         {
             if(validationMessages.ContainsKey(property)){
@@ -127,6 +142,9 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
+        /// <summary>
+        /// Entfernt alle Validierungsfehler, die im Verzeichnis gespeichert sind.
+        /// </summary>
         public void RemoveAllFailureMessages()
         {
             ValidationMessages.Clear();

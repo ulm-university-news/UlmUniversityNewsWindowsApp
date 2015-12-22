@@ -7,8 +7,13 @@
     RequestedTheme="Light">
     
     <Application.Resources>
+
         <!-- Converters -->
-        <valueconverter:ValidationMessageOnLocalizedStringConverter x:Key="ValidationMessageOnLocalizedStringConverter" />
+        <!-- <valueconverter:ValidationMessageOnLocalizedStringConverter x:Key="ValidationMessageOnLocalizedStringConverter" /> -->
+        
+        
+        <!-- Colors -->
+        <SolidColorBrush x:Key="UniUlmMainBackgroundColor" Color="#7D9AAA" />
         
         <!-- ContentDialog:-->
         <!-- Definiere den Style für TextBlock Elemente innerhalb von einem ContentDialog.-->
@@ -16,6 +21,7 @@
             x:Key="ContentDialogTextStyle"
             TargetType="TextBlock">
             <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontFamily" Value="Arial" />
             <Setter Property="Foreground" Value="White" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>    
@@ -26,6 +32,7 @@
             x:Key="DrawerTextStyle"
             TargetType="TextBlock">
             <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontFamily" Value="Arial" />
             <Setter Property="Foreground" Value="White" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Margin" Value="10,0,0,0" />
@@ -42,14 +49,14 @@
         <Style
             x:Key="DrawerMenuTitleBar"
             TargetType="Grid" >
-            <Setter Property="Background" Value="#7D9AAA" />
+            <Setter Property="Background" Value="{StaticResource UniUlmMainBackgroundColor}" />
             <Setter Property="Margin" Value="0,0,0,0" />
             <Setter Property="Height" Value="60" />
         </Style>
         
         <!-- Command Bar:-->
         <!-- Definiere die Hintergrundfarbe für die CommandBar. -->
-        <!--<Style BasedOn="{ThemeResource CommandBarStyle}"
+        <!--<Style 
             x:Key="CommandBarStyle"
             TargetType="CommandBar">
             <Setter Property="Background" Value="#7D9AAA" />

@@ -1,7 +1,7 @@
 <XamlCompilerSaveState>
   <ReferenceAssemblyList>
     <LocalAssembly PathName="c:\users\philipp\documents\visual studio 2013\projects\mobileapplicationengineering\ulmuniversitynews\ulmuniversitynews\obj\arm\debug\intermediatexaml\ulmuniversitynews.exe" HashGuid="9f8252a8-e2b8-f403-0d99-b1a009cdee0f" />
-    <ReferenceAssembly PathName="c:\users\philipp\source\repos\ulmuniversitynewswindowsapp\ulmuniversitynews\datahandlinglayer\bin\arm\debug\datahandlinglayer.dll" HashGuid="21a16c44-f454-bdbe-f034-a4de414fbc19" />
+    <ReferenceAssembly PathName="c:\users\philipp\source\repos\ulmuniversitynewswindowsapp\ulmuniversitynews\datahandlinglayer\bin\arm\debug\datahandlinglayer.dll" HashGuid="970764a7-45b6-fec2-54ef-d783ac1da00c" />
     <ReferenceAssembly PathName="c:\users\philipp\source\repos\ulmuniversitynewswindowsapp\ulmuniversitynews\packages\drawerlayout.1.0.4\lib\drawerlayout.dll" HashGuid="b0d3b3f8-90b7-6a66-b416-66f64dcf26fa" />
     <ReferenceAssembly PathName="c:\users\philipp\source\repos\ulmuniversitynewswindowsapp\ulmuniversitynews\pushnotificationmanagerbackground\bin\arm\debug\pushnotificationmanagerbackground.winmd" HashGuid="bbc6725b-41b7-a170-7614-b5608a7f71ae" />
     <ReferenceAssembly PathName="c:\users\philipp\source\repos\ulmuniversitynewswindowsapp\ulmuniversitynews\packages\sqlitepcl.3.8.7.2\lib\wpa81\sqlitepcl.dll" HashGuid="a405761a-bd1d-dc16-54b5-36df2e9981c5" />

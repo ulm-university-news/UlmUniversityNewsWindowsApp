@@ -1,3 +1,4 @@
-C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\DataHandlingLayer\DataHandlingLayer.csproj;x86
-C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\PushNotificationManagerBackground\PushNotificationManagerBackground.csproj;x86
-C:\Users\Philipp\Documents\Visual Studio 2013\Projects\MobileApplicationEngineering\UlmUniversityNews\UlmUniversityNews\UlmUniversityNews.csproj;x86
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\DataHandlingLayer\DataHandlingLayer.csproj;x86
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\DataHandlingLayer\DataHandlingLayer.csproj;x86
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\PushNotificationManagerBackground.csproj;x86
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\UlmUniversityNews.csproj;x86

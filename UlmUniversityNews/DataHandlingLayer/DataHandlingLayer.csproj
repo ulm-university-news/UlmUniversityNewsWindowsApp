@@ -87,6 +87,7 @@
     <Compile Include="CommandRelays\AsyncRelayCommand.cs" />
     <Compile Include="CommandRelays\Interface\IAsyncCommand.cs" />
     <Compile Include="CommandRelays\RelayCommand.cs" />
+    <Compile Include="Common\ObservableDictionary.cs" />
     <Compile Include="Controller\ValidationErrorReportInterface\IValidationErrorReport.cs" />
     <Compile Include="Controller\LocalUserController.cs" />
     <Compile Include="Controller\MainController.cs" />
