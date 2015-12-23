@@ -6,11 +6,23 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:drawerLayout="using:DrawerLayout"
+    xmlns:valueconverter="using:UlmUniversityNews.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Resources>
+        <!-- Konvertierung eines Boolean Wertes auf eine Sichtbarkeit. -->
+        <valueconverter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Page.Resources>
+    
     <!-- CommandBar - Die CommandBar wird per Code initialisiert. -->
     <Page.BottomAppBar>
-        <CommandBar x:Name="HomescreenCommandBar">
+        <CommandBar x:Name="HomescreenCommandBar"
+                    Background="{StaticResource UniUlmMainBackgroundColor}">
+            <AppBarButton x:Name="SearchChannels"
+                          x:Uid="HomescreenSearchChannelsButton"
+                          Icon="Find"
+                          Label="search channel"
+                          Visibility="{Binding Path=IsEnabled, RelativeSource={RelativeSource self}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         </CommandBar>
     </Page.BottomAppBar>
     
@@ -29,7 +41,7 @@
         </Grid.RowDefinitions>
 
         <!-- Titelbereich - Drawer -->
-        <Grid Grid.Row="0" Margin="0,0,0,0" Height="60">
+        <Grid Grid.Row="0" Style="{StaticResource DrawerMenuTitleBar}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -53,34 +65,32 @@
             
             <!-- Inhalt der Seite -->
             <Grid x:Name="MainFragment" Background="{StaticResource PhoneBackgroundBrush}">
-                <Pivot x:Uid="HomescreenPivot" x:Name="HomescreenPivot">
+                <Pivot x:Uid="HomescreenPivot" 
+                       x:Name="HomescreenPivot" 
+                       HeaderTemplate="{StaticResource PivotItemHeaderStyle}"
+                       SelectedIndex="{Binding SelectedPivotItemIndex, Mode=TwoWay}">
                     <!-- Pivotelement 1-->
                     <PivotItem x:Uid="MyChannels"
-                           Margin="19,14.5,0,0"
+                           Style="{StaticResource PivotItemStyle}"
                            Header="Meine Kanäle">
                         <!-- TODO -->
                         <TextBlock x:Name="Test"
-                                   FontSize="25"
+                                   FontSize="20"
                                    Text="Jo Servus, das ist ein Test Text. Den schreib ich extra groß, damit man ihn auch sieht."
                                    TextWrapping="Wrap"/>
                     </PivotItem>
                     <!-- Pivotelement 2-->
                     <PivotItem x:Uid="MyGroups"
-                           Margin="19,14.5,0,0"
+                           Style="{StaticResource PivotItemStyle}"
                            Header="Meine Gruppen">
-                        <!-- TODO -->
-                    </PivotItem>
-                    <!-- Pivotelement 3-->
-                    <PivotItem x:Uid="ApplicationSettings"
-                           Margin="19,14.5,0,0"
-                           Header="Anwendungseinstellungen">
                         <!-- TODO -->
                     </PivotItem>
                 </Pivot>
             </Grid>
             
+            
             <!-- Inhalt des Drawer Menüs-->
-            <Grid x:Name="ListFragment" Background="#F4F4F4">
+            <Grid x:Name="ListFragment" Background="{StaticResource UniUlmAccentColor}">
                 <ListView x:Name="ListMenuItems">
                     <ListView.ItemTemplate>
                         <DataTemplate>

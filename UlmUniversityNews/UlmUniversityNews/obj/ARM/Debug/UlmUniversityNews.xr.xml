@@ -11,6 +11,9 @@
     <RootPropertyPathName Name="Items" />
     <RootPropertyPathName Name="Description" />
     <RootPropertyPathName Name="FirstGroup" />
+    <RootPropertyPathName Name="IsEnabled" />
+    <RootPropertyPathName Name="SearchChannelsCommand" />
+    <RootPropertyPathName Name="SelectedPivotItemIndex" />
     <RootPropertyPathName Name="CreateUserCommand" />
     <RootPropertyPathName Name="ValidationMessages" />
     <RootPropertyPathName Name="Name" />
@@ -22,6 +25,7 @@
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Media.SolidColorBrush">
       <RootProperty Name="Color" />
+      <RootProperty Name="Opacity" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.TextBlock">
       <RootProperty Name="FontSize" />
@@ -29,8 +33,8 @@
       <RootProperty Name="Foreground" />
       <RootProperty Name="TextWrapping" />
       <RootProperty Name="Text" />
-      <RootProperty Name="Style" />
       <RootProperty Name="Margin" />
+      <RootProperty Name="Style" />
       <RootProperty Name="CharacterSpacing" />
       <RootProperty Name="HorizontalAlignment" />
       <RootProperty Name="VerticalAlignment" />
@@ -51,10 +55,9 @@
       <RootProperty Name="RowDefinitions" />
       <RootProperty Name="Children" />
       <RootProperty Name="Margin" />
-      <RootProperty Name="Height" />
+      <RootProperty Name="Style" />
       <RootProperty Name="ColumnDefinitions" />
       <RootProperty Name="Background" />
-      <RootProperty Name="Style" />
       <RootMethod Name="GetRow" />
       <RootMethod Name="SetRow" />
       <RootMethod Name="GetColumn" />
@@ -62,6 +65,27 @@
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.Panel">
       <RootProperty Name="Background" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.PivotItem">
+      <RootProperty Name="Margin" />
+      <RootProperty Name="Header" />
+      <RootProperty Name="DataContext" />
+      <RootProperty Name="Content" />
+      <RootProperty Name="Style" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.DataTemplate">
+      <RootProperty Name="Template" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.ContentPresenter">
+      <RootProperty Name="Content" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Data.Binding">
+      <RootProperty Name="RelativeSource" />
+      <RootProperty Name="ElementName" />
+      <RootProperty Name="Path" />
+      <RootProperty Name="Converter" />
+      <RootProperty Name="Mode" />
+      <RootProperty Name="FallbackValue" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Setter">
       <RootProperty Name="Property" />
@@ -75,12 +99,6 @@
       <RootProperty Name="Content" />
       <RootProperty Name="BottomAppBar" />
       <RootProperty Name="Resources" />
-    </RootType>
-    <RootType FullName="Windows.UI.Xaml.Data.Binding">
-      <RootProperty Name="RelativeSource" />
-      <RootProperty Name="FallbackValue" />
-      <RootProperty Name="Converter" />
-      <RootProperty Name="Mode" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Data.RelativeSource" />
     <RootType FullName="Microsoft.Xaml.Tools.DirectUI.ProxyTypes.ThemeResourceExtension" />
@@ -109,14 +127,10 @@
     <RootType FullName="Windows.UI.Xaml.Controls.Pivot">
       <RootProperty Name="Title" />
       <RootProperty Name="Items" />
+      <RootProperty Name="HeaderTemplate" />
+      <RootProperty Name="SelectedIndex" />
       <RootMethod Name="GetSlideInAnimationGroup" />
       <RootMethod Name="SetSlideInAnimationGroup" />
-    </RootType>
-    <RootType FullName="Windows.UI.Xaml.Controls.PivotItem">
-      <RootProperty Name="Margin" />
-      <RootProperty Name="Header" />
-      <RootProperty Name="DataContext" />
-      <RootProperty Name="Content" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.ListView">
       <RootProperty Name="ItemsSource" />
@@ -124,9 +138,6 @@
       <RootProperty Name="ItemTemplate" />
       <RootEvent Name="ItemClick" />
       <RootEvent Name="Loaded" />
-    </RootType>
-    <RootType FullName="Windows.UI.Xaml.DataTemplate">
-      <RootProperty Name="Template" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.CommandBar">
       <RootProperty Name="PrimaryCommands" />
@@ -136,10 +147,12 @@
     <RootType FullName="Windows.UI.Xaml.Controls.AppBarButton">
       <RootProperty Name="Label" />
       <RootProperty Name="Icon" />
+      <RootProperty Name="Visibility" />
       <RootProperty Name="Command" />
       <RootEvent Name="Click" />
     </RootType>
     <RootType FullName="UlmUniversityNews.PivotPage" />
+    <RootType FullName="UlmUniversityNews.Converters.BooleanToVisibilityConverter" />
     <RootType FullName="DrawerLayout.DrawerLayout">
       <RootProperty Name="Children" />
     </RootType>

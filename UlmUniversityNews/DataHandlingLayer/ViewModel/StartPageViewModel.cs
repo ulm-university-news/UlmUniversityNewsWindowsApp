@@ -41,6 +41,7 @@ namespace DataHandlingLayer.ViewModel
         /// Erzeugt eine Instanz der StartPageViewModel Klasse.
         /// </summary>
         /// <param name="navService">Eine Referenz auf den Navigationsdienst der Anwendung.</param>
+        /// <param name="errorMapper">Eine Referenz auf den Fehlerdienst der Anwendung.</param>
         public StartPageViewModel(INavigationService navService, IErrorMapper errorMapper) 
             : base(navService, errorMapper)
         {

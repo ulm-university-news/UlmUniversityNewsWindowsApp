@@ -6,12 +6,24 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:drawerLayout="using:DrawerLayout"
+    xmlns:valueconverter="using:UlmUniversityNews.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Resources>
+        <!-- Konvertierung eines Boolean Wertes auf eine Sichtbarkeit. -->
+        <valueconverter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Page.Resources>
+    
     <!-- CommandBar - Die CommandBar wird per Code initialisiert. -->
     <Page.BottomAppBar>
         <CommandBar x:Name="HomescreenCommandBar"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
+            <AppBarButton x:Name="SearchChannels"
+                          x:Uid="HomescreenSearchChannelsButton"
+                          Icon="Find"
+                          Label="search channel"
+                          Visibility="{Binding ElementName=SearchChannels, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                          Command="{Binding SearchChannelsCommand}" />
         </CommandBar>
     </Page.BottomAppBar>
     
@@ -56,7 +68,8 @@
             <Grid x:Name="MainFragment" Background="{StaticResource PhoneBackgroundBrush}">
                 <Pivot x:Uid="HomescreenPivot" 
                        x:Name="HomescreenPivot" 
-                       HeaderTemplate="{StaticResource PivotItemHeaderStyle}">
+                       HeaderTemplate="{StaticResource PivotItemHeaderStyle}"
+                       SelectedIndex="{Binding SelectedPivotItemIndex, Mode=TwoWay}">
                     <!-- Pivotelement 1-->
                     <PivotItem x:Uid="MyChannels"
                            Style="{StaticResource PivotItemStyle}"

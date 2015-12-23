@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using DataHandlingLayer.ViewModel;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -30,6 +31,8 @@ namespace UlmUniversityNews.Views.Homescreen
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
+        private HomescreenViewModel homescreenViewModel;
+
         public Homescreen()
         {
             Debug.WriteLine("Starting constructor of Homescreen.");
@@ -40,6 +43,10 @@ namespace UlmUniversityNews.Views.Homescreen
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
 
             HomescreenPivot.Loaded += HomescreenPivot_Loaded;
+
+            // Initialisiere Homescreen ViewModel.
+            homescreenViewModel = new HomescreenViewModel(App.NavigationService, App.ErrorMapper);
+            this.DataContext = homescreenViewModel;
 
             // Initialisiere das Drawer Layout.
             DrawerLayout.InitializeDrawerLayout();

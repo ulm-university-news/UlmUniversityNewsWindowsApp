@@ -183,4 +183,7 @@
   <data name="StartPageWelcomeText" xml:space="preserve">
     <value>Welcome to University News.</value>
   </data>
+  <data name="HomescreenSearchChannelsButton.Label" xml:space="preserve">
+    <value>search channel</value>
+  </data>
 </root>

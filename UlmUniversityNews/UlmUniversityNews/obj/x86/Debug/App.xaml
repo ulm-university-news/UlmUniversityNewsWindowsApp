@@ -11,22 +11,31 @@
         <!-- Converters -->
         <!-- <valueconverter:ValidationMessageOnLocalizedStringConverter x:Key="ValidationMessageOnLocalizedStringConverter" /> -->
         
+        
+        <!-- Colors -->
+        <SolidColorBrush x:Key="UniUlmMainBackgroundColor" Color="#7D9AAA" />
+        <SolidColorBrush x:Key="UniUlmAccentColor" Color="#A9A280" Opacity="0.6"  />
+
+        <!-- ************************************************************************************************************************************* -->
         <!-- ContentDialog:-->
         <!-- Definiere den Style für TextBlock Elemente innerhalb von einem ContentDialog.-->
         <Style 
             x:Key="ContentDialogTextStyle"
             TargetType="TextBlock">
             <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontFamily" Value="Arial" />
             <Setter Property="Foreground" Value="White" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>    
         
+        <!-- ************************************************************************************************************************************* -->
         <!-- Drawer Menü:-->
         <!-- Definiere den Style für den Text im Drawer Menü. -->
         <Style
             x:Key="DrawerTextStyle"
             TargetType="TextBlock">
             <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontFamily" Value="Arial" />
             <Setter Property="Foreground" Value="White" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Margin" Value="10,0,0,0" />
@@ -43,18 +52,42 @@
         <Style
             x:Key="DrawerMenuTitleBar"
             TargetType="Grid" >
-            <Setter Property="Background" Value="#7D9AAA" />
+            <Setter Property="Background" Value="{StaticResource UniUlmMainBackgroundColor}" />
             <Setter Property="Margin" Value="0,0,0,0" />
             <Setter Property="Height" Value="60" />
         </Style>
+
+        <!-- ************************************************************************************************************************************* -->
+        <!-- Pivot elements: --> 
+        <!-- Definiere den Style für einzelne Pivot Items.-->
+        <Style
+            x:Key="PivotItemStyle"
+            TargetType="PivotItem">
+            <Setter Property="Margin" Value="19,14.5,0,0" />
+        </Style>
+        
+        <!-- PivotItem Header Style -->
+        <!-- Der Header von PivotItem Elementen kann nicht einfach als Style definiert werden. Vielmehr muss hier ein
+        DataTemplate definiert werden, welches dann im Pivot Element als HeaderTemplate definiert wird.
+        Siehe auch hier: http://danielhindrikes.se/windows-10/new-controls-in-windows-10-pivot/-->
+        <DataTemplate x:Key="PivotItemHeaderStyle">
+            <ContentPresenter>
+                <TextBlock Text="{Binding}" 
+                           FontFamily="Arial" 
+                           Margin="0,5,0,0"
+                           FontSize="30"/>
+            </ContentPresenter>
+        </DataTemplate>
+
+        
         
         <!-- Command Bar:-->
         <!-- Definiere die Hintergrundfarbe für die CommandBar. -->
-        <Style
+        <!--<Style 
             x:Key="CommandBarStyle"
             TargetType="CommandBar">
             <Setter Property="Background" Value="#7D9AAA" />
-        </Style>
+        </Style>-->
     </Application.Resources>
 
 </Application>

@@ -108,6 +108,7 @@
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Constants\Constants.cs" />
+    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\ValidationMessageOnLocalizedStringConverter.cs" />
     <Compile Include="DataModel\SampleDataSource.cs" />
     <Compile Include="ErrorHandling\ErrorDescriptionMapper.cs" />
