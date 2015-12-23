@@ -14,7 +14,7 @@
         
         <!-- Colors -->
         <SolidColorBrush x:Key="UniUlmMainBackgroundColor" Color="#7D9AAA" />
-        <SolidColorBrush x:Key="UniUlmAccentColor" Color="#A9A280" Opacity="0.6"  />
+        <SolidColorBrush x:Key="UniUlmAccentColor" Color="#A9A280" Opacity="1"  />
 
         <!-- ************************************************************************************************************************************* -->
         <!-- ContentDialog:-->

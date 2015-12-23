@@ -14,7 +14,7 @@
         <valueconverter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Page.Resources>
     
-    <!-- CommandBar - Die CommandBar wird per Code initialisiert. -->
+    <!-- CommandBar -->
     <Page.BottomAppBar>
         <CommandBar x:Name="HomescreenCommandBar"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
@@ -24,6 +24,18 @@
                           Label="search channel"
                           Visibility="{Binding ElementName=SearchChannels, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                           Command="{Binding SearchChannelsCommand}" />
+            <AppBarButton x:Name="SearchGroups"
+                          x:Uid="HomescreenSearchGroupsButton"
+                          Icon="Find"
+                          Label="search group"
+                          Visibility="{Binding ElementName=SearchGroups, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                          Command="{Binding SearchGroupsCommand}"/>
+            <AppBarButton x:Name="AddGroup"
+                          x:Uid="HomescreenAddGroupButton"
+                          Icon="Add"
+                          Label="add group"
+                          Visibility="{Binding ElementName=AddGroup, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                          Command="{Binding AddGroupCommand}" />
         </CommandBar>
     </Page.BottomAppBar>
     

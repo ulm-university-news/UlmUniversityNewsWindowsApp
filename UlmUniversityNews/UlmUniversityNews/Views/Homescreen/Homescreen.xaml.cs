@@ -53,9 +53,6 @@ namespace UlmUniversityNews.Views.Homescreen
             string[] menuItems = new string[5] { "Test Item 1", "Test Item 2", "Test Item 3", "Test Item 4", "Test Item 5" };
             ListMenuItems.ItemsSource = menuItems.ToList();
 
-            // Füge CommandBar hinzu.
-            initializeAppBar();
-
             Debug.WriteLine("Finished constructor of Homescreen.");
         }
 
@@ -165,44 +162,44 @@ namespace UlmUniversityNews.Views.Homescreen
         }
 
         # region commandBar
-        /// <summary>
-        /// Erstellt und initiiert eine CommandBar.
-        /// </summary>
-        private void initializeAppBar()
-        {
-            Debug.WriteLine("Creating AppBar.");
-            CommandBar commandBar = HomescreenCommandBar;
+        ///// <summary>
+        ///// Erstellt und initiiert eine CommandBar.
+        ///// </summary>
+        //private void initializeAppBar()
+        //{
+        //    Debug.WriteLine("Creating AppBar.");
+        //    CommandBar commandBar = HomescreenCommandBar;
 
-            // Erstelle einen AppBarButton.
-            AppBarButton testButton = new AppBarButton();
-            testButton.Label = "hinzufügen";
-            testButton.IsEnabled = true;
-            testButton.Icon = new SymbolIcon(Symbol.Add);
-            testButton.Click += testButton_Click;
+        //    // Erstelle einen AppBarButton.
+        //    AppBarButton testButton = new AppBarButton();
+        //    testButton.Label = "hinzufügen";
+        //    testButton.IsEnabled = true;
+        //    testButton.Icon = new SymbolIcon(Symbol.Add);
+        //    testButton.Click += testButton_Click;
 
-            // Füge ihn als Primary Command hinzu.
-            commandBar.PrimaryCommands.Add(testButton);
+        //    // Füge ihn als Primary Command hinzu.
+        //    commandBar.PrimaryCommands.Add(testButton);
 
-            // Erstelle noch einen AppBarButton.
-            AppBarButton secondaryButtonTest = new AppBarButton();
-            secondaryButtonTest.Label = "secondary Element";
-            secondaryButtonTest.IsEnabled = true;
-            secondaryButtonTest.Click += secondaryButtonTest_Click;
+        //    // Erstelle noch einen AppBarButton.
+        //    AppBarButton secondaryButtonTest = new AppBarButton();
+        //    secondaryButtonTest.Label = "secondary Element";
+        //    secondaryButtonTest.IsEnabled = true;
+        //    secondaryButtonTest.Click += secondaryButtonTest_Click;
 
-            // Füge den zweiten Button als Secondary Element hinzu.
-            commandBar.SecondaryCommands.Add(secondaryButtonTest);
-            Debug.WriteLine("AppBar created.");
-        }
+        //    // Füge den zweiten Button als Secondary Element hinzu.
+        //    commandBar.SecondaryCommands.Add(secondaryButtonTest);
+        //    Debug.WriteLine("AppBar created.");
+        //}
 
-        void secondaryButtonTest_Click(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine("Secondary Element clicked!");
-        }
+        //void secondaryButtonTest_Click(object sender, RoutedEventArgs e)
+        //{
+        //    Debug.WriteLine("Secondary Element clicked!");
+        //}
 
-        void testButton_Click(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine("Button clicked!");
-        }
+        //void testButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    Debug.WriteLine("Button clicked!");
+        //}
         # endregion commandBar
 
         # region checkLockScreenAccessContentDialog
