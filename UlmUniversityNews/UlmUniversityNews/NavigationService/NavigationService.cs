@@ -57,5 +57,30 @@ namespace UlmUniversityNews.NavigationService
         {
             rootFrame.Navigate(pageMap[pageKey], parameter);
         }
+
+        /// <summary>
+        /// Zeigt an, ob der BackStack (d.h. der Navigationsverlauf) ein Element enthält, auf das man zurückkehren könnte.
+        /// </summary>
+        /// <returns>True, wenn es ein solches Element gibt, ansonsten false.</returns>
+        public bool CanGoBack()
+        {
+            return rootFrame.CanGoBack;
+        }
+
+        /// <summary>
+        /// Kehre zum letzten Element im Navigationsverlauf zurück.
+        /// </summary>
+        public void GoBack()
+        {
+            rootFrame.GoBack();
+        }
+
+        /// <summary>
+        /// Entfernt das zuletzt gespeicherte Element aus dem Navigationsverlauf.
+        /// </summary>
+        public void RemoveEntryFromBackStack()
+        {
+            rootFrame.BackStack.RemoveAt(rootFrame.BackStack.Count - 1);
+        }
     }
 }

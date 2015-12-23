@@ -73,6 +73,8 @@ namespace DataHandlingLayer.ViewModel
                 if(successful){
                     // Navigiere zum Homescreen.
                     _navService.Navigate("Homescreen");
+                    // Wurde man auf den Homescreen navigiert von der Startseite aus, so soll man nicht mehr zur Startseite zurückkehren können.
+                    _navService.RemoveEntryFromBackStack();
                 }
             }
             catch (ClientException e)

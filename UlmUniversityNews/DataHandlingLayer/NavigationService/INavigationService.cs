@@ -10,5 +10,8 @@ namespace DataHandlingLayer.NavigationService
     {
         void Navigate(string pageKey);
         void Navigate(string pageKey, object parameter);
+        bool CanGoBack();
+        void GoBack();
+        void RemoveEntryFromBackStack();
     }
 }
