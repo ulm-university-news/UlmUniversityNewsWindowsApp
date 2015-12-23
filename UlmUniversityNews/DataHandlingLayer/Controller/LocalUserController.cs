@@ -85,7 +85,7 @@ namespace DataHandlingLayer.Controller
             }
             else
             {
-                localUser.ClearValidationErrors();
+                localUser.ClearValidationErrors();  // propably useless here - TODO check this
                 clearValidationErrorForProperty("Name");
             }
 
