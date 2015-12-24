@@ -36,6 +36,69 @@ namespace DataHandlingLayer.API
         }
 
         /// <summary>
+        /// Eine Hilfsmethode, die einen HTTP Request absetzt und die Antwort des Servers in Form
+        /// einer HttpResponseMessage zurückliefert.
+        /// </summary>
+        /// <param name="httpClient">Die Instanz des HttpClient, mittels der der Request abgeschickt werden soll.</param>
+        /// <param name="request">Der Request in Form eines HttpRequestMessage Objekts.</param>
+        /// <returns>Eine Instanz vom Typ HttpResponseMessage.</returns>
+        /// <exception cref="APIException">Wirt APIException, wenn Request fehlschlägt.</exception>
+        protected async Task<HttpResponseMessage> sendHttpRequest(HttpClient httpClient, HttpRequestMessage request)
+        {
+            // Sende den Request und warte auf die Antwort.
+            HttpResponseMessage response = null;
+            try
+            {
+                response = await httpClient.SendRequestAsync(request);
+            }
+            catch (Exception ex)
+            {
+                if (response == null)
+                {
+                    Debug.WriteLine("Exception occured with message: " + ex.Message + "Throwing an APIException with ServerUnreachable.");
+                    Debug.WriteLine("Cannot continue. Response object is null.");
+                    throw new APIException(-1, ErrorCodes.ServerUnreachable);
+                }
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Eine Hilfsmethode, die aus den übergebenen Parametern ein Objekt vom Typ HttpRequestMessage formt.
+        /// </summary>
+        /// <param name="httpMethod">Die zu verwendende Http-Methode, z.B. POST oder GET.</param>
+        /// <param name="jsonContent">Der eigentliche Inhalt in Form eines JSON Dokuments.</param>
+        /// <param name="restResourcePath">Der REST Ressourcen Pfad, der an die Basis URI des Requests angehängt wird. Dieser Teil
+        /// der URI spezifiziert die exakte Ressource, die über den Request angesprochen wird.</param>
+        /// <returns>Ein Objekt vom Typ HttpRequestMessage.</returns>
+        protected HttpRequestMessage createHttpRequestMessageWithJsonBody(HttpMethod httpMethod, string jsonContent, string restResourcePath)
+        {
+            HttpRequestMessage request = new HttpRequestMessage();
+            request.Method = httpMethod;
+            request.Content = new HttpStringContent(jsonContent, Windows.Storage.Streams.UnicodeEncoding.Utf8, "application/json");
+            request.RequestUri = new Uri(BaseURL + restResourcePath);
+
+            return request;
+        }
+
+        /// <summary>
+        /// Eine Hilfsmethode, die aus den übergebenen Parametern ein Objekt vom Typ HttpRequestMessage formt.
+        /// </summary>
+        /// <param name="httpMethod">Die zu verwendende Http-Methode, z.B. POST oder GET.</param>
+        /// <param name="restResourcePath">Der REST Ressourcen Pfad, der an die Basis URI des Requests angehängt wird. Dieser Teil
+        /// der URI spezifiziert die exakte Ressource, die über den Request angesprochen wird.</param>
+        /// <returns>Ein Objekt vom Typ HttpRequestMessage.</returns>
+        protected HttpRequestMessage createHttpRequestMessageWithoutContent(HttpMethod httpMethod, string restResourcePath)
+        {
+            HttpRequestMessage request = new HttpRequestMessage();
+            request.Method = httpMethod;
+            request.RequestUri = new Uri(BaseURL + restResourcePath);
+
+            return request;
+        }
+
+        /// <summary>
         /// Extrahiert den ErrorCode aus einer vom REST-Server übermittelten Json Fehlernachricht. 
         /// </summary>
         /// <param name="jsonString">Die Fehlernachricht im Json Format.</param>

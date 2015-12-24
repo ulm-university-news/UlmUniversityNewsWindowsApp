@@ -82,6 +82,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="API\API.cs" />
+    <Compile Include="API\ChannelAPI.cs" />
     <Compile Include="API\UserAPI.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="CommandRelays\AsyncRelayCommand.cs" />
