@@ -93,6 +93,7 @@
     <Compile Include="Controller\ValidationErrorReportInterface\IValidationErrorReport.cs" />
     <Compile Include="Controller\LocalUserController.cs" />
     <Compile Include="Controller\MainController.cs" />
+    <Compile Include="Database\ChannelDatabaseManager.cs" />
     <Compile Include="Database\DatabaseManager.cs" />
     <Compile Include="Database\LocalUserDatabaseManager.cs" />
     <Compile Include="DataModel\Channel.cs" />

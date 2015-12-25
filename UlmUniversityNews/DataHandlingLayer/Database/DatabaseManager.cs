@@ -212,23 +212,6 @@ namespace DataHandlingLayer.Database
             }
         }
 
-        ///// <summary>
-        ///// Erstellt die Tabelle SubscribedChannel.
-        ///// </summary>
-        ///// <param name="conn">Aktive Verbindung zur Datenbank.</param>
-//        private static void createSubscribedChannelsTable(SQLiteConnection conn)
-//        {
-//            string sql = @"CREATE TABLE IF NOT EXISTS 
-//                            SubscribedChannels  (Id         INTEGER NOT NULL,
-//                                                Channel_Id  INTEGER NOT NULL,
-//                                                PRIMARY KEY(Id, Channel_Id)
-//                            );";
-//            using (var statement = conn.Prepare(sql))
-//            {
-//                statement.Step();
-//            }
-//        }
-
         /// <summary>
         /// Erstellt die Tabelle Lecture.
         /// </summary>

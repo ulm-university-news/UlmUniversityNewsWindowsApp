@@ -76,8 +76,8 @@ namespace DataHandlingLayer.Database
                         localUser = new User();
                         localUser.Id = Convert.ToInt32(statement["Id"]);
                         localUser.Name = (string)statement["Name"];
-                        localUser.ServerAccessToken = (String)statement["ServerAccessToken"];
-                        localUser.PushAccessToken = (String)statement["PushAccessToken"];
+                        localUser.ServerAccessToken = (string)statement["ServerAccessToken"];
+                        localUser.PushAccessToken = (string)statement["PushAccessToken"];
                         localUser.Platform = (DataModel.Enums.Platform)Enum.ToObject(typeof(DataModel.Enums.Platform), statement["Platform"]);
                     }
                 }
