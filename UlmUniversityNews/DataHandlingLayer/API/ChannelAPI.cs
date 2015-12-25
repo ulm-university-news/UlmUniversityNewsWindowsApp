@@ -9,6 +9,10 @@ using Windows.Web.Http;
 
 namespace DataHandlingLayer.API
 {
+    /// <summary>
+    /// Die Klasse ChannelAPI stellt Methoden bereit, um Requests an den REST Server abzusetzen. Mittels den bereitgestellten 
+    /// Methoden können Requests bezüglich Kanälen und den entsprechenden Subressourcen abgesetzt werden. 
+    /// </summary>
     public class ChannelAPI : API
     {
         /// <summary>
@@ -482,6 +486,303 @@ namespace DataHandlingLayer.API
             }
 
             return responseContent;
+        }
+
+        /// <summary>
+        /// Sende einen Request, um den Reminder mit der gegebenen Id zu aktualisieren. Um einen Reminder eines
+        /// Kanals zu aktualisieren benötigt man einen Moderatorenaccount und muss für den entsprechenden Kanal
+        /// verantwortlich sein.
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Requestors.</param>
+        /// <param name="channelId">Die Id des Kanals, zu dem der Reminder gehört.</param>
+        /// <param name="reminderId">Die Id des Reminders, der geändert werden soll.</param>
+        /// <param name="jsonContent">Die Beschreibung an durchzuführenden Änderungen auf der Reminder Ressource in Form eines JSON Merge Patch Dokuments.</param>
+        /// <returns>Die aktualisierte Reminder Ressource in Form eines JSON-Dokuments.</returns>
+        /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
+        public async Task<string> SendUpdateReminderRequestAsync(string serverAccessToken, int channelId, int reminderId, string jsonContent)
+        {
+            // Erstelle einen HTTP Request.
+            HttpClient httpClient = new HttpClient();
+
+            // Definiere HTTP-Request und Http-Request Header.
+            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
+            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
+            HttpRequestMessage request = createHttpRequestMessageWithJsonBody(HttpMethod.Patch, jsonContent, "/channel/" + channelId + "/reminder/" + reminderId);
+
+            // Sende den Request und warte auf die Antwort.
+            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
+
+            // Lies Antwort aus.
+            var statusCode = response.StatusCode;
+            string responseContent = await response.Content.ReadAsStringAsync();
+            if (statusCode == HttpStatusCode.Ok)
+            {
+                Debug.WriteLine("Update reminder with the id {0} in channel with id {1} request completed successfully.", reminderId, channelId);
+                Debug.WriteLine("Response from server is: " + responseContent);
+            }
+            else
+            {
+                // Bilde auf Fehlercode ab und werfe Exception.
+                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
+            }
+
+            return responseContent;
+        }
+
+        /// <summary>
+        /// Sende einen Request zum Löschen des angegebenen Reminders. Zum Löschen des Reminders benötigt man
+        /// einen Moderatorenaccount und muss für den angegebenen Kanal verantwortlich sein.
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Requestors.</param>
+        /// <param name="channelId">Die Id des Kanals, von dem der Reminder gelöscht werden soll.</param>
+        /// <param name="reminderId">Die Id des zu löschenden Reminders.</param>
+        /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
+        public async Task SendDeleteReminderRequestAsync(string serverAccessToken, int channelId, int reminderId)
+        {
+            // Erstelle einen HTTP Request.
+            HttpClient httpClient = new HttpClient();
+
+            // Definiere HTTP-Request und Http-Request Header.
+            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
+            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
+            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Delete, "/channel/" + channelId + "/reminder/" + reminderId);
+
+            // Sende den Request und warte auf die Antwort.
+            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
+
+            // Lies Antwort aus.
+            var statusCode = response.StatusCode;
+            if (statusCode == HttpStatusCode.NoContent)
+            {
+                Debug.WriteLine("Delete reminder with the id {0} in channel with id {1} request completed successfully.", reminderId, channelId);
+            }
+            else
+            {
+                // Bilde auf Fehlercode ab und werfe Exception.
+                string responseContent = await response.Content.ReadAsStringAsync();
+                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
+            }
+        }
+
+        // Abonnieren/Deabonnieren eines Kanals:
+
+        /// <summary>
+        /// Sende einen Request zum Abonnieren des angegebenen Kanals durch den lokalen Nutzer.
+        /// Der lokale Nutzer wird hierbei über das Zugriffstoken auf Serverseite identifiziert.
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Requestors.</param>
+        /// <param name="channelId">Die Id des Kanals, der abonniert werden soll.</param>
+        /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
+        public async Task SendSubscribeChannelRequestAsync(string serverAccessToken, int channelId)
+        {
+            // Erstelle einen HTTP Request.
+            HttpClient httpClient = new HttpClient();
+
+            // Definiere HTTP-Request und Http-Request Header.
+            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
+            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
+            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Post, "/channel/" + channelId + "/user");
+
+            // Sende den Request und warte auf die Antwort.
+            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
+
+            // Lies Antwort aus.
+            var statusCode = response.StatusCode;
+            if (statusCode == HttpStatusCode.Created)
+            {
+                Debug.WriteLine("Subscribe to channel with id {0} request completed successfully.", channelId);
+            }
+            else
+            {
+                // Bilde auf Fehlercode ab und werfe Exception.
+                string responseContent = await response.Content.ReadAsStringAsync();
+                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
+            }
+        }
+
+        /// <summary>
+        /// Sende einen Request zum Abfragen aller Abonnenten eines Kanals. Dieser Request
+        /// kann nur von einem Moderator durchgeführt werden, der für den angebenen Kanal zuständig ist.
+        /// Der Request kann verwendet werden, um beispielsweise die Anzahl an Abonnenten eines Kanals zu ermitteln.
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Requestors.</param>
+        /// <param name="channelId">Die Id des Kanals, für den die Abonnenten abgefragt werden sollen.</param>
+        /// <returns>Eine Liste von Nutzer-Ressourcen in Form eines JSON-Dokuments.</returns>
+        /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
+        public async Task<string> SendGetSubscribersRequestAsync(string serverAccessToken, int channelId)
+        {
+            // Erstelle einen HTTP Request.
+            HttpClient httpClient = new HttpClient();
+
+            // Definiere HTTP-Request und Http-Request Header.
+            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
+            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
+            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Get, "/channel/" + channelId + "/user");
+
+            // Sende den Request und warte auf die Antwort.
+            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
+
+            // Lies Antwort aus.
+            var statusCode = response.StatusCode;
+            string responseContent = await response.Content.ReadAsStringAsync();
+            if (statusCode == HttpStatusCode.Ok)
+            {
+                Debug.WriteLine("Get subscribers for the channel with id {0} request completed successfully.", channelId);
+                Debug.WriteLine("Response from server is: " + responseContent);
+            }
+            else
+            {
+                // Bilde auf Fehlercode ab und werfe Exception.
+                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
+            }
+
+            return responseContent;
+        }
+
+        /// <summary>
+        /// Sende Request zum Deabonnieren des angebenen Kanals. Der Nutzer, der durch die angegbene
+        /// Id identifiziert wird, wird aus der Abonnentenliste des Kanals ausgetragen.
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Requestors.</param>
+        /// <param name="channelId">Die Id des Kanals, der deabonniert wird.</param>
+        /// <param name="userId">Die Id des Nutzers, der aus der Abonnentenliste ausgetragen wird.</param>
+        /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
+        public async Task SendUnsubscribeChannelRequestAsync(string serverAccessToken, int channelId, int userId)
+        {
+            // Erstelle einen HTTP Request.
+            HttpClient httpClient = new HttpClient();
+
+            // Definiere HTTP-Request und Http-Request Header.
+            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
+            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
+            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Delete, "/channel/" + channelId + "/user/" + userId);
+
+            // Sende den Request und warte auf die Antwort.
+            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
+
+            // Lies Antwort aus.
+            var statusCode = response.StatusCode;
+            if (statusCode == HttpStatusCode.NoContent)
+            {
+                Debug.WriteLine("Unsubscribe channel with id {0} request completed successfully.", channelId);
+            }
+            else
+            {
+                // Bilde auf Fehlercode ab und werfe Exception.
+                string responseContent = await response.Content.ReadAsStringAsync();
+                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
+            }
+        }
+
+        // Kanalverwaltung durch Moderatoren:
+
+        /// <summary>
+        /// Request, um einen Moderator als Verantwortlichen für einen Kanal einzutragen. Der Moderator wird
+        /// hierbei als Ressource in Form eines JSON-Dokuments an den Server übermittelt. Um den Request ausführen 
+        /// zu können muss man ein Moderator sein, der für den angegebenen Kanal verantwortlich ist.
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Requestors.</param>
+        /// <param name="channelId">Die Id des Kanals, für den der Moderator als Verantwortlicher eingetragen werden soll.</param>
+        /// <param name="jsonContent">Der Moderator, der als Verantwortlicher eingetragen werden soll, als Ressource in Form eines JSON-Dokuments.</param>
+        /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
+        public async Task SendAddModeratorToChannelRequestAsync(string serverAccessToken, int channelId, string jsonContent)
+        {
+            // Erstelle einen HTTP Request.
+            HttpClient httpClient = new HttpClient();
+
+            // Definiere HTTP-Request und Http-Request Header.
+            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
+            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
+            HttpRequestMessage request = createHttpRequestMessageWithJsonBody(HttpMethod.Post, jsonContent, "/channel/" + channelId + "/moderator");
+
+            // Sende den Request und warte auf die Antwort.
+            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
+
+            // Lies Antwort aus.
+            var statusCode = response.StatusCode;
+            if (statusCode == HttpStatusCode.Created)
+            {
+                Debug.WriteLine("Add moderator as responsible moderator for the channel with id {0} request completed successfully.", channelId);
+            }
+            else
+            {
+                // Bilde auf Fehlercode ab und werfe Exception.
+                string responseContent = await response.Content.ReadAsStringAsync();
+                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
+            }
+        }
+
+        /// <summary>
+        /// Request um die verantwortlichen Moderatoren zu einem Kanal abzufgragen. Um diesen Request durchführen zu können
+        /// muss man ein Moderator sein, der für den gegebenen Kanal zuständig ist.
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Requestors.</param>
+        /// <param name="channelId">Die Id des Kanals, zu dem die verantwortlichen Moderatoren abgefragt werden sollen.</param>
+        /// <returns>Liste von Moderatoren-Ressourcen in Form eines JSON-Dokuments.</returns>
+        /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
+        public async Task<string> SendGetModeratorsOfChannelRequestAsync(string serverAccessToken, int channelId)
+        {
+            // Erstelle einen HTTP Request.
+            HttpClient httpClient = new HttpClient();
+
+            // Definiere HTTP-Request und Http-Request Header.
+            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
+            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
+            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Get, "/channel/" + channelId + "/moderator");
+
+            // Sende den Request und warte auf die Antwort.
+            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
+
+            // Lies Antwort aus.
+            var statusCode = response.StatusCode;
+            string responseContent = await response.Content.ReadAsStringAsync();
+            if (statusCode == HttpStatusCode.Ok)
+            {
+                Debug.WriteLine("Get moderators of the channel with id {0} request completed successfully.", channelId);
+                Debug.WriteLine("Response from server is: " + responseContent);
+            }
+            else
+            {
+                // Bilde auf Fehlercode ab und werfe Exception.
+                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
+            }
+
+            return responseContent;
+        }
+
+        /// <summary>
+        /// Request zum Entfernen eines Moderator als Verantwortlichen des Kanals. Dieser Request kann nur 
+        /// von Moderatoren durchgeführt werden, die für den gegebenen Kanal verantwortlich sind.
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Requestors.</param>
+        /// <param name="channelId">Die Id des Kanals, von dem der Moderator als Verantwortlicher entfernt wird.</param>
+        /// <param name="moderatorId">Die Id des Moderators, der von der Liste der verantwortlichen Moderatoren entfernt wird.</param>
+        /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
+        public async Task SendRemoveModeratorFromChannelRequestAsync(string serverAccessToken, int channelId, int moderatorId)
+        {
+            // Erstelle einen HTTP Request.
+            HttpClient httpClient = new HttpClient();
+
+            // Definiere HTTP-Request und Http-Request Header.
+            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
+            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
+            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Get, "/channel/" + channelId + "/moderator/" + moderatorId);
+
+            // Sende den Request und warte auf die Antwort.
+            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
+
+            // Lies Antwort aus.
+            var statusCode = response.StatusCode;
+            if (statusCode == HttpStatusCode.NoContent)
+            {
+                Debug.WriteLine("Remove moderator as responsible moderator from the channel with id {0} request completed successfully.", channelId);
+            }
+            else
+            {
+                // Bilde auf Fehlercode ab und werfe Exception.
+                string responseContent = await response.Content.ReadAsStringAsync();
+                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
+            }
         }
     }
 }
