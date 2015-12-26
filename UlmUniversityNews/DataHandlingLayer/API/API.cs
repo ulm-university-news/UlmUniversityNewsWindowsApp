@@ -11,11 +11,8 @@ using Windows.Web.Http;
 namespace DataHandlingLayer.API
 {
     /// <summary>
-    /// Stellt die abstrakte Basisklasse aller API Klassen dar. Bietet Funktionalitäten an, die in jeder
-    /// API Implementierungsklasse benötigt werden. Hat zudem die Basis-URL, die je nach Anfrage erweitert 
-    /// werden kann.
     /// </summary>
-    public abstract class API
+    public class API
     {
         private string baseURL;
         /// <summary>
@@ -33,6 +30,214 @@ namespace DataHandlingLayer.API
         protected API(){
             baseURL = "http://134.60.71.137/ulm-university-news";
             //baseURL = "http://localhost:8080/";
+        }
+
+        /// <summary>
+        /// Sende einen HTTP POST Request an den Server, der als Inhalt das übergebene JSON-Dokument enthält.
+        /// Mittels dieses Requests kann eine Ressource auf dem Server angelegt werden. 
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Requestors.</param>
+        /// <param name="content">Der zu sendende Inhalt in Form eines JSON-Dokuments.</param>
+        /// <param name="restResourcePath">Der REST Ressourcen Pfad, der an die Basis URI des Requests angehängt wird. Dieser Teil
+        /// der URI spezifiziert die exakte Ressource, die über den Request angesprochen wird.</param>
+        /// <param name="urlParameters">Per URI zu übergebene Parameter. Dieser Parameter kann null sein, wenn keine Parameter übergeben werden sollen.</param>
+        /// <returns>Die Antwort des Servers bei erfolgreicher Bearbeitung des Requests in Form eines JSON-Dokuments.</returns>
+        /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
+        public async Task<string> SendHttpPostRequestWithJsonBodyAsync(string serverAccessToken, string content, string restResourcePath, Dictionary<string, string> urlParameters)
+        {
+            // Erstelle einen HTTP Request.
+            HttpClient httpClient = new HttpClient();
+
+            // Definiere HTTP-Request und Http-Request Header.
+            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
+            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
+
+            // Füge URL Parameter an, falls vorhanden.
+            if (urlParameters != null && urlParameters.Count != 0)
+            {
+                restResourcePath = createRestURIWithParameters(restResourcePath, urlParameters);
+            }
+
+            HttpRequestMessage request = createHttpRequestMessageWithJsonBody(HttpMethod.Post, content, restResourcePath);
+
+            // Sende den Request und warte auf die Antwort.
+            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
+
+            // Lies Antwort aus.
+            var statusCode = response.StatusCode;
+            string responseContent = await response.Content.ReadAsStringAsync();
+            if (statusCode == HttpStatusCode.Created)
+            {
+                Debug.WriteLine("POST request to URI {0} completed successfully.", request.RequestUri);
+                Debug.WriteLine("Response from server is: " + responseContent);
+            }
+            else
+            {
+                // Bilde auf Fehlercode ab und werfe Exception.
+                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
+            }
+
+            return responseContent;
+        }
+
+        /// <summary>
+        /// Sende einen PATCH Request an den Server, der als Inhalt eine Beschreibung von durchzuführenden
+        /// Änderungen in Form eines JSON Merge Patch Dokuments beinhaltet. Mittels dieses Requests können
+        /// Änderungen an Ressourcen vorgenommen werden.
+        /// </summary>
+        /// <param name="serverAccessToken"> Das Zugriffstoken des Requestors.</param>
+        /// <param name="content">Die Beschreibung an durchzuführenden Änderungen als JSON-Merge-Patch Dokument.</param>
+        /// <param name="restResourcePath">Der REST Ressourcen Pfad, der an die Basis URI des Requests angehängt wird. Dieser Teil
+        /// der URI spezifiziert die exakte Ressource, die über den Request angesprochen wird.</param>
+        /// <param name="urlParameters">Per URI zu übergebene Parameter. Dieser Parameter kann null sein, wenn keine Parameter übergeben werden sollen.</param>
+        /// <returns>Die Antwort des Servers bei erfolgreicher Bearbeitung des Requests in Form eines JSON-Dokuments.</param>
+        /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
+        public async Task<string> SendHttpPatchRequestWithJsonBody(string serverAccessToken, string content, string restResourcePath, Dictionary<string, string> urlParameters)
+        {
+            // Erstelle einen HTTP Request.
+            HttpClient httpClient = new HttpClient();
+
+            // Definiere HTTP-Request und Http-Request Header.
+            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
+            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
+
+            // Füge URL Parameter an, falls vorhanden.
+            if (urlParameters != null && urlParameters.Count != 0)
+            {
+                restResourcePath = createRestURIWithParameters(restResourcePath, urlParameters);
+            }
+
+            HttpRequestMessage request = createHttpRequestMessageWithJsonBody(HttpMethod.Post, content, restResourcePath);
+
+            // Sende den Request und warte auf die Antwort.
+            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
+
+            // Lies Antwort aus.
+            var statusCode = response.StatusCode;
+            string responseContent = await response.Content.ReadAsStringAsync();
+            if (statusCode == HttpStatusCode.Ok)
+            {
+                Debug.WriteLine("PATCH request to URI {0} completed successfully." , request.RequestUri);
+                Debug.WriteLine("Response from server is: " + responseContent);
+            }
+            else
+            {
+                // Bilde auf Fehlercode ab und werfe Exception.
+                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
+            }
+
+            return responseContent;
+        }
+
+        /// <summary>
+        /// Sende einen HTTP GET Request an den Server. Mittels diesem Request können Ressourcen
+        /// vom Server abgefragt werden.
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Requestors.</param>
+        /// <param name="restResourcePath">Der REST Ressourcen Pfad, der an die Basis URI des Requests angehängt wird. Dieser Teil
+        /// der URI spezifiziert die exakte Ressource, die über den Request angesprochen wird.</param>
+        /// <param name="urlParameters">Per URI zu übergebene Parameter. Dieser Parameter kann null sein, wenn keine Parameter übergeben werden sollen.</param>
+        /// <returns>Die Antwort des Servers bei erfolgreicher Bearbeitung des Requests in Form eines JSON-Dokuments.</returns>
+        /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
+        public async Task<string> SendHttpGetRequestAsync(string serverAccessToken, string restResourcePath, Dictionary<string, string> urlParameters)
+        {
+            // Erstelle einen HTTP Request.
+            HttpClient httpClient = new HttpClient();
+
+            // Definiere HTTP-Request und Http-Request Header.
+            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
+            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
+
+            // Füge URL Parameter an, falls vorhanden.
+            if (urlParameters != null && urlParameters.Count != 0)
+            {
+                restResourcePath = createRestURIWithParameters(restResourcePath, urlParameters);
+            }
+
+            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Get, restResourcePath);
+
+            // Sende den Request und warte auf die Antwort.
+            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
+
+            // Lies Antwort aus.
+            var statusCode = response.StatusCode;
+            string responseContent = await response.Content.ReadAsStringAsync();
+            if (statusCode == HttpStatusCode.Ok)
+            {
+                Debug.WriteLine("GET request to URI {0} completed successfully.", request.RequestUri);
+                Debug.WriteLine("Response from server is: " + responseContent);
+            }
+            else
+            {
+                // Bilde auf Fehlercode ab und werfe Exception.
+                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
+            }
+
+            return responseContent;
+        }
+
+        /// <summary>
+        /// Sende einen HTTP DELETE Request an den Server. Mittels diesem Request können Ressourcen
+        /// gelöscht werden.
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Requestors.</param>
+        /// <param name="restResourcePath">Der REST Ressourcen Pfad, der an die Basis URI des Requests angehängt wird. Dieser Teil
+        /// der URI spezifiziert die exakte Ressource, die über den Request angesprochen wird.</param>
+        /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
+        public async Task SendHttpDeleteRequestAsync(string serverAccessToken, string restResourcePath)
+        {
+            // Erstelle einen HTTP Request.
+            HttpClient httpClient = new HttpClient();
+
+            // Definiere HTTP-Request und Http-Request Header.
+            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
+            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
+
+            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Delete, restResourcePath);
+
+            // Sende den Request und warte auf die Antwort.
+            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
+
+            // Lies Antwort aus.
+            var statusCode = response.StatusCode;
+            if (statusCode == HttpStatusCode.NoContent)
+            {
+                Debug.WriteLine("DELETE request to URI {0} completed successfully.", request.RequestUri);
+            }
+            else
+            {
+                // Bilde auf Fehlercode ab und werfe Exception.
+                string responseContent = await response.Content.ReadAsStringAsync();
+                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
+            }
+        }
+
+        /// <summary>
+        /// Hilfsmethode, die Parameter an die REST URI anhängt. 
+        /// </summary>
+        /// <param name="restResourcePath">Der Ressourcen Pfad der REST URI, an den die Parameter angehängt werden sollen.</param>
+        /// <param name="urlParameters">Ein Verzeichnis der anzuhängenden Parameter. Die Parameter werden als Schlüssel-Wert Paare übergeben.</param>
+        /// <returns>Die URI mit angehängten Parametern als String.</returns>
+        private string createRestURIWithParameters(string restResourcePath, Dictionary<string, string> urlParameters)
+        {
+            // Füge URL Parameter an, falls vorhanden.
+            if (urlParameters != null && urlParameters.Count != 0)
+            {
+                // Hole erstes Element.
+                var element = urlParameters.ElementAt(0);
+                restResourcePath = restResourcePath + "?" + System.Net.WebUtility.UrlEncode(element.Key) + "=" + System.Net.WebUtility.UrlEncode(element.Value);
+                urlParameters.Remove(element.Key);
+
+                while (urlParameters.Count > 0)
+                {
+                    var secondaryElement = urlParameters.ElementAt(0);
+                    // Hänge weitere Parameter an.
+                    restResourcePath = restResourcePath + "&" + System.Net.WebUtility.UrlEncode(secondaryElement.Key) + "=" + System.Net.WebUtility.UrlEncode(secondaryElement.Value);
+                    urlParameters.Remove(secondaryElement.Key);
+                }
+            }
+
+            return restResourcePath;
         }
 
         /// <summary>

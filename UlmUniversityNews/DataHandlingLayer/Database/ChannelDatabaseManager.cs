@@ -314,6 +314,7 @@ namespace DataHandlingLayer.Database
         /// von Kanälen wie Lecture, Sports, Events, etc.
         /// </summary>
         /// <returns>Liste von Kanal-Objekten. Liste kann auch leer sein.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn das Abrufen aller Kanäle fehlschlägt.</exception>
         public List<Channel> GetChannels()
         {
             List<Channel> channels = new List<Channel>();
@@ -432,7 +433,128 @@ namespace DataHandlingLayer.Database
             return channels;
         }
 
+        /// <summary>
+        /// Rufe den Kanal mit der angegebenen Id aus der Datenbank ab.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, der abgerufen werden soll.</param>
+        /// <returns>Eine Instanz der Klasse Channel. Kann null liefer, wenn der Kanal nicht in der Datenbank existiert.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn das Abrufen des Kanals fehlschlägt.</exception>
+        public Channel GetChannel(int channelId)
+        {
+            Channel channel = null;
 
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                // Initialisierung der Variablen.
+                int id;
+                string name, description, term, location, dates, contact, website, startDate, endDate, lecturer,
+                    assistant, cost, organizer, participants;
+                ChannelType type;
+                Faculty faculty;
+                DateTime creationDate, modificationDate;
+
+                // Frage Daten aus Kanal-Tabelle ab.
+                using (var getChannelStmt = conn.Prepare("SELECT * FROM Channel WHERE Id=?;"))
+                {
+                    getChannelStmt.Bind(1, channelId);
+
+                    if(getChannelStmt.Step() == SQLiteResult.ROW)
+                    {
+                        id = Convert.ToInt32(getChannelStmt["Id"]);
+                        name = (string)getChannelStmt["Name"];
+                        description = (string)getChannelStmt["Description"];
+                        type = (ChannelType)Enum.ToObject(typeof(ChannelType), getChannelStmt["Type"]);
+                        creationDate = (DateTime)getChannelStmt["CreationDate"];       // TODO test
+                        modificationDate = (DateTime)getChannelStmt["ModificationDate"];   // TODO test
+                        term = (string)getChannelStmt["Term"];
+                        location = (string)getChannelStmt["Location"];
+                        dates = (string)getChannelStmt["Dates"];
+                        contact = (string)getChannelStmt["Contact"];
+                        website = (string)getChannelStmt["Website"];
+
+                        // Falls notwenig, hole Daten aus den Tabllen der Subklasse.
+                        switch (type)
+                        {
+                            case ChannelType.LECTURE:
+                                using (var getLectureStmt = conn.Prepare("SELECT * FROM Lecture WHERE Channel_Id=?;"))
+                                {
+                                    getLectureStmt.Bind(1, id);
+
+                                    // Hole Ergebnis der Query.
+                                    if (getLectureStmt.Step() == SQLiteResult.ROW)
+                                    {
+                                        faculty = (Faculty)Enum.ToObject(typeof(Faculty), getLectureStmt["Faculty"]);
+                                        startDate = (string)getLectureStmt["StartDate"];
+                                        endDate = (string)getLectureStmt["EndDate"];
+                                        lecturer = (string)getLectureStmt["Lecturer"];
+                                        assistant = (string)getLectureStmt["Assistant"];
+
+                                        // Erstelle Lecture Objekt.
+                                        Lecture lecture = new Lecture(id, name, description, type, creationDate, modificationDate, term, location,
+                                            dates, contact, website, faculty, startDate, endDate, lecturer, assistant);
+                                        channel = lecture;
+                                    }
+                                }
+                                break;
+                            case ChannelType.EVENT:
+                                using (var getEventStmt = conn.Prepare("SELECT * FROM Event WHERE Channel_Id=?;"))
+                                {
+                                    getEventStmt.Bind(1, id);
+
+                                    // Hole Ergebnis der Query.
+                                    if (getEventStmt.Step() == SQLiteResult.ROW)
+                                    {
+                                        cost = (string)getEventStmt["Cost"];
+                                        organizer = (string)getEventStmt["Organizer"];
+
+                                        // Erstelle Event Objekt.
+                                        Event eventObj = new Event(id, name, description, type, creationDate, modificationDate, term, location,
+                                            dates, contact, website, cost, organizer);
+                                        channel = eventObj;
+                                    }
+                                }
+                                break;
+                            case ChannelType.SPORTS:
+                                using (var getSportsStmt = conn.Prepare("SELECT * FROM Sports WHERE Channel_Id=?;"))
+                                {
+                                    getSportsStmt.Bind(1, id);
+
+                                    // Hole Ergebnis der Query.
+                                    if (getSportsStmt.Step() == SQLiteResult.ROW)
+                                    {
+                                        cost = (string)getSportsStmt["Cost"];
+                                        participants = (string)getSportsStmt["NumberOfParticipants"];
+
+                                        // Erstelle Sports Objekt und füge es der Liste hinzu.
+                                        Sports sportsObj = new Sports(id, name, description, type, creationDate, modificationDate, term, location,
+                                            dates, contact, website, cost, participants);
+                                        channel = sportsObj;
+                                    }
+                                }
+                                break;
+                            default:
+                                // Keine Subklasse, also erzeuge Kanal Objekt.
+                                channel = new Channel(id, name, description, type, creationDate, modificationDate, term, location,
+                                    dates, contact, website);
+                                break;
+                        }
+                    }
+                }
+            }
+            catch (SQLiteException sqlEx)
+            {
+                Debug.WriteLine("SQLiteException has occurred in GetChannel. The message is: {0}." + sqlEx.Message);
+                throw new DatabaseException("Get channel has failed.");
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("SQLiteException has occurred in GetChannel. The message is: {0}, and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                throw new DatabaseException("Get channel has failed.");
+            }
+
+            return channel;
+        }
 
     }
 }

@@ -186,7 +186,7 @@ namespace DataHandlingLayer.Database
             }
             catch (SQLiteException sqlEx)
             {
-
+                Debug.WriteLine(sqlEx.StackTrace);
             }
         }
     }
