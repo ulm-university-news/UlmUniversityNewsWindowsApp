@@ -27,6 +27,29 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Wandelt eine Zeitangabe im DateTime Format um in einen String, um sie in einer
+        /// SQLite Datenbank zu speichern.
+        /// </summary>
+        /// <param name="datetime">Das umzuwandelnde Datum.</param>
+        /// <returns>Das Ergebnis der Umwandlung als String.</returns>
+        public static string DateTimeToSQLite(DateTime datetime)
+        {
+            string dateTimeFormat = "{0}-{1}-{2} {3}:{4}:{5}.{6}";
+            return string.Format(dateTimeFormat, datetime.Year, datetime.Month, datetime.Day,
+                datetime.Hour, datetime.Minute, datetime.Second, datetime.Millisecond);
+        }
+
+        /// <summary>
+        /// Wandelt einen String aus der SQLite Datenbank um in ein Objekt vom Typ DateTime.
+        /// </summary>
+        /// <param name="datetime">Der umzuwandelnde String.</param>
+        /// <returns>Objekt vom Typ DateTime.</returns>
+        public static DateTime DateTimeFromSQLite(string datetime)
+        {
+            return DateTime.Parse(datetime);
+        }
+
+        /// <summary>
         /// Erstelle die erforderlichen Tabellen, falls sie noch nicht vorhanden sind. 
         /// </summary>
         public static void LoadDatabase()
@@ -90,7 +113,7 @@ namespace DataHandlingLayer.Database
         /// <summary>
         /// Löscht das Datenbank Schema und alle zugehörigen Daten. Anschließend wird das Datenbank-Schema neu erstellt, so dass Änderungen am Datenbank Schema übernommen werden. 
         /// </summary>
-        public void UpgradeDatabase()
+        public static void UpgradeDatabase()
         {
             Debug.WriteLine("Start upgrading the database. This will remove all data and recreate the database schema.");
             try
@@ -195,14 +218,15 @@ namespace DataHandlingLayer.Database
                             Channel     (Id                 INTEGER NOT NULL,
                                         Name                TEXT NOT NULL,
                                         Description         TEXT,
-                                        CreationDate        INTEGER NOT NULL,
-                                        ModificationDate    INTEGER NOT NULL,
+                                        CreationDate        DATETIME NOT NULL,
+                                        ModificationDate    DATETIME NOT NULL,
                                         Type                INTEGER NOT NULL,
                                         Term                TEXT,
                                         Location            TEXT,
                                         Dates               TEXT,
                                         Contact             TEXT,
                                         Website             TEXT,
+                                        Deleted             BOOLEAN,
                                         PRIMARY KEY(Id)
 
                             );";
@@ -320,8 +344,8 @@ namespace DataHandlingLayer.Database
                                         Name                TEXT NOT NULL,
                                         Description         TEXT,
                                         Type                INTEGER NOT NULL,
-                                        CreationDate        INTEGER NOT NULL,
-                                        ModificationDate    INTEGER NOT NULL,
+                                        CreationDate        DATETIME NOT NULL,
+                                        ModificationDate    DATETIME NOT NULL,
                                         Term                TEXT,
                                         Deleted             INTEGER NOT NULL,
                                         GroupAdmin_User_Id  INTEGER NOT NULL,
@@ -426,7 +450,7 @@ namespace DataHandlingLayer.Database
             string sql = @"CREATE TABLE IF NOT EXISTS 
                             Message (Id             INTEGER NOT NULL,
                                     Text            TEXT    NOT NULL,
-                                    CreationDate    INTEGER NOT NULL,
+                                    CreationDate    DATETIME NOT NULL,
                                     Priority        INTEGER NOT NULL,
                                     Read            INTEGER NOT NULL,
                                     PRIMARY KEY(Id)
@@ -515,8 +539,8 @@ namespace DataHandlingLayer.Database
                                         Channel_Id          INTEGER NOT NULL,
                                         StartDate           INTEGER NOT NULL,
                                         EndDate             INTEGER NOT NULL,    
-                                        CreationDate        INTEGER NOT NULL,
-                                        ModificationDate    INTEGER NOT NULL,
+                                        CreationDate        DATETIME NOT NULL,
+                                        ModificationDate    DATETIME NOT NULL,
                                         ""Interval""            INTEGER,
                                         ""Ignore""              INTEGER,
                                         Title               TEXT NOT NULL,
