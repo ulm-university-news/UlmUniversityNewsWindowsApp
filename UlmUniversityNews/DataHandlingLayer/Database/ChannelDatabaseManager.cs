@@ -37,19 +37,20 @@ namespace DataHandlingLayer.Database
 
                 // Speichere Kanal Parameter.
                 using (var insertStmt = conn.Prepare("INSERT INTO Channel (Id, Name, Description, CreationDate, ModificationDate," +
-                    " Type, Term, Location, Dates, Contact, Website) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"))
+                    " Type, Term, Location, Dates, Contact, Website, Deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"))
                 {
                     insertStmt.Bind(1, channel.Id);
                     insertStmt.Bind(2, channel.Name);
                     insertStmt.Bind(3, channel.Description);
-                    insertStmt.Bind(4, channel.CreationDate);
-                    insertStmt.Bind(5, channel.ModificationDate);
+                    insertStmt.Bind(4, DatabaseManager.DateTimeToSQLite(channel.CreationDate));
+                    insertStmt.Bind(5, DatabaseManager.DateTimeToSQLite(channel.ModificationDate));
                     insertStmt.Bind(6, (int)channel.Type);
                     insertStmt.Bind(7, channel.Term);
                     insertStmt.Bind(8, channel.Locations);
                     insertStmt.Bind(9, channel.Dates);
                     insertStmt.Bind(10, channel.Contacts);
                     insertStmt.Bind(11, channel.Website);
+                    insertStmt.Bind(12, (channel.Deleted) ? 1 : 0);
 
                     insertStmt.Step();
                 }
@@ -158,19 +159,20 @@ namespace DataHandlingLayer.Database
             try
             {
                 using (var updateChannelStmt = conn.Prepare("UPDATE Channel SET Name=?, Description=?, CreationDate=?, ModificationDate=?, " + 
-                    "Type=?, Term=?, Location=?, Dates=?, Contact=?, Website=? WHERE Id=?;"))
+                    "Type=?, Term=?, Location=?, Dates=?, Contact=?, Website=?, Deleted=? WHERE Id=?;"))
                 {
                     updateChannelStmt.Bind(1, channel.Name);
                     updateChannelStmt.Bind(2, channel.Description);
-                    updateChannelStmt.Bind(3, channel.CreationDate);
-                    updateChannelStmt.Bind(4, channel.ModificationDate);
+                    updateChannelStmt.Bind(3, DatabaseManager.DateTimeToSQLite(channel.CreationDate));
+                    updateChannelStmt.Bind(4, DatabaseManager.DateTimeToSQLite(channel.ModificationDate));
                     updateChannelStmt.Bind(5, (int)channel.Type);
                     updateChannelStmt.Bind(6, channel.Term);
                     updateChannelStmt.Bind(7, channel.Locations);
                     updateChannelStmt.Bind(8, channel.Dates);
                     updateChannelStmt.Bind(9, channel.Contacts);
                     updateChannelStmt.Bind(10, channel.Website);
-                    updateChannelStmt.Bind(11, channel.Id);
+                    updateChannelStmt.Bind(11, channel.Deleted);
+                    updateChannelStmt.Bind(12, channel.Id);
 
                     updateChannelStmt.Step();
                 }
@@ -211,19 +213,20 @@ namespace DataHandlingLayer.Database
                 }
 
                 using (var updateChannelStmt = conn.Prepare("UPDATE Channel SET Name=?, Description=?, CreationDate=?, ModificationDate=?, " +
-                    "Type=?, Term=?, Location=?, Dates=?, Contact=?, Website=? WHERE Id=?;"))
+                    "Type=?, Term=?, Location=?, Dates=?, Contact=?, Website=?, Deleted=? WHERE Id=?;"))
                 {
                     updateChannelStmt.Bind(1, channel.Name);
                     updateChannelStmt.Bind(2, channel.Description);
-                    updateChannelStmt.Bind(3, channel.CreationDate);
-                    updateChannelStmt.Bind(4, channel.ModificationDate);
+                    updateChannelStmt.Bind(3, DatabaseManager.DateTimeToSQLite(channel.CreationDate));
+                    updateChannelStmt.Bind(4, DatabaseManager.DateTimeToSQLite(channel.ModificationDate));
                     updateChannelStmt.Bind(5, (int)channel.Type);
                     updateChannelStmt.Bind(6, channel.Term);
                     updateChannelStmt.Bind(7, channel.Locations);
                     updateChannelStmt.Bind(8, channel.Dates);
                     updateChannelStmt.Bind(9, channel.Contacts);
                     updateChannelStmt.Bind(10, channel.Website);
-                    updateChannelStmt.Bind(11, channel.Id);
+                    updateChannelStmt.Bind(11, channel.Deleted);
+                    updateChannelStmt.Bind(12, channel.Id);
 
                     updateChannelStmt.Step();
                 }
@@ -326,6 +329,7 @@ namespace DataHandlingLayer.Database
                 int id;
                 string name, description, term, location, dates, contact, website, startDate, endDate, lecturer,
                     assistant, cost, organizer, participants;
+                bool deleted;
                 ChannelType type;
                 Faculty faculty;
                 DateTime creationDate, modificationDate;
@@ -347,6 +351,7 @@ namespace DataHandlingLayer.Database
                         dates = (string)getChannelsStmt["Dates"];
                         contact = (string)getChannelsStmt["Contact"];
                         website = (string)getChannelsStmt["Website"];
+                        deleted = (bool)getChannelsStmt["Deleted"];
 
                         // Falls notwendig, hole Daten aus Tabelle der Subklasse.
                         switch(type)
@@ -367,7 +372,7 @@ namespace DataHandlingLayer.Database
 
                                         // Erstelle Lecture Objekt und füge es der Liste hinzu.
                                         Lecture lecture = new Lecture(id, name, description, type, creationDate, modificationDate, term, location,
-                                            dates, contact, website, faculty, startDate, endDate, lecturer, assistant);
+                                            dates, contact, website, deleted, faculty, startDate, endDate, lecturer, assistant);
                                         channels.Add(lecture);
                                     }
                                 }
@@ -385,7 +390,7 @@ namespace DataHandlingLayer.Database
 
                                         // Erstelle Event Objekt und füge es der Liste hinzu.
                                         Event eventObj = new Event(id, name, description, type, creationDate, modificationDate, term, location, 
-                                            dates, contact, website, cost, organizer);
+                                            dates, contact, website, deleted, cost, organizer);
                                         channels.Add(eventObj);
                                     }
                                 }
@@ -403,7 +408,7 @@ namespace DataHandlingLayer.Database
 
                                         // Erstelle Sports Objekt und füge es der Liste hinzu.
                                         Sports sportsObj = new Sports(id, name, description, type, creationDate, modificationDate, term, location, 
-                                            dates, contact, website, cost, participants);
+                                            dates, contact, website, deleted, cost, participants);
                                         channels.Add(sportsObj);
                                     }
                                 }
@@ -411,7 +416,7 @@ namespace DataHandlingLayer.Database
                             default:
                                 // Keine Subklasse, also erzeuge Kanal Objekt.
                                 Channel channel = new Channel(id, name, description, type, creationDate, modificationDate, term, location,
-                                    dates, contact, website);
+                                    dates, contact, website, deleted);
                                 channels.Add(channel);
                                 break;
                         }
@@ -450,6 +455,7 @@ namespace DataHandlingLayer.Database
                 int id;
                 string name, description, term, location, dates, contact, website, startDate, endDate, lecturer,
                     assistant, cost, organizer, participants;
+                bool deleted;
                 ChannelType type;
                 Faculty faculty;
                 DateTime creationDate, modificationDate;
@@ -472,6 +478,7 @@ namespace DataHandlingLayer.Database
                         dates = (string)getChannelStmt["Dates"];
                         contact = (string)getChannelStmt["Contact"];
                         website = (string)getChannelStmt["Website"];
+                        deleted = (bool)getChannelStmt["Deleted"];
 
                         // Falls notwenig, hole Daten aus den Tabllen der Subklasse.
                         switch (type)
@@ -492,7 +499,7 @@ namespace DataHandlingLayer.Database
 
                                         // Erstelle Lecture Objekt.
                                         Lecture lecture = new Lecture(id, name, description, type, creationDate, modificationDate, term, location,
-                                            dates, contact, website, faculty, startDate, endDate, lecturer, assistant);
+                                            dates, contact, website, deleted, faculty, startDate, endDate, lecturer, assistant);
                                         channel = lecture;
                                     }
                                 }
@@ -510,7 +517,7 @@ namespace DataHandlingLayer.Database
 
                                         // Erstelle Event Objekt.
                                         Event eventObj = new Event(id, name, description, type, creationDate, modificationDate, term, location,
-                                            dates, contact, website, cost, organizer);
+                                            dates, contact, website, deleted, cost, organizer);
                                         channel = eventObj;
                                     }
                                 }
@@ -528,7 +535,7 @@ namespace DataHandlingLayer.Database
 
                                         // Erstelle Sports Objekt und füge es der Liste hinzu.
                                         Sports sportsObj = new Sports(id, name, description, type, creationDate, modificationDate, term, location,
-                                            dates, contact, website, cost, participants);
+                                            dates, contact, website, deleted, cost, participants);
                                         channel = sportsObj;
                                     }
                                 }
@@ -536,7 +543,7 @@ namespace DataHandlingLayer.Database
                             default:
                                 // Keine Subklasse, also erzeuge Kanal Objekt.
                                 channel = new Channel(id, name, description, type, creationDate, modificationDate, term, location,
-                                    dates, contact, website);
+                                    dates, contact, website, deleted);
                                 break;
                         }
                     }
@@ -556,5 +563,159 @@ namespace DataHandlingLayer.Database
             return channel;
         }
 
+        // TODO - Fix casting in all methods
+        // TODO - outsource some code which is highly redundant
+
+        /// <summary>
+        /// Hole alle Kanäle aus der Datenbank, die der lokale Nutzer abonniert hat.
+        /// </summary>
+        /// <returns>Eine Liste von Objekten vom Typ Kanal oder vom Typ einer der Subklassen von Kanal. Die Liste kann auch leer sein.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn das Abrufen der abonnierten Kanäle fehlschlägt.</exception>
+        public List<Channel> GetSubscribedChannels()
+        {
+            List<Channel> channels = new List<Channel>();
+
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                // Initialisierung der Variablen.
+                int id;
+                string name, description, term, location, dates, contact, website, startDate, endDate, lecturer,
+                    assistant, cost, organizer, participants;
+                bool deleted;
+                ChannelType type;
+                Faculty faculty;
+                DateTime creationDate, modificationDate;
+
+                using(var getSubscribedChannelsStmt = conn.Prepare("SELECT * FROM Channel WHERE Id IN (" +
+                    "SELECT Channel_Id AS Id FROM SubscribedChannels);"))
+                {
+                    // Iteriere über Ergebnisse.
+                    while (getSubscribedChannelsStmt.Step() == SQLiteResult.ROW)
+                    {
+                        id = Convert.ToInt32(getSubscribedChannelsStmt["Id"]);
+                        name = (string)getSubscribedChannelsStmt["Name"];
+                        description = (string)getSubscribedChannelsStmt["Description"];
+                        type = (ChannelType)Enum.ToObject(typeof(ChannelType), getSubscribedChannelsStmt["Type"]);
+                        creationDate = DatabaseManager.DateTimeFromSQLite(getSubscribedChannelsStmt["CreationDate"].ToString());       // TODO test
+                        modificationDate = DatabaseManager.DateTimeFromSQLite(getSubscribedChannelsStmt["ModificationDate"].ToString());   // TODO test
+                        term = (string)getSubscribedChannelsStmt["Term"];
+                        location = (string)getSubscribedChannelsStmt["Location"];
+                        dates = (string)getSubscribedChannelsStmt["Dates"];
+                        contact = (string)getSubscribedChannelsStmt["Contact"];
+                        website = (string)getSubscribedChannelsStmt["Website"];
+                        deleted = ((long)getSubscribedChannelsStmt["Deleted"] == 1) ? true : false;
+
+                        // Falls notwendig, hole Daten aus Tabelle der Subklasse.
+                        switch (type)
+                        {
+                            case ChannelType.LECTURE:
+                                using (var getLectureStmt = conn.Prepare("SELECT * FROM Lecture WHERE Channel_Id=?;"))
+                                {
+                                    getLectureStmt.Bind(1, id);
+
+                                    // Hole Ergebnis der Query.
+                                    if (getLectureStmt.Step() == SQLiteResult.ROW)
+                                    {
+                                        faculty = (Faculty)Enum.ToObject(typeof(Faculty), getLectureStmt["Faculty"]);
+                                        startDate = (string)getLectureStmt["StartDate"];
+                                        endDate = (string)getLectureStmt["EndDate"];
+                                        lecturer = (string)getLectureStmt["Lecturer"];
+                                        assistant = (string)getLectureStmt["Assistant"];
+
+                                        // Erstelle Lecture Objekt und füge es der Liste hinzu.
+                                        Lecture lecture = new Lecture(id, name, description, type, creationDate, modificationDate, term, location,
+                                            dates, contact, website, deleted, faculty, startDate, endDate, lecturer, assistant);
+                                        channels.Add(lecture);
+                                    }
+                                }
+                                break;
+                            case ChannelType.EVENT:
+                                using (var getEventStmt = conn.Prepare("SELECT * FROM Event WHERE Channel_Id=?;"))
+                                {
+                                    getEventStmt.Bind(1, id);
+
+                                    // Hole Ergebnis der Query.
+                                    if (getEventStmt.Step() == SQLiteResult.ROW)
+                                    {
+                                        cost = (string)getEventStmt["Cost"];
+                                        organizer = (string)getEventStmt["Organizer"];
+
+                                        // Erstelle Event Objekt und füge es der Liste hinzu.
+                                        Event eventObj = new Event(id, name, description, type, creationDate, modificationDate, term, location,
+                                            dates, contact, website, deleted, cost, organizer);
+                                        channels.Add(eventObj);
+                                    }
+                                }
+                                break;
+                            case ChannelType.SPORTS:
+                                using (var getSportsStmt = conn.Prepare("SELECT * FROM Sports WHERE Channel_Id=?;"))
+                                {
+                                    getSportsStmt.Bind(1, id);
+
+                                    // Hole Ergebnis der Query.
+                                    if (getSportsStmt.Step() == SQLiteResult.ROW)
+                                    {
+                                        cost = (string)getSportsStmt["Cost"];
+                                        participants = (string)getSportsStmt["NumberOfParticipants"];
+
+                                        // Erstelle Sports Objekt und füge es der Liste hinzu.
+                                        Sports sportsObj = new Sports(id, name, description, type, creationDate, modificationDate, term, location,
+                                            dates, contact, website, deleted, cost, participants);
+                                        channels.Add(sportsObj);
+                                    }
+                                }
+                                break;
+                            default:
+                                // Keine Subklasse, also erzeuge Kanal Objekt.
+                                Channel channel = new Channel(id, name, description, type, creationDate, modificationDate, term, location,
+                                    dates, contact, website, deleted);
+                                channels.Add(channel);
+                                break;
+                        }
+                    }
+                }
+            }
+            catch(SQLiteException sqlEx)
+            {
+                Debug.WriteLine("SQLiteException has occurred in GetSubscribedChannels. The message is: {0}." + sqlEx.Message);
+                throw new DatabaseException("Get subscribed channels has failed.");
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("Exception has occurred in GetSubscribedChannels. The message is: {0}, and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                throw new DatabaseException("Get subscribed channel has failed.");
+            }
+
+            return channels;
+        }
+
+        /// <summary>
+        /// Trage den Kanal mit der angegebenen Id als abonnierten Kanal in die Datenbank ein.
+        /// </summary>
+        /// <param name="channelId">Die Id des zu abonnierenden Kanal.</param>
+        public void SubscribeChannel(int channelId)
+        {
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                using (var subscribeStmt = conn.Prepare("INSERT INTO SubscribedChannels (Channel_Id) VALUES (?);"))
+                {
+                    subscribeStmt.Bind(1, channelId);
+
+                    subscribeStmt.Step();
+                }
+            }
+            catch(SQLiteException sqlEx)
+            {
+                Debug.WriteLine("SQLiteException has occurred in SubscribeChannel. The message is: {0}." + sqlEx.Message);
+                throw new DatabaseException("Subscribe channel has failed.");
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("Exception has occurred in GetSubscribedChannels. The message is: {0}, and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                throw new DatabaseException("Subscribe channel has failed.");
+            }
+        }
     }
 }
