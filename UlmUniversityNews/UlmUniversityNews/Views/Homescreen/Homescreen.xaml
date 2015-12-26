@@ -86,11 +86,16 @@
                     <PivotItem x:Uid="MyChannels"
                            Style="{StaticResource PivotItemStyle}"
                            Header="Meine Kanäle">
+                        <!-- Definiere Liste für Kanäle. -->
+                        <ListView 
+                            ItemTemplate="{StaticResource ChannelListItemStyle}"
+                            ItemsSource="{Binding MyChannels}"/>
+                       
                         <!-- TODO -->
-                        <TextBlock x:Name="Test"
+                        <!--<TextBlock x:Name="Test"
                                    FontSize="20"
                                    Text="Jo Servus, das ist ein Test Text. Den schreib ich extra groß, damit man ihn auch sieht."
-                                   TextWrapping="Wrap"/>
+                                   TextWrapping="Wrap"/>-->
                     </PivotItem>
                     <!-- Pivotelement 2-->
                     <PivotItem x:Uid="MyGroups"

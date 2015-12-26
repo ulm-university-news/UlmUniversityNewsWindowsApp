@@ -46,6 +46,30 @@
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\welcome_screen.png">
       <PackagePath>Assets\AppIcons\welcome_screen.png</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\ChannelIcons\event.png">
+      <PackagePath>Assets\ChannelIcons\event.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\ChannelIcons\other.png">
+      <PackagePath>Assets\ChannelIcons\other.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\ChannelIcons\sport.png">
+      <PackagePath>Assets\ChannelIcons\sport.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\ChannelIcons\student_group.png">
+      <PackagePath>Assets\ChannelIcons\student_group.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\ChannelIcons\V_informatik.png">
+      <PackagePath>Assets\ChannelIcons\V_informatik.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\ChannelIcons\V_mathe.png">
+      <PackagePath>Assets\ChannelIcons\V_mathe.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\ChannelIcons\V_medicine.png">
+      <PackagePath>Assets\ChannelIcons\V_medicine.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\ChannelIcons\V_science.png">
+      <PackagePath>Assets\ChannelIcons\V_science.png</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\Drawer\drawer_icon.png">
       <PackagePath>Assets\Drawer\drawer_icon.png</PackagePath>
     </AppxPackagedFile>

@@ -109,6 +109,8 @@
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Constants\Constants.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Converters\ChannelTypeToIconPathConverter.cs" />
+    <Compile Include="Converters\ChannelTypeToStringConverter.cs" />
     <Compile Include="Converters\ValidationMessageOnLocalizedStringConverter.cs" />
     <Compile Include="DataModel\SampleDataSource.cs" />
     <Compile Include="ErrorHandling\ErrorDescriptionMapper.cs" />
@@ -136,6 +138,14 @@
   <ItemGroup>
     <Content Include="Assets\AppIcons\Logo-Uni.png" />
     <Content Include="Assets\AppIcons\welcome_screen.png" />
+    <Content Include="Assets\ChannelIcons\event.png" />
+    <Content Include="Assets\ChannelIcons\other.png" />
+    <Content Include="Assets\ChannelIcons\sport.png" />
+    <Content Include="Assets\ChannelIcons\student_group.png" />
+    <Content Include="Assets\ChannelIcons\V_informatik.png" />
+    <Content Include="Assets\ChannelIcons\V_mathe.png" />
+    <Content Include="Assets\ChannelIcons\V_medicine.png" />
+    <Content Include="Assets\ChannelIcons\V_science.png" />
     <Content Include="Assets\Drawer\drawer_icon.png" />
     <Content Include="Assets\Logo.scale-240.png" />
     <Content Include="Assets\SmallLogo.scale-240.png" />

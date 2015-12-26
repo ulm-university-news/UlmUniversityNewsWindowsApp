@@ -99,9 +99,11 @@ namespace UlmUniversityNews.Views.Homescreen
         /// <see cref="Frame.Navigate(Type, Object)"/> als diese Seite ursprünglich angefordert wurde und
         /// ein Wörterbuch des Zustands, der von dieser Seite während einer früheren
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
-        private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
+        private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             Debug.WriteLine("LoadState Homescreen");
+            // Lade "Meine Kanäle"
+            await homescreenViewModel.LoadMyChannelsAsync();
         }
 
         /// <summary>
