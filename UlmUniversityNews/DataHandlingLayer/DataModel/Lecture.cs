@@ -75,8 +75,8 @@ namespace DataHandlingLayer.DataModel
 
         public Lecture(int id, string name, string description, ChannelType type, DateTime creationDate, 
             DateTime modificationDate, string term, string locations, string dates, string contacts,
-            string website, Faculty faculty, string startDate, string endDate, string lecturer, string assistant)
-            : base(id, name, description, type, creationDate, modificationDate, term, locations, dates, contacts, website)
+            string website, bool deleted, Faculty faculty, string startDate, string endDate, string lecturer, string assistant)
+            : base(id, name, description, type, creationDate, modificationDate, term, locations, dates, contacts, website, deleted)
         {
             this.faculty = faculty;
             this.startDate = startDate;

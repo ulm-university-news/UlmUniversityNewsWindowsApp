@@ -56,12 +56,13 @@ namespace DataHandlingLayer.DataModel
         /// <param name="dates">Termin, an dem das Event stattfindet.</param>
         /// <param name="contacts">Kontaktdaten von verantwortlichen Personen.</param>
         /// <param name="website">Ein oder mehrere Links auf Webseiten.</param>
+        /// <param name="deleted">Gibt an, ob das Event als gelöscht markiert wurde.</param>
         /// <param name="cost">Die dem Event zugeordneten Kosten.</param>
         /// <param name="organizer">Der Veranstalter des Events.</param>
         public Event(int id, string name, string description, ChannelType type, DateTime creationDate, 
             DateTime modiciationDate, string term, string locations, string dates, string contacts, 
-            string website, string cost, string organizer)
-            : base(id, name, description, type, creationDate, modiciationDate, term, locations, dates, contacts, website)
+            string website, bool deleted, string cost, string organizer)
+            : base(id, name, description, type, creationDate, modiciationDate, term, locations, dates, contacts, website, deleted)
         {
             this.cost = cost;
             this.organizer = organizer;

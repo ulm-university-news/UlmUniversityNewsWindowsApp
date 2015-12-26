@@ -122,6 +122,17 @@ namespace DataHandlingLayer.DataModel
             get { return website; }
             set { website = value; }
         }
+
+        private bool deleted;
+        /// <summary>
+        /// Gibt an, ob ein Kanal als gelöscht markiert wurde.
+        /// </summary>
+        public bool Deleted
+        {
+            get { return deleted; }
+            set { deleted = value; }
+        }
+        
         #endregion Properties
 
         /// <summary>
@@ -146,8 +157,9 @@ namespace DataHandlingLayer.DataModel
         /// <param name="dates">Termine, die bezüglich des Kanals relevant sind.</param>
         /// <param name="contacts">Kontaktdaten von verantwortlichen Personen.</param>
         /// <param name="website">Ein oderer mehrere Links zu Webseiten.</param>
+        /// <param name="deleted">Gibt an, ob der Kanal als gelöscht markiert wurde.</param>
         public Channel(int id, string name, string description, ChannelType type, DateTime creationDate, 
-            DateTime modificationDate, string term, string locations, string dates, string contacts, string website)
+            DateTime modificationDate, string term, string locations, string dates, string contacts, string website, bool deleted)
         {
             this.id = id;
             this.name = name;
@@ -160,6 +172,7 @@ namespace DataHandlingLayer.DataModel
             this.dates = dates;
             this.contacts = contacts;
             this.website = website;
+            this.deleted = deleted;
         }
     }
 }

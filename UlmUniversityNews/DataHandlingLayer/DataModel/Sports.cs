@@ -44,8 +44,8 @@ namespace DataHandlingLayer.DataModel
 
         public Sports(int id, string name, string description, ChannelType type, DateTime creationDate,
             DateTime modificationDate, string term, string locations, string dates, string contacts, string website,
-            string cost, string numberOfParticipants)
-            : base(id, name, description, type, creationDate, modificationDate, term, locations, dates, contacts, website)
+            bool deleted, string cost, string numberOfParticipants)
+            : base(id, name, description, type, creationDate, modificationDate, term, locations, dates, contacts, website, deleted)
         {
             this.cost = cost;
             this.numberOfParticipants = numberOfParticipants;
