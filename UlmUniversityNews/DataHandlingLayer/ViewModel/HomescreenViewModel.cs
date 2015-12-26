@@ -2,16 +2,24 @@
 using DataHandlingLayer.NavigationService;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataHandlingLayer.CommandRelays;
 using System.Diagnostics;
+using DataHandlingLayer.DataModel;
+using DataHandlingLayer.Controller;
 
 namespace DataHandlingLayer.ViewModel
 {
     public class HomescreenViewModel : ViewModel
     {
+        /// <summary>
+        /// Eine Referenz auf eine Instanz des ChannelController.
+        /// </summary>
+        private ChannelController channelController;
+
         #region Properties
         private int selectedPivotItemIndex;
         /// <summary>
@@ -28,6 +36,17 @@ namespace DataHandlingLayer.ViewModel
                 checkCommandExecution();
             }
         }
+
+        private ObservableCollection<Channel> myChannels;
+        /// <summary>
+        /// Liste von Kanalobjekten, die der lokale Nutzer abonniert hat.
+        /// </summary>
+        public ObservableCollection<Channel> MyChannels
+        {
+            get { return myChannels; }
+            set { this.setProperty(ref this.myChannels, value); }
+        }
+
         #endregion Properties
 
         #region Commands
@@ -70,10 +89,48 @@ namespace DataHandlingLayer.ViewModel
         public HomescreenViewModel(INavigationService navService, IErrorMapper errorMapper)
             : base(navService, errorMapper)
         {
+            // Erzeuge Controller Objekt.
+            channelController = new ChannelController(this);
+
+            // Start test
+            Lecture testChannel = new Lecture()
+            {
+                Id = 1,
+                Name = "MMK",
+                Description = "Das ist der Kanal für die MMK Vorlesung",
+                CreationDate = DateTime.Now,
+                ModificationDate = DateTime.Now,
+                Type = DataHandlingLayer.DataModel.Enums.ChannelType.LECTURE,
+                Term = "SS2015",
+                Locations = "H20 und H21",
+                Dates = "Montag 14 - 16 Uhr und Mittwoch 12 - 14 Uhr",
+                Contacts = "max-mustermann@uni-ulm.de",
+                Website = "http://www.uni-ulm.de/in/vs/teach/mmk.html",
+                Deleted = false,
+                Faculty = DataModel.Enums.Faculty.ENGINEERING_COMPUTER_SCIENCE_PSYCHOLOGY,
+                StartDate = "13.April.2015",
+                EndDate = "16.Oktober.2015",
+                Lecturer = "Professor Hauck",
+                Assistant = "Mr Nobody"
+            };
+            channelController.storeTestChannel(testChannel);
+            // End test
+
             // Initialisiere die Kommandos.
             searchChannelsCommand = new RelayCommand(param => executeSearchChannelsCommand(), param => canSearchChannels());
             addGroupCommand = new RelayCommand(param => executeAddGroupCommand(), param => canAddGroup());
             searchGroupsCommand = new RelayCommand(param => executeSearchGroupsCommand(), param => canSearchGroups());
+        }
+
+        /// <summary>
+        /// Lädt die Kanäle, die der lokale Nutzer abonniert hat und macht diese über die MyChannels Property abrufbar.
+        /// </summary>
+        public async Task LoadMyChannelsAsync()
+        {
+            List<Channel> channels = await Task.Run( () => channelController.GetMyChannels());
+
+            // Mache Kanäle über Property abrufbar.
+            MyChannels = new ObservableCollection<Channel>(channels);
         }
 
         /// <summary>
@@ -83,6 +140,8 @@ namespace DataHandlingLayer.ViewModel
         private void checkCommandExecution()
         {
             searchChannelsCommand.RaiseCanExecuteChanged();
+            addGroupCommand.RaiseCanExecuteChanged();
+            searchGroupsCommand.RaiseCanExecuteChanged();
         }
 
         /// <summary>
