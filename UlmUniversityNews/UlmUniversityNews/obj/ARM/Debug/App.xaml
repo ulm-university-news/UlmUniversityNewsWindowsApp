@@ -93,9 +93,11 @@
         <!-- ************************************************************************************************************************************ -->
         <!-- Layout eines Eintrages einer Kanal-Ressource in der Übersichtliste von Kanälen.-->
         <DataTemplate x:Key="ChannelListItemStyle">
+            <!-- Margin ist angepasst an den des PivotItem.-->
+            <!-- Verwende feste Höhe pro Eintrag. -->
             <Grid 
                 Background="{StaticResource UniUlmAccentColorListItemBackground}"
-                Height="70px"
+                Height="70px"       
                 Margin="0,0,19,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="70px" /> <!-- Spalte für Icon-->
@@ -125,6 +127,7 @@
                                FontWeight="Bold"
                                Text="{Binding Name}"/>
 
+                    <!-- Anzeige für Typ und Semester.-->
                     <Grid Grid.Row="1"
                           x:Name="TypAndSemester"
                           VerticalAlignment="Center">
@@ -139,6 +142,7 @@
                                    HorizontalAlignment="Left"
                                    Style="{StaticResource ListTextStyle}"
                                    Text="{Binding Type, Converter={StaticResource ChannelTypeToStringConverter}}"/>
+                        <!-- Semester -->
                         <TextBlock Grid.Column="1"
                                    x:Name="TermOfChannel" 
                                    HorizontalAlignment="Right"
