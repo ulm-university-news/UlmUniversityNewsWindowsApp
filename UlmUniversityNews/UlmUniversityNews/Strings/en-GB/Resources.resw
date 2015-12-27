@@ -186,4 +186,19 @@
   <data name="HomescreenSearchChannelsButton.Label" xml:space="preserve">
     <value>search channel</value>
   </data>
+  <data name="ListItemChannelTypeEventString" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="ListItemChannelTypeLectureString" xml:space="preserve">
+    <value>Lecture</value>
+  </data>
+  <data name="ListItemChannelTypeOtherString" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="ListItemChannelTypeSportsString" xml:space="preserve">
+    <value>Sports group</value>
+  </data>
+  <data name="ListItemChannelTypeStudentGroupString" xml:space="preserve">
+    <value>Student group</value>
+  </data>
 </root>

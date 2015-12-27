@@ -127,7 +127,7 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
             _typeNameTable = new string[19];
             _typeNameTable[0] = "UlmUniversityNews.Converters.ChannelTypeToStringConverter";
             _typeNameTable[1] = "Object";
-            _typeNameTable[2] = "UlmUniversityNews.Converters.ChannelTypeToIconPathConverter";
+            _typeNameTable[2] = "UlmUniversityNews.Converters.ChannelToIconPathConverter";
             _typeNameTable[3] = "UlmUniversityNews.ItemPage";
             _typeNameTable[4] = "Windows.UI.Xaml.Controls.Page";
             _typeNameTable[5] = "Windows.UI.Xaml.Controls.UserControl";
@@ -148,7 +148,7 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
             _typeTable = new global::System.Type[19];
             _typeTable[0] = typeof(global::UlmUniversityNews.Converters.ChannelTypeToStringConverter);
             _typeTable[1] = typeof(global::System.Object);
-            _typeTable[2] = typeof(global::UlmUniversityNews.Converters.ChannelTypeToIconPathConverter);
+            _typeTable[2] = typeof(global::UlmUniversityNews.Converters.ChannelToIconPathConverter);
             _typeTable[3] = typeof(global::UlmUniversityNews.ItemPage);
             _typeTable[4] = typeof(global::Windows.UI.Xaml.Controls.Page);
             _typeTable[5] = typeof(global::Windows.UI.Xaml.Controls.UserControl);
@@ -200,7 +200,7 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
         }
 
         private object Activate_0_ChannelTypeToStringConverter() { return new global::UlmUniversityNews.Converters.ChannelTypeToStringConverter(); }
-        private object Activate_2_ChannelTypeToIconPathConverter() { return new global::UlmUniversityNews.Converters.ChannelTypeToIconPathConverter(); }
+        private object Activate_2_ChannelToIconPathConverter() { return new global::UlmUniversityNews.Converters.ChannelToIconPathConverter(); }
         private object Activate_3_ItemPage() { return new global::UlmUniversityNews.ItemPage(); }
         private object Activate_8_ObservableDictionary() { return new global::UlmUniversityNews.Common.ObservableDictionary(); }
         private object Activate_10_PivotPage() { return new global::UlmUniversityNews.PivotPage(); }
@@ -238,9 +238,9 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
                 xamlType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 2:   //  UlmUniversityNews.Converters.ChannelTypeToIconPathConverter
+            case 2:   //  UlmUniversityNews.Converters.ChannelToIconPathConverter
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
-                userType.Activator = Activate_2_ChannelTypeToIconPathConverter;
+                userType.Activator = Activate_2_ChannelToIconPathConverter;
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;

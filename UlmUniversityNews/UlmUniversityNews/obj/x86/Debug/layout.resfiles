@@ -2,6 +2,14 @@ SQLitePCL.Ext.dll
 SQLitePCL.Ext.pri
 Assets\AppIcons\Logo-Uni.png
 Assets\AppIcons\welcome_screen.png
+Assets\ChannelIcons\event.png
+Assets\ChannelIcons\other.png
+Assets\ChannelIcons\sport.png
+Assets\ChannelIcons\student_group.png
+Assets\ChannelIcons\V_informatik.png
+Assets\ChannelIcons\V_mathe.png
+Assets\ChannelIcons\V_medicine.png
+Assets\ChannelIcons\V_science.png
 Assets\Drawer\drawer_icon.png
 Assets\Logo.scale-240.png
 Assets\SmallLogo.scale-240.png

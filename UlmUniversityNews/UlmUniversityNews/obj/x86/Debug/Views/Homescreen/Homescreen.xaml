@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:drawerLayout="using:DrawerLayout"
     xmlns:valueconverter="using:UlmUniversityNews.Converters"
+    xmlns:data="using:DataHandlingLayer.DataModel"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
@@ -14,7 +15,7 @@
         <valueconverter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Page.Resources>
     
-    <!-- CommandBar - Die CommandBar wird per Code initialisiert. -->
+    <!-- CommandBar -->
     <Page.BottomAppBar>
         <CommandBar x:Name="HomescreenCommandBar"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
@@ -22,7 +23,20 @@
                           x:Uid="HomescreenSearchChannelsButton"
                           Icon="Find"
                           Label="search channel"
-                          Visibility="{Binding Path=IsEnabled, RelativeSource={RelativeSource self}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                          Visibility="{Binding ElementName=SearchChannels, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                          Command="{Binding SearchChannelsCommand}" />
+            <AppBarButton x:Name="SearchGroups"
+                          x:Uid="HomescreenSearchGroupsButton"
+                          Icon="Find"
+                          Label="search group"
+                          Visibility="{Binding ElementName=SearchGroups, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                          Command="{Binding SearchGroupsCommand}"/>
+            <AppBarButton x:Name="AddGroup"
+                          x:Uid="HomescreenAddGroupButton"
+                          Icon="Add"
+                          Label="add group"
+                          Visibility="{Binding ElementName=AddGroup, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                          Command="{Binding AddGroupCommand}" />
         </CommandBar>
     </Page.BottomAppBar>
     
@@ -73,11 +87,17 @@
                     <PivotItem x:Uid="MyChannels"
                            Style="{StaticResource PivotItemStyle}"
                            Header="Meine Kanäle">
+                        <!-- Definiere Liste für Kanäle. -->
+                        <ListView 
+                            ItemTemplate="{StaticResource ChannelListItemStyle}"
+                            ItemsSource="{Binding MyChannels}"
+                            d:DataContext="{Binding , Source={d:DesignData Source=../../DataModel/SampleChannelData.json, Type=data:Channel}}"/>
+                       
                         <!-- TODO -->
-                        <TextBlock x:Name="Test"
+                        <!--<TextBlock x:Name="Test"
                                    FontSize="20"
                                    Text="Jo Servus, das ist ein Test Text. Den schreib ich extra groß, damit man ihn auch sieht."
-                                   TextWrapping="Wrap"/>
+                                   TextWrapping="Wrap"/>-->
                     </PivotItem>
                     <!-- Pivotelement 2-->
                     <PivotItem x:Uid="MyGroups"

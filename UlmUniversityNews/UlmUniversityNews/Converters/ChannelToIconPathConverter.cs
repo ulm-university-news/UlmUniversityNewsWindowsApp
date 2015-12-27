@@ -10,24 +10,26 @@ using Windows.UI.Xaml.Data;
 namespace UlmUniversityNews.Converters
 {
     /// <summary>
-    /// Wandelt einen ChannelType ab auf einen Pfad zum zugehörigen Icon im Assets Ordner.
+    /// Leitet aus dem ChannelType (und falls nötig der Faculty) den Pfad zum zugehörigen Icon im Assets Ordner ab.
     /// </summary>
-    public class ChannelTypeToIconPathConverter : IValueConverter
+    public class ChannelToIconPathConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            ChannelType type = (ChannelType)value;
-
-            System.Diagnostics.Debug.WriteLine("In ChannelTypeToIconPathConverter the type is: {0} and the parameter is {1}.", type.ToString(), parameter.ToString());
-
+            Channel channel = value as Channel;
             string iconPath = string.Empty;
-            switch (type)
+
+            if(channel != null)
             {
-                case ChannelType.LECTURE:
-                    if(parameter != null)
-                    {
-                        Lecture lecture = parameter as Lecture;
-                        if(lecture != null)
+                ChannelType type = channel.Type;
+
+                System.Diagnostics.Debug.WriteLine("In ChannelTypeToIconPathConverter the type is: {0}.", type.ToString());
+
+                switch (type)
+                {
+                    case ChannelType.LECTURE:
+                        Lecture lecture = channel as Lecture;
+                        if (lecture != null)
                         {
                             // Frage die Fakultät der Vorlesung ab.
                             Faculty faculty = lecture.Faculty;
@@ -50,20 +52,20 @@ namespace UlmUniversityNews.Converters
                                     break;
                             }
                         }
-                    }
-                    break;
-                case ChannelType.EVENT:
-                    iconPath = "/Assets/ChannelIcons/event.png";
-                    break;
-                case ChannelType.SPORTS:
-                    iconPath = "/Assets/ChannelIcons/sport.png";
-                    break;
-                case ChannelType.STUDENT_GROUP:
-                    iconPath = "/Assets/ChannelIcons/student_group.png";
-                    break;
-                case ChannelType.OTHER:
-                    iconPath = "/Assets/ChannelIcons/other.png";
-                    break;
+                        break;
+                    case ChannelType.EVENT:
+                        iconPath = "/Assets/ChannelIcons/event.png";
+                        break;
+                    case ChannelType.SPORTS:
+                        iconPath = "/Assets/ChannelIcons/sport.png";
+                        break;
+                    case ChannelType.STUDENT_GROUP:
+                        iconPath = "/Assets/ChannelIcons/student_group.png";
+                        break;
+                    case ChannelType.OTHER:
+                        iconPath = "/Assets/ChannelIcons/other.png";
+                        break;
+                }
             }
 
             System.Diagnostics.Debug.WriteLine("Output of ChannelTypeToIconPathConverter is: {0}.", iconPath);

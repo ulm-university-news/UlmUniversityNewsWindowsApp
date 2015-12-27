@@ -109,7 +109,7 @@
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Constants\Constants.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
-    <Compile Include="Converters\ChannelTypeToIconPathConverter.cs" />
+    <Compile Include="Converters\ChannelToIconPathConverter.cs" />
     <Compile Include="Converters\ChannelTypeToStringConverter.cs" />
     <Compile Include="Converters\ValidationMessageOnLocalizedStringConverter.cs" />
     <Compile Include="DataModel\SampleDataSource.cs" />
@@ -183,6 +183,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="DataModel\SampleChannelData.json" />
     <None Include="packages.config" />
     <PRIResource Include="Strings\en-GB\Resources.resw" />
   </ItemGroup>

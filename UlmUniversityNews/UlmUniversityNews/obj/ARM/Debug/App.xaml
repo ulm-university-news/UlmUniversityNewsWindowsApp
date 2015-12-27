@@ -11,12 +11,13 @@
         <!-- Converters -->
         <!-- <valueconverter:ValidationMessageOnLocalizedStringConverter x:Key="ValidationMessageOnLocalizedStringConverter" /> -->
         <converter:ChannelTypeToStringConverter x:Key="ChannelTypeToStringConverter" />
-        <converter:ChannelTypeToIconPathConverter x:Key="ChannelTypeToIconPathConverter" />
+        <converter:ChannelToIconPathConverter x:Key="ChannelToIconPathConverter" />
         
         
         <!-- Colors -->
         <SolidColorBrush x:Key="UniUlmMainBackgroundColor" Color="#7D9AAA" />
-        <SolidColorBrush x:Key="UniUlmAccentColor" Color="#A9A280" Opacity="1"  />
+        <SolidColorBrush x:Key="UniUlmAccentColor" Color="#A9A280" Opacity="0.5"  />
+        <SolidColorBrush x:Key="UniUlmAccentColorListItemBackground" Color="#A9A280" Opacity="0.1"  />
         
         <!-- Style für Schriften in Listen. -->
         <Style 
@@ -92,47 +93,59 @@
         <!-- ************************************************************************************************************************************ -->
         <!-- Layout eines Eintrages einer Kanal-Ressource in der Übersichtliste von Kanälen.-->
         <DataTemplate x:Key="ChannelListItemStyle">
-            <Grid>
+            <Grid 
+                Background="{StaticResource UniUlmAccentColorListItemBackground}"
+                Height="70px"
+                Margin="0,0,19,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*" /> <!-- Spalte für Icon-->
-                    <ColumnDefinition Width="4*" /> <!-- Spalte für restliche Information-->
+                    <ColumnDefinition Width="70px" /> <!-- Spalte für Icon-->
+                    <ColumnDefinition Width="*" /> <!-- Spalte für restliche Information-->
                 </Grid.ColumnDefinitions>
                 
                 <!-- Icon -->
-                <Image Source="{Binding Type, Converter={StaticResource ChannelTypeToIconPathConverter}, ConverterParameter={Binding}}"
+                <Image Source="{Binding Converter={StaticResource ChannelToIconPathConverter}}" 
                        Grid.Column="0"
-                       Height="45px"
-                       Width="45px"
+                       Height="60px"
+                       Width="60px"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"/>
                 
                 <!-- andere Informationen -->
-                <Grid Grid.Column="1">
+                <Grid Grid.Column="1" Margin="5,0,0,0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="25px" /> <!-- Zeile für Name des Kanals -->
-                        <RowDefinition Height="25px" /> <!-- Zeile für Typ und Semester -->
+                        <RowDefinition Height="35px" /> <!-- Zeile für Name des Kanals -->
+                        <RowDefinition Height="35px" /> <!-- Zeile für Typ und Semester -->
                     </Grid.RowDefinitions>
                     
                     <!-- Name -->
-                    <TextBlock x:Name="ChannelName"
-                               Grid.Row="0"
+                    <TextBlock Grid.Row="0"
+                               VerticalAlignment="Center"
+                               x:Name="ChannelName"
                                Style="{StaticResource ListTextStyle}"
                                FontWeight="Bold"
                                Text="{Binding Name}"/>
-                               
-                    <StackPanel x:Name="TypAndSemester"
-                                Grid.Row="1"
-                                Orientation="Horizontal">
+
+                    <Grid Grid.Row="1"
+                          x:Name="TypAndSemester"
+                          VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
                         <!-- Typ -->
-                        <TextBlock x:Name="ChannelType" 
+                        <TextBlock Grid.Column="0" 
+                                   x:Name="ChannelType" 
                                    HorizontalAlignment="Left"
                                    Style="{StaticResource ListTextStyle}"
                                    Text="{Binding Type, Converter={StaticResource ChannelTypeToStringConverter}}"/>
-                        <TextBlock x:Name="TermOfChannel" 
-                                   HorizontalAlignment="Right" 
+                        <TextBlock Grid.Column="1"
+                                   x:Name="TermOfChannel" 
+                                   HorizontalAlignment="Right"
+                                   Margin="0,0,5,0"
                                    Style="{StaticResource ListTextStyle}"
                                    Text="{Binding Term}"/>
-                    </StackPanel>
+                    </Grid>
                     
                 </Grid>
             </Grid>

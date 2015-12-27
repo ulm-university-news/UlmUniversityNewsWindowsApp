@@ -4,6 +4,9 @@
     <RootInterface FullName="Windows.UI.Xaml.Data.IValueConverter" />
   </Roots.Interfaces>
   <Roots.PropertyPathNames>
+    <RootPropertyPathName Name="Term" />
+    <RootPropertyPathName Name="Type" />
+    <RootPropertyPathName Name="Name" />
     <RootPropertyPathName Name="DefaultViewModel" />
     <RootPropertyPathName Name="Item" />
     <RootPropertyPathName Name="Title" />
@@ -12,16 +15,21 @@
     <RootPropertyPathName Name="Description" />
     <RootPropertyPathName Name="FirstGroup" />
     <RootPropertyPathName Name="IsEnabled" />
+    <RootPropertyPathName Name="AddGroupCommand" />
+    <RootPropertyPathName Name="SearchGroupsCommand" />
+    <RootPropertyPathName Name="SearchChannelsCommand" />
     <RootPropertyPathName Name="SelectedPivotItemIndex" />
+    <RootPropertyPathName Name="MyChannels" />
     <RootPropertyPathName Name="CreateUserCommand" />
     <RootPropertyPathName Name="ValidationMessages" />
-    <RootPropertyPathName Name="Name" />
   </Roots.PropertyPathNames>
   <Roots.RootTypes>
     <RootType FullName="Windows.UI.Xaml.Application">
       <RootProperty Name="RequestedTheme" />
       <RootProperty Name="Resources" />
     </RootType>
+    <RootType FullName="UlmUniversityNews.Converters.ChannelTypeToStringConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.ChannelToIconPathConverter" />
     <RootType FullName="Windows.UI.Xaml.Media.SolidColorBrush">
       <RootProperty Name="Color" />
       <RootProperty Name="Opacity" />
@@ -31,11 +39,12 @@
       <RootProperty Name="FontFamily" />
       <RootProperty Name="Foreground" />
       <RootProperty Name="TextWrapping" />
-      <RootProperty Name="Text" />
-      <RootProperty Name="Margin" />
       <RootProperty Name="Style" />
-      <RootProperty Name="CharacterSpacing" />
+      <RootProperty Name="FontWeight" />
+      <RootProperty Name="Text" />
       <RootProperty Name="HorizontalAlignment" />
+      <RootProperty Name="Margin" />
+      <RootProperty Name="CharacterSpacing" />
       <RootProperty Name="VerticalAlignment" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.FrameworkElement">
@@ -46,21 +55,25 @@
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.Image">
       <RootProperty Name="Source" />
+      <RootProperty Name="Height" />
+      <RootProperty Name="Width" />
+      <RootProperty Name="HorizontalAlignment" />
+      <RootProperty Name="VerticalAlignment" />
       <RootProperty Name="Style" />
       <RootEvent Name="Tapped" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.Grid">
-      <RootProperty Name="ChildrenTransitions" />
-      <RootProperty Name="RowDefinitions" />
+      <RootProperty Name="ColumnDefinitions" />
       <RootProperty Name="Children" />
+      <RootProperty Name="RowDefinitions" />
+      <RootProperty Name="ChildrenTransitions" />
       <RootProperty Name="Margin" />
       <RootProperty Name="Style" />
-      <RootProperty Name="ColumnDefinitions" />
       <RootProperty Name="Background" />
-      <RootMethod Name="GetRow" />
-      <RootMethod Name="SetRow" />
       <RootMethod Name="GetColumn" />
       <RootMethod Name="SetColumn" />
+      <RootMethod Name="GetRow" />
+      <RootMethod Name="SetRow" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.Panel">
       <RootProperty Name="Background" />
@@ -75,21 +88,33 @@
     <RootType FullName="Windows.UI.Xaml.DataTemplate">
       <RootProperty Name="Template" />
     </RootType>
-    <RootType FullName="Windows.UI.Xaml.Controls.ContentPresenter">
-      <RootProperty Name="Content" />
+    <RootType FullName="Windows.UI.Xaml.Controls.ColumnDefinition">
+      <RootProperty Name="Width" />
     </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.RowDefinition">
+      <RootProperty Name="Height" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.StackPanel">
+      <RootProperty Name="Orientation" />
+      <RootProperty Name="Children" />
+      <RootProperty Name="Margin" />
+    </RootType>
+    <RootType FullName="Microsoft.Xaml.Tools.DirectUI.ProxyTypes.StaticResourceExtension" />
     <RootType FullName="Windows.UI.Xaml.Data.Binding">
-      <RootProperty Name="RelativeSource" />
-      <RootProperty Name="Path" />
       <RootProperty Name="Converter" />
+      <RootProperty Name="RelativeSource" />
+      <RootProperty Name="ElementName" />
+      <RootProperty Name="Path" />
       <RootProperty Name="Mode" />
       <RootProperty Name="FallbackValue" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.ContentPresenter">
+      <RootProperty Name="Content" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Setter">
       <RootProperty Name="Property" />
       <RootProperty Name="Value" />
     </RootType>
-    <RootType FullName="Microsoft.Xaml.Tools.DirectUI.ProxyTypes.StaticResourceExtension" />
     <RootType FullName="Windows.UI.Xaml.Controls.Page">
       <RootProperty Name="DataContext" />
       <RootProperty Name="Background" />
@@ -109,13 +134,6 @@
       <RootMethod Name="SetExitElementContainer" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Media.Animation.EntranceThemeTransition" />
-    <RootType FullName="Windows.UI.Xaml.Controls.RowDefinition">
-      <RootProperty Name="Height" />
-    </RootType>
-    <RootType FullName="Windows.UI.Xaml.Controls.StackPanel">
-      <RootProperty Name="Margin" />
-      <RootProperty Name="Children" />
-    </RootType>
     <RootType FullName="UlmUniversityNews.ItemPage" />
     <RootType FullName="Windows.UI.Xaml.Media.Animation.CommonNavigationTransitionInfo">
       <RootProperty Name="IsStaggeringEnabled" />
@@ -153,9 +171,6 @@
     <RootType FullName="UlmUniversityNews.Converters.BooleanToVisibilityConverter" />
     <RootType FullName="DrawerLayout.DrawerLayout">
       <RootProperty Name="Children" />
-    </RootType>
-    <RootType FullName="Windows.UI.Xaml.Controls.ColumnDefinition">
-      <RootProperty Name="Width" />
     </RootType>
     <RootType FullName="UlmUniversityNews.Views.Homescreen.Homescreen" />
     <RootType FullName="UlmUniversityNews.Converters.ValidationMessageOnLocalizedStringConverter" />

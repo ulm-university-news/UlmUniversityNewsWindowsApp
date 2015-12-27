@@ -117,19 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddAppBarButton.Label" xml:space="preserve">
-    <value>Hinzufügen</value>
-    <comment>TODO delete this resource string</comment>
-  </data>
   <data name="BadRequestError" xml:space="preserve">
     <value>Der Request wurde vom Server als ungültig abgelehnt.</value>
   </data>
   <data name="ErrorDialogBoxTitle" xml:space="preserve">
     <value>Fehler</value>
-  </data>
-  <data name="Header.Text" xml:space="preserve">
-    <value>MEINE ANWENDUNG</value>
-    <comment>TODO delete this resource string</comment>
   </data>
   <data name="LocalDatabaseError" xml:space="preserve">
     <value>Es ist ein Fehler bei einer Operation auf der lokalen Datenbank aufgetreten.</value>
@@ -146,40 +138,8 @@
   <data name="MethodNotAllowedError" xml:space="preserve">
     <value>Der Server hat den Request abgelehnt aufgrund einer falschen HTTP Methode.</value>
   </data>
-  <data name="NavigationFailedExceptionMessage" xml:space="preserve">
-    <value>Fehler bei Navigation.</value>
-    <comment>TODO delete this resource string</comment>
-  </data>
-  <data name="NewItemDescription" xml:space="preserve">
-    <value>Elementbeschreibung: Pellentesque porta, mauris quis interdum vehicula, urna sapien ultrices velit, nec venenatis dui odio in augue. Cras posuere, enim a cursus convallis, neque turpis malesuada erat, ut adipiscing neque tortor ac erat.</value>
-    <comment>TODO delete this resource string</comment>
-  </data>
-  <data name="NewItemTitle" xml:space="preserve">
-    <value>Elementtitel: {0}</value>
-    <comment>TODO delete this resource string</comment>
-  </data>
   <data name="NotFoundError" xml:space="preserve">
     <value>Die angegebene Ressource konnte auf dem Server nicht gefunden werden.</value>
-  </data>
-  <data name="Pivot.Title" xml:space="preserve">
-    <value>MEINE ANWENDUNG</value>
-    <comment>TODO delete this resource string</comment>
-  </data>
-  <data name="PivotItem1.Header" xml:space="preserve">
-    <value>erstens</value>
-    <comment>TODO delete this resource string</comment>
-  </data>
-  <data name="PivotItem2.Header" xml:space="preserve">
-    <value>zweitens</value>
-    <comment>TODO delete this resource string</comment>
-  </data>
-  <data name="SecondaryButton1.Label" xml:space="preserve">
-    <value>Sekundärer Befehl 1</value>
-    <comment>TODO delete this resource string</comment>
-  </data>
-  <data name="SecondaryButton2.Label" xml:space="preserve">
-    <value>Sekundärer Befehl 2</value>
-    <comment>TODO delete this resource string</comment>
   </data>
   <data name="ServerUnreachableError" xml:space="preserve">
     <value>Der Server konnte nicht erreicht werden. Bitte stellen Sie sicher, dass eine Internetverbindung besteht.</value>
@@ -225,5 +185,20 @@
   </data>
   <data name="HomescreenSearchChannelsButton.Label" xml:space="preserve">
     <value>suche kanal</value>
+  </data>
+  <data name="ListItemChannelTypeEventString" xml:space="preserve">
+    <value>Veranstaltung</value>
+  </data>
+  <data name="ListItemChannelTypeLectureString" xml:space="preserve">
+    <value>Vorlesung</value>
+  </data>
+  <data name="ListItemChannelTypeOtherString" xml:space="preserve">
+    <value>Sonstiges</value>
+  </data>
+  <data name="ListItemChannelTypeSportsString" xml:space="preserve">
+    <value>Sportgruppe</value>
+  </data>
+  <data name="ListItemChannelTypeStudentGroupString" xml:space="preserve">
+    <value>Studentengruppe</value>
   </data>
 </root>

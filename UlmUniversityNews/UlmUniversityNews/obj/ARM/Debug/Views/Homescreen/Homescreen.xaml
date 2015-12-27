@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:drawerLayout="using:DrawerLayout"
     xmlns:valueconverter="using:UlmUniversityNews.Converters"
+    xmlns:data="using:DataHandlingLayer.DataModel"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
@@ -89,8 +90,17 @@
                         <!-- Definiere Liste für Kanäle. -->
                         <ListView 
                             ItemTemplate="{StaticResource ChannelListItemStyle}"
-                            ItemsSource="{Binding MyChannels}"/>
-                       
+                            ItemsSource="{Binding MyChannels}"
+                            HorizontalContentAlignment="Stretch"
+                            HorizontalAlignment="Stretch"
+                            d:DataContext="{Binding , Source={d:DesignData Source=../../DataModel/SampleChannelData.json, Type=data:Channel}}">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                        </ListView>
+
                         <!-- TODO -->
                         <!--<TextBlock x:Name="Test"
                                    FontSize="20"
