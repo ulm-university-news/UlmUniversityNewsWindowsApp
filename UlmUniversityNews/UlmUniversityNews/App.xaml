@@ -18,6 +18,7 @@
         <SolidColorBrush x:Key="UniUlmMainBackgroundColor" Color="#7D9AAA" />
         <SolidColorBrush x:Key="UniUlmAccentColor" Color="#A9A280" Opacity="0.5"  />
         <SolidColorBrush x:Key="UniUlmAccentColorListItemBackground" Color="#A9A280" Opacity="0.1"  />
+        <SolidColorBrush x:Key="MainFragmentBackgroundColor" Color="White" />
         
         <!-- Style für Schriften in Listen. -->
         <Style 
