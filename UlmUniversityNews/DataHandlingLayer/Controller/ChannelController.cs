@@ -8,6 +8,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataHandlingLayer.API;
+using Newtonsoft.Json;
 
 namespace DataHandlingLayer.Controller
 {
@@ -19,12 +21,18 @@ namespace DataHandlingLayer.Controller
         private ChannelDatabaseManager channelDatabaseManager;
 
         /// <summary>
+        /// Eine Referenz auf eine Instanz der API Klasse mittels der Requests an den Server abgesetzt werden können.
+        /// </summary>
+        private API.API api;
+
+        /// <summary>
         /// Erzeugt eine Instanz der ChannelController Klasse.
         /// </summary>
         public ChannelController()
             : base()
         {
             channelDatabaseManager = new ChannelDatabaseManager();
+            api = new API.API();
         }
 
         /// <summary>
@@ -75,6 +83,67 @@ namespace DataHandlingLayer.Controller
             }
         }
 
+        /// <summary>
+        /// Gibt eine Liste von Kanal-Objekten zurück, die seit der letzten Aktualisierung
+        /// der im System verwalteten Kanäle geändert wurden.
+        /// </summary>
+        /// <returns>Liste von Kanal-Objekten.</returns>
+        public async Task<List<Channel>> RetrieveUpdatedChannelsFromServerAsync()
+        {
+            List<Channel> channels = null;
+            Dictionary<string, string> parameters = null;
+
+            // Hole als erstes das Datum der letzten Aktualisierung.
+            DateTime lastUpdate = channelDatabaseManager.GetDateOfLastChannelListUpdate();
+            if(lastUpdate != DateTime.MinValue)
+            {
+                // Erzeuge Parameter für lastUpdate;
+                parameters = new Dictionary<string, string>();
+                parameters.Add("lastUpdated", api.ParseDateTimeToUTCFormat(lastUpdate));
+            }
+
+            // Setze Request an den Server ab.
+            string serverResponse;
+            try
+            {
+                serverResponse = await api.SendHttpGetRequestAsync(getLocalUser().ServerAccessToken, "/channel", parameters);
+            }
+            catch(APIException ex)
+            {
+                Debug.WriteLine("API request has failed.");
+                // Abbilden auf ClientException.
+                throw new ClientException(ex.ErrorCode, "API request to Server has failed.");
+            }
+
+            // Versuche Response zu parsen.
+            channels = parseChannelListFromJson(serverResponse);
+
+            return channels;
+        }
+
+        /// <summary>
+        /// Erzeugt eine Liste von Objekten vom Typ Kanal aus dem übergebenen JSON-Dokument.
+        /// </summary>
+        /// <param name="jsonString">Das JSON-Dokument.</param>
+        /// <returns>Liste von Kanal-Objekten.</returns>
+        /// <exception cref="ClientException">Wirft eine ClientException wenn keine Liste von Kanal-Objekten aus dem JSON String extrahiert werden kann.</exception>
+        private List<Channel> parseChannelListFromJson(string jsonString)
+        {
+            List<Channel> channels = null;
+            try
+            {
+                channels = JsonConvert.DeserializeObject <List<Channel>>(jsonString);
+            }
+            catch(JsonException ex)
+            {
+                Debug.WriteLine("Error during deserialization. Exception is: " + ex.Message);
+                // Abbilden des aufgetretenen Fehlers auf eine ClientException.
+                throw new ClientException(ErrorCodes.JsonParserError, "Parsing of JSON object has failed.");
+            }
+
+            return channels;
+        }
+
         // TODO - Remove after testing
         // Rein für Testzwecke
         public void storeTestChannel(Channel channel)
@@ -85,5 +154,6 @@ namespace DataHandlingLayer.Controller
             // Trage Kanal als subscribed ein.
             channelDatabaseManager.SubscribeChannel(channel.Id);
         }
+
     }
 }

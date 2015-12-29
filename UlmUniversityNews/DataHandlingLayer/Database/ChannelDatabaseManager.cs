@@ -484,7 +484,6 @@ namespace DataHandlingLayer.Database
         /// der Anwendung verwalteten Kanäle durchgeführt wurde.
         /// </summary>
         /// <returns>Ein Objekt vom Typ DateTime.</returns>
-        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn das Abrufen des letzten Änderungsdatums fehlschlägt.</exception>
         public DateTime GetDateOfLastChannelListUpdate()
         {
             DateTime lastUpdate = DateTime.MinValue;
@@ -505,7 +504,6 @@ namespace DataHandlingLayer.Database
             {
                 Debug.WriteLine("Exception has occurred in GetDateOfLastChannelListUpdate. The message is: {0}, " +
                     "and the stack trace: {1}." + ex.Message, ex.StackTrace);
-                throw new DatabaseException("Retrieving the date of the last update on the channel list has failed.");
             }
             return lastUpdate;
         }
