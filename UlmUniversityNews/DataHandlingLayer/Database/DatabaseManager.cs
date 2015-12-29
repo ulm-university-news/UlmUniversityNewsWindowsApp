@@ -75,6 +75,7 @@ namespace DataHandlingLayer.Database
                 createSportsTable(conn);
                 createSubscribedChannelsTable(conn);
                 createModerartorChannelTable(conn);
+                createLastUpdateOnChannelsListTable(conn);
 
                 // Erstelle Group Tabelle und zugehörige Sub-Tabellen.
                 createGroupTable(conn);
@@ -128,7 +129,7 @@ namespace DataHandlingLayer.Database
                 }
 
                 string[] tableNames = { "User", "LocalUser", "Moderator", "Channel", "Lecture", "Event", "Sports", "SubscribedChannels", "ModeratorChannel",
-                                          "Group", "UserGroup", "Ballot", "Option", "UserOption", "Message", "Conversation", "ConversationMessage", "Announcement", "Reminder"};
+                                          "Group", "UserGroup", "Ballot", "Option", "UserOption", "Message", "Conversation", "ConversationMessage", "Announcement", "Reminder", "LastUpdateOnChannelsList"};
                 for (int i = 0; i < tableNames.Length; i++)
                 {
                     // Drop tables.
@@ -290,6 +291,22 @@ namespace DataHandlingLayer.Database
                                     PRIMARY KEY(Channel_Id),
                                     FOREIGN KEY(Channel_Id) REFERENCES Channel(Id)
                             );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle LastUpdateOnChannelsList.
+        /// </summary>
+        /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
+        private static void createLastUpdateOnChannelsListTable(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            LastUpdateOnChannelsList  ( Id   INTEGER PRIMARY KEY,
+                                                        LastUpdate DATETIME
+                         );";
             using (var statement = conn.Prepare(sql))
             {
                 statement.Step();

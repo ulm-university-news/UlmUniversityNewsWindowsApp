@@ -453,6 +453,7 @@ namespace DataHandlingLayer.Database
         /// Trage den Kanal mit der angegebenen Id als abonnierten Kanal in die Datenbank ein.
         /// </summary>
         /// <param name="channelId">Die Id des zu abonnierenden Kanal.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn das Markieren des Kanals als abonniert in der DB fehlschlägt.</exception>
         public void SubscribeChannel(int channelId)
         {
             SQLiteConnection conn = DatabaseManager.GetConnection();
@@ -475,6 +476,81 @@ namespace DataHandlingLayer.Database
                 Debug.WriteLine("Exception has occurred in GetSubscribedChannels. The message is: {0}, " + 
                     "and the stack trace: {1}." + ex.Message, ex.StackTrace);
                 throw new DatabaseException("Subscribe channel has failed.");
+            }
+        }
+
+        /// <summary>
+        /// Liefert das Datum zurück, an dem zum letzten Mal ein Update der Liste aller in
+        /// der Anwendung verwalteten Kanäle durchgeführt wurde.
+        /// </summary>
+        /// <returns>Ein Objekt vom Typ DateTime.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn das Abrufen des letzten Änderungsdatums fehlschlägt.</exception>
+        public DateTime GetDateOfLastChannelListUpdate()
+        {
+            DateTime lastUpdate = DateTime.MinValue;
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                using (var statement = conn.Prepare(@"  SELECT * 
+                                                        FROM LastUpdateOnChannelsList 
+                                                        WHERE Id=0;"))
+                {
+                    if (statement.Step() == SQLiteResult.ROW)
+                    {
+                        lastUpdate = DatabaseManager.DateTimeFromSQLite(statement["LastUpdate"].ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Exception has occurred in GetDateOfLastChannelListUpdate. The message is: {0}, " +
+                    "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                throw new DatabaseException("Retrieving the date of the last update on the channel list has failed.");
+            }
+            return lastUpdate;
+        }
+
+        /// <summary>
+        /// Setzt das Datum der letzten Aktualisierung der Kanäle, die in der Anwendung verwaltet werden.
+        /// </summary>
+        /// <param name="lastUpdate">Das Datum der letzten Änderung in Form eines DateTime Objekts.</param>
+        /// /// <exception cref="DatabaseException">Wirft DatabaseException, wenn das Setzen des letzten Änderungsdatums fehlschlägt.</exception>
+        public void SetDateOfLastChannelListUpdate(DateTime lastUpdate)
+        {
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                // Frage zunächst ab, ob es schon ein Änderungsdatum in der Tabelle gibt.
+                DateTime tableEntry = GetDateOfLastChannelListUpdate();
+                if(tableEntry == DateTime.MinValue)
+                {
+                    // Noch kein Eintrag in Tabelle, füge also einen ein.
+                    using(var statement = conn.Prepare(@"INSERT INTO (Id, LastUpdate) VALUES (?,?);"))
+                    {
+                        statement.Bind(1, 0);
+                        statement.Bind(2, DatabaseManager.DateTimeToSQLite(lastUpdate));
+
+                        statement.Step();
+                    }
+                }
+                else
+                {
+                    // Aktualisiere bereits vorhandenen Eintrag.
+                    using (var statement = conn.Prepare(@"  UPDATE LastUpdateOnChannelsList 
+                                                            SET LastUpdate=? WHERE Id=0;"))
+                    {
+                        statement.Bind(1, DatabaseManager.DateTimeToSQLite(lastUpdate));
+
+                        statement.Step();
+                    }
+                }
+
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("Exception has occurred in SetDateOfLastChannelListUpdate. The message is: {0}, " +
+                    "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                throw new DatabaseException("Setting the date of the last update on the channel list has failed.");
             }
         }
 
