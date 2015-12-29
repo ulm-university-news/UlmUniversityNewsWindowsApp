@@ -1,8 +1,10 @@
 ﻿using DataHandlingLayer.Controller.ValidationErrorReportInterface;
 using DataHandlingLayer.Database;
 using DataHandlingLayer.DataModel;
+using DataHandlingLayer.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,9 +41,38 @@ namespace DataHandlingLayer.Controller
         /// Liefert eine Liste von Kanälen zurück, die vom lokalen Nutzer abonniert wurden.
         /// </summary>
         /// <returns>Eine Liste von Objekten der Klasse Kanal oder einer ihrer Subklassen.</returns>
+        /// <exception cref="ClientException">Wirft eine Client Exception, wenn ein Fehler bei der Ausführung aufgetreten ist.</exception>
         public List<Channel> GetMyChannels()
         {
-            return channelDatabaseManager.GetSubscribedChannels();
+            try
+            {
+                return channelDatabaseManager.GetSubscribedChannels();
+            }
+            catch(DatabaseException e)
+            {
+                Debug.WriteLine("DatabaseException with message {0} occurred.", e.Message);
+                // Abbilden auf ClientException.
+                throw new ClientException(ErrorCodes.LocalDatabaseException, "Local database failure.");
+            }
+        }
+
+        /// <summary>
+        /// Liefert eine Liste aller aktuell in der Datenbank gespeicherten Kanäle zurück.
+        /// </summary>
+        /// <returns>Eine Liste von Objekten der Klasse Kanal oder einer ihrer Subklassen.</returns>
+        /// <exception cref="ClientException">Wirft eine Client Exception, wenn ein Fehler bei der Ausführung aufgetreten ist.</exception>
+        public List<Channel> GetAllChannels()
+        {
+            try
+            {
+                return channelDatabaseManager.GetChannels();
+            }
+            catch(DatabaseException e)
+            {
+                Debug.WriteLine("DatabaseException with message {0} occurred.", e.Message);
+                // Abbilden auf ClientException.
+                throw new ClientException(ErrorCodes.LocalDatabaseException, "Local database failure.");
+            }
         }
 
         // TODO - Remove after testing

@@ -213,6 +213,19 @@ namespace DataHandlingLayer.API
         }
 
         /// <summary>
+        /// Eine Hilfsmethode, die ein DateTime Objekt in das Format der koordinierten Weltzeit umwandelt und
+        /// als String zurückliefert. Diese Methode kann verwendet werden, um DateTime Objekte in ein
+        /// Format zu bringen, die vom Server verstanden werden. 
+        /// </summary>
+        /// <param name="datetime">Das umzuwandelnde DateTime Objekt.</param>
+        /// <returns>Die Datums- und Uhrzeitangabe im UTC Format.</returns>
+        public string ParseDateTimeToUTCFormat(DateTime datetime)
+        {
+            datetime = datetime.ToUniversalTime();
+            return datetime.ToString();
+        }
+
+        /// <summary>
         /// Hilfsmethode, die Parameter an die REST URI anhängt. 
         /// </summary>
         /// <param name="restResourcePath">Der Ressourcen Pfad der REST URI, an den die Parameter angehängt werden sollen.</param>

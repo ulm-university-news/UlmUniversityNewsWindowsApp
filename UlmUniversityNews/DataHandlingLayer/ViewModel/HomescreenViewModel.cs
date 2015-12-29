@@ -10,6 +10,7 @@ using DataHandlingLayer.CommandRelays;
 using System.Diagnostics;
 using DataHandlingLayer.DataModel;
 using DataHandlingLayer.Controller;
+using DataHandlingLayer.Exceptions;
 
 namespace DataHandlingLayer.ViewModel
 {
@@ -92,29 +93,29 @@ namespace DataHandlingLayer.ViewModel
             // Erzeuge Controller Objekt.
             channelController = new ChannelController(this);
 
-            // Start test
-            Lecture testChannel = new Lecture()
-            {
-                Id = 1,
-                Name = "MMK",
-                Description = "Das ist der Kanal für die MMK Vorlesung",
-                CreationDate = DateTime.Now,
-                ModificationDate = DateTime.Now,
-                Type = DataHandlingLayer.DataModel.Enums.ChannelType.LECTURE,
-                Term = "SS2015",
-                Locations = "H20 und H21",
-                Dates = "Montag 14 - 16 Uhr und Mittwoch 12 - 14 Uhr",
-                Contacts = "max-mustermann@uni-ulm.de",
-                Website = "http://www.uni-ulm.de/in/vs/teach/mmk.html",
-                Deleted = false,
-                Faculty = DataModel.Enums.Faculty.ENGINEERING_COMPUTER_SCIENCE_PSYCHOLOGY,
-                StartDate = "13.April.2015",
-                EndDate = "16.Oktober.2015",
-                Lecturer = "Professor Hauck",
-                Assistant = "Mr Nobody"
-            };
-            channelController.storeTestChannel(testChannel);
-            // End test
+            //// Start test
+            //Lecture testChannel = new Lecture()
+            //{
+            //    Id = 1,
+            //    Name = "MMK",
+            //    Description = "Das ist der Kanal für die MMK Vorlesung",
+            //    CreationDate = DateTime.Now,
+            //    ModificationDate = DateTime.Now,
+            //    Type = DataHandlingLayer.DataModel.Enums.ChannelType.LECTURE,
+            //    Term = "SS2015",
+            //    Locations = "H20 und H21",
+            //    Dates = "Montag 14 - 16 Uhr und Mittwoch 12 - 14 Uhr",
+            //    Contacts = "max-mustermann@uni-ulm.de",
+            //    Website = "http://www.uni-ulm.de/in/vs/teach/mmk.html",
+            //    Deleted = false,
+            //    Faculty = DataModel.Enums.Faculty.ENGINEERING_COMPUTER_SCIENCE_PSYCHOLOGY,
+            //    StartDate = "13.April.2015",
+            //    EndDate = "16.Oktober.2015",
+            //    Lecturer = "Professor Hauck",
+            //    Assistant = "Mr Nobody"
+            //};
+            //channelController.storeTestChannel(testChannel);
+            //// End test
 
             // Initialisiere die Kommandos.
             searchChannelsCommand = new RelayCommand(param => executeSearchChannelsCommand(), param => canSearchChannels());
@@ -127,10 +128,17 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         public async Task LoadMyChannelsAsync()
         {
-            List<Channel> channels = await Task.Run( () => channelController.GetMyChannels());
-
-            // Mache Kanäle über Property abrufbar.
-            MyChannels = new ObservableCollection<Channel>(channels);
+            List<Channel> channels;
+            try
+            {
+                channels = await Task.Run(() => channelController.GetMyChannels());
+                
+                // Mache Kanäle über Property abrufbar.
+                MyChannels = new ObservableCollection<Channel>(channels);
+            }catch(ClientException e)
+            {
+                displayError(e.ErrorCode);
+            }
         }
 
         /// <summary>

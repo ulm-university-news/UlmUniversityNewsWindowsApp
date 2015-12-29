@@ -114,6 +114,7 @@
     <Compile Include="NavigationService\INavigationService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\HomescreenViewModel.cs" />
+    <Compile Include="ViewModel\SearchChannelsViewModel.cs" />
     <Compile Include="ViewModel\StartPageViewModel.cs" />
     <Compile Include="ViewModel\ViewModel.cs" />
   </ItemGroup>
