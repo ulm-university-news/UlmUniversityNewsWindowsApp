@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataHandlingLayer.CommandRelays;
 
 namespace DataHandlingLayer.ViewModel
 {
@@ -37,10 +38,29 @@ namespace DataHandlingLayer.ViewModel
             get { return channels; }
             set { this.setProperty(ref this.channels, value); }
         }
-        
+
+        private string searchTerm;
+        /// <summary>
+        /// Der aktuell im Textfeld eingegebene Suchbegriff.
+        /// </summary>
+        public string SearchTerm
+        {
+            get { return searchTerm; }
+            set { this.setProperty(ref this.searchTerm, value); }
+        }        
         #endregion Properties
 
         #region Commands
+        private AsyncRelayCommand startChannelSearchCommand;
+        /// <summary>
+        /// Kommando, zum Starten der Kanalsuche.
+        /// </summary>
+        public AsyncRelayCommand StartChannelSearchCommand
+        {
+            get { return startChannelSearchCommand; }
+            set { startChannelSearchCommand = value; }
+        }
+        
         #endregion Commands
 
         /// <summary>
@@ -54,6 +74,8 @@ namespace DataHandlingLayer.ViewModel
             channelController = new ChannelController();
             allChannels = new Dictionary<int, Channel>();
 
+            // Initialisiere Kommandos.
+            StartChannelSearchCommand = new AsyncRelayCommand(param => executeChannelSearchAsync(), param => canExecuteSearch());
         }
 
         /// <summary>
@@ -133,6 +155,44 @@ namespace DataHandlingLayer.ViewModel
             {
                 displayError(ex.ErrorCode);
             }
+        }
+
+        /// <summary>
+        /// Gibt an, ob das Kommando zur Suche nach Kanälen mit dem aktuellen Zustand ausgeführt werden kann.
+        /// </summary>
+        /// <returns>Liefert true, wenn das Kommando zur Verfügung steht, ansonsten false.</returns>
+        private bool canExecuteSearch()
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// Führt die Suche nach einem Kanal aus. Es werden die Kanäle aus der Liste extrahiert, 
+        /// die den angegebenen SearchTerm im Namen enthalten. Die gefundenen Kanäle werden über
+        /// die Property Channels verfügbar gemacht.
+        /// </summary>
+        private async Task executeChannelSearchAsync()
+        {
+            List<Channel> resultChannels = await Task.Run(() => extractChannelsByName(SearchTerm));
+
+            // Mache Ergebnis-Kanalliste als Property verfügbar.
+            Channels = new ObservableCollection<Channel>(resultChannels);
+        }
+
+        /// <summary>
+        /// Hilfsmethode, die aus der Liste aller Kanalressourcen die Kanäle extrahiert, die 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private List<Channel> extractChannelsByName(string name)
+        {
+            List<Channel> allChannelsList = allChannels.Values.ToList<Channel>();
+            List<Channel> results = new List<Channel>( 
+                from item in allChannelsList
+                where item.Name.ToLower().Contains(name.ToLower()) || item.Name.ToLower().Contains(name.Trim().ToLower())
+                select item
+                );
+            return results;
         }
     }
 }

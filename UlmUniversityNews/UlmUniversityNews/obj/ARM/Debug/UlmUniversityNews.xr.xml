@@ -15,6 +15,8 @@
     <RootPropertyPathName Name="Description" />
     <RootPropertyPathName Name="FirstGroup" />
     <RootPropertyPathName Name="Channels" />
+    <RootPropertyPathName Name="StartChannelSearchCommand" />
+    <RootPropertyPathName Name="SearchTerm" />
     <RootPropertyPathName Name="IsEnabled" />
     <RootPropertyPathName Name="AddGroupCommand" />
     <RootPropertyPathName Name="SearchGroupsCommand" />
@@ -102,9 +104,9 @@
     <RootType FullName="Windows.UI.Xaml.Data.Binding">
       <RootProperty Name="Converter" />
       <RootProperty Name="RelativeSource" />
+      <RootProperty Name="Mode" />
       <RootProperty Name="ElementName" />
       <RootProperty Name="Path" />
-      <RootProperty Name="Mode" />
       <RootProperty Name="FallbackValue" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.ContentPresenter">
@@ -187,14 +189,15 @@
     <RootType FullName="Windows.UI.Xaml.Controls.TextBox">
       <RootProperty Name="Background" />
       <RootProperty Name="InputScope" />
-      <RootProperty Name="Header" />
       <RootProperty Name="Text" />
+      <RootProperty Name="Header" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.Button">
       <RootProperty Name="Margin" />
       <RootProperty Name="MinWidth" />
       <RootProperty Name="HorizontalContentAlignment" />
       <RootProperty Name="HorizontalAlignment" />
+      <RootProperty Name="Command" />
       <RootProperty Name="Background" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Media.ImageBrush">

@@ -76,14 +76,16 @@
                             Background="White"
                             Grid.Column="0"
                             x:Name="ChannelSearchBox"
-                            InputScope="Search"/>
+                            InputScope="Search"
+                            Text="{Binding SearchTerm, Mode=TwoWay}"/>
                         <Button
                             Grid.Column="1"
                             Margin="5,0,0,0"
                             x:Name="ChannelSearchButton"
                             MinWidth="40"
                             HorizontalContentAlignment="Stretch" 
-                            HorizontalAlignment="Stretch">
+                            HorizontalAlignment="Stretch"
+                            Command="{Binding StartChannelSearchCommand}">
                             <Button.Background>
                                 <ImageBrush Stretch="None" 
                                             ImageSource="/Assets/ButtonIcons/feature.search.png"/>

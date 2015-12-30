@@ -141,11 +141,3 @@ C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmU
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelSearch\ChannelSearch.xaml
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelSearch\ChannelSearch.xbf
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ChannelSearch\ChannelSearch.xbf
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\layout.resfiles
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\layout.resfiles.intermediate
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\Resources.resfiles
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\Resources.resfiles.intermediate
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\pri.resfiles
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\pri.resfiles.intermediate
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\priconfig.xml
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\priconfig.xml.intermediate
