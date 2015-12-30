@@ -164,6 +164,25 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Speichere das übergebene Datum als das letzte Aktualisierungsdatum der lokalen Kanalressourcen.
+        /// </summary>
+        /// <param name="lastUpdate">Das Datum der letzten Aktualisierung als DateTime Objekt.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn ein lokaler Datenbankfehler die Ausführung verhindert hat.</exception>
+        public void SetDateOfLastChannelListUpdate(DateTime lastUpdate)
+        {
+            try
+            {
+                channelDatabaseManager.SetDateOfLastChannelListUpdate(lastUpdate);
+            }
+            catch(DatabaseException ex)
+            {
+                Debug.WriteLine("DatabaseException with message {0} occurred.", ex.Message);
+                // Abbilden auf ClientException.
+                throw new ClientException(ErrorCodes.LocalDatabaseException, "Local database failure.");
+            }
+        }
+
+        /// <summary>
         /// Erzeugt eine Liste von Objekten vom Typ Kanal aus dem übergebenen JSON-Dokument.
         /// </summary>
         /// <param name="jsonString">Das JSON-Dokument.</param>

@@ -94,6 +94,9 @@
 
                 <!-- Liste mit Kanälen-->
                 <ListView Grid.Row="1"
+                          Margin="19,0,0,0"
+                          HorizontalContentAlignment="Stretch"
+                          HorizontalAlignment="Stretch"
                           ItemTemplate="{StaticResource ChannelListItemStyle}"
                           ItemsSource="{Binding Channels}">
                     <ListView.ItemContainerStyle>

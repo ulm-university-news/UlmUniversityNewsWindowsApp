@@ -523,7 +523,7 @@ namespace DataHandlingLayer.Database
                 if(tableEntry == DateTime.MinValue)
                 {
                     // Noch kein Eintrag in Tabelle, füge also einen ein.
-                    using(var statement = conn.Prepare(@"INSERT INTO (Id, LastUpdate) VALUES (?,?);"))
+                    using (var statement = conn.Prepare(@"INSERT INTO LastUpdateOnChannelsList (Id, LastUpdate) VALUES (?,?);"))
                     {
                         statement.Bind(1, 0);
                         statement.Bind(2, DatabaseManager.DateTimeToSQLite(lastUpdate));
@@ -543,6 +543,10 @@ namespace DataHandlingLayer.Database
                     }
                 }
 
+            }
+            catch(SQLiteException sqlEx){
+                Debug.WriteLine("SQLiteException has occurred in SetDateOfLastChannelListUpdate. The message is: {0}." + sqlEx.Message);
+                throw new DatabaseException("SetDateOfLastChannelListUpdate channel has failed.");
             }
             catch(Exception ex)
             {
@@ -656,6 +660,10 @@ namespace DataHandlingLayer.Database
                             dates, contact, website, deleted);
                         break;
                 }
+            }
+            catch(SQLiteException sqlEx){
+                Debug.WriteLine("SQLiteException has occurred in retrieveChannelObjectFromStatement. The message is: {0}." + sqlEx.Message);
+                throw new DatabaseException("Retrieve channel has failed.");
             }
             catch(Exception ex)
             {

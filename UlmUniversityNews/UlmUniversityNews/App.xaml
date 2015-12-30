@@ -100,7 +100,7 @@
             <Grid 
                 Background="{StaticResource UniUlmAccentColorListItemBackground}"
                 Height="70px"       
-                Margin="0,0,19,0">
+                Margin="0,5,19,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="70px" /> <!-- Spalte für Icon-->
                     <ColumnDefinition Width="*" /> <!-- Spalte für restliche Information-->
@@ -124,6 +124,8 @@
                     <!-- Name -->
                     <TextBlock Grid.Row="0"
                                VerticalAlignment="Center"
+                               TextWrapping="NoWrap"
+                               TextTrimming="WordEllipsis"
                                x:Name="ChannelName"
                                Style="{StaticResource ListTextStyle}"
                                FontWeight="Bold"

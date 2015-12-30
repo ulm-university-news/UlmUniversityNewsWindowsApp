@@ -65,7 +65,14 @@ namespace DataHandlingLayer.API
 
             // Lies Antwort aus.
             var statusCode = response.StatusCode;
-            string responseContent = await response.Content.ReadAsStringAsync();
+            var buffer = await response.Content.ReadAsBufferAsync();
+            byte[] rawBytes = new byte[buffer.Length];
+            using (var reader = Windows.Storage.Streams.DataReader.FromBuffer(buffer))
+            {
+                reader.ReadBytes(rawBytes);
+            }
+            string responseContent = Encoding.UTF8.GetString(rawBytes, 0, rawBytes.Length); 
+
             if (statusCode == HttpStatusCode.Created)
             {
                 Debug.WriteLine("POST request to URI {0} completed successfully.", request.RequestUri);
@@ -114,7 +121,14 @@ namespace DataHandlingLayer.API
 
             // Lies Antwort aus.
             var statusCode = response.StatusCode;
-            string responseContent = await response.Content.ReadAsStringAsync();
+            var buffer = await response.Content.ReadAsBufferAsync();
+            byte[] rawBytes = new byte[buffer.Length];
+            using (var reader = Windows.Storage.Streams.DataReader.FromBuffer(buffer))
+            {
+                reader.ReadBytes(rawBytes);
+            }
+            string responseContent = Encoding.UTF8.GetString(rawBytes, 0, rawBytes.Length); 
+
             if (statusCode == HttpStatusCode.Ok)
             {
                 Debug.WriteLine("PATCH request to URI {0} completed successfully." , request.RequestUri);
@@ -161,7 +175,14 @@ namespace DataHandlingLayer.API
 
             // Lies Antwort aus.
             var statusCode = response.StatusCode;
-            string responseContent = await response.Content.ReadAsStringAsync();
+            var buffer = await response.Content.ReadAsBufferAsync();
+            byte[] rawBytes = new byte[buffer.Length];
+            using(var reader = Windows.Storage.Streams.DataReader.FromBuffer(buffer))
+            {
+                reader.ReadBytes(rawBytes);
+            }
+            string responseContent = Encoding.UTF8.GetString(rawBytes, 0, rawBytes.Length); 
+
             if (statusCode == HttpStatusCode.Ok)
             {
                 Debug.WriteLine("GET request to URI {0} completed successfully.", request.RequestUri);
@@ -221,8 +242,8 @@ namespace DataHandlingLayer.API
         /// <returns>Die Datums- und Uhrzeitangabe im UTC Format.</returns>
         public string ParseDateTimeToUTCFormat(DateTime datetime)
         {
-            datetime = datetime.ToUniversalTime();
-            return datetime.ToString();
+            string datetimeString = datetime.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");;
+            return datetimeString;
         }
 
         /// <summary>
