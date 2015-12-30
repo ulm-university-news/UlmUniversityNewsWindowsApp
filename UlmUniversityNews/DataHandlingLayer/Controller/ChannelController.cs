@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataHandlingLayer.API;
 using Newtonsoft.Json;
+using DataHandlingLayer.DataModel.Enums;
 
 namespace DataHandlingLayer.Controller
 {
@@ -56,9 +57,9 @@ namespace DataHandlingLayer.Controller
             {
                 return channelDatabaseManager.GetSubscribedChannels();
             }
-            catch(DatabaseException e)
+            catch(DatabaseException ex)
             {
-                Debug.WriteLine("DatabaseException with message {0} occurred.", e.Message);
+                Debug.WriteLine("DatabaseException with message {0} occurred.", ex.Message);
                 // Abbilden auf ClientException.
                 throw new ClientException(ErrorCodes.LocalDatabaseException, "Local database failure.");
             }
@@ -75,9 +76,9 @@ namespace DataHandlingLayer.Controller
             {
                 return channelDatabaseManager.GetChannels();
             }
-            catch(DatabaseException e)
+            catch(DatabaseException ex)
             {
-                Debug.WriteLine("DatabaseException with message {0} occurred.", e.Message);
+                Debug.WriteLine("DatabaseException with message {0} occurred.", ex.Message);
                 // Abbilden auf ClientException.
                 throw new ClientException(ErrorCodes.LocalDatabaseException, "Local database failure.");
             }
@@ -122,6 +123,47 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Aktualisiert die Datensätze der Kanäle, die aktuell von der Anwendung verwaltet werden
+        /// basierend auf der übergebenen Liste an Kanaldaten. Die Liste kann neue Kanäle enthalten,
+        /// die dann in die lokalen Datensätze übernommen werden. Die Liste kann aber auch bestehende
+        /// Datensätze mit geänderten Datenwerten beinhalten, dann werden die lokalen Datensätze aktualisiert.
+        /// </summary>
+        /// <param name="channels">Die Liste mit neuen oder geänderten Kanaldaten.</param>
+        public void UpdateChannels(List<Channel> channels)
+        {
+            Channel currentChannel;
+            Channel channelDB;
+
+            // Iteriere über Liste:
+            for (int i = 0; i < channels.Count; i++)
+            {
+                currentChannel = channels[i];
+
+                try
+                {
+                    // Prüfe zunächst, ob lokaler Datensatz existiert für den Kanal.
+                    channelDB = channelDatabaseManager.GetChannel(currentChannel.Id);
+                    if (channelDB != null)
+                    {
+                        // Führe Aktualisierung durch.
+                        channelDatabaseManager.UpdateChannelWithSubclass(currentChannel);
+                    }
+                    else
+                    {
+                        // Führe Einfügeoperation durch.
+                        channelDatabaseManager.StoreChannel(currentChannel);
+                    }
+                }
+                catch(DatabaseException ex)
+                {
+                    Debug.WriteLine("DatabaseException with message {0} occurred.", ex.Message);
+                    // Abbilden auf ClientException.
+                    throw new ClientException(ErrorCodes.LocalDatabaseException, "Local database failure.");
+                }
+            }
+        }
+
+        /// <summary>
         /// Erzeugt eine Liste von Objekten vom Typ Kanal aus dem übergebenen JSON-Dokument.
         /// </summary>
         /// <param name="jsonString">Das JSON-Dokument.</param>
@@ -129,10 +171,47 @@ namespace DataHandlingLayer.Controller
         /// <exception cref="ClientException">Wirft eine ClientException wenn keine Liste von Kanal-Objekten aus dem JSON String extrahiert werden kann.</exception>
         private List<Channel> parseChannelListFromJson(string jsonString)
         {
-            List<Channel> channels = null;
+            List<Channel> channels = new List<Channel>();
             try
             {
-                channels = JsonConvert.DeserializeObject <List<Channel>>(jsonString);
+                //channels = JsonConvert.DeserializeObject <List<Channel>>(jsonString);
+                
+                // Parse JSON List in eine JArray Repräsentation. JArray repräsentiert ein JSON Array. 
+                Newtonsoft.Json.Linq.JArray jsonArray = Newtonsoft.Json.Linq.JArray.Parse(jsonString);
+                foreach (var item in jsonArray)
+                {
+                    if(item.Type == Newtonsoft.Json.Linq.JTokenType.Object)
+                    {
+                        // Frage den Wert des Attributs "type" ab.
+                        string typeValue = item.Value<string>("type");
+
+                        ChannelType type;
+                        if (Enum.TryParse(typeValue.ToString(), false, out type))
+                        {
+                            // Führe weiteres Parsen abhängig von dem Typ des Kanals durch.
+                            switch(type)
+                            {
+                                case ChannelType.LECTURE:
+                                    Lecture lecture = JsonConvert.DeserializeObject<Lecture>(item.ToString());
+                                    channels.Add(lecture);
+                                    break;
+                                case ChannelType.EVENT:
+                                    Event eventObj = JsonConvert.DeserializeObject<Event>(item.ToString());
+                                    channels.Add(eventObj);
+                                    break;
+                                case ChannelType.SPORTS:
+                                    Sports sportsObj = JsonConvert.DeserializeObject<Sports>(item.ToString());
+                                    channels.Add(sportsObj);
+                                    break;
+                                default:
+                                    // Für Student-Group und Other gibt es keine eigene Klasse.
+                                    Channel channel = JsonConvert.DeserializeObject<Channel>(item.ToString());
+                                    channels.Add(channel);
+                                    break;
+                            }
+                        }
+                    }
+                }
             }
             catch(JsonException ex)
             {
@@ -142,6 +221,17 @@ namespace DataHandlingLayer.Controller
             }
 
             return channels;
+        }
+
+        // TODO - Remove after testing
+        // Testzweck
+        public async void TestJsonParsing()
+        {
+            List<Channel> channels = await RetrieveUpdatedChannelsFromServerAsync();
+
+            foreach(var entry in channels){
+                Debug.WriteLine(channels.ToString());
+            }
         }
 
         // TODO - Remove after testing

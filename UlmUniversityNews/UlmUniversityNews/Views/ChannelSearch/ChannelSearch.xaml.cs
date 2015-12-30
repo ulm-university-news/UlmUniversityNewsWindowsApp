@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using DataHandlingLayer.ViewModel;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -28,6 +29,11 @@ namespace UlmUniversityNews.Views.ChannelSearch
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
+        /// <summary>
+        /// Eine Referenz auf die zugehörige ViewModel Instanz.
+        /// </summary>
+        private SearchChannelsViewModel searchChannelsViewModel;
+
         public ChannelSearch()
         {
             this.InitializeComponent();
@@ -35,6 +41,10 @@ namespace UlmUniversityNews.Views.ChannelSearch
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+
+            // Setze DataContext der Seite.
+            searchChannelsViewModel = new SearchChannelsViewModel(App.NavigationService, App.ErrorMapper);
+            this.DataContext = searchChannelsViewModel;
         }
 
         /// <summary>
@@ -107,5 +117,23 @@ namespace UlmUniversityNews.Views.ChannelSearch
         }
 
         #endregion
+
+        /// <summary>
+        /// Behandelt Klick Events für das Drawer-Layout. Das Menü wird mittels eines Klicks
+        /// auf das Drawer Icon abhängig vom aktuellen Zustand ein oder ausgeklappt.
+        /// </summary>
+        /// <param name="sender">Die Quelle des Ereignisses, d.h. ein Klick auf das Drawer Icon.</param>
+        /// <param name="e">Ereignisdaten</param>
+        private void DrawerIcon_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (DrawerLayout.IsDrawerOpen)
+            {
+                DrawerLayout.CloseDrawer();
+            }
+            else
+            {
+                DrawerLayout.OpenDrawer();
+            }
+        }
     }
 }

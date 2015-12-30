@@ -170,7 +170,7 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private void executeSearchChannelsCommand()
         {
-            // TODO
+            _navService.Navigate("ChannelSearch");
         }
 
         /// <summary>

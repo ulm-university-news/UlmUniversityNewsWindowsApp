@@ -51,6 +51,7 @@ namespace DataHandlingLayer.ViewModel
         {
             channelController = new ChannelController();
             allChannels = new List<Channel>();
+
         }
 
         /// <summary>

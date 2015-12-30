@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataHandlingLayer.DataModel.Enums;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace DataHandlingLayer.DataModel
 {
@@ -17,17 +19,18 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Die Fakultität, der die Vorlesung zugeordnet ist.
         /// </summary>
+        [JsonProperty("faculty", NullValueHandling = NullValueHandling.Ignore), JsonConverter(typeof(StringEnumConverter))]
         public Faculty Faculty
         {
             get { return faculty; }
             set { faculty = value; }
         }
         
-
         private string startDate;
         /// <summary>
         /// Das Datum, an dem die Vorlesung beginnt.
         /// </summary>
+        [JsonProperty("startDate", NullValueHandling = NullValueHandling.Ignore)]
         public string StartDate
         {
             get { return startDate; }
@@ -38,6 +41,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Das Datum, an dem die Vorlesung endet.
         /// </summary>
+        [JsonProperty("endDate", NullValueHandling = NullValueHandling.Ignore)]
         public string EndDate
         {
             get { return endDate; }
@@ -48,6 +52,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Der Dozent der Vorlesung.
         /// </summary>
+        [JsonProperty("lecturer", NullValueHandling = NullValueHandling.Ignore)]
         public string Lecturer
         {
             get { return lecturer; }
@@ -58,6 +63,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Der Übungsleiter der Vorlesung.
         /// </summary>
+        [JsonProperty("assistant", NullValueHandling = NullValueHandling.Ignore)]
         public string Assistant
         {
             get { return assistant; }

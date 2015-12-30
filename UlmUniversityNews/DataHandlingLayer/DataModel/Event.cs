@@ -1,4 +1,5 @@
 ﻿using DataHandlingLayer.DataModel.Enums;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Die Kosten für das Event, z.B. Eintrittskosten.
         /// </summary>
+        [JsonProperty("cost", NullValueHandling = NullValueHandling.Ignore)]
         public string Cost
         {
             get { return cost; }
@@ -27,6 +29,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Der Organisator des Events.
         /// </summary>
+        [JsonProperty("organizer", NullValueHandling = NullValueHandling.Ignore)]
         public string Organizer
         {
             get { return organizer; }

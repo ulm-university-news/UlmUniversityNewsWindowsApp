@@ -78,7 +78,7 @@
         <drawerLayout:DrawerLayout Grid.Row="1" x:Name="DrawerLayout">
             
             <!-- Inhalt der Seite -->
-            <Grid x:Name="MainFragment" Background="{StaticResource PhoneBackgroundBrush}">
+            <Grid x:Name="MainFragment" Background="{StaticResource MainFragmentBackgroundColor}">
                 <Pivot x:Uid="HomescreenPivot" 
                        x:Name="HomescreenPivot" 
                        HeaderTemplate="{StaticResource PivotItemHeaderStyle}"

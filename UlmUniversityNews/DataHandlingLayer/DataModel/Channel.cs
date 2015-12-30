@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataHandlingLayer.DataModel.Enums;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace DataHandlingLayer.DataModel
 {
@@ -17,6 +19,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Die eindeutige Id des Kanals.
         /// </summary>
+        [JsonProperty("id")]
         public int Id
         {
             get { return id; }
@@ -27,6 +30,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Der Name des Kanals.
         /// </summary>
+        [JsonProperty("name")]
         public string Name
         {
             get { return name; }
@@ -37,6 +41,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Die Beschreibung des Kanals.
         /// </summary>
+        [JsonProperty("description")]
         public string Description
         {
             get { return description; }
@@ -47,6 +52,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Gibt an, um welchen Typ es sich bei dem Kanal handelt.
         /// </summary>
+        [JsonProperty("type"), JsonConverter(typeof(StringEnumConverter))]
         public ChannelType Type
         {
             get { return type; }
@@ -57,6 +63,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Das Erstellungsdatum des Kanals.
         /// </summary>
+        [JsonProperty("creationDate", NullValueHandling = NullValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTime CreationDate
         {
             get { return creationDate; }
@@ -67,6 +74,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Das Datum der letzten Änderung des Kanals.
         /// </summary>
+        [JsonProperty("modificationDate", NullValueHandling = NullValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTime ModificationDate
         {
             get { return modificationDate; }
@@ -77,6 +85,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Das Semester, das für den Kanal angegeben wurde.
         /// </summary>
+        [JsonProperty("term", NullValueHandling = NullValueHandling.Ignore)]
         public string Term
         {
             get { return term; }
@@ -87,6 +96,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Gibt Orte an, die hinsichtlich des Kanals relevant sind.
         /// </summary>
+        [JsonProperty("locations", NullValueHandling = NullValueHandling.Ignore)]
         public string Locations
         {
             get { return locations; }
@@ -97,6 +107,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Gibt Termine an, die hinsichtlich des Kanals relevant an.
         /// </summary>
+        [JsonProperty("dates", NullValueHandling = NullValueHandling.Ignore)]
         public string Dates
         {
             get { return dates; }
@@ -107,6 +118,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Gibt Kontaktdaten von Personen an, die für den Kanal zuständig sind.
         /// </summary>
+        [JsonProperty("contacts", NullValueHandling = NullValueHandling.Ignore)]
         public string Contacts
         {
             get { return contacts; }
@@ -117,6 +129,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Ein Link zu einer Webadresse. 
         /// </summary>
+        [JsonProperty("website", NullValueHandling = NullValueHandling.Ignore)]
         public string Website
         {
             get { return website; }
@@ -127,6 +140,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Gibt an, ob ein Kanal als gelöscht markiert wurde.
         /// </summary>
+        [JsonIgnore]
         public bool Deleted
         {
             get { return deleted; }
