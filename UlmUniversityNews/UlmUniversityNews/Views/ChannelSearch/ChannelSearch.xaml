@@ -82,8 +82,10 @@
                             Background="White"
                             Grid.Column="0"
                             x:Name="ChannelSearchBox"
-                            InputScope="Search"
-                            Text="{Binding SearchTerm, FallbackValue='', TargetNullValue='', Mode=TwoWay}"/>
+                            KeyDown="ChannelSearchBox_KeyDown"
+                            InputScope="Search"            
+                            Text="{Binding SearchTerm, FallbackValue='', TargetNullValue='', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        </TextBox>
                         <Button
                             Grid.Column="1"
                             Margin="5,0,0,0"

@@ -139,5 +139,26 @@ namespace UlmUniversityNews.Views.ChannelSearch
                 DrawerLayout.OpenDrawer();
             }
         }
+
+        /// <summary>
+        /// Event Handler, der Tastenevents der TextBox abfängt.
+        /// </summary>
+        /// <param name="sender">Der Sender der Tastenevents.</param>
+        /// <param name="e">Das gesendete Event.</param>
+        private async void ChannelSearchBox_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                if (searchChannelsViewModel.StartChannelSearchCommand != null
+                    && searchChannelsViewModel.StartChannelSearchCommand.CanExecute(null))
+                {
+                    await searchChannelsViewModel.StartChannelSearchCommand.Execute(null);
+                }
+                // Keyboard soll nicht mehr angezeigt wird.
+                InputPane.GetForCurrentView().TryHide();
+            }
+        }
+
+
     }
 }

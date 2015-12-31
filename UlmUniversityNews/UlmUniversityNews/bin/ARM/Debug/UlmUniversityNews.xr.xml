@@ -109,6 +109,7 @@
       <RootProperty Name="Mode" />
       <RootProperty Name="FallbackValue" />
       <RootProperty Name="TargetNullValue" />
+      <RootProperty Name="UpdateSourceTrigger" />
       <RootProperty Name="ElementName" />
       <RootProperty Name="Path" />
     </RootType>
@@ -200,6 +201,7 @@
       <RootProperty Name="InputScope" />
       <RootProperty Name="Text" />
       <RootProperty Name="Header" />
+      <RootEvent Name="KeyDown" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.Button">
       <RootProperty Name="Margin" />
