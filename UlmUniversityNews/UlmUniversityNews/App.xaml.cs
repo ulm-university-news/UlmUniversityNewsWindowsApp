@@ -162,6 +162,7 @@ namespace UlmUniversityNews
                 NavigationService.RegisterPage("StartPage", typeof(StartPage));
                 NavigationService.RegisterPage("Homescreen", typeof(Views.Homescreen.Homescreen));
                 NavigationService.RegisterPage("ChannelSearch", typeof(Views.ChannelSearch.ChannelSearch));
+                NavigationService.RegisterPage("ChannelDetails", typeof(Views.ChannelDetails.ChannelDetails));
 
                 // Navigiere zum Homescreen, wenn der lokale Nutzeraccount bereits existiert.
                 if (localUserExists) {

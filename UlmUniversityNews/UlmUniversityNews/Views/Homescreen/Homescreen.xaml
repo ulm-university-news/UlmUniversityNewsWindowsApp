@@ -84,7 +84,7 @@
                        HeaderTemplate="{StaticResource PivotItemHeaderStyle}"
                        SelectedIndex="{Binding SelectedPivotItemIndex, Mode=TwoWay}">
                     <!-- Pivotelement 1-->
-                    <PivotItem x:Uid="MyChannels"
+                    <PivotItem x:Uid="HomescreenMyChannelsPivotItem"
                            Style="{StaticResource PivotItemStyle}"
                            Header="Meine Kanäle">
                         <!-- Definiere Liste für Kanäle. -->
@@ -94,21 +94,16 @@
                             HorizontalContentAlignment="Stretch"
                             HorizontalAlignment="Stretch"
                             d:DataContext="{Binding , Source={d:DesignData Source=../../DataModel/SampleChannelData.json, Type=data:Channel}}">
+                            <!---d:DataContext="{Binding , Source={d:DesignData Source=../../DataModel/SampleChannelData.json, Type=data:Channel}}"-->
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem">
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                                 </Style>
                             </ListView.ItemContainerStyle>
                         </ListView>
-
-                        <!-- TODO -->
-                        <!--<TextBlock x:Name="Test"
-                                   FontSize="20"
-                                   Text="Jo Servus, das ist ein Test Text. Den schreib ich extra groß, damit man ihn auch sieht."
-                                   TextWrapping="Wrap"/>-->
                     </PivotItem>
                     <!-- Pivotelement 2-->
-                    <PivotItem x:Uid="MyGroups"
+                    <PivotItem x:Uid="HomescreenMyGroupsPivotItem"
                            Style="{StaticResource PivotItemStyle}"
                            Header="Meine Gruppen">
                         <!-- TODO -->

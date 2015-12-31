@@ -207,4 +207,16 @@
   <data name="HomescreenSearchGroupsButton.Label" xml:space="preserve">
     <value>suche gruppen</value>
   </data>
+  <data name="HomescreenMyChannelsPivotItem.Header" xml:space="preserve">
+    <value>Meine Kanäle</value>
+  </data>
+  <data name="HomescreenMyGroupsPivotItem.Header" xml:space="preserve">
+    <value>Meine Gruppen</value>
+  </data>
+  <data name="ChannelDetailsChannelInformationPivotItem.Header" xml:space="preserve">
+    <value>Kanalinformationen</value>
+  </data>
+  <data name="ChannelDetailsMessagesPivotItem.Header" xml:space="preserve">
+    <value>Nachrichten</value>
+  </data>
 </root>

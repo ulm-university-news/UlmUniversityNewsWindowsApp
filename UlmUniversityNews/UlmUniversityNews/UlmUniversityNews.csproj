@@ -90,6 +90,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ChannelDetails\ChannelDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ChannelSearch\ChannelSearch.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -127,6 +131,9 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PushNotifications\PushNotificationManager.cs" />
+    <Compile Include="Views\ChannelDetails\ChannelDetails.xaml.cs">
+      <DependentUpon>ChannelDetails.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ChannelSearch\ChannelSearch.xaml.cs">
       <DependentUpon>ChannelSearch.xaml</DependentUpon>
     </Compile>

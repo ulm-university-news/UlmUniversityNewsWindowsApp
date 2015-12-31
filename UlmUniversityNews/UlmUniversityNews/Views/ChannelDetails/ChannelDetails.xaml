@@ -1,0 +1,342 @@
+﻿<Page
+    x:Class="UlmUniversityNews.Views.ChannelDetails.ChannelDetails"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:UlmUniversityNews.Views.ChannelDetails"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:drawerLayout="using:DrawerLayout"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <!-- CommandBar -->
+    <Page.BottomAppBar>
+        <CommandBar x:Name="ChannelDetailsCommandBar"
+                    Background="{StaticResource UniUlmMainBackgroundColor}">
+                <!-- TODO -->
+        </CommandBar>
+    </Page.BottomAppBar>
+
+    <!-- Layout Root -->
+    <Grid x:Name="LayoutRoot">
+
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Titelbereich - Drawer -->
+        <Grid Grid.Row="0" Style="{StaticResource DrawerMenuTitleBar}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Drawer Icon -->
+            <Image x:Name="DrawerIcon" 
+                   Grid.Column="0"
+                   Style="{StaticResource DrawerIconStyle}"
+                   Tapped="DrawerIcon_Tapped" />
+
+            <!-- Drawer Text -->
+            <TextBlock Grid.Column="1"
+                       x:Uid="ChannelDetailsTitle"
+                       Style="{StaticResource DrawerTextStyle}"
+                       Text="Kanalansicht" /> <!-- TODO set Text per Binding-->
+        </Grid>
+
+        <!--Inhalt der Seite und Inhalt des Drawer Menü-->
+        <drawerLayout:DrawerLayout Grid.Row="1" x:Name="DrawerLayout">
+
+            <!-- Inhalt der Seite -->
+            <Grid x:Name="MainFragment" Background="{StaticResource MainFragmentBackgroundColor}">
+                <Pivot x:Uid="ChannelDetailsPivot" 
+                       x:Name="ChannelDetailsPivot" 
+                       HeaderTemplate="{StaticResource PivotItemHeaderStyle}"
+                       SelectedIndex="{Binding SelectedPivotItemIndex, Mode=TwoWay}">
+                    
+                    <!-- Pivotelement 1-->
+                    <PivotItem x:Uid="ChannelDetailsMessagesPivotItem"
+                           Style="{StaticResource PivotItemStyle}"
+                           Header="Nachrichten">
+                            <!-- TODO -->
+                    </PivotItem>
+                    
+                    <!-- Pivotelement 2-->
+                    <PivotItem x:Uid="ChannelDetailsChannelInformationPivotItem"
+                           Style="{StaticResource PivotItemStyle}"
+                           Header="Kanalinformationen">
+
+                        <ScrollViewer 
+                            VerticalScrollBarVisibility="Auto">
+                            <!-- Elemente mit Kanalinformationen. -->
+                            <Grid
+                            Margin="0,0,19,0"
+                            HorizontalAlignment="Stretch">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <!-- Kanalname -->
+                                <Grid
+                                Grid.Row="0"
+                                Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                    Grid.Row="0"
+                                    x:Name="ChannelName"
+                                    Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                    Text="Name" />
+
+                                    <TextBlock
+                                    Grid.Row="1"
+                                    x:Name="ChannelNameContent"
+                                    Style="{StaticResource TextInPropertyDescriptions}"
+                                    Text="Das ist der Name des Kanals." />
+                                </Grid>
+
+                                <!-- Kanalbeschreibung -->
+                                <Grid
+                                Grid.Row="1"
+                                Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                    Grid.Row="0"
+                                    x:Name="ChannelDescription"
+                                    Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                    Text="Description" />
+
+                                    <TextBlock
+                                    Grid.Row="1"
+                                    x:Name="ChannelDescriptionContent"
+                                    Style="{StaticResource TextInPropertyDescriptions}"
+                                    Text="Das ist eine Beschreibung des Kanals." />
+                                </Grid>
+
+                                <!-- Kanaltyp -->
+                                <Grid
+                                Grid.Row="2"
+                                Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                    Grid.Row="0"
+                                    x:Name="ChannelType"
+                                    Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                    Text="Typ" />
+
+                                    <TextBlock
+                                    Grid.Row="1"
+                                    x:Name="ChannelTypeContent"
+                                    Style="{StaticResource TextInPropertyDescriptions}"
+                                    Text="Der Typ des Kanals. Hier wird auf jeden Fall ein Converter benötigt." />
+                                </Grid>
+
+                                <!-- Erstellungsdatum -->
+                                <Grid
+                                Grid.Row="3"
+                                Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                    Grid.Row="0"
+                                    x:Name="ChannelCreationDate"
+                                    Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                    Text="Erstellungsdatum" />
+
+                                    <TextBlock
+                                    Grid.Row="1"
+                                    x:Name="ChannelCreationDateContent"
+                                    Style="{StaticResource TextInPropertyDescriptions}"
+                                    Text="Das Erstellungsdatum des Kanals. Wird hier ein Converter benötigt?" />
+                                </Grid>
+
+                                <!-- Änderungsdatum -->
+                                <Grid
+                                Grid.Row="4"
+                                Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                    Grid.Row="0"
+                                    x:Name="ChannelModificationDate"
+                                    Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                    Text="Änderungsdatum" />
+
+                                    <TextBlock
+                                    Grid.Row="1"
+                                    x:Name="ChannelModificationDateContent"
+                                    Style="{StaticResource TextInPropertyDescriptions}"
+                                    Text="Das Änderungsdatum des Kanals. Wird hier ein Converter benötigt?" />
+                                </Grid>
+
+                                <!-- Semester -->
+                                <Grid
+                                Grid.Row="5"
+                                Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                    Grid.Row="0"
+                                    x:Name="ChannelTerm"
+                                    Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                    Text="Semester" />
+
+                                    <TextBlock
+                                    Grid.Row="1"
+                                    x:Name="ChannelTermContent"
+                                    Style="{StaticResource TextInPropertyDescriptions}"
+                                    Text="WS2015/16" />
+                                </Grid>
+
+                                <!-- Lokalitäten -->
+                                <Grid
+                                Grid.Row="6"
+                                Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                    Grid.Row="0"
+                                    x:Name="ChannelLocations"
+                                    Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                    Text="Locations" />
+
+                                    <TextBlock
+                                    Grid.Row="1"
+                                    x:Name="ChannelLocationsContent"
+                                    Style="{StaticResource TextInPropertyDescriptions}"
+                                    Text="Orte, die für den Kanal relevant sind." />
+                                </Grid>
+
+                                <!-- Termine -->
+                                <Grid
+                                Grid.Row="7"
+                                Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                    Grid.Row="0"
+                                    x:Name="ChannelDates"
+                                    Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                    Text="Termine" />
+
+                                    <TextBlock
+                                    Grid.Row="1"
+                                    x:Name="ChannelDatesContent"
+                                    Style="{StaticResource TextInPropertyDescriptions}"
+                                    Text="Jo, die Termine, die für den Kanal relevant sind." />
+                                </Grid>
+
+                                <!-- Kontaktinformationen -->
+                                <Grid
+                                Grid.Row="8"
+                                Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                    Grid.Row="0"
+                                    x:Name="ChannelContacts"
+                                    Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                    Text="Kontaktinformationen" />
+
+                                    <TextBlock
+                                    Grid.Row="1"
+                                    x:Name="ChannelContactsContent"
+                                    Style="{StaticResource TextInPropertyDescriptions}"
+                                    Text="Hier stehen Informationen, wer für den Kanal verantwortlich ist." />
+                                </Grid>
+
+
+                                <!-- Website -->
+                                <Grid
+                                Grid.Row="9"
+                                Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                    Grid.Row="0"
+                                    x:Name="ChannelWebsite"
+                                    Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                    Text="Website" />
+
+                                    <TextBlock
+                                    Grid.Row="1"
+                                    x:Name="ChannelWebsiteContent"
+                                    Style="{StaticResource TextInPropertyDescriptions}"
+                                    Text="Hier steht ein Link auf eine Webseite, z.B. http://www.universityNews.de " />
+                                </Grid>
+
+                            </Grid>
+                        </ScrollViewer>
+
+                    </PivotItem>
+                </Pivot>
+            </Grid>
+
+
+            <!-- Inhalt des Drawer Menüs-->
+            <!--<Grid x:Name="ListFragment" Background="{StaticResource UniUlmAccentColor}">
+                <ListView x:Name="ListMenuItems">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}"
+                                       Margin="10"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Center"
+                                       FontSize="18"
+                                       Foreground="Black" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>-->
+
+        </drawerLayout:DrawerLayout>
+        
+    </Grid>
+</Page>

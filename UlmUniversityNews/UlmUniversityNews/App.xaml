@@ -21,14 +21,43 @@
         <SolidColorBrush x:Key="UniUlmAccentColorElementBackground" Color="#A9A280" Opacity="0.4"  />
         <SolidColorBrush x:Key="MainFragmentBackgroundColor" Color="White" />
         
-        <!-- Style für Schriften in Listen. -->
+        <!-- Style für Schriften in Listen und Aufzählungen. -->
         <Style 
             x:Key="ListTextStyle"
             TargetType="TextBlock">
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontFamily" Value="Arial" />
         </Style>
+        
+        <Style 
+            x:Key="HeaderTextInPropertyDescriptions"
+            TargetType="TextBlock">
+            <Setter Property="TextWrapping" Value="NoWrap" />
+            <Setter Property="TextTrimming" Value="WordEllipsis" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontFamily" Value="Arial" />
+        </Style>
 
+        <Style 
+            x:Key="TextInPropertyDescriptions"
+            TargetType="TextBlock">
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0, 5, 0, 0" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontFamily" Value="Arial" />
+        </Style>
+        
+        <!-- *************************************************************************************************************************************-->
+        <!-- Grid Style für Aufzählung der Eigenschaften eines Kanals. -->
+        <Style
+            x:Key="EnumerationOfPropertiesGridStyle"
+            TargetType="Grid">
+            <Setter Property="Margin" Value="0,0,0,10" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="{StaticResource UniUlmAccentColorListItemBackground}" />
+        </Style>
+        
         <!-- ************************************************************************************************************************************* -->
         <!-- ContentDialog:-->
         <!-- Definiere den Style für TextBlock Elemente innerhalb von einem ContentDialog.-->
