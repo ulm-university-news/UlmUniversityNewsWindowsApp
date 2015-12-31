@@ -14,6 +14,10 @@ using DataHandlingLayer.CommandRelays;
 
 namespace DataHandlingLayer.ViewModel
 {
+    /// <summary>
+    /// Die Klasse SearchChannelsViewModel stellt eine Implementierung des ViewModels dar, dass für
+    /// die View SearchChannel verwendet wird.
+    /// </summary>
     public class SearchChannelsViewModel : ViewModel
     {
         /// <summary>
@@ -47,7 +51,18 @@ namespace DataHandlingLayer.ViewModel
         {
             get { return searchTerm; }
             set { this.setProperty(ref this.searchTerm, value); }
-        }        
+        }
+
+        private bool orderByTypeChecked;
+        /// <summary>
+        /// Gibt den aktuellen Zustand des ToggleButtons OrderByType an. 
+        /// </summary>
+        public bool OrderByTypeChecked
+        {
+            get { return orderByTypeChecked; }
+            set { this.setProperty(ref this.orderByTypeChecked, value); }
+        }
+        
         #endregion Properties
 
         #region Commands
@@ -60,7 +75,16 @@ namespace DataHandlingLayer.ViewModel
             get { return startChannelSearchCommand; }
             set { startChannelSearchCommand = value; }
         }
-        
+
+        private AsyncRelayCommand reorderChannelsCommand;
+        /// <summary>
+        /// Kommando, um die Anordnung der Kanalressourcen in der Liste zu beeinflussen.
+        /// </summary>
+        public AsyncRelayCommand ReorderChannelsCommand
+        {
+            get { return reorderChannelsCommand; }
+            set { reorderChannelsCommand = value; }
+        }     
         #endregion Commands
 
         /// <summary>
@@ -76,6 +100,7 @@ namespace DataHandlingLayer.ViewModel
 
             // Initialisiere Kommandos.
             StartChannelSearchCommand = new AsyncRelayCommand(param => executeChannelSearchAsync(), param => canExecuteSearch());
+            ReorderChannelsCommand = new AsyncRelayCommand(param => executeReorderChannelsCommandAsync());
         }
 
         /// <summary>
@@ -128,8 +153,13 @@ namespace DataHandlingLayer.ViewModel
                     }
                 }
 
-                // Mache neue Kanalliste als Property verfügbar.
-                Channels = new ObservableCollection<Channel>(allChannels.Values.ToList<Channel>());
+                // Mache neue Kanalliste als Property verfügbar. Beachte hierbei einen 
+                // möglicherweiße bereits eingegebenen Suchbegriff und die Sortierung.
+                List<Channel> channelList = extractChannelsByName(SearchTerm);
+                channelList = reorderListByCurrentViewState(channelList);
+                updateObservableCollectionChannels(channelList);
+
+                //Channels = new ObservableCollection<Channel>(allChannels.Values.ToList<Channel>());
             }
         }
 
@@ -141,6 +171,7 @@ namespace DataHandlingLayer.ViewModel
             try
             {
                 List<Channel> channels = await Task.Run(() => channelController.GetAllChannels());
+                channels = reorderListByCurrentViewState(channels);
 
                 // Mache Kanäle über Property abrufbar.
                 Channels = new ObservableCollection<Channel>(channels);
@@ -173,10 +204,76 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private async Task executeChannelSearchAsync()
         {
+            // Generiere Ergebnisliste der Suche.
             List<Channel> resultChannels = await Task.Run(() => extractChannelsByName(SearchTerm));
 
+            // Führe noch Sortierung der Liste aus, nach aktuellem View Zustand.
+            resultChannels = await Task.Run(() => reorderListByCurrentViewState(resultChannels));
+
             // Mache Ergebnis-Kanalliste als Property verfügbar.
-            Channels = new ObservableCollection<Channel>(resultChannels);
+            updateObservableCollectionChannels(resultChannels);
+        }
+
+        /// <summary>
+        /// Stoße eine Sortierung der Kanalliste an. Die Liste wird sortiert nach dem aktuellen
+        /// Zustand innerhalb der View. Der Zustand kann dabei eine Sortierung nach dem Typ des Kanals
+        /// oder eine alphabetische Sortierung nach dem Namen eines Kanals auslösen.
+        /// </summary>
+        private async Task executeReorderChannelsCommandAsync()
+        {
+            List<Channel> currentChannelList = Channels.ToList<Channel>();
+            // Führe Sortierung der aktuelle angezeigten Liste aus, nach aktuellem View Zustand.
+            currentChannelList = await Task.Run(() => reorderListByCurrentViewState(currentChannelList));
+            
+            // Sortiere Elemente in ObservableCollection um, entsprechend der neuen Sortierung.
+            updateObservableCollectionChannels(currentChannelList);
+        }
+
+        /// <summary>
+        /// Ändert die ObservableCollection Channels, welche die aktuell anzuzeigenden Kanalressourcen enthält, entsprechend
+        /// der übergebenen Liste an Kanälen ab. Die Änderungen werden über die ObservableCollection direkt der View
+        /// mitgeteilt, so dass sich die Anzeige entsprechend der neuen Daten anpassen kann.
+        /// </summary>
+        /// <param name="updatedList">Die Liste von Kanälen, auf die die ObservableCollection geändert werden soll.</param>
+        private void updateObservableCollectionChannels(List<Channel> updatedList)
+        {
+            // Lösche aktuell dargestellte Kanäle.
+            Channels.Clear();
+
+            foreach(Channel channel in updatedList)
+            {
+                Channels.Insert(updatedList.IndexOf(channel), channel);
+            }
+        }
+
+        /// <summary>
+        /// Eine Hilfsmethode, die eine übergebene Liste abhängig vom aktuellen Zustand innerhalb der View
+        /// sortiert. Der Zustand kann wechseln zwischen einer Sortierung nach dem Typ des Kanals,
+        /// oder einer alphabetischen Sortierung nach dem Namen des Kanals.
+        /// </summary>
+        /// <returns>Eine sortierte Liste mit Kanälen.</returns>
+        /// <param name="channelList">Die zu sortierende Liste von Kanälen.</param>
+        private List<Channel> reorderListByCurrentViewState(List<Channel> channelList)
+        {
+            if(OrderByTypeChecked)
+            {
+                // Ändere Anordnung, so dass Kanäle nach Typ sortiert werden.
+                channelList = new List<Channel>(
+                    from item in channelList
+                    orderby item.Type
+                    select item
+                    );
+            }
+            else
+            {
+                // Ändere Anordnung, so dass Kanäle alphabetisch sortiert werden.
+                channelList = new List<Channel>(
+                    from item in channelList
+                    orderby item.Name
+                    select item
+                    );
+            }
+            return channelList;
         }
 
         /// <summary>
@@ -186,6 +283,11 @@ namespace DataHandlingLayer.ViewModel
         /// <returns></returns>
         private List<Channel> extractChannelsByName(string name)
         {
+            if(name == null)
+            {
+                name = string.Empty;
+            }
+
             List<Channel> allChannelsList = allChannels.Values.ToList<Channel>();
             List<Channel> results = new List<Channel>( 
                 from item in allChannelsList

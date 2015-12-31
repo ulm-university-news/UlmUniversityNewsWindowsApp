@@ -201,4 +201,10 @@
   <data name="ListItemChannelTypeStudentGroupString" xml:space="preserve">
     <value>Studentengruppe</value>
   </data>
+  <data name="HomescreenAddGroupButton.Label" xml:space="preserve">
+    <value>gruppe hinzufügen</value>
+  </data>
+  <data name="HomescreenSearchGroupsButton.Label" xml:space="preserve">
+    <value>suche gruppen</value>
+  </data>
 </root>

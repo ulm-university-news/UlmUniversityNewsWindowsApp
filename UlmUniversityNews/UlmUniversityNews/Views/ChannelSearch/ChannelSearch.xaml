@@ -14,7 +14,13 @@
     <Page.BottomAppBar>
         <CommandBar x:Name="ChannelSearchCommandBar"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
-            <!-- TODO -->
+            <AppBarToggleButton 
+                x:Name="OrderByChannelType"
+                x:Uid="ChannelSearchOrderByChannelTypeButton"
+                Label="order by type"
+                Icon="Shuffle"
+                IsChecked="{Binding OrderByTypeChecked, Mode=TwoWay}"
+                Command="{Binding ReorderChannelsCommand}" />
         </CommandBar>
     </Page.BottomAppBar>
 
@@ -77,7 +83,7 @@
                             Grid.Column="0"
                             x:Name="ChannelSearchBox"
                             InputScope="Search"
-                            Text="{Binding SearchTerm, Mode=TwoWay}"/>
+                            Text="{Binding SearchTerm, FallbackValue='', TargetNullValue='', Mode=TwoWay}"/>
                         <Button
                             Grid.Column="1"
                             Margin="5,0,0,0"

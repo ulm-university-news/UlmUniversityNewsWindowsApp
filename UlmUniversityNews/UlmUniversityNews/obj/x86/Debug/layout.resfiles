@@ -2,6 +2,7 @@ SQLitePCL.Ext.dll
 SQLitePCL.Ext.pri
 Assets\AppIcons\Logo-Uni.png
 Assets\AppIcons\welcome_screen.png
+Assets\ButtonIcons\feature.search.png
 Assets\ChannelIcons\event.png
 Assets\ChannelIcons\other.png
 Assets\ChannelIcons\sport.png
@@ -21,6 +22,7 @@ App.xbf
 ItemPage.xbf
 PivotPage.xbf
 UlmUniversityNews.xr.xml
+Views\ChannelSearch\ChannelSearch.xbf
 Views\Homescreen\Homescreen.xbf
 Views\StartPage.xbf
 Common\ReadMe.txt

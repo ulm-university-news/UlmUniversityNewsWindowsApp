@@ -46,6 +46,9 @@
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\welcome_screen.png">
       <PackagePath>Assets\AppIcons\welcome_screen.png</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\ButtonIcons\feature.search.png">
+      <PackagePath>Assets\ButtonIcons\feature.search.png</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\ChannelIcons\event.png">
       <PackagePath>Assets\ChannelIcons\event.png</PackagePath>
     </AppxPackagedFile>
@@ -126,6 +129,9 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\x86\Debug\PivotPage.xbf">
       <PackagePath>PivotPage.xbf</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\x86\Debug\Views\ChannelSearch\ChannelSearch.xbf">
+      <PackagePath>Views\ChannelSearch\ChannelSearch.xbf</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\x86\Debug\Views\Homescreen\Homescreen.xbf">
       <PackagePath>Views\Homescreen\Homescreen.xbf</PackagePath>
