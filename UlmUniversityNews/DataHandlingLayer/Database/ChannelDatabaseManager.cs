@@ -480,6 +480,42 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Prüft, ob der Kanal mit der angegebenen Id als abonnierter Kanal in der Datenbank gelistet ist.
+        /// </summary>
+        /// <param name="channelId">Die Id des zu prüfenden Kanals.</param>
+        /// <returns>Liefert true, wenn der Kanal unter den abonnierten Kanälen gelistet ist, ansonsten false.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn die Prüfung fehlschlägt.</exception>
+        public bool IsChannelSubscribed(int channelId)
+        {
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                using (var stmt = conn.Prepare(@"SELECT * FROM SubscribedChannels WHERE Channel_Id=? LIMIT 1;"))
+                {
+                    stmt.Bind(1, channelId);
+
+                    if(stmt.Step() == SQLiteResult.ROW)
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch(SQLiteException sqlEx)
+            {
+                Debug.WriteLine("SQLiteException has occurred in IsChannelSubscribed. The message is: {0}." + sqlEx.Message);
+                throw new DatabaseException("Check of subscription status of channel has failed.");
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("Exception has occurred in IsChannelSubscribed. The message is: {0}, " +
+                    "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                throw new DatabaseException("Check of subscription status of channel has failed.");
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Liefert das Datum zurück, an dem zum letzten Mal ein Update der Liste aller in
         /// der Anwendung verwalteten Kanäle durchgeführt wurde.
         /// </summary>

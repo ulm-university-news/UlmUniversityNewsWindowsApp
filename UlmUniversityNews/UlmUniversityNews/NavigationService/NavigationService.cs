@@ -43,9 +43,10 @@ namespace UlmUniversityNews.NavigationService
         /// Navigiere zur Seite, die unter dem angegebenen Schlüssel registriert ist. 
         /// </summary>
         /// <param name="pageKey">Der Schlüssel der Seite.</param>
-        public void Navigate(string pageKey)
+        public async void Navigate(string pageKey)
         {
-            rootFrame.Navigate(pageMap[pageKey]);
+            var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => rootFrame.Navigate(pageMap[pageKey]));
         }
 
         /// <summary>
@@ -53,9 +54,10 @@ namespace UlmUniversityNews.NavigationService
         /// </summary>
         /// <param name="pageKey">Der Schlüssel der Seite.</param>
         /// <param name="parameter">Der zu übergebende Parameter.</param>
-        public void Navigate(string pageKey, object parameter)
+        public async void Navigate(string pageKey, object parameter)
         {
-            rootFrame.Navigate(pageMap[pageKey], parameter);
+            var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher; 
+            await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => rootFrame.Navigate(pageMap[pageKey], parameter));
         }
 
         /// <summary>
@@ -70,9 +72,10 @@ namespace UlmUniversityNews.NavigationService
         /// <summary>
         /// Kehre zum letzten Element im Navigationsverlauf zurück.
         /// </summary>
-        public void GoBack()
+        public async void GoBack()
         {
-            rootFrame.GoBack();
+            var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => rootFrame.GoBack());
         }
 
         /// <summary>

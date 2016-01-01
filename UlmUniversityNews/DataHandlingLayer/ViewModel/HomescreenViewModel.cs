@@ -226,6 +226,9 @@ namespace DataHandlingLayer.ViewModel
         private void executeChannelSelected(object selectedChannelObj)
         {
             Debug.WriteLine("ChannelSelected command executed. The passed object is of type: " + selectedChannelObj.GetType());
+            _navService.Navigate("ChannelDetails", selectedChannelObj);
+
+            //await Windows.UI.Core.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _navService.Navigate("ChannelDetails", selectedChannelObj));
         }
     }
 }

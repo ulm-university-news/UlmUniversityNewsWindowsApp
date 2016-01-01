@@ -5,10 +5,16 @@
     xmlns:local="using:UlmUniversityNews.Views.ChannelDetails"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converter="using:UlmUniversityNews.Converters"
     xmlns:drawerLayout="using:DrawerLayout"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <!--<Page.Resources>
+        --><!-- Konverter zur Umwandlung des Enum-Wertes ChannelType in einen String. --><!--
+        <converter:ChannelTypeToStringConverter x:Key="ChannelTypeToStringConverterLocal" />
+    </Page.Resources>-->
+    
     <!-- CommandBar -->
     <Page.BottomAppBar>
         <CommandBar x:Name="ChannelDetailsCommandBar"
@@ -46,9 +52,10 @@
 
             <!-- Drawer Text -->
             <TextBlock Grid.Column="1"
-                       x:Uid="ChannelDetailsTitle"
+                       x:Uid="ChannelDetailsPageTitle"
                        Style="{StaticResource DrawerTextStyle}"
-                       Text="Kanalansicht" /> <!-- TODO set Text per Binding-->
+                       Text="{Binding Channel.Name, TargetNullValue='Details', FallbackValue='Details'}" />
+            <!-- TODO set Text per Binding--> <!--{Binding Channel.Name, TargetNullValue='Details', FallbackValue='Details'}-->
         </Grid>
 
         <!--Inhalt der Seite und Inhalt des Drawer Menü-->
@@ -75,6 +82,7 @@
 
                         <ScrollViewer 
                             VerticalScrollBarVisibility="Auto">
+                            
                             <!-- Elemente mit Kanalinformationen. -->
                             <Grid
                             Margin="0,0,19,0"
@@ -110,7 +118,7 @@
                                     Grid.Row="1"
                                     x:Name="ChannelNameContent"
                                     Style="{StaticResource TextInPropertyDescriptions}"
-                                    Text="Das ist der Name des Kanals." />
+                                    Text="{Binding Channel.Name, TargetNullValue='', FallbackValue=''}" />
                                 </Grid>
 
                                 <!-- Kanalbeschreibung -->
@@ -132,7 +140,7 @@
                                     Grid.Row="1"
                                     x:Name="ChannelDescriptionContent"
                                     Style="{StaticResource TextInPropertyDescriptions}"
-                                    Text="Das ist eine Beschreibung des Kanals." />
+                                    Text="{Binding Channel.Description, TargetNullValue='', FallbackValue=''}" /> <!--{Binding Description, TargetNullValue='', FallbackValue=''}-->
                                 </Grid>
 
                                 <!-- Kanaltyp -->
@@ -154,7 +162,7 @@
                                     Grid.Row="1"
                                     x:Name="ChannelTypeContent"
                                     Style="{StaticResource TextInPropertyDescriptions}"
-                                    Text="Der Typ des Kanals. Hier wird auf jeden Fall ein Converter benötigt." />
+                                    Text="{Binding Channel.Type, TargetNullValue='', FallbackValue='', Converter={StaticResource ChannelTypeToStringConverter}}" /> <!--{Binding Type, TargetNullValue='', FallbackValue='', Converter={StaticResource ChannelTypeToStringConverterLocal}}-->
                                 </Grid>
 
                                 <!-- Erstellungsdatum -->
@@ -176,7 +184,7 @@
                                     Grid.Row="1"
                                     x:Name="ChannelCreationDateContent"
                                     Style="{StaticResource TextInPropertyDescriptions}"
-                                    Text="Das Erstellungsdatum des Kanals. Wird hier ein Converter benötigt?" />
+                                    Text="{Binding Channel.CreationDate, TargetNullValue='', FallbackValue=''}" /> <!--{Binding Channel.CreationDate, TargetNullValue='', FallbackValue=''}-->
                                 </Grid>
 
                                 <!-- Änderungsdatum -->
@@ -198,7 +206,7 @@
                                     Grid.Row="1"
                                     x:Name="ChannelModificationDateContent"
                                     Style="{StaticResource TextInPropertyDescriptions}"
-                                    Text="Das Änderungsdatum des Kanals. Wird hier ein Converter benötigt?" />
+                                    Text="{Binding Channel.ModificationDate, TargetNullValue='', FallbackValue=''}" /> <!--{Binding Channel.ModificationDate, TargetNullValue='', FallbackValue=''}-->
                                 </Grid>
 
                                 <!-- Semester -->
@@ -220,7 +228,7 @@
                                     Grid.Row="1"
                                     x:Name="ChannelTermContent"
                                     Style="{StaticResource TextInPropertyDescriptions}"
-                                    Text="WS2015/16" />
+                                    Text="{Binding Channel.Term, TargetNullValue='', FallbackValue=''}" /> <!--{Binding Term, TargetNullValue='', FallbackValue=''}-->
                                 </Grid>
 
                                 <!-- Lokalitäten -->
@@ -242,7 +250,7 @@
                                     Grid.Row="1"
                                     x:Name="ChannelLocationsContent"
                                     Style="{StaticResource TextInPropertyDescriptions}"
-                                    Text="Orte, die für den Kanal relevant sind." />
+                                    Text="{Binding Channel.Locations, TargetNullValue='', FallbackValue=''}" /> <!--{Binding Locations, TargetNullValue='', FallbackValue=''}-->
                                 </Grid>
 
                                 <!-- Termine -->
@@ -264,7 +272,7 @@
                                     Grid.Row="1"
                                     x:Name="ChannelDatesContent"
                                     Style="{StaticResource TextInPropertyDescriptions}"
-                                    Text="Jo, die Termine, die für den Kanal relevant sind." />
+                                    Text="{Binding Channel.Dates, TargetNullValue='', FallbackValue=''}" /> <!--{Binding Dates, TargetNullValue='', FallbackValue=''}-->
                                 </Grid>
 
                                 <!-- Kontaktinformationen -->
@@ -286,7 +294,7 @@
                                     Grid.Row="1"
                                     x:Name="ChannelContactsContent"
                                     Style="{StaticResource TextInPropertyDescriptions}"
-                                    Text="Hier stehen Informationen, wer für den Kanal verantwortlich ist." />
+                                    Text="{Binding Channel.Contacts, TargetNullValue='', FallbackValue=''}" /> <!--{Binding Contacts, TargetNullValue='', FallbackValue=''}-->
                                 </Grid>
 
 
@@ -309,10 +317,11 @@
                                     Grid.Row="1"
                                     x:Name="ChannelWebsiteContent"
                                     Style="{StaticResource TextInPropertyDescriptions}"
-                                    Text="Hier steht ein Link auf eine Webseite, z.B. http://www.universityNews.de " />
+                                    Text="{Binding Channel.Website, TargetNullValue='', FallbackValue=''}" /> <!--{Binding Website, TargetNullValue='', FallbackValue=''}-->
                                 </Grid>
 
                             </Grid>
+                        
                         </ScrollViewer>
 
                     </PivotItem>

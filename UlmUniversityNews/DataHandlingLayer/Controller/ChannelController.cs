@@ -183,6 +183,25 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Prüft, ob der lokale Nutzer den Kanal mit der angegebenen Id abonniert hat.
+        /// </summary>
+        /// <param name="channeId">Die Id des zu prüfenden Kanals.</param>
+        /// <returns>Liefert true, wenn der lokale Nutzer den Kanal abonniert hat, ansonsten false.</returns>
+        public bool IsChannelSubscribed(int channeId)
+        {
+            try
+            {
+                return channelDatabaseManager.IsChannelSubscribed(channeId);
+            }
+            catch(DatabaseException ex)
+            {
+                // Keine Abbildung auf ClientException.
+                Debug.WriteLine("DatabaseException with message {0} occurred.", ex.Message);
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Erzeugt eine Liste von Objekten vom Typ Kanal aus dem übergebenen JSON-Dokument.
         /// </summary>
         /// <param name="jsonString">Das JSON-Dokument.</param>

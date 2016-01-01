@@ -219,4 +219,7 @@
   <data name="ChannelDetailsMessagesPivotItem.Header" xml:space="preserve">
     <value>Messages</value>
   </data>
+  <data name="ChannelSearchPageTitle" xml:space="preserve">
+    <value>Search Channels</value>
+  </data>
 </root>

@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using DataHandlingLayer.ViewModel;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -28,6 +29,11 @@ namespace UlmUniversityNews.Views.ChannelDetails
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
+        /// <summary>
+        /// Eine Referenz auf die ViewModel Klasse ChannelDetailsViewModel.
+        /// </summary>
+        private ChannelDetailsViewModel channelDetailsViewModel;
+
         public ChannelDetails()
         {
             this.InitializeComponent();
@@ -35,6 +41,9 @@ namespace UlmUniversityNews.Views.ChannelDetails
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+
+            channelDetailsViewModel = new ChannelDetailsViewModel(App.NavigationService, App.ErrorMapper);
+            this.DataContext = channelDetailsViewModel;
         }
 
         /// <summary>
@@ -67,6 +76,8 @@ namespace UlmUniversityNews.Views.ChannelDetails
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            // Lade den Zustand im ViewModel mit dem übergebenen Parameterwert.
+            channelDetailsViewModel.LoadSelectedChannel(e.NavigationParameter);
         }
 
         /// <summary>

@@ -52,9 +52,9 @@
 
             <!-- Drawer Text -->
             <TextBlock Grid.Column="1"
-                       x:Uid="HomescreenTitle"
+                       x:Uid="ChannelSearchPageTitle"
                        Style="{StaticResource DrawerTextStyle}"
-                       Text="Homescreen" />
+                       Text="Channel search" />
         </Grid>
 
         <!--Inhalt der Seite und Inhalt des Drawer Menü-->

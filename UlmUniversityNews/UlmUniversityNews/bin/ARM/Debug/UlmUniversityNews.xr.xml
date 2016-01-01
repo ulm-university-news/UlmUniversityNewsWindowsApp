@@ -15,6 +15,13 @@
     <RootPropertyPathName Name="Description" />
     <RootPropertyPathName Name="FirstGroup" />
     <RootPropertyPathName Name="SelectedPivotItemIndex" />
+    <RootPropertyPathName Name="Channel" />
+    <RootPropertyPathName Name="Website" />
+    <RootPropertyPathName Name="Contacts" />
+    <RootPropertyPathName Name="Dates" />
+    <RootPropertyPathName Name="Locations" />
+    <RootPropertyPathName Name="ModificationDate" />
+    <RootPropertyPathName Name="CreationDate" />
     <RootPropertyPathName Name="OrderByTypeChecked" />
     <RootPropertyPathName Name="ReorderChannelsCommand" />
     <RootPropertyPathName Name="Channels" />
@@ -109,8 +116,8 @@
       <RootProperty Name="Converter" />
       <RootProperty Name="RelativeSource" />
       <RootProperty Name="Mode" />
-      <RootProperty Name="FallbackValue" />
       <RootProperty Name="TargetNullValue" />
+      <RootProperty Name="FallbackValue" />
       <RootProperty Name="UpdateSourceTrigger" />
       <RootProperty Name="ElementName" />
       <RootProperty Name="Path" />
