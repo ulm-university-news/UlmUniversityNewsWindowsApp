@@ -19,6 +19,12 @@
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\x86\Debug\UlmUniversityNews.exe">
       <PackagePath>UlmUniversityNews.exe</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\WindowsPhoneApp\v8.1\ExtensionSDKs\BehaviorsXamlSDKManaged\12.0\References\CommonConfiguration\Neutral\Microsoft.Xaml.Interactions.dll">
+      <PackagePath>Microsoft.Xaml.Interactions.dll</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\WindowsPhoneApp\v8.1\ExtensionSDKs\BehaviorsXamlSDKManaged\12.0\References\CommonConfiguration\Neutral\Microsoft.Xaml.Interactivity.dll">
+      <PackagePath>Microsoft.Xaml.Interactivity.dll</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\DataHandlingLayer\bin\x86\Debug\DataHandlingLayer.dll">
       <PackagePath>DataHandlingLayer.dll</PackagePath>
     </AppxPackagedFile>
@@ -100,23 +106,8 @@
       <PackagePath>Assets\WideLogo.scale-240.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Toolkit.Content\ApplicationBar.Cancel.png">
-      <PackagePath>Toolkit.Content\ApplicationBar.Cancel.png</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Toolkit.Content\ApplicationBar.Check.png">
-      <PackagePath>Toolkit.Content\ApplicationBar.Check.png</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Toolkit.Content\ApplicationBar.Delete.png">
-      <PackagePath>Toolkit.Content\ApplicationBar.Delete.png</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Toolkit.Content\ApplicationBar.Select.png">
-      <PackagePath>Toolkit.Content\ApplicationBar.Select.png</PackagePath>
-    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Common\ReadMe.txt">
       <PackagePath>Common\ReadMe.txt</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\README_FIRST.txt">
-      <PackagePath>README_FIRST.txt</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\DataModel\SampleData.json">
       <PackagePath>DataModel\SampleData.json</PackagePath>
@@ -129,6 +120,9 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\x86\Debug\PivotPage.xbf">
       <PackagePath>PivotPage.xbf</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\x86\Debug\Views\ChannelDetails\ChannelDetails.xbf">
+      <PackagePath>Views\ChannelDetails\ChannelDetails.xbf</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\x86\Debug\Views\ChannelSearch\ChannelSearch.xbf">
       <PackagePath>Views\ChannelSearch\ChannelSearch.xbf</PackagePath>

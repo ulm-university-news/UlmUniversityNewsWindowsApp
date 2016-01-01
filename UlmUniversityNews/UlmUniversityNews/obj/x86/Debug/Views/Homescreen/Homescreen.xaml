@@ -5,6 +5,8 @@
     xmlns:local="using:UlmUniversityNews.Views.Homescreen"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:drawerLayout="using:DrawerLayout"
     xmlns:valueconverter="using:UlmUniversityNews.Converters"
     xmlns:data="using:DataHandlingLayer.DataModel"
@@ -84,7 +86,7 @@
                        HeaderTemplate="{StaticResource PivotItemHeaderStyle}"
                        SelectedIndex="{Binding SelectedPivotItemIndex, Mode=TwoWay}">
                     <!-- Pivotelement 1-->
-                    <PivotItem x:Uid="MyChannels"
+                    <PivotItem x:Uid="HomescreenMyChannelsPivotItem"
                            Style="{StaticResource PivotItemStyle}"
                            Header="Meine Kanäle">
                         <!-- Definiere Liste für Kanäle. -->
@@ -92,23 +94,24 @@
                             ItemTemplate="{StaticResource ChannelListItemStyle}"
                             ItemsSource="{Binding MyChannels}"
                             HorizontalContentAlignment="Stretch"
-                            HorizontalAlignment="Stretch"
-                            d:DataContext="{Binding , Source={d:DesignData Source=../../DataModel/SampleChannelData.json, Type=data:Channel}}">
+                            HorizontalAlignment="Stretch">
+                            <!---d:DataContext="{Binding , Source={d:DesignData Source=../../DataModel/SampleChannelData.json, Type=data:Channel}}"-->
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem">
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                                 </Style>
                             </ListView.ItemContainerStyle>
+                            
+                            <!-- Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
+                            <i:Interaction.Behaviors>
+                                <core:EventTriggerBehavior EventName="ItemClick">
+                                    <core:InvokeCommandAction Command="{Binding ChannelSelected}" />
+                                </core:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
                         </ListView>
-
-                        <!-- TODO -->
-                        <!--<TextBlock x:Name="Test"
-                                   FontSize="20"
-                                   Text="Jo Servus, das ist ein Test Text. Den schreib ich extra groß, damit man ihn auch sieht."
-                                   TextWrapping="Wrap"/>-->
                     </PivotItem>
                     <!-- Pivotelement 2-->
-                    <PivotItem x:Uid="MyGroups"
+                    <PivotItem x:Uid="HomescreenMyGroupsPivotItem"
                            Style="{StaticResource PivotItemStyle}"
                            Header="Meine Gruppen">
                         <!-- TODO -->

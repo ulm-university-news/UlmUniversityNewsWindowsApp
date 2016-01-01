@@ -141,6 +141,13 @@ C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmU
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\x86\Debug\Views\ChannelSearch\ChannelSearch.g.cs
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\x86\Debug\Views\ChannelSearch\ChannelSearch.xaml
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\x86\Debug\Views\ChannelSearch\ChannelSearch.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\x86\Debug\Views\ChannelDetails\ChannelDetails.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\x86\Debug\Microsoft.Xaml.Interactions.dll
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\x86\Debug\Microsoft.Xaml.Interactivity.dll
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\x86\Debug\Views\ChannelDetails\ChannelDetails.g.i.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\x86\Debug\Views\ChannelDetails\ChannelDetails.g.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\x86\Debug\Views\ChannelDetails\ChannelDetails.xaml
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\x86\Debug\Views\ChannelDetails\ChannelDetails.xbf
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\x86\Debug\SQLitePCL\layout.resfiles
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\x86\Debug\SQLitePCL\layout.resfiles.intermediate
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\x86\Debug\SQLitePCL\Resources.resfiles

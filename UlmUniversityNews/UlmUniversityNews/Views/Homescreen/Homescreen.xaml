@@ -5,6 +5,8 @@
     xmlns:local="using:UlmUniversityNews.Views.Homescreen"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:drawerLayout="using:DrawerLayout"
     xmlns:valueconverter="using:UlmUniversityNews.Converters"
     xmlns:data="using:DataHandlingLayer.DataModel"
@@ -13,6 +15,8 @@
     <Page.Resources>
         <!-- Konvertierung eines Boolean Wertes auf eine Sichtbarkeit. -->
         <valueconverter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <!-- Konvertierung eines ItemClickEventArgs auf das geklickte Objekt. -->
+        <valueconverter:ItemClickedConverter x:Key="ItemClickedConverter" />
     </Page.Resources>
     
     <!-- CommandBar -->
@@ -88,18 +92,27 @@
                            Style="{StaticResource PivotItemStyle}"
                            Header="Meine Kanäle">
                         <!-- Definiere Liste für Kanäle. -->
+                        <!-- Beachte, IsItemClickEnabled muss explizit aktiviert werden, sonst funktioniert das Binding auf das Command über das Behaviour nicht.-->
                         <ListView 
                             ItemTemplate="{StaticResource ChannelListItemStyle}"
                             ItemsSource="{Binding MyChannels}"
+                            IsItemClickEnabled="True"
                             HorizontalContentAlignment="Stretch"
-                            HorizontalAlignment="Stretch"
-                            d:DataContext="{Binding , Source={d:DesignData Source=../../DataModel/SampleChannelData.json, Type=data:Channel}}">
+                            HorizontalAlignment="Stretch">
                             <!---d:DataContext="{Binding , Source={d:DesignData Source=../../DataModel/SampleChannelData.json, Type=data:Channel}}"-->
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem">
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                                 </Style>
                             </ListView.ItemContainerStyle>
+                            
+                            <!-- Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
+                            <i:Interaction.Behaviors>
+                                <core:EventTriggerBehavior EventName="ItemClick">
+                                    <core:InvokeCommandAction Command="{Binding ChannelSelected}"
+                                                              InputConverter="{StaticResource ItemClickedConverter}" />
+                                </core:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
                         </ListView>
                     </PivotItem>
                     <!-- Pivotelement 2-->

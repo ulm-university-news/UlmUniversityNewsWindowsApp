@@ -14,7 +14,9 @@
     <RootPropertyPathName Name="Items" />
     <RootPropertyPathName Name="Description" />
     <RootPropertyPathName Name="FirstGroup" />
+    <RootPropertyPathName Name="SelectedPivotItemIndex" />
     <RootPropertyPathName Name="OrderByTypeChecked" />
+    <RootPropertyPathName Name="ReorderChannelsCommand" />
     <RootPropertyPathName Name="Channels" />
     <RootPropertyPathName Name="StartChannelSearchCommand" />
     <RootPropertyPathName Name="SearchTerm" />
@@ -22,8 +24,8 @@
     <RootPropertyPathName Name="AddGroupCommand" />
     <RootPropertyPathName Name="SearchGroupsCommand" />
     <RootPropertyPathName Name="SearchChannelsCommand" />
-    <RootPropertyPathName Name="SelectedPivotItemIndex" />
     <RootPropertyPathName Name="MyChannels" />
+    <RootPropertyPathName Name="ChannelSelected" />
     <RootPropertyPathName Name="CreateUserCommand" />
     <RootPropertyPathName Name="ValidationMessages" />
   </Roots.PropertyPathNames>
@@ -41,31 +43,22 @@
     <RootType FullName="Windows.UI.Xaml.Controls.TextBlock">
       <RootProperty Name="FontSize" />
       <RootProperty Name="FontFamily" />
-      <RootProperty Name="Foreground" />
       <RootProperty Name="TextWrapping" />
-      <RootProperty Name="VerticalAlignment" />
       <RootProperty Name="TextTrimming" />
-      <RootProperty Name="Style" />
       <RootProperty Name="FontWeight" />
+      <RootProperty Name="Foreground" />
+      <RootProperty Name="VerticalAlignment" />
+      <RootProperty Name="Style" />
       <RootProperty Name="Text" />
       <RootProperty Name="HorizontalAlignment" />
       <RootProperty Name="Margin" />
       <RootProperty Name="CharacterSpacing" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.FrameworkElement">
-      <RootProperty Name="VerticalAlignment" />
       <RootProperty Name="Margin" />
       <RootProperty Name="HorizontalAlignment" />
-      <RootProperty Name="Height" />
-    </RootType>
-    <RootType FullName="Windows.UI.Xaml.Controls.Image">
-      <RootProperty Name="Source" />
-      <RootProperty Name="Height" />
-      <RootProperty Name="Width" />
-      <RootProperty Name="HorizontalAlignment" />
       <RootProperty Name="VerticalAlignment" />
-      <RootProperty Name="Style" />
-      <RootEvent Name="Tapped" />
+      <RootProperty Name="Height" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.Grid">
       <RootProperty Name="Background" />
@@ -77,6 +70,7 @@
       <RootProperty Name="VerticalAlignment" />
       <RootProperty Name="ChildrenTransitions" />
       <RootProperty Name="Style" />
+      <RootProperty Name="HorizontalAlignment" />
       <RootMethod Name="GetColumn" />
       <RootMethod Name="SetColumn" />
       <RootMethod Name="GetRow" />
@@ -84,6 +78,15 @@
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.Panel">
       <RootProperty Name="Background" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.Image">
+      <RootProperty Name="Source" />
+      <RootProperty Name="Height" />
+      <RootProperty Name="Width" />
+      <RootProperty Name="HorizontalAlignment" />
+      <RootProperty Name="VerticalAlignment" />
+      <RootProperty Name="Style" />
+      <RootEvent Name="Tapped" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.PivotItem">
       <RootProperty Name="Margin" />
@@ -106,9 +109,11 @@
       <RootProperty Name="Converter" />
       <RootProperty Name="RelativeSource" />
       <RootProperty Name="Mode" />
+      <RootProperty Name="FallbackValue" />
+      <RootProperty Name="TargetNullValue" />
+      <RootProperty Name="UpdateSourceTrigger" />
       <RootProperty Name="ElementName" />
       <RootProperty Name="Path" />
-      <RootProperty Name="FallbackValue" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.ContentPresenter">
       <RootProperty Name="Content" />
@@ -180,13 +185,19 @@
       <RootEvent Name="Click" />
     </RootType>
     <RootType FullName="UlmUniversityNews.PivotPage" />
+    <RootType FullName="DrawerLayout.DrawerLayout">
+      <RootProperty Name="Children" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.ScrollViewer">
+      <RootProperty Name="VerticalScrollBarVisibility" />
+      <RootProperty Name="Content" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.Views.ChannelDetails.ChannelDetails" />
     <RootType FullName="Windows.UI.Xaml.Controls.AppBarToggleButton">
       <RootProperty Name="Label" />
       <RootProperty Name="Icon" />
       <RootProperty Name="IsChecked" />
-    </RootType>
-    <RootType FullName="DrawerLayout.DrawerLayout">
-      <RootProperty Name="Children" />
+      <RootProperty Name="Command" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.ListViewItem" />
     <RootType FullName="Windows.UI.Xaml.Controls.Control">
@@ -197,6 +208,7 @@
       <RootProperty Name="InputScope" />
       <RootProperty Name="Text" />
       <RootProperty Name="Header" />
+      <RootEvent Name="KeyDown" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.Button">
       <RootProperty Name="Margin" />
@@ -212,6 +224,17 @@
     </RootType>
     <RootType FullName="UlmUniversityNews.Views.ChannelSearch.ChannelSearch" />
     <RootType FullName="UlmUniversityNews.Converters.BooleanToVisibilityConverter" />
+    <RootType FullName="Microsoft.Xaml.Interactivity.Interaction">
+      <RootMethod Name="GetBehaviors" />
+      <RootMethod Name="SetBehaviors" />
+    </RootType>
+    <RootType FullName="Microsoft.Xaml.Interactions.Core.EventTriggerBehavior">
+      <RootProperty Name="EventName" />
+      <RootProperty Name="Actions" />
+    </RootType>
+    <RootType FullName="Microsoft.Xaml.Interactions.Core.InvokeCommandAction">
+      <RootProperty Name="Command" />
+    </RootType>
     <RootType FullName="UlmUniversityNews.Views.Homescreen.Homescreen" />
     <RootType FullName="UlmUniversityNews.Converters.ValidationMessageOnLocalizedStringConverter" />
     <RootType FullName="Microsoft.Xaml.Tools.DirectUI.ProxyTypes.NullExtension" />

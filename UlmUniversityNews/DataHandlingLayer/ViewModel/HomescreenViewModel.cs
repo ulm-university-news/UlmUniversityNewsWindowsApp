@@ -80,6 +80,16 @@ namespace DataHandlingLayer.ViewModel
             get { return searchGroupsCommand; }
             set { searchGroupsCommand = value; }
         }
+
+        private RelayCommand channelSelected;
+        /// <summary>
+        /// Es wurde ein Kanal ausgewähhlt, zu dem nun die Kanaldetails angezeigt werden sollen.
+        /// </summary>
+        public RelayCommand ChannelSelected
+        {
+            get { return channelSelected; }
+            set { channelSelected = value; }
+        }
         #endregion Commands
 
         /// <summary>
@@ -97,6 +107,7 @@ namespace DataHandlingLayer.ViewModel
             searchChannelsCommand = new RelayCommand(param => executeSearchChannelsCommand(), param => canSearchChannels());
             addGroupCommand = new RelayCommand(param => executeAddGroupCommand(), param => canAddGroup());
             searchGroupsCommand = new RelayCommand(param => executeSearchGroupsCommand(), param => canSearchGroups());
+            channelSelected = new RelayCommand(param => executeChannelSelected(param), param => canSelectChannel());
         }
 
         /// <summary>
@@ -126,6 +137,7 @@ namespace DataHandlingLayer.ViewModel
             searchChannelsCommand.RaiseCanExecuteChanged();
             addGroupCommand.RaiseCanExecuteChanged();
             searchGroupsCommand.RaiseCanExecuteChanged();
+            channelSelected.RaiseCanExecuteChanged();
         }
 
         /// <summary>
@@ -176,6 +188,7 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Liefert true zurück, wenn das Kommando ausgeführt werden kann, ansonsten false.</returns>
         private bool canSearchGroups()
         {
+            Debug.WriteLine("In canSearchGroups() method.");
             if (selectedPivotItemIndex == 1)    // Aktiv, wenn "Meine Gruppen" PivotItem aktiv ist.
             {
                 return true;
@@ -189,6 +202,30 @@ namespace DataHandlingLayer.ViewModel
         private void executeSearchGroupsCommand()
         {
             // TODO
+        }
+
+        /// <summary>
+        /// Zeigt an, ob aktuell ein Kanal ausgewählt werden kann.
+        /// </summary>
+        /// <returns></returns>
+        private bool canSelectChannel()
+        {
+            Debug.WriteLine("In canSelectChannel() method.");
+            if (selectedPivotItemIndex == 0)     // Aktiv, wenn "Meine Kanäle" Pivotitem aktiv ist.
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Bereite Anzeige der Kanaldetails für den ausgwählten Kanal vor und löse Übergang
+        /// auf Kanaldetails View aus.
+        /// </summary>
+        /// <param name="selectedChannelObj">Der ausgewählte Kanal als Objekt.</param>
+        private void executeChannelSelected(object selectedChannelObj)
+        {
+            Debug.WriteLine("ChannelSelected command executed. The passed object is of type: " + selectedChannelObj.GetType());
         }
     }
 }
