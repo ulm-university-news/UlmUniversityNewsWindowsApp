@@ -53,7 +53,7 @@ namespace UlmUniversityNews.Views.ChannelDetails
 
         /// <summary>
         /// Event-Handler, der aufgerufen wird, wenn das PivotElement geladen wurde.
-        /// Wird hier für Workaround benötigt beüglich HidablePivotItemBehavior.
+        /// Wird hier für Workaround benötigt bezüglich HidablePivotItemBehavior.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
