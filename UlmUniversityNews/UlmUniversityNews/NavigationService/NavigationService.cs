@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,12 +44,12 @@ namespace UlmUniversityNews.NavigationService
         /// Navigiere zur Seite, die unter dem angegebenen Schlüssel registriert ist. 
         /// </summary>
         /// <param name="pageKey">Der Schlüssel der Seite.</param>
-        public void Navigate(string pageKey)
+        public async void Navigate(string pageKey)
         {
-            //var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
-            //await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => rootFrame.Navigate(pageMap[pageKey]));
+            Debug.WriteLine("In Navigate(pageKey) method of the NavigationService and the current Thread ID is: {0}.", Environment.CurrentManagedThreadId);
 
-            rootFrame.Navigate(pageMap[pageKey]);
+            var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => rootFrame.Navigate(pageMap[pageKey]));
         }
 
         /// <summary>
@@ -58,6 +59,8 @@ namespace UlmUniversityNews.NavigationService
         /// <param name="parameter">Der zu übergebende Parameter.</param>
         public async void Navigate(string pageKey, object parameter)
         {
+            Debug.WriteLine("In Navigate(pageKey, object) method of the NavigationService and the current Thread ID is: {0}.", Environment.CurrentManagedThreadId);
+
             var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher; 
             await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => rootFrame.Navigate(pageMap[pageKey], parameter));
         }
@@ -76,6 +79,8 @@ namespace UlmUniversityNews.NavigationService
         /// </summary>
         public async void GoBack()
         {
+            Debug.WriteLine("In GoBack() method of the NavigationService and the current Thread ID is: {0}.", Environment.CurrentManagedThreadId);
+
             var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
             await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => rootFrame.GoBack());
         }

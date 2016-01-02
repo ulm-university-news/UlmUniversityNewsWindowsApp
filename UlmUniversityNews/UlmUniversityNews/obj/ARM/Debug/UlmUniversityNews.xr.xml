@@ -14,6 +14,9 @@
     <RootPropertyPathName Name="Items" />
     <RootPropertyPathName Name="Description" />
     <RootPropertyPathName Name="FirstGroup" />
+    <RootPropertyPathName Name="IsEnabled" />
+    <RootPropertyPathName Name="UnsubscribeChannelCommand" />
+    <RootPropertyPathName Name="SubscribeChannelCommand" />
     <RootPropertyPathName Name="SelectedPivotItemIndex" />
     <RootPropertyPathName Name="EventObj" />
     <RootPropertyPathName Name="DataContext" />
@@ -38,9 +41,9 @@
     <RootPropertyPathName Name="OrderByTypeChecked" />
     <RootPropertyPathName Name="ReorderChannelsCommand" />
     <RootPropertyPathName Name="Channels" />
+    <RootPropertyPathName Name="ChannelSelectedCommand" />
     <RootPropertyPathName Name="StartChannelSearchCommand" />
     <RootPropertyPathName Name="SearchTerm" />
-    <RootPropertyPathName Name="IsEnabled" />
     <RootPropertyPathName Name="AddGroupCommand" />
     <RootPropertyPathName Name="SearchGroupsCommand" />
     <RootPropertyPathName Name="SearchChannelsCommand" />
@@ -116,7 +119,6 @@
       <RootProperty Name="DataContext" />
       <RootProperty Name="Content" />
       <RootProperty Name="Style" />
-      <RootProperty Name="Visibility" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.DataTemplate">
       <RootProperty Name="Template" />
@@ -131,10 +133,10 @@
     <RootType FullName="Windows.UI.Xaml.Data.Binding">
       <RootProperty Name="Converter" />
       <RootProperty Name="RelativeSource" />
-      <RootProperty Name="Mode" />
-      <RootProperty Name="TargetNullValue" />
       <RootProperty Name="ElementName" />
       <RootProperty Name="Path" />
+      <RootProperty Name="Mode" />
+      <RootProperty Name="TargetNullValue" />
       <RootProperty Name="FallbackValue" />
       <RootProperty Name="UpdateSourceTrigger" />
     </RootType>
@@ -214,12 +216,20 @@
     <RootType FullName="DrawerLayout.DrawerLayout">
       <RootProperty Name="Children" />
     </RootType>
+    <RootType FullName="Microsoft.Xaml.Interactivity.Interaction">
+      <RootMethod Name="GetBehaviors" />
+      <RootMethod Name="SetBehaviors" />
+    </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.ScrollViewer">
       <RootProperty Name="VerticalScrollBarVisibility" />
       <RootProperty Name="Content" />
     </RootType>
     <RootType FullName="Microsoft.Xaml.Tools.DirectUI.ProxyTypes.NullExtension" />
+    <RootType FullName="UlmUniversityNews.Common.HideablePivotItemBehavior">
+      <RootProperty Name="Visible" />
+    </RootType>
     <RootType FullName="UlmUniversityNews.Views.ChannelDetails.ChannelDetails" />
+    <RootType FullName="UlmUniversityNews.Converters.ItemClickedConverter" />
     <RootType FullName="Windows.UI.Xaml.Controls.AppBarToggleButton">
       <RootProperty Name="Label" />
       <RootProperty Name="Icon" />
@@ -229,6 +239,14 @@
     <RootType FullName="Windows.UI.Xaml.Controls.ListViewItem" />
     <RootType FullName="Windows.UI.Xaml.Controls.Control">
       <RootProperty Name="HorizontalContentAlignment" />
+    </RootType>
+    <RootType FullName="Microsoft.Xaml.Interactions.Core.EventTriggerBehavior">
+      <RootProperty Name="EventName" />
+      <RootProperty Name="Actions" />
+    </RootType>
+    <RootType FullName="Microsoft.Xaml.Interactions.Core.InvokeCommandAction">
+      <RootProperty Name="Command" />
+      <RootProperty Name="InputConverter" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.TextBox">
       <RootProperty Name="Background" />
@@ -250,19 +268,6 @@
       <RootProperty Name="ImageSource" />
     </RootType>
     <RootType FullName="UlmUniversityNews.Views.ChannelSearch.ChannelSearch" />
-    <RootType FullName="UlmUniversityNews.Converters.ItemClickedConverter" />
-    <RootType FullName="Microsoft.Xaml.Interactivity.Interaction">
-      <RootMethod Name="GetBehaviors" />
-      <RootMethod Name="SetBehaviors" />
-    </RootType>
-    <RootType FullName="Microsoft.Xaml.Interactions.Core.EventTriggerBehavior">
-      <RootProperty Name="EventName" />
-      <RootProperty Name="Actions" />
-    </RootType>
-    <RootType FullName="Microsoft.Xaml.Interactions.Core.InvokeCommandAction">
-      <RootProperty Name="Command" />
-      <RootProperty Name="InputConverter" />
-    </RootType>
     <RootType FullName="UlmUniversityNews.Views.Homescreen.Homescreen" />
     <RootType FullName="UlmUniversityNews.Converters.ValidationMessageOnLocalizedStringConverter" />
     <RootType FullName="UlmUniversityNews.Views.StartPage" />

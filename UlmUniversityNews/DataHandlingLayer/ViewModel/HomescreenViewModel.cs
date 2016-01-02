@@ -188,7 +188,6 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Liefert true zurück, wenn das Kommando ausgeführt werden kann, ansonsten false.</returns>
         private bool canSearchGroups()
         {
-            Debug.WriteLine("In canSearchGroups() method.");
             if (selectedPivotItemIndex == 1)    // Aktiv, wenn "Meine Gruppen" PivotItem aktiv ist.
             {
                 return true;
@@ -210,7 +209,6 @@ namespace DataHandlingLayer.ViewModel
         /// <returns></returns>
         private bool canSelectChannel()
         {
-            Debug.WriteLine("In canSelectChannel() method.");
             if (selectedPivotItemIndex == 0)     // Aktiv, wenn "Meine Kanäle" Pivotitem aktiv ist.
             {
                 return true;
@@ -226,9 +224,8 @@ namespace DataHandlingLayer.ViewModel
         private void executeChannelSelected(object selectedChannelObj)
         {
             Debug.WriteLine("ChannelSelected command executed. The passed object is of type: " + selectedChannelObj.GetType());
+            Debug.WriteLine("Currently on thread with id: {0} in executeChannelSelected: ", Environment.CurrentManagedThreadId);
             _navService.Navigate("ChannelDetails", selectedChannelObj);
-
-            //await Windows.UI.Core.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _navService.Navigate("ChannelDetails", selectedChannelObj));
         }
     }
 }

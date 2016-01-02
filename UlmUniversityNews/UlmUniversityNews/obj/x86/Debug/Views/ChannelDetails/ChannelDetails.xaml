@@ -3,6 +3,9 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:UlmUniversityNews.Views.ChannelDetails"
+    xmlns:common="using:UlmUniversityNews.Common"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converter="using:UlmUniversityNews.Converters"
@@ -14,15 +17,34 @@
         <!-- Konverter von Faculty Enum Wert auf einen String. -->
         <converter:FacultyToLocalizedStringConverter x:Key="FacultyToLocalizedStringConverter" />
         
-        <!--Konverter zur Umwandlung des Enum-Wertes ChannelType in einen String.--> 
+        <!-- Konverter zur Umwandlung des Enum-Wertes ChannelType in einen String. --> 
         <converter:ChannelTypeToStringConverter x:Key="ChannelTypeToStringConverterLocal" />
+        
+        <!-- Konverter zur Umwandlung von Werten auf eine Sichtbarkeit. -->
+        <converter:NullValuetoVisibilityConverter x:Key="NullValuetoVisibilityConverter" />
+        
+        <!-- Konverter zur Umwandlung von Boolean Werten auf eine Sichtbarkeit. -->
+        <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Page.Resources>
 
     <!-- CommandBar -->
     <Page.BottomAppBar>
         <CommandBar x:Name="ChannelDetailsCommandBar"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
-            <!-- TODO -->
+            <AppBarButton
+                x:Name="SubscribeChannelButton"
+                x:Uid="ChannelDetailsSubscribeChannelButton"
+                Icon="Favorite"
+                Label="subscribe channel"
+                Visibility="{Binding ElementName=SubscribeChannelButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding SubscribeChannelCommand}" />
+            <AppBarButton
+                x:Name="UnsubscribeChannelButton"
+                x:Uid="ChannelDetailsUnsubscribeChannelButton"
+                Icon="UnFavorite"
+                Label="unsubscribe channel"
+                Visibility="{Binding ElementName=UnsubscribeChannelButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding UnsubscribeChannelCommand}" />
         </CommandBar>
     </Page.BottomAppBar>
 
@@ -66,28 +88,40 @@
 
             <!-- Inhalt der Seite -->
             <Grid x:Name="MainFragment" Background="{StaticResource MainFragmentBackgroundColor}">
-                <Pivot x:Uid="ChannelDetailsPivot" 
-                       x:Name="ChannelDetailsPivot" 
+                <Pivot x:Uid="ChannelDetailsPivot"
+                       x:Name="ChannelDetailsPivot"
                        HeaderTemplate="{StaticResource PivotItemHeaderStyle}"
                        SelectedIndex="{Binding SelectedPivotItemIndex, Mode=TwoWay}">
 
                     <!-- Pivotelement 1-->
-                    <PivotItem x:Uid="ChannelDetailsMessagesPivotItem"
-                           Style="{StaticResource PivotItemStyle}"
-                           Header="Nachrichten">
+                    <PivotItem
+                        x:Uid="ChannelDetailsMessagesPivotItem"
+                        Style="{StaticResource PivotItemStyle}"
+                        Header="Nachrichtenansicht">
+                        <!--Visibility="{Binding ChannelSubscribedStatus, Converter={StaticResource BooleanToVisibilityConverter}, TargetNullValue=Collapsed}"-->
+
+                        <!-- Blende Nachrichten PivotItem aus, wenn der Kanal noch nicht abonniert ist.-->
+                        <!-- Behavior zum Ein- bzw. Ausblenden dieses PivotItems abhängig vom SubscribeStatus. -->
+                        <i:Interaction.Behaviors>
+                            <common:HideablePivotItemBehavior x:Name="HidablePivotItemBehaviour" Visible="{Binding ChannelSubscribedStatus, UpdateSourceTrigger=PropertyChanged}" />
+                        </i:Interaction.Behaviors>
+
                         <!-- TODO -->
                     </PivotItem>
 
                     <!-- Pivotelement 2-->
-                    <PivotItem x:Uid="ChannelDetailsChannelInformationPivotItem"
-                           Style="{StaticResource PivotItemStyle}"
-                           Header="Kanalinformationen">
+                    <PivotItem
+                        x:Name="ChannelDetailsChannelInformationPivotItem"
+                        x:Uid="ChannelDetailsChannelInformationPivotItem"
+                        Style="{StaticResource PivotItemStyle}"
+                        Header="Kanalinformationen">
 
                         <ScrollViewer 
                             VerticalScrollBarVisibility="Auto">
 
                             <!-- Elemente mit Kanalinformationen einschließlich Subklasseninformationen. -->
                             <Grid
+                            x:Name="GridWithChannelInformation"
                             Margin="0,0,19,0"
                             HorizontalAlignment="Stretch">
                                 <Grid.RowDefinitions>
@@ -127,6 +161,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsChannelNameField"
                                             x:Name="ChannelName"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                             Text="Name" />
@@ -140,6 +175,7 @@
 
                                     <!-- Kanalbeschreibung -->
                                     <Grid
+                                        x:Name="ChannelNameGrid"
                                         Grid.Row="1"
                                         Style="{StaticResource EnumerationOfPropertiesGridStyle}">
                                         <Grid.RowDefinitions>
@@ -149,9 +185,9 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsChannelDescriptionField"
                                             x:Name="ChannelDescription"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Description" />
+                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"/>
 
                                         <TextBlock
                                             Grid.Row="1"
@@ -163,8 +199,8 @@
 
                                     <!-- Kanaltyp -->
                                     <Grid
-                                Grid.Row="2"
-                                Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                        Grid.Row="2"
+                                        Style="{StaticResource EnumerationOfPropertiesGridStyle}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
@@ -172,6 +208,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsChannelTypeField"
                                             x:Name="ChannelType"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                             Text="Typ" />
@@ -181,7 +218,7 @@
                                             x:Name="ChannelTypeContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding Type, Converter={StaticResource ChannelTypeToStringConverterLocal}, TargetNullValue='', FallbackValue=''}" />
-                                        <!--{Binding Type, TargetNullValue='', FallbackValue='', Converter={StaticResource ChannelTypeToStringConverterLocal}}-->
+                                            <!--{Binding Type, TargetNullValue='', FallbackValue='', Converter={StaticResource ChannelTypeToStringConverterLocal}}-->
                                     </Grid>
 
                                     <!-- Erstellungsdatum -->
@@ -195,6 +232,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsChannelCreationDateField"
                                             x:Name="ChannelCreationDate"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                             Text="Erstellungsdatum" />
@@ -218,6 +256,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsChannelModificationDateField"
                                             x:Name="ChannelModificationDate"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                             Text="Änderungsdatum" />
@@ -241,6 +280,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsChannelTermField"
                                             x:Name="ChannelTerm"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                             Text="Semester" />
@@ -264,6 +304,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsChannelLocationsField"
                                             x:Name="ChannelLocations"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                             Text="Locations" />
@@ -287,6 +328,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsChannelDatesField"
                                             x:Name="ChannelDates"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                             Text="Termine" />
@@ -310,6 +352,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsChannelContactsField"
                                             x:Name="ChannelContacts"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                             Text="Kontaktinformationen" />
@@ -334,6 +377,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsChannelWebsiteField"
                                             x:Name="ChannelWebsite"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                             Text="Website" />
@@ -352,6 +396,7 @@
                                     Grid.Row="1"
                                     x:Name="LectureDataFields"
                                     DataContext="{Binding Lecture, TargetNullValue={x:Null}}"
+                                    Visibility="{Binding ElementName=LectureDataFields, Path=DataContext, Converter={StaticResource NullValuetoVisibilityConverter}}"
                                     HorizontalAlignment="Stretch">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -372,6 +417,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsLectureFacultyField"
                                             x:Name="LectureFaculty"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                             Text="Fakultät" />
@@ -394,6 +440,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsLectureStartDateField"
                                             x:Name="LectureStartDate"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                             Text="Vorlesungsbeginn" />
@@ -416,6 +463,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsLectureEndDateField"
                                             x:Name="LectureEndDate"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                             Text="Vorlesungsende" />
@@ -438,6 +486,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsLectureLecturerField"
                                             x:Name="LectureLecturer"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                             Text="Dozent" />
@@ -460,6 +509,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsLectureAssistantField"
                                             x:Name="LectureAssistant"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                             Text="Übungsleiter/Assistent" />
@@ -478,6 +528,7 @@
                                     Grid.Row="2"
                                     x:Name="SportsDataFields"
                                     DataContext="{Binding Sports, TargetNullValue={x:Null}}"
+                                    Visibility="{Binding ElementName=SportsDataFields, Path=DataContext, Converter={StaticResource NullValuetoVisibilityConverter}}"
                                     HorizontalAlignment="Stretch">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -495,9 +546,10 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsSportCostField"
                                             x:Name="SportsCost"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Übungsleiter/Assistent" />
+                                            Text="Kosten" />
 
                                         <TextBlock
                                             Grid.Row="1"
@@ -517,9 +569,10 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsSportNumberOfParticipantsField"
                                             x:Name="SportsNumberOfParticipants"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Übungsleiter/Assistent" />
+                                            Text="Teilnehmerplätze" />
 
                                         <TextBlock
                                             Grid.Row="1"
@@ -535,6 +588,7 @@
                                     Grid.Row="3"
                                     x:Name="EventDataFields"
                                     DataContext="{Binding EventObj, TargetNullValue={x:Null}}"
+                                    Visibility="{Binding ElementName=EventDataFields, Path=DataContext, Converter={StaticResource NullValuetoVisibilityConverter}}"
                                     HorizontalAlignment="Stretch">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -552,6 +606,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsEventCostField"
                                             x:Name="EventCost"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                             Text="Eintritt" />
@@ -574,6 +629,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
+                                            x:Uid="ChannelDetailsEventOrganizerField"
                                             x:Name="EventOrganizer"
                                             Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                             Text="Organisator" />
@@ -594,7 +650,6 @@
                     </PivotItem>
                 </Pivot>
             </Grid>
-
 
             <!-- Inhalt des Drawer Menüs-->
             <!--<Grid x:Name="ListFragment" Background="{StaticResource UniUlmAccentColor}">

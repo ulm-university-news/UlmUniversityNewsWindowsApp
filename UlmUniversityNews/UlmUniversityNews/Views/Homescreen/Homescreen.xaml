@@ -115,6 +115,7 @@
                             </i:Interaction.Behaviors>
                         </ListView>
                     </PivotItem>
+                    
                     <!-- Pivotelement 2-->
                     <PivotItem x:Uid="HomescreenMyGroupsPivotItem"
                            Style="{StaticResource PivotItemStyle}"

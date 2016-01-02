@@ -42,6 +42,9 @@ namespace UlmUniversityNews.Views.ChannelSearch
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
 
+            // Initialisiere das Drawer Layout.
+            DrawerLayout.InitializeDrawerLayout();
+
             // Setze DataContext der Seite.
             searchChannelsViewModel = new SearchChannelsViewModel(App.NavigationService, App.ErrorMapper);
             this.DataContext = searchChannelsViewModel;

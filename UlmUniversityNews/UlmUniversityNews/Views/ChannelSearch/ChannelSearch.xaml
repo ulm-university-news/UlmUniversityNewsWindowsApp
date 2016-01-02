@@ -3,12 +3,19 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:UlmUniversityNews.Views.ChannelSearch"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converter="using:UlmUniversityNews.Converters"
     xmlns:drawerLayout="using:DrawerLayout"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <!-- Ressourcen dieser Seite-->
+    <Page.Resources>
+        <converter:ItemClickedConverter x:Key="ItemClickedConverter" />
+    </Page.Resources>
 
     <!-- CommandBar -->
     <Page.BottomAppBar>
@@ -102,11 +109,12 @@
                     </Grid>
                 </StackPanel>
 
-                <!-- Liste mit Kanälen-->
+                <!-- Liste mit Kanälen. IsItemClickEnabled muss aktiviert sein, sonst funktioniert das Binding mittels der Behaviour SDK nicht.-->
                 <ListView Grid.Row="1"
                           Margin="19,0,0,0"
                           HorizontalContentAlignment="Stretch"
                           HorizontalAlignment="Stretch"
+                          IsItemClickEnabled="True"
                           ItemTemplate="{StaticResource ChannelListItemStyle}"
                           ItemsSource="{Binding Channels}">
                     <ListView.ItemContainerStyle>
@@ -114,12 +122,21 @@
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         </Style>
                     </ListView.ItemContainerStyle>
+
+                    <!-- Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
+                    <i:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{Binding ChannelSelectedCommand}"
+                                                              InputConverter="{StaticResource ItemClickedConverter}" />
+                        </core:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                    
                 </ListView>
                 
             </Grid>
 
-            <!-- Inhalt des Drawer Menüs-->
-            <!--<Grid x:Name="ListFragment" Background="{StaticResource UniUlmAccentColor}">
+             <!--Inhalt des Drawer Menüs-->
+            <Grid x:Name="ListFragment" Background="{StaticResource UniUlmAccentColor}">
                 <ListView x:Name="ListMenuItems">
                     <ListView.ItemTemplate>
                         <DataTemplate>
@@ -132,7 +149,7 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-            </Grid>-->
+            </Grid>
 
         </drawerLayout:DrawerLayout>
 

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DataHandlingLayer.DataModel;
 using DataHandlingLayer.DataModel.Enums;
 using System.Diagnostics;
+using DataHandlingLayer.CommandRelays;
 
 namespace DataHandlingLayer.ViewModel
 {
@@ -91,6 +92,25 @@ namespace DataHandlingLayer.ViewModel
         #endregion Properties
 
         #region Commands
+        private AsyncRelayCommand subscribeChannelCommand;
+        /// <summary>
+        /// Das Kommando wird gefeuert, wenn der aktuell angezeigte Kanal abonniert werden soll.
+        /// </summary>
+        public AsyncRelayCommand SubscribeChannelCommand
+        {
+            get { return subscribeChannelCommand; }
+            set { subscribeChannelCommand = value; }
+        }
+
+        private AsyncRelayCommand unsubscribeChannelCommand;
+        /// <summary>
+        /// Das Kommando wird gefeuert, wenn der aktuell angezeigte Kanal deabonniert werden soll.
+        /// </summary>
+        public AsyncRelayCommand UnsubscribeChannelCommand
+        {
+            get { return unsubscribeChannelCommand; }
+            set { unsubscribeChannelCommand = value; }
+        }
         #endregion Commands
 
         /// <summary>
@@ -102,6 +122,10 @@ namespace DataHandlingLayer.ViewModel
             : base(navService, errorReporter)
         {
             channelController = new ChannelController();
+
+            // Initialisiere Kommandos.
+            SubscribeChannelCommand = new AsyncRelayCommand(param => executeSubscribeChannel(), param => canSubscribeChannel());
+            UnsubscribeChannelCommand = new AsyncRelayCommand(param => executeUnsubscribeChannel(), param => canUnsubscribeChannel());
         }
 
         /// <summary>
@@ -144,7 +168,52 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private void checkCommandExecution()
         {
-            // TODO
+            SubscribeChannelCommand.OnCanExecuteChanged();
+            UnsubscribeChannelCommand.OnCanExecuteChanged();
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Kanal aktuell abonniert werden kann.
+        /// </summary>
+        /// <returns>Liefert true zurück, wenn der Kanal abonniert werden kann, ansonsten false.</returns>
+        private bool canSubscribeChannel()
+        {
+            if (SelectedPivotItemIndex == 1 && ChannelSubscribedStatus == false)    // In "Kanalinformationen" PivotItem und der Kanal wurde noch nicht abonniert.
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Stößt den Abonnementvorgang an. Der lokale Nutzer abonniert den Kanal, der aktuell
+        /// in der Detailansicht angezeigt wird.
+        /// </summary>
+        private async Task executeSubscribeChannel()
+        {
+
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Kanal aktuell deabonniert werden kann.
+        /// </summary>
+        /// <returns>Liefert true zurück, wenn der Kanal deabonniert werden kann, ansonsten false.</returns>
+        private bool canUnsubscribeChannel()
+        {
+            if (SelectedPivotItemIndex == 1 && ChannelSubscribedStatus == true)    // In "Kanalinformationen" PivotItem und der Kanal wurde bereits abonniert.
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Stößt den Deabonnementvorgang an. Der lokale Nutzer deabonniert den Kanal, der aktuell
+        /// in der Detailansicht angezeigt wird.
+        /// </summary>
+        private async Task executeUnsubscribeChannel()
+        {
+
         }
     }
 }

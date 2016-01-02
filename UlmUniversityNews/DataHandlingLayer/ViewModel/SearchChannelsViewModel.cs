@@ -61,8 +61,7 @@ namespace DataHandlingLayer.ViewModel
         {
             get { return orderByTypeChecked; }
             set { this.setProperty(ref this.orderByTypeChecked, value); }
-        }
-        
+        }  
         #endregion Properties
 
         #region Commands
@@ -84,7 +83,17 @@ namespace DataHandlingLayer.ViewModel
         {
             get { return reorderChannelsCommand; }
             set { reorderChannelsCommand = value; }
-        }     
+        }
+
+        private RelayCommand channelSelectedCommand;
+        /// <summary>
+        /// Kommando, das den Klick auf ein Kanal in der Auflistung behandelt.
+        /// </summary>
+        public RelayCommand ChannelSelectedCommand
+        {
+            get { return channelSelectedCommand; }
+            set { channelSelectedCommand = value; }
+        }      
         #endregion Commands
 
         /// <summary>
@@ -101,6 +110,7 @@ namespace DataHandlingLayer.ViewModel
             // Initialisiere Kommandos.
             StartChannelSearchCommand = new AsyncRelayCommand(param => executeChannelSearchAsync(), param => canExecuteSearch());
             ReorderChannelsCommand = new AsyncRelayCommand(param => executeReorderChannelsCommandAsync());
+            ChannelSelectedCommand = new RelayCommand(param => executeChannelSelected(param), param => canSelectChannel());
         }
 
         /// <summary>
@@ -158,8 +168,6 @@ namespace DataHandlingLayer.ViewModel
                 List<Channel> channelList = extractChannelsByName(SearchTerm);
                 channelList = reorderListByCurrentViewState(channelList);
                 updateObservableCollectionChannels(channelList);
-
-                //Channels = new ObservableCollection<Channel>(allChannels.Values.ToList<Channel>());
             }
         }
 
@@ -277,10 +285,11 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
-        /// Hilfsmethode, die aus der Liste aller Kanalressourcen die Kanäle extrahiert, die 
+        /// Hilfsmethode, die aus der Liste aller Kanalressourcen die Kanäle extrahiert, die den
+        /// gegebenen Suchbegriff in ihrem Namen enthalten.
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <param name="name">Der Suchbegriff, d.h. der komplette Name oder ein Teil des Namens des gesuchten Kanals.</param>
+        /// <returns>Eine Liste von Kanalressourcen, die den gegebenen Suchbegriff im Namen enthalten.</returns>
         private List<Channel> extractChannelsByName(string name)
         {
             if(name == null)
@@ -295,6 +304,27 @@ namespace DataHandlingLayer.ViewModel
                 select item
                 );
             return results;
+        }
+
+        /// <summary>
+        /// Gibt an, ob anhand des aktuellen Zustands ein Kanal ausgewählt werden kann.
+        /// </summary>
+        /// <returns>Liefert true zurück, wenn die Kanalauswahl zulässig ist, ansonsten false.</returns>
+        private bool canSelectChannel()
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt den Klick auf einen Kanal in der Auflistung. Löst einen Übergang auf die Kanaldetails Seite 
+        /// für den geklickten Kanal aus.
+        /// </summary>
+        /// <param name="selectedChannelObj">Das in der Auflistung gewählte Kanalobjekt.</param>
+        private void executeChannelSelected(object selectedChannelObj)
+        {
+            Debug.WriteLine("ChannelSelectedCommand executed. The passed object is of type: " + selectedChannelObj.GetType());
+            Debug.WriteLine("Currently on thread with id: {0} in executeChannelSelected: ", Environment.CurrentManagedThreadId);
+            _navService.Navigate("ChannelDetails", selectedChannelObj);
         }
     }
 }

@@ -42,8 +42,31 @@ namespace UlmUniversityNews.Views.ChannelDetails
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
 
+            // Initialisiere das Drawer Layout.
+            DrawerLayout.InitializeDrawerLayout();
+
+            ChannelDetailsPivot.Loaded += ChannelDetailsPivot_Loaded;
+            
             channelDetailsViewModel = new ChannelDetailsViewModel(App.NavigationService, App.ErrorMapper);
             this.DataContext = channelDetailsViewModel;
+        }
+
+        /// <summary>
+        /// Event-Handler, der aufgerufen wird, wenn das PivotElement geladen wurde.
+        /// Wird hier für Workaround benötigt beüglich HidablePivotItemBehavior.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void ChannelDetailsPivot_Loaded(object sender, RoutedEventArgs e)
+        {
+            if(channelDetailsViewModel != null)
+            {
+                // Workaround to call an update of the Visible attribute and thus force the evaluation of the
+                // visibility status of the pivot item once againg when the pivot element is actually loaded.
+                bool visibilityTmp = HidablePivotItemBehaviorElement.Visible;
+                HidablePivotItemBehaviorElement.ClearValue(HideablePivotItemBehavior.VisibleProperty);
+                HidablePivotItemBehaviorElement.Visible = visibilityTmp;
+            }
         }
 
         /// <summary>
@@ -136,5 +159,6 @@ namespace UlmUniversityNews.Views.ChannelDetails
                 DrawerLayout.OpenDrawer();
             }
         }
+
     }
 }
