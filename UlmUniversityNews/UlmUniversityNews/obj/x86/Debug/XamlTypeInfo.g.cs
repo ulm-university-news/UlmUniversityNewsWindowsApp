@@ -124,7 +124,7 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
 
         private void InitTypeTables()
         {
-            _typeNameTable = new string[29];
+            _typeNameTable = new string[31];
             _typeNameTable[0] = "UlmUniversityNews.Converters.ChannelTypeToStringConverter";
             _typeNameTable[1] = "Object";
             _typeNameTable[2] = "UlmUniversityNews.Converters.ChannelToIconPathConverter";
@@ -136,26 +136,28 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
             _typeNameTable[8] = "UlmUniversityNews.Common.ObservableDictionary";
             _typeNameTable[9] = "String";
             _typeNameTable[10] = "UlmUniversityNews.PivotPage";
-            _typeNameTable[11] = "DrawerLayout.DrawerLayout";
-            _typeNameTable[12] = "Windows.UI.Xaml.Controls.Grid";
-            _typeNameTable[13] = "Windows.UI.Xaml.Controls.Panel";
-            _typeNameTable[14] = "Boolean";
-            _typeNameTable[15] = "UlmUniversityNews.Views.ChannelDetails.ChannelDetails";
-            _typeNameTable[16] = "UlmUniversityNews.Views.ChannelSearch.ChannelSearch";
-            _typeNameTable[17] = "UlmUniversityNews.Converters.BooleanToVisibilityConverter";
-            _typeNameTable[18] = "Microsoft.Xaml.Interactivity.Interaction";
-            _typeNameTable[19] = "Microsoft.Xaml.Interactivity.BehaviorCollection";
-            _typeNameTable[20] = "Windows.UI.Xaml.DependencyObjectCollection";
-            _typeNameTable[21] = "Microsoft.Xaml.Interactions.Core.EventTriggerBehavior";
-            _typeNameTable[22] = "Microsoft.Xaml.Interactivity.ActionCollection";
-            _typeNameTable[23] = "Microsoft.Xaml.Interactions.Core.InvokeCommandAction";
-            _typeNameTable[24] = "System.Windows.Input.ICommand";
-            _typeNameTable[25] = "Windows.UI.Xaml.Data.IValueConverter";
-            _typeNameTable[26] = "UlmUniversityNews.Views.Homescreen.Homescreen";
-            _typeNameTable[27] = "UlmUniversityNews.Converters.ValidationMessageOnLocalizedStringConverter";
-            _typeNameTable[28] = "UlmUniversityNews.Views.StartPage";
+            _typeNameTable[11] = "UlmUniversityNews.Converters.FacultyToLocalizedStringConverter";
+            _typeNameTable[12] = "DrawerLayout.DrawerLayout";
+            _typeNameTable[13] = "Windows.UI.Xaml.Controls.Grid";
+            _typeNameTable[14] = "Windows.UI.Xaml.Controls.Panel";
+            _typeNameTable[15] = "Boolean";
+            _typeNameTable[16] = "UlmUniversityNews.Views.ChannelDetails.ChannelDetails";
+            _typeNameTable[17] = "UlmUniversityNews.Views.ChannelSearch.ChannelSearch";
+            _typeNameTable[18] = "UlmUniversityNews.Converters.BooleanToVisibilityConverter";
+            _typeNameTable[19] = "UlmUniversityNews.Converters.ItemClickedConverter";
+            _typeNameTable[20] = "Microsoft.Xaml.Interactivity.Interaction";
+            _typeNameTable[21] = "Microsoft.Xaml.Interactivity.BehaviorCollection";
+            _typeNameTable[22] = "Windows.UI.Xaml.DependencyObjectCollection";
+            _typeNameTable[23] = "Microsoft.Xaml.Interactions.Core.EventTriggerBehavior";
+            _typeNameTable[24] = "Microsoft.Xaml.Interactivity.ActionCollection";
+            _typeNameTable[25] = "Microsoft.Xaml.Interactions.Core.InvokeCommandAction";
+            _typeNameTable[26] = "System.Windows.Input.ICommand";
+            _typeNameTable[27] = "Windows.UI.Xaml.Data.IValueConverter";
+            _typeNameTable[28] = "UlmUniversityNews.Views.Homescreen.Homescreen";
+            _typeNameTable[29] = "UlmUniversityNews.Converters.ValidationMessageOnLocalizedStringConverter";
+            _typeNameTable[30] = "UlmUniversityNews.Views.StartPage";
 
-            _typeTable = new global::System.Type[29];
+            _typeTable = new global::System.Type[31];
             _typeTable[0] = typeof(global::UlmUniversityNews.Converters.ChannelTypeToStringConverter);
             _typeTable[1] = typeof(global::System.Object);
             _typeTable[2] = typeof(global::UlmUniversityNews.Converters.ChannelToIconPathConverter);
@@ -167,24 +169,26 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
             _typeTable[8] = typeof(global::UlmUniversityNews.Common.ObservableDictionary);
             _typeTable[9] = typeof(global::System.String);
             _typeTable[10] = typeof(global::UlmUniversityNews.PivotPage);
-            _typeTable[11] = typeof(global::DrawerLayout.DrawerLayout);
-            _typeTable[12] = typeof(global::Windows.UI.Xaml.Controls.Grid);
-            _typeTable[13] = typeof(global::Windows.UI.Xaml.Controls.Panel);
-            _typeTable[14] = typeof(global::System.Boolean);
-            _typeTable[15] = typeof(global::UlmUniversityNews.Views.ChannelDetails.ChannelDetails);
-            _typeTable[16] = typeof(global::UlmUniversityNews.Views.ChannelSearch.ChannelSearch);
-            _typeTable[17] = typeof(global::UlmUniversityNews.Converters.BooleanToVisibilityConverter);
-            _typeTable[18] = typeof(global::Microsoft.Xaml.Interactivity.Interaction);
-            _typeTable[19] = typeof(global::Microsoft.Xaml.Interactivity.BehaviorCollection);
-            _typeTable[20] = typeof(global::Windows.UI.Xaml.DependencyObjectCollection);
-            _typeTable[21] = typeof(global::Microsoft.Xaml.Interactions.Core.EventTriggerBehavior);
-            _typeTable[22] = typeof(global::Microsoft.Xaml.Interactivity.ActionCollection);
-            _typeTable[23] = typeof(global::Microsoft.Xaml.Interactions.Core.InvokeCommandAction);
-            _typeTable[24] = typeof(global::System.Windows.Input.ICommand);
-            _typeTable[25] = typeof(global::Windows.UI.Xaml.Data.IValueConverter);
-            _typeTable[26] = typeof(global::UlmUniversityNews.Views.Homescreen.Homescreen);
-            _typeTable[27] = typeof(global::UlmUniversityNews.Converters.ValidationMessageOnLocalizedStringConverter);
-            _typeTable[28] = typeof(global::UlmUniversityNews.Views.StartPage);
+            _typeTable[11] = typeof(global::UlmUniversityNews.Converters.FacultyToLocalizedStringConverter);
+            _typeTable[12] = typeof(global::DrawerLayout.DrawerLayout);
+            _typeTable[13] = typeof(global::Windows.UI.Xaml.Controls.Grid);
+            _typeTable[14] = typeof(global::Windows.UI.Xaml.Controls.Panel);
+            _typeTable[15] = typeof(global::System.Boolean);
+            _typeTable[16] = typeof(global::UlmUniversityNews.Views.ChannelDetails.ChannelDetails);
+            _typeTable[17] = typeof(global::UlmUniversityNews.Views.ChannelSearch.ChannelSearch);
+            _typeTable[18] = typeof(global::UlmUniversityNews.Converters.BooleanToVisibilityConverter);
+            _typeTable[19] = typeof(global::UlmUniversityNews.Converters.ItemClickedConverter);
+            _typeTable[20] = typeof(global::Microsoft.Xaml.Interactivity.Interaction);
+            _typeTable[21] = typeof(global::Microsoft.Xaml.Interactivity.BehaviorCollection);
+            _typeTable[22] = typeof(global::Windows.UI.Xaml.DependencyObjectCollection);
+            _typeTable[23] = typeof(global::Microsoft.Xaml.Interactions.Core.EventTriggerBehavior);
+            _typeTable[24] = typeof(global::Microsoft.Xaml.Interactivity.ActionCollection);
+            _typeTable[25] = typeof(global::Microsoft.Xaml.Interactions.Core.InvokeCommandAction);
+            _typeTable[26] = typeof(global::System.Windows.Input.ICommand);
+            _typeTable[27] = typeof(global::Windows.UI.Xaml.Data.IValueConverter);
+            _typeTable[28] = typeof(global::UlmUniversityNews.Views.Homescreen.Homescreen);
+            _typeTable[29] = typeof(global::UlmUniversityNews.Converters.ValidationMessageOnLocalizedStringConverter);
+            _typeTable[30] = typeof(global::UlmUniversityNews.Views.StartPage);
         }
 
         private int LookupTypeIndexByName(string typeName)
@@ -224,17 +228,19 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
         private object Activate_3_ItemPage() { return new global::UlmUniversityNews.ItemPage(); }
         private object Activate_8_ObservableDictionary() { return new global::UlmUniversityNews.Common.ObservableDictionary(); }
         private object Activate_10_PivotPage() { return new global::UlmUniversityNews.PivotPage(); }
-        private object Activate_11_DrawerLayout() { return new global::DrawerLayout.DrawerLayout(); }
-        private object Activate_15_ChannelDetails() { return new global::UlmUniversityNews.Views.ChannelDetails.ChannelDetails(); }
-        private object Activate_16_ChannelSearch() { return new global::UlmUniversityNews.Views.ChannelSearch.ChannelSearch(); }
-        private object Activate_17_BooleanToVisibilityConverter() { return new global::UlmUniversityNews.Converters.BooleanToVisibilityConverter(); }
-        private object Activate_19_BehaviorCollection() { return new global::Microsoft.Xaml.Interactivity.BehaviorCollection(); }
-        private object Activate_21_EventTriggerBehavior() { return new global::Microsoft.Xaml.Interactions.Core.EventTriggerBehavior(); }
-        private object Activate_22_ActionCollection() { return new global::Microsoft.Xaml.Interactivity.ActionCollection(); }
-        private object Activate_23_InvokeCommandAction() { return new global::Microsoft.Xaml.Interactions.Core.InvokeCommandAction(); }
-        private object Activate_26_Homescreen() { return new global::UlmUniversityNews.Views.Homescreen.Homescreen(); }
-        private object Activate_27_ValidationMessageOnLocalizedStringConverter() { return new global::UlmUniversityNews.Converters.ValidationMessageOnLocalizedStringConverter(); }
-        private object Activate_28_StartPage() { return new global::UlmUniversityNews.Views.StartPage(); }
+        private object Activate_11_FacultyToLocalizedStringConverter() { return new global::UlmUniversityNews.Converters.FacultyToLocalizedStringConverter(); }
+        private object Activate_12_DrawerLayout() { return new global::DrawerLayout.DrawerLayout(); }
+        private object Activate_16_ChannelDetails() { return new global::UlmUniversityNews.Views.ChannelDetails.ChannelDetails(); }
+        private object Activate_17_ChannelSearch() { return new global::UlmUniversityNews.Views.ChannelSearch.ChannelSearch(); }
+        private object Activate_18_BooleanToVisibilityConverter() { return new global::UlmUniversityNews.Converters.BooleanToVisibilityConverter(); }
+        private object Activate_19_ItemClickedConverter() { return new global::UlmUniversityNews.Converters.ItemClickedConverter(); }
+        private object Activate_21_BehaviorCollection() { return new global::Microsoft.Xaml.Interactivity.BehaviorCollection(); }
+        private object Activate_23_EventTriggerBehavior() { return new global::Microsoft.Xaml.Interactions.Core.EventTriggerBehavior(); }
+        private object Activate_24_ActionCollection() { return new global::Microsoft.Xaml.Interactivity.ActionCollection(); }
+        private object Activate_25_InvokeCommandAction() { return new global::Microsoft.Xaml.Interactions.Core.InvokeCommandAction(); }
+        private object Activate_28_Homescreen() { return new global::UlmUniversityNews.Views.Homescreen.Homescreen(); }
+        private object Activate_29_ValidationMessageOnLocalizedStringConverter() { return new global::UlmUniversityNews.Converters.ValidationMessageOnLocalizedStringConverter(); }
+        private object Activate_30_StartPage() { return new global::UlmUniversityNews.Views.StartPage(); }
         private void MapAdd_8_ObservableDictionary(object instance, object key, object item)
         {
             var collection = (global::System.Collections.Generic.IDictionary<global::System.String, global::System.Object>)instance;
@@ -242,13 +248,13 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
             var newItem = (global::System.Object)item;
             collection.Add(newKey, newItem);
         }
-        private void VectorAdd_19_BehaviorCollection(object instance, object item)
+        private void VectorAdd_21_BehaviorCollection(object instance, object item)
         {
             var collection = (global::System.Collections.Generic.ICollection<global::Windows.UI.Xaml.DependencyObject>)instance;
             var newItem = (global::Windows.UI.Xaml.DependencyObject)item;
             collection.Add(newItem);
         }
-        private void VectorAdd_22_ActionCollection(object instance, object item)
+        private void VectorAdd_24_ActionCollection(object instance, object item)
         {
             var collection = (global::System.Collections.Generic.ICollection<global::Windows.UI.Xaml.DependencyObject>)instance;
             var newItem = (global::Windows.UI.Xaml.DependencyObject)item;
@@ -332,70 +338,84 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 11:   //  DrawerLayout.DrawerLayout
+            case 11:   //  UlmUniversityNews.Converters.FacultyToLocalizedStringConverter
+                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
+                userType.Activator = Activate_11_FacultyToLocalizedStringConverter;
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 12:   //  DrawerLayout.DrawerLayout
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Grid"));
-                userType.Activator = Activate_11_DrawerLayout;
+                userType.Activator = Activate_12_DrawerLayout;
                 userType.AddMemberName("IsDrawerOpen");
                 xamlType = userType;
                 break;
 
-            case 12:   //  Windows.UI.Xaml.Controls.Grid
+            case 13:   //  Windows.UI.Xaml.Controls.Grid
                 xamlType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 13:   //  Windows.UI.Xaml.Controls.Panel
+            case 14:   //  Windows.UI.Xaml.Controls.Panel
                 xamlType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 14:   //  Boolean
+            case 15:   //  Boolean
                 xamlType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 15:   //  UlmUniversityNews.Views.ChannelDetails.ChannelDetails
+            case 16:   //  UlmUniversityNews.Views.ChannelDetails.ChannelDetails
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_15_ChannelDetails;
+                userType.Activator = Activate_16_ChannelDetails;
                 userType.AddMemberName("NavigationHelper");
                 userType.AddMemberName("DefaultViewModel");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 16:   //  UlmUniversityNews.Views.ChannelSearch.ChannelSearch
+            case 17:   //  UlmUniversityNews.Views.ChannelSearch.ChannelSearch
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_16_ChannelSearch;
+                userType.Activator = Activate_17_ChannelSearch;
                 userType.AddMemberName("NavigationHelper");
                 userType.AddMemberName("DefaultViewModel");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 17:   //  UlmUniversityNews.Converters.BooleanToVisibilityConverter
+            case 18:   //  UlmUniversityNews.Converters.BooleanToVisibilityConverter
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
-                userType.Activator = Activate_17_BooleanToVisibilityConverter;
+                userType.Activator = Activate_18_BooleanToVisibilityConverter;
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 18:   //  Microsoft.Xaml.Interactivity.Interaction
+            case 19:   //  UlmUniversityNews.Converters.ItemClickedConverter
+                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
+                userType.Activator = Activate_19_ItemClickedConverter;
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 20:   //  Microsoft.Xaml.Interactivity.Interaction
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
                 userType.AddMemberName("Behaviors");
                 xamlType = userType;
                 break;
 
-            case 19:   //  Microsoft.Xaml.Interactivity.BehaviorCollection
+            case 21:   //  Microsoft.Xaml.Interactivity.BehaviorCollection
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.DependencyObjectCollection"));
-                userType.CollectionAdd = VectorAdd_19_BehaviorCollection;
+                userType.CollectionAdd = VectorAdd_21_BehaviorCollection;
                 userType.SetIsReturnTypeStub();
                 xamlType = userType;
                 break;
 
-            case 20:   //  Windows.UI.Xaml.DependencyObjectCollection
+            case 22:   //  Windows.UI.Xaml.DependencyObjectCollection
                 xamlType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 21:   //  Microsoft.Xaml.Interactions.Core.EventTriggerBehavior
+            case 23:   //  Microsoft.Xaml.Interactions.Core.EventTriggerBehavior
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.DependencyObject"));
-                userType.Activator = Activate_21_EventTriggerBehavior;
+                userType.Activator = Activate_23_EventTriggerBehavior;
                 userType.SetContentPropertyName("Microsoft.Xaml.Interactions.Core.EventTriggerBehavior.Actions");
                 userType.AddMemberName("Actions");
                 userType.AddMemberName("EventName");
@@ -404,53 +424,53 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 22:   //  Microsoft.Xaml.Interactivity.ActionCollection
+            case 24:   //  Microsoft.Xaml.Interactivity.ActionCollection
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.DependencyObjectCollection"));
-                userType.CollectionAdd = VectorAdd_22_ActionCollection;
+                userType.CollectionAdd = VectorAdd_24_ActionCollection;
                 userType.SetIsReturnTypeStub();
                 xamlType = userType;
                 break;
 
-            case 23:   //  Microsoft.Xaml.Interactions.Core.InvokeCommandAction
+            case 25:   //  Microsoft.Xaml.Interactions.Core.InvokeCommandAction
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.DependencyObject"));
-                userType.Activator = Activate_23_InvokeCommandAction;
+                userType.Activator = Activate_25_InvokeCommandAction;
                 userType.AddMemberName("Command");
-                userType.AddMemberName("CommandParameter");
                 userType.AddMemberName("InputConverter");
+                userType.AddMemberName("CommandParameter");
                 userType.AddMemberName("InputConverterParameter");
                 userType.AddMemberName("InputConverterLanguage");
                 xamlType = userType;
                 break;
 
-            case 24:   //  System.Windows.Input.ICommand
+            case 26:   //  System.Windows.Input.ICommand
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, null);
                 userType.SetIsReturnTypeStub();
                 xamlType = userType;
                 break;
 
-            case 25:   //  Windows.UI.Xaml.Data.IValueConverter
+            case 27:   //  Windows.UI.Xaml.Data.IValueConverter
                 xamlType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 26:   //  UlmUniversityNews.Views.Homescreen.Homescreen
+            case 28:   //  UlmUniversityNews.Views.Homescreen.Homescreen
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_26_Homescreen;
+                userType.Activator = Activate_28_Homescreen;
                 userType.AddMemberName("NavigationHelper");
                 userType.AddMemberName("DefaultViewModel");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 27:   //  UlmUniversityNews.Converters.ValidationMessageOnLocalizedStringConverter
+            case 29:   //  UlmUniversityNews.Converters.ValidationMessageOnLocalizedStringConverter
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
-                userType.Activator = Activate_27_ValidationMessageOnLocalizedStringConverter;
+                userType.Activator = Activate_29_ValidationMessageOnLocalizedStringConverter;
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 28:   //  UlmUniversityNews.Views.StartPage
+            case 30:   //  UlmUniversityNews.Views.StartPage
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_28_StartPage;
+                userType.Activator = Activate_30_StartPage;
                 userType.AddMemberName("NavigationHelper");
                 userType.AddMemberName("DefaultViewModel");
                 userType.SetIsLocalType();
@@ -559,25 +579,25 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
             var that = (global::Microsoft.Xaml.Interactions.Core.InvokeCommandAction)instance;
             that.Command = (global::System.Windows.Input.ICommand)Value;
         }
-        private object get_15_InvokeCommandAction_CommandParameter(object instance)
-        {
-            var that = (global::Microsoft.Xaml.Interactions.Core.InvokeCommandAction)instance;
-            return that.CommandParameter;
-        }
-        private void set_15_InvokeCommandAction_CommandParameter(object instance, object Value)
-        {
-            var that = (global::Microsoft.Xaml.Interactions.Core.InvokeCommandAction)instance;
-            that.CommandParameter = (global::System.Object)Value;
-        }
-        private object get_16_InvokeCommandAction_InputConverter(object instance)
+        private object get_15_InvokeCommandAction_InputConverter(object instance)
         {
             var that = (global::Microsoft.Xaml.Interactions.Core.InvokeCommandAction)instance;
             return that.InputConverter;
         }
-        private void set_16_InvokeCommandAction_InputConverter(object instance, object Value)
+        private void set_15_InvokeCommandAction_InputConverter(object instance, object Value)
         {
             var that = (global::Microsoft.Xaml.Interactions.Core.InvokeCommandAction)instance;
             that.InputConverter = (global::Windows.UI.Xaml.Data.IValueConverter)Value;
+        }
+        private object get_16_InvokeCommandAction_CommandParameter(object instance)
+        {
+            var that = (global::Microsoft.Xaml.Interactions.Core.InvokeCommandAction)instance;
+            return that.CommandParameter;
+        }
+        private void set_16_InvokeCommandAction_CommandParameter(object instance, object Value)
+        {
+            var that = (global::Microsoft.Xaml.Interactions.Core.InvokeCommandAction)instance;
+            that.CommandParameter = (global::System.Object)Value;
         }
         private object get_17_InvokeCommandAction_InputConverterParameter(object instance)
         {
@@ -724,19 +744,19 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
                 xamlMember.Getter = get_14_InvokeCommandAction_Command;
                 xamlMember.Setter = set_14_InvokeCommandAction_Command;
                 break;
-            case "Microsoft.Xaml.Interactions.Core.InvokeCommandAction.CommandParameter":
-                userType = (global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.Xaml.Interactions.Core.InvokeCommandAction");
-                xamlMember = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlMember(this, "CommandParameter", "Object");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_15_InvokeCommandAction_CommandParameter;
-                xamlMember.Setter = set_15_InvokeCommandAction_CommandParameter;
-                break;
             case "Microsoft.Xaml.Interactions.Core.InvokeCommandAction.InputConverter":
                 userType = (global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.Xaml.Interactions.Core.InvokeCommandAction");
                 xamlMember = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlMember(this, "InputConverter", "Windows.UI.Xaml.Data.IValueConverter");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_16_InvokeCommandAction_InputConverter;
-                xamlMember.Setter = set_16_InvokeCommandAction_InputConverter;
+                xamlMember.Getter = get_15_InvokeCommandAction_InputConverter;
+                xamlMember.Setter = set_15_InvokeCommandAction_InputConverter;
+                break;
+            case "Microsoft.Xaml.Interactions.Core.InvokeCommandAction.CommandParameter":
+                userType = (global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.Xaml.Interactions.Core.InvokeCommandAction");
+                xamlMember = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlMember(this, "CommandParameter", "Object");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_16_InvokeCommandAction_CommandParameter;
+                xamlMember.Setter = set_16_InvokeCommandAction_CommandParameter;
                 break;
             case "Microsoft.Xaml.Interactions.Core.InvokeCommandAction.InputConverterParameter":
                 userType = (global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.Xaml.Interactions.Core.InvokeCommandAction");

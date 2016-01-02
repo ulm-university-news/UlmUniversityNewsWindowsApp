@@ -15,6 +15,18 @@
     <RootPropertyPathName Name="Description" />
     <RootPropertyPathName Name="FirstGroup" />
     <RootPropertyPathName Name="SelectedPivotItemIndex" />
+    <RootPropertyPathName Name="EventObj" />
+    <RootPropertyPathName Name="DataContext" />
+    <RootPropertyPathName Name="Organizer" />
+    <RootPropertyPathName Name="Cost" />
+    <RootPropertyPathName Name="Sports" />
+    <RootPropertyPathName Name="NumberOfParticipants" />
+    <RootPropertyPathName Name="Lecture" />
+    <RootPropertyPathName Name="Assistant" />
+    <RootPropertyPathName Name="Lecturer" />
+    <RootPropertyPathName Name="EndDate" />
+    <RootPropertyPathName Name="StartDate" />
+    <RootPropertyPathName Name="Faculty" />
     <RootPropertyPathName Name="Channel" />
     <RootPropertyPathName Name="Website" />
     <RootPropertyPathName Name="Contacts" />
@@ -22,6 +34,7 @@
     <RootPropertyPathName Name="Locations" />
     <RootPropertyPathName Name="ModificationDate" />
     <RootPropertyPathName Name="CreationDate" />
+    <RootPropertyPathName Name="ChannelSubscribedStatus" />
     <RootPropertyPathName Name="OrderByTypeChecked" />
     <RootPropertyPathName Name="ReorderChannelsCommand" />
     <RootPropertyPathName Name="Channels" />
@@ -78,6 +91,8 @@
       <RootProperty Name="ChildrenTransitions" />
       <RootProperty Name="Style" />
       <RootProperty Name="HorizontalAlignment" />
+      <RootProperty Name="DataContext" />
+      <RootProperty Name="Visibility" />
       <RootMethod Name="GetColumn" />
       <RootMethod Name="SetColumn" />
       <RootMethod Name="GetRow" />
@@ -101,6 +116,7 @@
       <RootProperty Name="DataContext" />
       <RootProperty Name="Content" />
       <RootProperty Name="Style" />
+      <RootProperty Name="Visibility" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.DataTemplate">
       <RootProperty Name="Template" />
@@ -117,10 +133,10 @@
       <RootProperty Name="RelativeSource" />
       <RootProperty Name="Mode" />
       <RootProperty Name="TargetNullValue" />
-      <RootProperty Name="FallbackValue" />
-      <RootProperty Name="UpdateSourceTrigger" />
       <RootProperty Name="ElementName" />
       <RootProperty Name="Path" />
+      <RootProperty Name="FallbackValue" />
+      <RootProperty Name="UpdateSourceTrigger" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.ContentPresenter">
       <RootProperty Name="Content" />
@@ -192,6 +208,9 @@
       <RootEvent Name="Click" />
     </RootType>
     <RootType FullName="UlmUniversityNews.PivotPage" />
+    <RootType FullName="UlmUniversityNews.Converters.FacultyToLocalizedStringConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.NullValuetoVisibilityConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.BooleanToVisibilityConverter" />
     <RootType FullName="DrawerLayout.DrawerLayout">
       <RootProperty Name="Children" />
     </RootType>
@@ -199,6 +218,7 @@
       <RootProperty Name="VerticalScrollBarVisibility" />
       <RootProperty Name="Content" />
     </RootType>
+    <RootType FullName="Microsoft.Xaml.Tools.DirectUI.ProxyTypes.NullExtension" />
     <RootType FullName="UlmUniversityNews.Views.ChannelDetails.ChannelDetails" />
     <RootType FullName="Windows.UI.Xaml.Controls.AppBarToggleButton">
       <RootProperty Name="Label" />
@@ -230,7 +250,6 @@
       <RootProperty Name="ImageSource" />
     </RootType>
     <RootType FullName="UlmUniversityNews.Views.ChannelSearch.ChannelSearch" />
-    <RootType FullName="UlmUniversityNews.Converters.BooleanToVisibilityConverter" />
     <RootType FullName="UlmUniversityNews.Converters.ItemClickedConverter" />
     <RootType FullName="Microsoft.Xaml.Interactivity.Interaction">
       <RootMethod Name="GetBehaviors" />
@@ -246,7 +265,6 @@
     </RootType>
     <RootType FullName="UlmUniversityNews.Views.Homescreen.Homescreen" />
     <RootType FullName="UlmUniversityNews.Converters.ValidationMessageOnLocalizedStringConverter" />
-    <RootType FullName="Microsoft.Xaml.Tools.DirectUI.ProxyTypes.NullExtension" />
     <RootType FullName="UlmUniversityNews.Views.StartPage" />
   </Roots.RootTypes>
 </Roots>

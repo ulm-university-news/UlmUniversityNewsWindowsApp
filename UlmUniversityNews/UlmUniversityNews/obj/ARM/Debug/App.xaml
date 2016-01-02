@@ -57,7 +57,7 @@
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Background" Value="{StaticResource UniUlmAccentColorListItemBackground}" />
         </Style>
-        
+                
         <!-- ************************************************************************************************************************************* -->
         <!-- ContentDialog:-->
         <!-- Definiere den Style für TextBlock Elemente innerhalb von einem ContentDialog.-->

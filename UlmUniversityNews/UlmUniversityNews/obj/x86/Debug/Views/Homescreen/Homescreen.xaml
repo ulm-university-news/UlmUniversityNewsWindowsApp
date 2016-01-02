@@ -15,6 +15,8 @@
     <Page.Resources>
         <!-- Konvertierung eines Boolean Wertes auf eine Sichtbarkeit. -->
         <valueconverter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <!-- Konvertierung eines ItemClickEventArgs auf das geklickte Objekt. -->
+        <valueconverter:ItemClickedConverter x:Key="ItemClickedConverter" />
     </Page.Resources>
     
     <!-- CommandBar -->
@@ -90,9 +92,11 @@
                            Style="{StaticResource PivotItemStyle}"
                            Header="Meine Kanäle">
                         <!-- Definiere Liste für Kanäle. -->
+                        <!-- Beachte, IsItemClickEnabled muss explizit aktiviert werden, sonst funktioniert das Binding auf das Command über das Behaviour nicht.-->
                         <ListView 
                             ItemTemplate="{StaticResource ChannelListItemStyle}"
                             ItemsSource="{Binding MyChannels}"
+                            IsItemClickEnabled="True"
                             HorizontalContentAlignment="Stretch"
                             HorizontalAlignment="Stretch">
                             <!---d:DataContext="{Binding , Source={d:DesignData Source=../../DataModel/SampleChannelData.json, Type=data:Channel}}"-->
@@ -105,7 +109,8 @@
                             <!-- Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
                             <i:Interaction.Behaviors>
                                 <core:EventTriggerBehavior EventName="ItemClick">
-                                    <core:InvokeCommandAction Command="{Binding ChannelSelected}" />
+                                    <core:InvokeCommandAction Command="{Binding ChannelSelected}"
+                                                              InputConverter="{StaticResource ItemClickedConverter}" />
                                 </core:EventTriggerBehavior>
                             </i:Interaction.Behaviors>
                         </ListView>

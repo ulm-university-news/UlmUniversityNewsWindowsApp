@@ -41,6 +41,9 @@
                           Label="add group"
                           Visibility="{Binding ElementName=AddGroup, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                           Command="{Binding AddGroupCommand}" />
+            <AppBarButton x:ConnectionId='1' Label="Test"
+                          Icon="Clock"
+                                                     />
         </CommandBar>
     </Page.BottomAppBar>
     
@@ -66,7 +69,7 @@
             </Grid.ColumnDefinitions>
             
             <!-- Drawer Icon -->
-            <Image x:ConnectionId='1' x:Name="DrawerIcon" 
+            <Image x:ConnectionId='2' x:Name="DrawerIcon" 
                    Grid.Column="0"
                    Style="{StaticResource DrawerIconStyle}"
                                               />

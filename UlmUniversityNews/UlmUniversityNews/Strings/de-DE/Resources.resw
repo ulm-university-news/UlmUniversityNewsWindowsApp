@@ -219,7 +219,79 @@
   <data name="ChannelDetailsMessagesPivotItem.Header" xml:space="preserve">
     <value>Nachrichten</value>
   </data>
-  <data name="ChannelSearchPageTitle" xml:space="preserve">
+  <data name="ChannelSearchPageTitle.Text" xml:space="preserve">
     <value>Kanalsuche</value>
+  </data>
+  <data name="ListItemFacultyEngineeringAndComputerScienceString" xml:space="preserve">
+    <value>Fakultät für Ingenierwissenschaften, Informatik und Psychologie</value>
+  </data>
+  <data name="ListItemFacultyMathematicsAndEconomicsString" xml:space="preserve">
+    <value>Fakultät für Mathematik und Wirtschaftswissenschaften</value>
+  </data>
+  <data name="ListItemFacultyMedicinesString" xml:space="preserve">
+    <value>Medizinische Fakultät</value>
+  </data>
+  <data name="ListItemFacultyNaturalSciencesString" xml:space="preserve">
+    <value>Fakultät für Naturwissenschaften</value>
+  </data>
+  <data name="ChannelDetailsChannelContactsField.Text" xml:space="preserve">
+    <value>Kontaktinformationen</value>
+  </data>
+  <data name="ChannelDetailsChannelCreationDateField.Text" xml:space="preserve">
+    <value>Erstellungsdatum</value>
+  </data>
+  <data name="ChannelDetailsChannelDatesField.Text" xml:space="preserve">
+    <value>Termine</value>
+  </data>
+  <data name="ChannelDetailsChannelDescriptionField.Text" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="ChannelDetailsChannelLocationsField.Text" xml:space="preserve">
+    <value>Ort</value>
+  </data>
+  <data name="ChannelDetailsChannelModificationDateField.Text" xml:space="preserve">
+    <value>Änderungsdatum</value>
+  </data>
+  <data name="ChannelDetailsChannelNameField.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ChannelDetailsChannelTermField.Text" xml:space="preserve">
+    <value>Semester</value>
+  </data>
+  <data name="ChannelDetailsChannelTypeField.Text" xml:space="preserve">
+    <value>Kanaltyp</value>
+  </data>
+  <data name="ChannelDetailsChannelWebsiteField.Text" xml:space="preserve">
+    <value>Webseite</value>
+  </data>
+  <data name="ChannelDetailsEventCostField.Text" xml:space="preserve">
+    <value>Eintritt</value>
+  </data>
+  <data name="ChannelDetailsEventOrganizerField.Text" xml:space="preserve">
+    <value>Organisator</value>
+  </data>
+  <data name="ChannelDetailsLectureAssistantField.Text" xml:space="preserve">
+    <value>Übungsleiter/Assistent</value>
+  </data>
+  <data name="ChannelDetailsLectureEndDateField.Text" xml:space="preserve">
+    <value>Vorlesungsende</value>
+  </data>
+  <data name="ChannelDetailsLectureFacultyField.Text" xml:space="preserve">
+    <value>Fakultät</value>
+  </data>
+  <data name="ChannelDetailsLectureLecturerField.Text" xml:space="preserve">
+    <value>Dozent</value>
+  </data>
+  <data name="ChannelDetailsLectureStartDateField.Text" xml:space="preserve">
+    <value>Vorlesungsbeginn</value>
+  </data>
+  <data name="ChannelDetailsSportCostField.Text" xml:space="preserve">
+    <value>Kosten</value>
+  </data>
+  <data name="ChannelDetailsSportNumberOfParticipantsField.Text" xml:space="preserve">
+    <value>Teilnehmerplätze</value>
+  </data>
+  <data name="ChannelSearchOrderByChannelTypeButton.Label" xml:space="preserve">
+    <value>ordne nach typ</value>
   </data>
 </root>

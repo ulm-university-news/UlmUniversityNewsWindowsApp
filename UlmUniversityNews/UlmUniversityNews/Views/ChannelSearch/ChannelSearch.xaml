@@ -54,7 +54,7 @@
             <TextBlock Grid.Column="1"
                        x:Uid="ChannelSearchPageTitle"
                        Style="{StaticResource DrawerTextStyle}"
-                       Text="Channel search" />
+                       Text="ChannelSearchDefault" />
         </Grid>
 
         <!--Inhalt der Seite und Inhalt des Drawer Menü-->

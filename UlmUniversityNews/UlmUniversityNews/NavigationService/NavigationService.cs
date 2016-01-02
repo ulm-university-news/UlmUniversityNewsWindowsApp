@@ -43,10 +43,12 @@ namespace UlmUniversityNews.NavigationService
         /// Navigiere zur Seite, die unter dem angegebenen Schlüssel registriert ist. 
         /// </summary>
         /// <param name="pageKey">Der Schlüssel der Seite.</param>
-        public async void Navigate(string pageKey)
+        public void Navigate(string pageKey)
         {
-            var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
-            await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => rootFrame.Navigate(pageMap[pageKey]));
+            //var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            //await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => rootFrame.Navigate(pageMap[pageKey]));
+
+            rootFrame.Navigate(pageMap[pageKey]);
         }
 
         /// <summary>
