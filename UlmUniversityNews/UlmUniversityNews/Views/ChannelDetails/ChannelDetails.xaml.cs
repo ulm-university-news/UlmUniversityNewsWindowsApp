@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using DataHandlingLayer.ViewModel;
+using System.Diagnostics;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -63,9 +64,8 @@ namespace UlmUniversityNews.Views.ChannelDetails
             {
                 // Workaround to call an update of the Visible attribute and thus force the evaluation of the
                 // visibility status of the pivot item once againg when the pivot element is actually loaded.
-                bool visibilityTmp = HidablePivotItemBehaviorElement.Visible;
                 HidablePivotItemBehaviorElement.ClearValue(HideablePivotItemBehavior.VisibleProperty);
-                HidablePivotItemBehaviorElement.Visible = visibilityTmp;
+                HidablePivotItemBehaviorElement.Visible = channelDetailsViewModel.ChannelSubscribedStatus;
             }
         }
 
@@ -99,8 +99,15 @@ namespace UlmUniversityNews.Views.ChannelDetails
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            // Lade den Zustand im ViewModel mit dem übergebenen Parameterwert.
-            channelDetailsViewModel.LoadSelectedChannel(e.NavigationParameter);
+            Debug.WriteLine("In LoadState of ChannelDetails page. NavigationParameter is: {0}.", e.NavigationParameter);
+            if(e.NavigationParameter != null)
+            {
+                // Lade den Zustand im ViewModel mit dem übergebenen Parameterwert.
+                int selectedChannelId;
+                bool successful = int.TryParse(e.NavigationParameter.ToString(), out selectedChannelId);
+                if(successful)
+                    channelDetailsViewModel.LoadSelectedChannel(selectedChannelId);
+            }
         }
 
         /// <summary>
@@ -113,6 +120,7 @@ namespace UlmUniversityNews.Views.ChannelDetails
         /// serialisierbarer Zustand.</param>
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
+            Debug.WriteLine("In SaveState of ChannelDetails page.");
         }
 
         #region NavigationHelper-Registrierung

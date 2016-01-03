@@ -31,6 +31,12 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private Dictionary<int, Channel> allChannels;
 
+        /// <summary>
+        /// Feld, das angibt, ob online auf dem Server nach aktualisierten Kanalressourcen gesucht
+        /// werden soll.
+        /// </summary>
+        private bool performOnlineUpdate;
+
         #region Properties
         private ObservableCollection<Channel> channels;
         /// <summary>
@@ -107,6 +113,9 @@ namespace DataHandlingLayer.ViewModel
             channelController = new ChannelController();
             allChannels = new Dictionary<int, Channel>();
 
+            // Führe Online Update bei nächster Aktualisierung aus.
+            performOnlineUpdate = true;
+
             // Initialisiere Kommandos.
             StartChannelSearchCommand = new AsyncRelayCommand(param => executeChannelSearchAsync(), param => canExecuteSearch());
             ReorderChannelsCommand = new AsyncRelayCommand(param => executeReorderChannelsCommandAsync());
@@ -119,30 +128,41 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         public async Task UpdateLocalChannelList()
         {
-            displayProgressBar();
-            DateTime currentDate = DateTime.Now;
-
             List<Channel> updatedChannels = null;
-            try
+            if (performOnlineUpdate)
             {
-                // Frage Liste von geänderten Kanal-Ressourcen ab.
-                updatedChannels = await channelController.RetrieveUpdatedChannelsFromServerAsync();
+                DateTime currentDate = DateTime.Now;
+                try
+                {
+                    displayProgressBar();
+                    // Frage Liste von geänderten Kanal-Ressourcen ab.
+                    updatedChannels = await channelController.RetrieveUpdatedChannelsFromServerAsync();
 
-                // Führe Aktualisierungen auf den lokalen Datensätzen aus.
-                await Task.Run(() => channelController.UpdateChannels(updatedChannels));
+                    // Führe Aktualisierungen auf den lokalen Datensätzen aus.
+                    await Task.Run(() => channelController.UpdateChannels(updatedChannels));
 
-                // Setze Aktualisierungsdatum neu.
-                channelController.SetDateOfLastChannelListUpdate(currentDate);
+                    // Setze Aktualisierungsdatum neu.
+                    channelController.SetDateOfLastChannelListUpdate(currentDate);
+                }
+                catch (ClientException ex)
+                {
+                    // Fehler wird nicht an View weitergereicht.
+                    Debug.WriteLine("ClientException occurred. The message is {0} and the error code is: {1}.", ex.Message, ex.ErrorCode);
+                    return;
+                }
+                finally
+                {
+                    hideProgressBar();
+                }
+
+                // Deaktiviere Online Update für den nächsten Aktualisierungsvorgang.
+                performOnlineUpdate = false;
             }
-            catch(ClientException ex)
+            else
             {
-                // Fehler wird nicht an View weitergereicht.
-                Debug.WriteLine("ClientException occurred. The message is {0} and the error code is: {1}.", ex.Message, ex.ErrorCode);
-                return;
-            }
-            finally
-            {
-                hideProgressBar();
+                //// TODO - Teste diese Implementierung.
+                //// Führe Offline Aktualisierung durch.
+                updatedChannels = await Task.Run(() => channelController.GetAllChannels());
             }
 
             // Aktualisiere Liste im ViewController.
@@ -153,8 +173,11 @@ namespace DataHandlingLayer.ViewModel
                     // Prüfe, ob der Kanal schon in der Liste enthalten ist.
                     if(allChannels.ContainsKey(channel.Id))
                     {
-                        // Ersetze Channel im Verzeichnis durch aktualisierte Version.
-                        allChannels[channel.Id] = channel;
+                        if (!channel.Equals(allChannels[channel.Id]))
+                        {
+                            // Ersetze Channel im Verzeichnis durch aktualisierte Version.
+                            allChannels[channel.Id] = channel;
+                        }
                     }
                     else
                     {
@@ -176,6 +199,13 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         public async Task LoadChannelsAsync()
         {
+            // Teste zuerst, ob Werte aus dem Cache geladen wurden.
+            if(allChannels.Count != 0)
+            {
+                return;
+            }
+
+            // Wenn Werte nicht aus dem Cache geladen wurden, lade sie aus der Datenbank.
             try
             {
                 List<Channel> channels = await Task.Run(() => channelController.GetAllChannels());
@@ -324,7 +354,12 @@ namespace DataHandlingLayer.ViewModel
         {
             Debug.WriteLine("ChannelSelectedCommand executed. The passed object is of type: " + selectedChannelObj.GetType());
             Debug.WriteLine("Currently on thread with id: {0} in executeChannelSelected: ", Environment.CurrentManagedThreadId);
-            _navService.Navigate("ChannelDetails", selectedChannelObj);
+
+            Channel selectedChannel = selectedChannelObj as Channel;
+            if(selectedChannel != null)
+            {
+                _navService.Navigate("ChannelDetails", selectedChannel.Id);
+            }     
         }
     }
 }

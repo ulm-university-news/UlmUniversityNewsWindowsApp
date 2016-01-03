@@ -172,6 +172,49 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Lädt die Daten des Kanals mit der übergebenen Id in das ViewModel
+        /// und macht die Daten über die Properties verfügbar.
+        /// </summary>
+        /// <param name="selectedChannelId">Die Id des Kanals, der geladen werden soll.</param>
+        public void LoadSelectedChannel(int selectedChannelId)
+        {
+            try
+            {
+                Channel = channelController.GetChannel(selectedChannelId);
+            }
+            catch(ClientException ex)
+            {
+                // Zeige Fehlernachricht an.
+                displayError(ex.ErrorCode);
+            }
+                        
+            if(Channel != null)
+            {
+                switch (Channel.Type)
+                {
+                    case ChannelType.LECTURE:
+                        Debug.WriteLine("Selected channel is of type Lecture.");
+                        Lecture = Channel as Lecture;
+                        break;
+                    case ChannelType.EVENT:
+                        Debug.WriteLine("Selected channel is of type Event.");
+                        EventObj = Channel as Event;
+                        break;
+                    case ChannelType.SPORTS:
+                        Debug.WriteLine("Selected channel is of type Sports.");
+                        Sports = Channel as Sports;
+                        break;
+                    default:
+                        Debug.WriteLine("Selected channel is of type Student_Group or Other with no special properties.");
+                        break;
+                }
+
+                // Prüfe, ob Kanal bereits abonniert wurde.
+                ChannelSubscribedStatus = channelController.IsChannelSubscribed(Channel.Id);
+            }
+        }
+
+        /// <summary>
         /// Eine Hilfsmethode, die nach einer Statusänderung des Pivot Elements prüft,
         /// ob noch alle Kommandos ausgeführt werden können.
         /// </summary>

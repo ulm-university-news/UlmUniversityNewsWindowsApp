@@ -25,7 +25,7 @@ namespace UlmUniversityNews.Converters
                 visibility = Windows.UI.Xaml.Visibility.Visible;
             }
 
-            System.Diagnostics.Debug.WriteLine("NullValuetoVisibilityConverter returns: " + visibility);
+            //System.Diagnostics.Debug.WriteLine("NullValuetoVisibilityConverter returns: " + visibility);
             return visibility;
         }
 

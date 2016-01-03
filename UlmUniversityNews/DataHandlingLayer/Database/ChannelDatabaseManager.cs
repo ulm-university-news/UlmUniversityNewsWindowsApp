@@ -366,7 +366,7 @@ namespace DataHandlingLayer.Database
                 throw new DatabaseException("Get channels has failed.");
             }
 
-            Debug.WriteLine("Return a channel list with {0} elements." + channels.Count);
+            Debug.WriteLine("Return a channel list with {0} elements.", channels.Count);
             return channels;
         }
 

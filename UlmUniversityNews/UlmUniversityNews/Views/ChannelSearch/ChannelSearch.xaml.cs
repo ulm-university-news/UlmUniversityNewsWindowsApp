@@ -45,6 +45,9 @@ namespace UlmUniversityNews.Views.ChannelSearch
             // Initialisiere das Drawer Layout.
             DrawerLayout.InitializeDrawerLayout();
 
+            // Diese Seite soll wenn möglich im Cache gehalten werden.
+            NavigationCacheMode = NavigationCacheMode.Enabled;
+
             // Setze DataContext der Seite.
             searchChannelsViewModel = new SearchChannelsViewModel(App.NavigationService, App.ErrorMapper);
             this.DataContext = searchChannelsViewModel;

@@ -117,12 +117,19 @@ namespace UlmUniversityNews
                 // Frame erstellen, der als Navigationskontext fungiert und zum Parameter der ersten Seite navigieren.
                 rootFrame = new Frame();
 
+                // Erzeuge Instanz des Navigationsdiensts und lade die Seiten.
+                NavigationService = new UlmUniversityNews.NavigationService.NavigationService(rootFrame);
+                NavigationService.RegisterPage("StartPage", typeof(StartPage));
+                NavigationService.RegisterPage("Homescreen", typeof(Views.Homescreen.Homescreen));
+                NavigationService.RegisterPage("ChannelSearch", typeof(Views.ChannelSearch.ChannelSearch));
+                NavigationService.RegisterPage("ChannelDetails", typeof(Views.ChannelDetails.ChannelDetails));
+
                 // Verknüpfen Sie den Frame mit einem SuspensionManager-Schlüssel.
                 SuspensionManager.RegisterFrame(rootFrame, "AppFrame");
 
                 // TODO: diesen Wert auf eine Cachegröße ändern, die für Ihre Anwendung geeignet ist
                 // siehe: https://msdn.microsoft.com/en-us/library/system.windows.controls.frame.cachesize%28v=vs.95%29.aspx
-                rootFrame.CacheSize = 1;
+                rootFrame.CacheSize = 5;
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
@@ -141,7 +148,17 @@ namespace UlmUniversityNews
                 // Den Frame im aktuellen Fenster platzieren.
                 Window.Current.Content = rootFrame;
             }
-
+            else
+            {
+                // Erzeuge Instanz des Navigationsdiensts und lade die Seiten.
+                NavigationService = new UlmUniversityNews.NavigationService.NavigationService(rootFrame);
+                NavigationService.RegisterPage("StartPage", typeof(StartPage));
+                NavigationService.RegisterPage("Homescreen", typeof(Views.Homescreen.Homescreen));
+                NavigationService.RegisterPage("ChannelSearch", typeof(Views.ChannelSearch.ChannelSearch));
+                NavigationService.RegisterPage("ChannelDetails", typeof(Views.ChannelDetails.ChannelDetails));
+            }
+            
+            // Wenn der Inhalt des RootFrames null ist, d.h. kein Content durch eine Wiederherstellung vorhanden ist.
             if (rootFrame.Content == null)
             {
                 // Entfernt die Drehkreuznavigation für den Start.
@@ -156,14 +173,7 @@ namespace UlmUniversityNews
 
                 rootFrame.ContentTransitions = null;
                 rootFrame.Navigated += this.RootFrame_FirstNavigated;
-
-                // Erzeuge Instanz des Navigationsdiensts und lade die Seiten.
-                NavigationService = new UlmUniversityNews.NavigationService.NavigationService(rootFrame);
-                NavigationService.RegisterPage("StartPage", typeof(StartPage));
-                NavigationService.RegisterPage("Homescreen", typeof(Views.Homescreen.Homescreen));
-                NavigationService.RegisterPage("ChannelSearch", typeof(Views.ChannelSearch.ChannelSearch));
-                NavigationService.RegisterPage("ChannelDetails", typeof(Views.ChannelDetails.ChannelDetails));
-
+                
                 // Navigiere zum Homescreen, wenn der lokale Nutzeraccount bereits existiert.
                 if (localUserExists) {
                     // Prüfe, ob der Push Notification Manager bereits initialisiert ist und initialisiere falls notwendig.

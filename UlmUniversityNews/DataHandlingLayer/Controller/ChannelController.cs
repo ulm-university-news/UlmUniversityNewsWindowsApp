@@ -85,6 +85,26 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Liefert den Kanal mit der angegebenen Id zurück, sofern dieser in den lokalen
+        /// Datensätzen der Anwendung gespeichert ist.
+        /// </summary>
+        /// <param name="channelId">Die Id des abzurufenden Kanals.</param>
+        /// <returns>Das Kanalobjekt bzw. ein Objekt vom Typ einer Unterklasse von Kanal.</returns>
+        public Channel GetChannel(int channelId)
+        {
+            try
+            {
+                return channelDatabaseManager.GetChannel(channelId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("DatabaseException with message {0} occurred.", ex.Message);
+                // Abbilden auf ClientException.
+                throw new ClientException(ErrorCodes.LocalDatabaseException, "Local database failure.");
+            }
+        }
+
+        /// <summary>
         /// Gibt eine Liste von Kanal-Objekten zurück, die seit der letzten Aktualisierung
         /// der im System verwalteten Kanäle geändert wurden.
         /// </summary>

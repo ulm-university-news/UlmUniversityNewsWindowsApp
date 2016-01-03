@@ -23,7 +23,7 @@ namespace UlmUniversityNews.Converters
             {
                 ChannelType type = channel.Type;
 
-                System.Diagnostics.Debug.WriteLine("In ChannelTypeToIconPathConverter the type is: {0}.", type.ToString());
+                //System.Diagnostics.Debug.WriteLine("In ChannelTypeToIconPathConverter the type is: {0}.", type.ToString());
 
                 switch (type)
                 {
@@ -34,7 +34,7 @@ namespace UlmUniversityNews.Converters
                             // Frage die Fakultät der Vorlesung ab.
                             Faculty faculty = lecture.Faculty;
 
-                            System.Diagnostics.Debug.WriteLine("In ChannelTypeToIconPathConverter the faculty is: {0}.", faculty.ToString());
+                            //System.Diagnostics.Debug.WriteLine("In ChannelTypeToIconPathConverter the faculty is: {0}.", faculty.ToString());
 
                             switch (faculty)
                             {
@@ -68,7 +68,7 @@ namespace UlmUniversityNews.Converters
                 }
             }
 
-            System.Diagnostics.Debug.WriteLine("Output of ChannelTypeToIconPathConverter is: {0}.", iconPath);
+            //System.Diagnostics.Debug.WriteLine("Output of ChannelTypeToIconPathConverter is: {0}.", iconPath);
             return iconPath;
         }
 
