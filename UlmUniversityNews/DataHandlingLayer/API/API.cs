@@ -228,7 +228,13 @@ namespace DataHandlingLayer.API
             else
             {
                 // Bilde auf Fehlercode ab und werfe Exception.
-                string responseContent = await response.Content.ReadAsStringAsync();
+                var buffer = await response.Content.ReadAsBufferAsync();
+                byte[] rawBytes = new byte[buffer.Length];
+                using (var reader = Windows.Storage.Streams.DataReader.FromBuffer(buffer))
+                {
+                    reader.ReadBytes(rawBytes);
+                }
+                string responseContent = Encoding.UTF8.GetString(rawBytes, 0, rawBytes.Length); 
                 mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
             }
         }
@@ -343,11 +349,11 @@ namespace DataHandlingLayer.API
         /// <param name="jsonString">Die Fehlernachricht im Json Format.</param>
         /// <returns>Den extrahierten Error Code, oder -1 wenn der Error-Code nicht extrahiert werden konnte.</returns>
         protected int parseErrorCodeFromJson(string jsonString)
-        {
-            JsonObject jsonObj = Windows.Data.Json.JsonValue.Parse(jsonString).GetObject();
+        {            
             int errorCode;
             try
             {
+                JsonObject jsonObj = Windows.Data.Json.JsonValue.Parse(jsonString).GetObject();
                 errorCode = Convert.ToInt32(jsonObj["errorCode"].GetNumber());
             }
             catch (Exception ex) 

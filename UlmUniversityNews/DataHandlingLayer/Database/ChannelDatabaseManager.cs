@@ -371,6 +371,37 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Lösche den Kanal mit der angegebenen Id aus der Datenbank. Es werden auch die
+        /// Datensätze aus Tabellen mit Subklassenattributen dieses Kanals gelöscht, falls
+        /// welche existieren.
+        /// </summary>
+        /// <param name="channelId">Die Id des zu löschenden Kanals.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Löschvorgang nicht erfolgreich ist.</exception>
+        public void DeleteChannel(int channelId)
+        {
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                using(var deleteChannelStmt = conn.Prepare(@"DELETE FROM Channel WHERE Id=?;"))
+                {
+                    deleteChannelStmt.Bind(1, channelId);
+                    deleteChannelStmt.Step();
+                }
+            }
+            catch (SQLiteException sqlEx)
+            {
+                Debug.WriteLine("SQLiteException has occurred in DeleteChannel. The message is: {0}." + sqlEx.Message);
+                throw new DatabaseException("Delete channel has failed.");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("SQLiteException has occurred in DeleteChannel. The message is: {0}, " +
+                    "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                throw new DatabaseException("Delete channel has failed.");
+            }
+        }
+
+        /// <summary>
         /// Rufe den Kanal mit der angegebenen Id aus der Datenbank ab.
         /// </summary>
         /// <param name="channelId">Die Id des Kanals, der abgerufen werden soll.</param>
@@ -459,7 +490,7 @@ namespace DataHandlingLayer.Database
             SQLiteConnection conn = DatabaseManager.GetConnection();
             try
             {
-                using (var subscribeStmt = conn.Prepare("INSERT INTO SubscribedChannels (Channel_Id) VALUES (?);"))
+                using (var subscribeStmt = conn.Prepare(@"INSERT INTO SubscribedChannels (Channel_Id) VALUES (?);"))
                 {
                     subscribeStmt.Bind(1, channelId);
 
@@ -473,9 +504,37 @@ namespace DataHandlingLayer.Database
             }
             catch(Exception ex)
             {
-                Debug.WriteLine("Exception has occurred in GetSubscribedChannels. The message is: {0}, " + 
+                Debug.WriteLine("Exception has occurred in SubscribeChannel. The message is: {0}, " + 
                     "and the stack trace: {1}." + ex.Message, ex.StackTrace);
                 throw new DatabaseException("Subscribe channel has failed.");
+            }
+        }
+
+        /// <summary>
+        /// Entferne den Kanal mit der angebenen Id aus der Menge der abonnierten Kanäle in der Datenbank.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, der deabonniert werden soll.</param>
+        public void UnsubscribeChannel(int channelId)
+        {
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                using (var unsubscribeStmt = conn.Prepare(@"DELETE FROM SubscribedChannels WHERE Channel_Id=?;"))
+                {
+                    unsubscribeStmt.Bind(1, channelId);
+
+                    unsubscribeStmt.Step();
+                }
+            }
+            catch(SQLiteException sqlEx)
+            {
+                // Hier keine Abbildung auf DatabaseException.
+                Debug.WriteLine("SQLiteException has occurred in UnsubscribeChannel. The message is: {0}." + sqlEx.Message);
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("Exception has occurred in UnubscribeChannel. The message is: {0}, " +
+                    "and the stack trace: {1}." + ex.Message, ex.StackTrace);
             }
         }
 

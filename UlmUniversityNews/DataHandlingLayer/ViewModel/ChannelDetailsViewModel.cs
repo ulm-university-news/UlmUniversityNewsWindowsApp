@@ -10,6 +10,7 @@ using DataHandlingLayer.DataModel;
 using DataHandlingLayer.DataModel.Enums;
 using System.Diagnostics;
 using DataHandlingLayer.CommandRelays;
+using DataHandlingLayer.Exceptions;
 
 namespace DataHandlingLayer.ViewModel
 {
@@ -28,7 +29,11 @@ namespace DataHandlingLayer.ViewModel
         public Channel Channel
         {
             get { return channel; }
-            set { this.setProperty(ref this.channel, value); }
+            set 
+            { 
+                this.setProperty(ref this.channel, value);
+                checkCommandExecution();
+            }
         }
 
         private Lecture lecture;
@@ -71,7 +76,11 @@ namespace DataHandlingLayer.ViewModel
         public bool ChannelSubscribedStatus
         {
             get { return channelSubscribedStatus; }
-            set { this.setProperty(ref this.channelSubscribedStatus, value); }
+            set 
+            { 
+                this.setProperty(ref this.channelSubscribedStatus, value);
+                checkCommandExecution();
+            }
         }
 
         private int selectedPivotItemIndex;
@@ -178,7 +187,9 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Liefert true zurück, wenn der Kanal abonniert werden kann, ansonsten false.</returns>
         private bool canSubscribeChannel()
         {
-            if (SelectedPivotItemIndex == 1 && ChannelSubscribedStatus == false)    // In "Kanalinformationen" PivotItem und der Kanal wurde noch nicht abonniert.
+            //  Prüfe nicht auf SelectedPivotItemIndex == 1, da das Nachrichten PivotElement entfernt wird bei ChannelSubscribedStatus == false. 
+            if (Channel != null &&
+                ChannelSubscribedStatus == false)    // In "Kanalinformationen" PivotItem und der Kanal wurde noch nicht abonniert.
             {
                 return true;
             }
@@ -191,7 +202,21 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private async Task executeSubscribeChannel()
         {
-
+            try
+            {
+                displayProgressBar();
+                await channelController.SubscribeChannelAsync(Channel.Id);
+                // Gehe zurück auf die Kanalsuche.
+                _navService.Navigate("ChannelSearch");
+            }
+            catch(ClientException ex)
+            {
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideProgressBar();
+            }
         }
 
         /// <summary>
@@ -200,7 +225,9 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Liefert true zurück, wenn der Kanal deabonniert werden kann, ansonsten false.</returns>
         private bool canUnsubscribeChannel()
         {
-            if (SelectedPivotItemIndex == 1 && ChannelSubscribedStatus == true)    // In "Kanalinformationen" PivotItem und der Kanal wurde bereits abonniert.
+            if (Channel != null &&
+                SelectedPivotItemIndex == 1 &&
+                ChannelSubscribedStatus == true)    // In "Kanalinformationen" PivotItem und der Kanal wurde bereits abonniert.
             {
                 return true;
             }
@@ -213,7 +240,21 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private async Task executeUnsubscribeChannel()
         {
-
+            try
+            {
+                displayProgressBar();
+                await channelController.UnsubscribeChannelAsync(Channel.Id);
+                // Gehe zurück auf den Homescreen.
+                _navService.Navigate("Homescreen");
+            }
+            catch(ClientException ex)
+            {
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideProgressBar();
+            }
         }
     }
 }

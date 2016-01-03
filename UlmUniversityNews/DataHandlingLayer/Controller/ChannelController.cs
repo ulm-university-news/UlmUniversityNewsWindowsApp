@@ -202,11 +202,102 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Der lokale Nutzer abonniert den Kanal mit der angegebenen Id. Es wird die Kommunikation
+        /// mit dem Server realisiert und der Kanal in der lokalen Datenbank entsprechend als abonnierter
+        /// Kanal eingetragen.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, der abonniert werden soll.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn der Abonnementvorgang fehlschlägt.</exception>
+        public async Task SubscribeChannelAsync(int channelId)
+        {
+            // Trage den Kanal in der lokalen Datenbank als abonnierten Kanal ein.
+            try
+            {
+                channelDatabaseManager.SubscribeChannel(channelId);
+            }
+            catch(DatabaseException ex)
+            {
+                Debug.WriteLine("DatabaseException with message {0} occurred.", ex.Message);
+                // Abbilden auf ClientException.
+                throw new ClientException(ErrorCodes.LocalDatabaseException, "Local database failure.");
+            }
+
+            // Führe Request an den Server durch, um den Kanal zu abonnieren.
+            try
+            {
+                string serverResponse = 
+                    await api.SendHttpPostRequestWithJsonBodyAsync(getLocalUser().ServerAccessToken, string.Empty, "/channel/" + channelId + "/user", null);
+            }
+            catch(APIException ex)
+            {
+                // Request fehlgeschlagen. Nehme Kanal wieder aus der Menge an abonnierten Kanälen raus.
+                channelDatabaseManager.UnsubscribeChannel(channelId);
+
+                // Wenn der Kanal auf Serverseite gar nicht mehr existiert.
+                if(ex.ErrorCode == ErrorCodes.ChannelNotFound)
+                {
+                    Debug.WriteLine("User tried to subscribe to a channel that doesn't exist anymore. Remove the channel from the local database.");
+                    try
+                    {
+                        channelDatabaseManager.DeleteChannel(channelId);
+                    }
+                    catch(DatabaseException dEx)
+                    {
+                        Debug.WriteLine("Channel with id {0} couldn't be deleted. Message is: {1}.", channelId, dEx.Message);
+                    }
+                }
+
+                Debug.WriteLine("Couldn't subscribe channel. Server returned status code {0} and error code {1}.", ex.ResponseStatusCode, ex.ErrorCode);
+                // Abbilden auf ClientException.
+                throw new ClientException(ex.ErrorCode, "Error occurred during API call.");
+            }
+            
+        }
+
+        /// <summary>
+        /// Der lokale Nutzer deabonniert den Kanal mit der angegebenen Id. Es wird die Kommunikation
+        /// mit dem Server realisiert und der Kanal in der lokalen Datenbank aus der Menge der abonnierten
+        /// Kanäle ausgetragen.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, der deabonniert werden soll.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn der Deabonnementvorgang fehlschlägt.</exception>
+        public async Task UnsubscribeChannelAsync(int channelId)
+        {
+            // Setze Request zum Deabonnieren des Kanals an den Server ab.
+            try
+            {
+                User localUser = getLocalUser();
+                await api.SendHttpDeleteRequestAsync(localUser.ServerAccessToken, "/channel/" + channelId + "/user");
+            }
+            catch(APIException ex)
+            {
+                Debug.WriteLine("Couldn't unsubscribe channel. Server returned status code {0} and error code {1}.", ex.ResponseStatusCode, ex.ErrorCode);
+
+                // Wenn der Kanal auf dem Server gelöscht wurde, dann ist der Nutzer auch nicht mehr Abonnent.
+                if(ex.ErrorCode == ErrorCodes.ChannelNotFound)
+                {
+                    Debug.WriteLine("Channel seems to be deleted from the server. Perform unsubscribe on local database.");
+
+                    // Nehme den Kanal aus der Menge der abonnierten Kanäle raus.
+                    channelDatabaseManager.UnsubscribeChannel(channelId);
+                    return;
+                }
+
+                // Abbilden auf ClientException.
+                throw new ClientException(ex.ErrorCode, "Error occurred during API call.");
+            }
+
+            // Nehme den Kanal aus der Menge der abonnierten Kanäle raus.
+            channelDatabaseManager.UnsubscribeChannel(channelId);
+        }
+
+        /// <summary>
         /// Erzeugt eine Liste von Objekten vom Typ Kanal aus dem übergebenen JSON-Dokument.
         /// </summary>
         /// <param name="jsonString">Das JSON-Dokument.</param>
         /// <returns>Liste von Kanal-Objekten.</returns>
-        /// <exception cref="ClientException">Wirft eine ClientException wenn keine Liste von Kanal-Objekten aus dem JSON String extrahiert werden kann.</exception>
+        /// <exception cref="ClientException">Wirft eine ClientException wenn keine
+        ///     Liste von Kanal-Objekten aus dem JSON String extrahiert werden kann.</exception>
         private List<Channel> parseChannelListFromJson(string jsonString)
         {
             List<Channel> channels = new List<Channel>();
