@@ -2,6 +2,7 @@
 using DataHandlingLayer.Database;
 using DataHandlingLayer.DataModel;
 using DataHandlingLayer.Exceptions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -113,6 +114,30 @@ namespace DataHandlingLayer.Controller
             }
 
             return localUser;
+        }
+
+        /// <summary>
+        /// Erzeugt ein Moderator Objekt aus dem übergebenen JSON String. Ist eine
+        /// Umwandlung des JSON Strings nicht möglich, so wird eine ClientException 
+        /// geworfen.
+        /// </summary>
+        /// <param name="jsonString">Der JSON String, der in ein Moderator Objekt umgewandelt werden soll.</param>
+        /// <returns>Eine Instanz der Klasse Moderator.</returns>
+        /// <exception cref="ClientException">Wirft eine ClientException wenn kein Moderator Objekt aus dem JSON String übergeben werden kann.</exception>
+        protected Moderator parseModeratorObjectFromJSON(string jsonString)
+        {
+            Moderator moderator = null;
+            try
+            {
+                moderator = JsonConvert.DeserializeObject<Moderator>(jsonString);
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine("Error during deserialization. Exception is: " + ex.Message);
+                // Abbilden des aufgetretenen Fehlers auf eine ClientException.
+                throw new ClientException(ErrorCodes.JsonParserError, "Parsing of JSON object has failed.");
+            }
+            return moderator;
         }
     }
 }

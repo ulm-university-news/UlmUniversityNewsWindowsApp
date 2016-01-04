@@ -22,6 +22,11 @@ namespace DataHandlingLayer.Controller
         private ChannelDatabaseManager channelDatabaseManager;
 
         /// <summary>
+        /// Eine Referenz auf den DatabaseManager, der Funktionalität bezüglich der Moderator-Ressourcen beinhaltet.
+        /// </summary>
+        private ModeratorDatabaseManager moderatorDatabaseManager;
+
+        /// <summary>
         /// Eine Referenz auf eine Instanz der API Klasse mittels der Requests an den Server abgesetzt werden können.
         /// </summary>
         private API.API api;
@@ -33,6 +38,7 @@ namespace DataHandlingLayer.Controller
             : base()
         {
             channelDatabaseManager = new ChannelDatabaseManager();
+            moderatorDatabaseManager = new ModeratorDatabaseManager();
             api = new API.API();
         }
 
@@ -44,6 +50,8 @@ namespace DataHandlingLayer.Controller
             : base(validationErrorReporter)
         {
             channelDatabaseManager = new ChannelDatabaseManager();
+            moderatorDatabaseManager = new ModeratorDatabaseManager();
+            api = new API.API();
         }
 
         /// <summary>
@@ -242,11 +250,12 @@ namespace DataHandlingLayer.Controller
                 throw new ClientException(ErrorCodes.LocalDatabaseException, "Local database failure.");
             }
 
-            // Führe Request an den Server durch, um den Kanal zu abonnieren.
+            User localUser = getLocalUser();
             try
             {
+                // Führe Request an den Server durch, um den Kanal zu abonnieren.
                 string serverResponse = 
-                    await api.SendHttpPostRequestWithJsonBodyAsync(getLocalUser().ServerAccessToken, string.Empty, "/channel/" + channelId + "/user", null);
+                    await api.SendHttpPostRequestWithJsonBodyAsync(localUser.ServerAccessToken, string.Empty, "/channel/" + channelId + "/user", null);
             }
             catch(APIException ex)
             {
@@ -271,7 +280,38 @@ namespace DataHandlingLayer.Controller
                 // Abbilden auf ClientException.
                 throw new ClientException(ex.ErrorCode, "Error occurred during API call.");
             }
-            
+
+            try 
+            {
+                // Frage die verantwortlichen Moderatoren für diesen Kanal ab und speichere sie in der Datenbank.
+                List<Moderator> responsibleModerators = await GetResponsibleModeratorsAsync(channelId);
+                foreach(Moderator moderator in responsibleModerators)
+                {
+                    if(!moderatorDatabaseManager.IsModeratorStored(moderator.Id))
+                    {
+                        moderatorDatabaseManager.StoreModerator(moderator);
+
+                        // TODO füge Moderator noch als Verantwortlichen zum Kanal hinzu in der Datenbank.
+
+                    }
+                }
+
+                // TODO Frage die Nachrichten zum Kanal ab und speichere Sie in der Datenbank. 
+            }
+            catch (DatabaseException dbEx)
+            {
+                // Keine weitere Aktion. Moderatoren und Announcements werden im weiteren Verlauf erneut abgerufen.
+                // Es ist hier also nicht weiter dramatisch, wenn die Speicherung nicht erfolgreich war.
+                Debug.WriteLine("Exception occurred during storage of the responsible moderators or the announcements.");
+                Debug.WriteLine("Message is {0}.", dbEx.Message);
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Aktion.
+                Debug.WriteLine("Exception occurred during request of the responsible moderators or the announcements.");
+                Debug.WriteLine("Message is: {0}, and ErrorCode is {1}.", ex.Message, ex.ErrorCode);
+            }
+
         }
 
         /// <summary>
@@ -309,6 +349,45 @@ namespace DataHandlingLayer.Controller
 
             // Nehme den Kanal aus der Menge der abonnierten Kanäle raus.
             channelDatabaseManager.UnsubscribeChannel(channelId);
+        }
+
+        /// <summary>
+        /// Frage die Moderatoren-Ressourcen vom Server ab, die für den Kanal mit der angegebenen Id verantwortlich sind.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals zu dem die verantwortlichen Moderatoren abgefragt werden.</param>
+        /// <returns>Eine Liste von Moderator Objekten.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn die Moderatoren-Ressourcen nicht erfolgreich abgefragt werden konnten.</exception>
+        public async Task<List<Moderator>> GetResponsibleModeratorsAsync(int channelId)
+        {
+            List<Moderator> responsibleModerators = new List<Moderator>();
+            try
+            {
+                // Frage die verantwortlichen Moderatoren für den Kanal ab. 
+                string serverResponse =
+                    await api.SendHttpGetRequestAsync(getLocalUser().ServerAccessToken, "/channel/" + channelId + "/moderator", null);
+
+                // Extrahiere Moderatoren-Objekte aus der Antwort.
+                // Parse JSON List in eine JArray Repräsentation. JArray repräsentiert ein JSON Array. 
+                Newtonsoft.Json.Linq.JArray jsonArray = Newtonsoft.Json.Linq.JArray.Parse(serverResponse);
+                foreach(var item in jsonArray)
+                {
+                    Moderator moderator = parseModeratorObjectFromJSON(item.ToString());
+                    responsibleModerators.Add(moderator);
+                }
+            }
+            catch (JsonException jsonEx)
+            {
+                Debug.WriteLine("Error during deserialization. Exception is: " + jsonEx.Message);
+                // Abbilden des aufgetretenen Fehlers auf eine ClientException.
+                throw new ClientException(ErrorCodes.JsonParserError, "Parsing of JSON object has failed.");
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("Couldn't retrieve responsible moderators. " + 
+                "Error code is: {0} and status code was {1}.", ex.ErrorCode, ex.ResponseStatusCode);
+                throw new ClientException(ex.ErrorCode, "API call failed.");
+            }
+            return responsibleModerators;
         }
 
         /// <summary>

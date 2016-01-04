@@ -157,7 +157,7 @@ namespace DataHandlingLayer.Database
         {
             if (channel == null)
             {
-                Debug.WriteLine("No valid channel object passed to the StoreChannel method.");
+                Debug.WriteLine("No valid channel object passed to the UpdateChannel method.");
                 return;
             }
 

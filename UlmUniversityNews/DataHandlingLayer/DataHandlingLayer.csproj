@@ -96,10 +96,12 @@
     <Compile Include="Database\ChannelDatabaseManager.cs" />
     <Compile Include="Database\DatabaseManager.cs" />
     <Compile Include="Database\LocalUserDatabaseManager.cs" />
+    <Compile Include="Database\ModeratorDatabaseManager.cs" />
     <Compile Include="DataModel\Announcement.cs" />
     <Compile Include="DataModel\Channel.cs" />
     <Compile Include="DataModel\ConversationMessage.cs" />
     <Compile Include="DataModel\Enums\ChannelType.cs" />
+    <Compile Include="DataModel\Enums\Language.cs" />
     <Compile Include="DataModel\Enums\Priority.cs" />
     <Compile Include="DataModel\Enums\Faculty.cs" />
     <Compile Include="DataModel\Enums\Platform.cs" />
@@ -107,6 +109,7 @@
     <Compile Include="DataModel\Lecture.cs" />
     <Compile Include="DataModel\LocalUser.cs" />
     <Compile Include="DataModel\Message.cs" />
+    <Compile Include="DataModel\Moderator.cs" />
     <Compile Include="DataModel\Reminder.cs" />
     <Compile Include="DataModel\Sports.cs" />
     <Compile Include="DataModel\User.cs" />
