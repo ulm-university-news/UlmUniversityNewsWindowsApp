@@ -162,7 +162,7 @@ namespace DataHandlingLayer.ViewModel
             {
                 //// TODO - Teste diese Implementierung.
                 //// Führe Offline Aktualisierung durch.
-                updatedChannels = await Task.Run(() => channelController.GetAllChannels());
+                // updatedChannels = await Task.Run(() => channelController.GetAllChannels());
             }
 
             // Aktualisiere Liste im ViewController.

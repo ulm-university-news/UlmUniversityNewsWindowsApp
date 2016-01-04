@@ -224,7 +224,7 @@ namespace DataHandlingLayer.ViewModel
         private void executeChannelSelected(object selectedChannelObj)
         {
             Debug.WriteLine("ChannelSelected command executed. The passed object is of type: " + selectedChannelObj.GetType());
-            Debug.WriteLine("Currently on thread with id: {0} in executeChannelSelected: ", Environment.CurrentManagedThreadId);
+            Debug.WriteLine("Currently on thread with id: {0} in executeChannelSelected.", Environment.CurrentManagedThreadId);
 
             Channel selectedChannel = selectedChannelObj as Channel;
             if (selectedChannel != null)

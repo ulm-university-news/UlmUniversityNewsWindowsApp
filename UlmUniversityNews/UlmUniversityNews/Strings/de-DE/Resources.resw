@@ -294,4 +294,10 @@
   <data name="ChannelSearchOrderByChannelTypeButton.Label" xml:space="preserve">
     <value>ordne nach typ</value>
   </data>
+  <data name="ChannelDetailsSubscribeChannelButton.Label" xml:space="preserve">
+    <value>abonniere kanal</value>
+  </data>
+  <data name="ChannelDetailsUnsubscribeChannelButton.Label" xml:space="preserve">
+    <value>deabonniere kanal</value>
+  </data>
 </root>

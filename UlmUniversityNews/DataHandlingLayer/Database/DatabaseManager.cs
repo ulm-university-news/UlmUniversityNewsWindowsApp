@@ -554,8 +554,8 @@ namespace DataHandlingLayer.Database
             string sql = @"CREATE TABLE IF NOT EXISTS 
                             Reminder    (Id                 INTEGER NOT NULL,
                                         Channel_Id          INTEGER NOT NULL,
-                                        StartDate           INTEGER NOT NULL,
-                                        EndDate             INTEGER NOT NULL,    
+                                        StartDate           DATETIME NOT NULL,
+                                        EndDate             DATETIME NOT NULL,    
                                         CreationDate        DATETIME NOT NULL,
                                         ModificationDate    DATETIME NOT NULL,
                                         ""Interval""            INTEGER,
