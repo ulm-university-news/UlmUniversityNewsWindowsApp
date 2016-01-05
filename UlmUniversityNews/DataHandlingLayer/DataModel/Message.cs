@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataHandlingLayer.DataModel.Enums;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace DataHandlingLayer.DataModel
 {
@@ -19,6 +21,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Die eindeutige Id einer Nachricht.
         /// </summary>
+        [JsonProperty("id")]
         public int Id
         {
             get { return id; }
@@ -29,6 +32,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Der Nachrichteninhalt als String.
         /// </summary>
+        [JsonProperty("text")]
         public string Text
         {
             get { return text; }
@@ -41,6 +45,7 @@ namespace DataHandlingLayer.DataModel
         /// immer zu einer Ressource, z.B. zu einem Kanal oder einer Gruppen-Konversation. Innerhalb der zugehörigen Ressource
         /// sind die Nachrichten abhängig vom Datum ihrer Erstellung aufsteigend durchnummeriert. 
         /// </summary>
+        [JsonProperty("messageNumber")]
         public int MessageNumber
         {
             get { return messageNumber; }
@@ -51,6 +56,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Das Erstellungsdatum der Nachricht.
         /// </summary>
+        [JsonProperty("creationDate", NullValueHandling = NullValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTime CreationDate
         {
             get { return creationDate; }
@@ -61,6 +67,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Die Priorität, mit der die Nachricht verschickt wurde.
         /// </summary>
+        [JsonProperty("priority", NullValueHandling = NullValueHandling.Ignore), JsonConverter(typeof(StringEnumConverter))]
         public Priority MessagePriority
         {
             get { return messagePriority; }
@@ -71,6 +78,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Gibt an, ob die Nachricht bereits gelesen wurde.
         /// </summary>
+        [JsonIgnore]
         public bool Read
         {
             get { return isRead; }

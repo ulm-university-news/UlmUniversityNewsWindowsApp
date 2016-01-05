@@ -1,4 +1,5 @@
 ﻿using DataHandlingLayer.DataModel.Enums;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Die Id des Kanals zu dem die Announcement Nachricht gehört.
         /// </summary>
+        [JsonProperty("channelId", NullValueHandling = NullValueHandling.Ignore)]
         public int ChannelId
         {
             get { return channelId; }
@@ -29,6 +31,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Die Id des Autors (ein Moderator), der diese Nachricht verfasst hat.
         /// </summary>
+        [JsonProperty("authorModerator", NullValueHandling = NullValueHandling.Ignore)]
         public int AuthorId
         {
             get { return authorModerator; }
@@ -39,6 +42,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Der Title der Announcement Nachricht.
         /// </summary>
+        [JsonProperty("title", NullValueHandling = NullValueHandling.Ignore)]
         public string Title
         {
             get { return title; }

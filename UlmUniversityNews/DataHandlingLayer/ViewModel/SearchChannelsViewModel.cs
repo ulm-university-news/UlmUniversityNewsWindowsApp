@@ -138,8 +138,10 @@ namespace DataHandlingLayer.ViewModel
                     // Frage Liste von geänderten Kanal-Ressourcen ab.
                     updatedChannels = await channelController.RetrieveUpdatedChannelsFromServerAsync();
 
-                    // Führe Aktualisierungen auf den lokalen Datensätzen aus.
+                    // Führe Aktualisierungen auf den lokalen Datensätzen aus. Delegiere den Aufruf an einen Hintergrundthread.
+                    Debug.WriteLine("Started updating the channel resources.");
                     await Task.Run(() => channelController.UpdateChannels(updatedChannels));
+                    Debug.WriteLine("Finished updating the channel resources.");
 
                     // Setze Aktualisierungsdatum neu.
                     channelController.SetDateOfLastChannelListUpdate(currentDate);
@@ -242,7 +244,7 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private async Task executeChannelSearchAsync()
         {
-            // Generiere Ergebnisliste der Suche.
+            // Generiere Ergebnisliste der Suche. Aufgabe wird an Hintergrund-Threads übergebem.
             List<Channel> resultChannels = await Task.Run(() => extractChannelsByName(SearchTerm));
 
             // Führe noch Sortierung der Liste aus, nach aktuellem View Zustand.

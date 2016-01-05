@@ -677,7 +677,7 @@ namespace DataHandlingLayer.Database
                             SET Active=? 
                             WHERE Channel_Id=? AND Moderator_Id=?;"))
                         {
-                            stmt.Bind(1, isActive);
+                            stmt.Bind(1, (isActive) ? 1 : 0);
                             stmt.Bind(2, channelId);
                             stmt.Bind(3, moderatorId);
 
@@ -692,7 +692,7 @@ namespace DataHandlingLayer.Database
                         {
                             stmt.Bind(1, channelId);
                             stmt.Bind(2, moderatorId);
-                            stmt.Bind(3, isActive);
+                            stmt.Bind(3, (isActive) ? 1 : 0);
 
                             stmt.Step();
                         }
@@ -788,7 +788,7 @@ namespace DataHandlingLayer.Database
                 }
 
                 // Speichere Daten in Message Tabelle.
-                using (var insertMessageStmt = conn.Prepare(@"INSER INTO Message (Id, Text, CreationDate, Priority, Read) 
+                using (var insertMessageStmt = conn.Prepare(@"INSERT INTO Message (Id, Text, CreationDate, Priority, Read) 
                     VALUES (?,?,?,?,?);"))
                 {
                     insertMessageStmt.Bind(1, announcement.Id);
@@ -817,6 +817,7 @@ namespace DataHandlingLayer.Database
                 using (var statement = conn.Prepare("COMMIT TRANSACTION"))
                 {
                     statement.Step();
+                    Debug.WriteLine("Announcement with id {0} stored.", announcement.Id);
                 }
             }
             catch(SQLiteException sqlEx)
@@ -833,6 +834,92 @@ namespace DataHandlingLayer.Database
             catch(Exception ex)
             {
                 Debug.WriteLine("Exception has occurred in StoreAnnouncement. " +
+                    "Exception message is: {0}, and stack trace is {1}.", ex.Message, ex.StackTrace);
+                // Rollback der Transaktion.
+                using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                {
+                    statement.Step();
+                }
+
+                throw new DatabaseException("Storing announcement data in database has failed.");
+            }
+        }
+
+        /// <summary>
+        /// Speichert eine Menge von Announcement Objekten in der Datenbank ab.
+        /// </summary>
+        /// <param name="announcements">Eine Liste von Announcement-Objekten.</param>
+        /// <exception cref="DatabaseException">Wirft eine Exception, wenn die Speicherung fehlschlägt.</exception>
+        public void BulkInsertOfAnnouncements(List<Announcement> announcements)
+        {
+            if(announcements == null || announcements.Count == 0)
+            {
+                Debug.WriteLine("No announcements to insert in BulkInsertOfAnnouncements.");
+                return;
+            }
+            
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                // Starte eine Transaktion.
+                using (var statement = conn.Prepare("BEGIN TRANSACTION"))
+                {
+                    statement.Step();
+                }
+
+                // Statement für die Message-Tabelle.
+                var insertMessageStmt = conn.Prepare(@"INSERT INTO Message (Id, Text,
+                    CreationDate, Priority, Read) VALUES (?,?,?,?,?);");
+                // Statement für die Announcement-Tabelle.
+                var insertAnnouncementStmt = conn.Prepare(@"INSERT INTO Announcement (MessageNumber,
+                    Channel_Id, Title, Author_Moderator_Id, Message_Id) VALUES (?,?,?,?,?);");
+
+                // Führe insert-Statements durch.
+                foreach(Announcement announcement in announcements)
+                {
+                    insertMessageStmt.Bind(1, announcement.Id);
+                    insertMessageStmt.Bind(2, announcement.Text);
+                    insertMessageStmt.Bind(3, DatabaseManager.DateTimeToSQLite(announcement.CreationDate));
+                    insertMessageStmt.Bind(4, (int)announcement.MessagePriority);
+                    insertMessageStmt.Bind(5, 0);   // Nachricht noch nicht gelesen.
+
+                    if (insertMessageStmt.Step() != SQLiteResult.DONE)
+                        Debug.WriteLine("Failed to store the current announcement with id {0}.", announcement.Id);
+
+                    insertAnnouncementStmt.Bind(1, announcement.MessageNumber);
+                    insertAnnouncementStmt.Bind(2, announcement.ChannelId);
+                    insertAnnouncementStmt.Bind(3, announcement.Title);
+                    insertAnnouncementStmt.Bind(4, announcement.AuthorId);
+                    insertAnnouncementStmt.Bind(5, announcement.Id);
+
+                    if (insertAnnouncementStmt.Step() != SQLiteResult.DONE)
+                        Debug.WriteLine("Failed to store the current announcement with id {0}.", announcement.Id);
+
+                    insertMessageStmt.Reset();
+                    insertAnnouncementStmt.Reset();
+                }
+
+                // Commit der Transaktion.
+                using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                {
+                    statement.Step();
+                    Debug.WriteLine("Stored {0} announcements in the database.", announcements.Count);
+                }
+            }
+            catch (SQLiteException sqlEx)
+            {
+                Debug.WriteLine("SQLiteException has occurred in BulkInsertOfAnnouncements. Exception message is: {0}.", sqlEx.Message);
+                // Rollback der Transaktion.
+                using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                {
+                    statement.Step();
+                }
+
+                throw new DatabaseException("Storing announcement data in database has failed.");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Exception has occurred in BulkInsertOfAnnouncements. " +
                     "Exception message is: {0}, and stack trace is {1}.", ex.Message, ex.StackTrace);
                 // Rollback der Transaktion.
                 using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))

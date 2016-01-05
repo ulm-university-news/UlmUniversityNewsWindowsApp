@@ -64,6 +64,8 @@ namespace UlmUniversityNews
             this.Suspending += this.OnSuspending;
             this.Resuming += App_Resuming;
 
+            this.UnhandledException += App_UnhandledException;
+
             // Erstelle Instanz des ErrorMapper.
             ErrorMapper = new ErrorDescriptionMapper();
 
@@ -91,8 +93,8 @@ namespace UlmUniversityNews
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Lade die Datenbank.
-            DatabaseManager.UpgradeDatabase();
-            //DatabaseManager.LoadDatabase();
+            //DatabaseManager.UpgradeDatabase();
+            DatabaseManager.LoadDatabase();
 
             // TODO Test start
             // Lösche lokalen Nutzer testweise:
@@ -338,6 +340,19 @@ namespace UlmUniversityNews
             var deferral = e.SuspendingOperation.GetDeferral();
             await SuspensionManager.SaveAsync();
             deferral.Complete();
+        }
+
+        /// <summary>
+        /// Wird aufgerufen, wenn innerhalb der Anwendung eine Exception aufgetreten ist,
+        /// die nicht durch den Anwendungscode behandelt wurde.
+        /// </summary>
+        /// <param name="sender">Der Sender des Events.</param>
+        /// <param name="e">Die Event Parameter.</param>
+        void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Debug.WriteLine("Unhandled Exception in Application.");
+            Debug.WriteLine("The exception message was {0}.", e.Message);
+            Debug.WriteLine("The stack trace is: {0}.", e.Exception.StackTrace);
         }
     }
 }

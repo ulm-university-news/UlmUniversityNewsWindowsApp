@@ -289,6 +289,7 @@ namespace DataHandlingLayer.Controller
                 {
                     if(!moderatorDatabaseManager.IsModeratorStored(moderator.Id))
                     {
+                        Debug.WriteLine("Need to store the moderator with id {0} locally.", moderator.Id);
                         moderatorDatabaseManager.StoreModerator(moderator);
                     }
                     // Füge Moderator noch als aktiven Verantwortlichen zum Kanal hinzu in der Datenbank.
@@ -297,10 +298,7 @@ namespace DataHandlingLayer.Controller
 
                 // Frage die Nachrichten zum Kanal ab und speichere Sie in der Datenbank.
                 List<Announcement> announcements = await GetAnnouncementsOfChannelAsync(channelId, 0);
-                foreach (Announcement announcement in announcements)
-                {
-                    StoreReceivedAnnouncement(announcement);
-                }
+                StoreReceivedAnnouncements(announcements);
             }
             catch (DatabaseException dbEx)
             {
@@ -433,19 +431,30 @@ namespace DataHandlingLayer.Controller
         /// <param name="announcement">Das Announcement Objekt der empfangenen Announcement</param>
         public void StoreReceivedAnnouncement(Announcement announcement)
         {
+            if(announcement == null)
+            {
+                return;
+            }
+
+            Debug.WriteLine("Trying to store the announcement with id {0} and messageNr {1}.", 
+                announcement.Id, announcement.MessageNumber);
             try
             {
                 // Prüfe ob der Moderator in der Datenbank existiert, der als Autor der Nachricht eingetragen ist.
                 if (moderatorDatabaseManager.IsModeratorStored(announcement.AuthorId))
                 {
+                    Debug.WriteLine("Starting to store announcement.");
                     // Speichere die Announcement ab.
                     channelDatabaseManager.StoreAnnouncement(announcement);
                 }
                 else
                 {
+                    Debug.WriteLine("We do not have the author of the announcement in the database. Cannot store announcement.");
+                    Debug.WriteLine("The missing author has the id {0}.", announcement.AuthorId);
                     // Mache zunächst mal nichts. Die Nachricht wird einfach nicht gespeichert.
 
                     //TODO - Möglicherweise frage den fehlenden Moderator vom Server ab.
+                    //TODO - oder bilde auf Dummy Moderator ab.
                 }
             }
             catch (DatabaseException ex)
@@ -454,6 +463,65 @@ namespace DataHandlingLayer.Controller
                 // die normalerweise im Hintergrund ausgeführt wird und nicht aktiv durch den 
                 // Nutzer ausgelöst wird.
                 Debug.WriteLine("Couldn't store the received announcement of channel. Message was {0}.", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Speichere eine Menge von empfangenen Announcements in der Datenbank ab.
+        /// </summary>
+        /// <param name="announcements">Eine Liste von Announcement Objekten.</param>
+        public void StoreReceivedAnnouncements(List<Announcement> announcements)
+        {
+            if(announcements == null || announcements.Count == 0)
+            {
+                Debug.WriteLine("No announcements passed to the StoreReceivedAnnouncements method.");
+                return;
+            }
+
+            List<Announcement> announcementsToStore = new List<Announcement>();
+
+            // Lookup-Verzeichnis, um schnell herauszufinden, ob ein Moderator lokale in der Datenbank gespeichert ist, oder nicht?
+            Dictionary<int, bool> moderatorStoredMap = new Dictionary<int, bool>();
+            // Iteriere über Announcements in Liste und speichere diese ab.
+            foreach(Announcement announcement in announcements)
+            {
+                // Prüfung, ob Autor (Moderator) in lokaler DB verfügbar.
+                bool isStored = false;
+                if(moderatorStoredMap.ContainsKey(announcement.AuthorId))
+                {
+                    isStored = moderatorStoredMap[announcement.AuthorId];
+                }
+                else
+                {
+                    isStored = moderatorDatabaseManager.IsModeratorStored(announcement.AuthorId);
+                    moderatorStoredMap.Add(announcement.AuthorId, isStored);
+                }
+
+                // Wenn eine gültige Referenz auf einen Autor existiert.
+                if(isStored)
+                {
+                    announcementsToStore.Add(announcement);
+                }
+                else
+                {
+                    Debug.WriteLine("No local entry for the moderator which is author of that announcement. The author id is {0}.", 
+                        announcement.AuthorId);
+                    // TODO - retrieve missing moderator or map onto a dummy moderator object.
+                }
+            }
+
+            try
+            {
+                Debug.WriteLine("Start bulk insert of announcements.");
+                //Speichere die Announcements ab in der Datenbank.
+                channelDatabaseManager.BulkInsertOfAnnouncements(announcementsToStore);
+            }
+            catch(DatabaseException ex)
+            {
+                // Fehler wird nicht weitergereicht, da es sich hierbei um eine Aktion handelt,
+                // die normalerweise im Hintergrund ausgeführt wird und nicht aktiv durch den 
+                // Nutzer ausgelöst wird.
+                Debug.WriteLine("Couldn't store the received announcements of channel. Message was {0}.", ex.Message);
             }
         }
 
