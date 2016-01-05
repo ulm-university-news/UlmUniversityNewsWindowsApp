@@ -290,17 +290,21 @@ namespace DataHandlingLayer.Controller
                     if(!moderatorDatabaseManager.IsModeratorStored(moderator.Id))
                     {
                         moderatorDatabaseManager.StoreModerator(moderator);
-
-                        // TODO füge Moderator noch als Verantwortlichen zum Kanal hinzu in der Datenbank.
-
                     }
+                    // Füge Moderator noch als aktiven Verantwortlichen zum Kanal hinzu in der Datenbank.
+                    channelDatabaseManager.AddModeratorToChannel(channelId, moderator.Id, true);
                 }
 
-                // TODO Frage die Nachrichten zum Kanal ab und speichere Sie in der Datenbank. 
+                // Frage die Nachrichten zum Kanal ab und speichere Sie in der Datenbank.
+                List<Announcement> announcements = await GetAnnouncementsOfChannelAsync(channelId, 0);
+                foreach (Announcement announcement in announcements)
+                {
+                    StoreReceivedAnnouncement(announcement);
+                }
             }
             catch (DatabaseException dbEx)
             {
-                // Keine weitere Aktion. Moderatoren und Announcements werden im weiteren Verlauf erneut abgerufen.
+                // Keine weitere Aktion. Moderatoren und Announcements können im weiteren Verlauf erneut abgerufen werden.
                 // Es ist hier also nicht weiter dramatisch, wenn die Speicherung nicht erfolgreich war.
                 Debug.WriteLine("Exception occurred during storage of the responsible moderators or the announcements.");
                 Debug.WriteLine("Message is {0}.", dbEx.Message);
@@ -311,7 +315,6 @@ namespace DataHandlingLayer.Controller
                 Debug.WriteLine("Exception occurred during request of the responsible moderators or the announcements.");
                 Debug.WriteLine("Message is: {0}, and ErrorCode is {1}.", ex.Message, ex.ErrorCode);
             }
-
         }
 
         /// <summary>
@@ -347,6 +350,7 @@ namespace DataHandlingLayer.Controller
                 throw new ClientException(ex.ErrorCode, "Error occurred during API call.");
             }
 
+            // TODO - eventuell doch nicht einfach löschen bei fehlgeschlagenem Request
             // Nehme den Kanal aus der Menge der abonnierten Kanäle raus.
             channelDatabaseManager.UnsubscribeChannel(channelId);
         }
@@ -388,6 +392,92 @@ namespace DataHandlingLayer.Controller
                 throw new ClientException(ex.ErrorCode, "API call failed.");
             }
             return responsibleModerators;
+        }
+
+        /// <summary>
+        /// Frage die Announcements zu dem Kanal mit der angegebenen Id vom Server ab.
+        /// Die Abfrage kann durch die Angabe der Nachrichtennummer beeinflusst werden. Es
+        /// werden nur die Announcements mit einer höheren Nachrichtennummer als der angegebenen 
+        /// abgefragt.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, zu dem die Announcements abgefragt werden sollen.</param>
+        /// <param name="messageNr">Die Nachrichtennummer, ab der die Announcements abgefragt werden sollen.</param>
+        /// <returns>Eine Liste von Announcement Objekten. Die Liste kann auch leer sein.</returns>
+        /// <exception cref="ClientException">Wirft eine ClientException, wenn der Abfruf der Nachrichten fehlgeschlagen ist.</exception>
+        public async Task<List<Announcement>> GetAnnouncementsOfChannelAsync(int channelId, int messageNr)
+        {
+            List<Announcement> announcements = new List<Announcement>();
+            try
+            {
+                // Frage alle Announcements zu dem gegebenen Kanal ab, beginnend bei der angegebenen Nachrichtennummer.
+                Dictionary<string, string> parameters = new Dictionary<string, string>();
+                parameters.Add("messageNr", messageNr.ToString());
+                string serverResponse =
+                    await api.SendHttpGetRequestAsync(getLocalUser().ServerAccessToken, "/channel/" + channelId + "/announcement", parameters);
+
+                // Extrahiere Announcements aus JSON-Dokument.
+                announcements = parseAnnouncementListFromJson(serverResponse);
+            }
+            catch(APIException ex)
+            {
+                Debug.WriteLine("Couldn't retrieve announcements of channel. " +
+                    "Error code is: {0} and status code was {1}.", ex.ErrorCode, ex.ResponseStatusCode);
+                throw new ClientException(ex.ErrorCode, "API call failed.");
+            }
+            return announcements;
+        }
+
+        /// <summary>
+        /// Speichere eine empfangen Announcement ab.
+        /// </summary>
+        /// <param name="announcement">Das Announcement Objekt der empfangenen Announcement</param>
+        public void StoreReceivedAnnouncement(Announcement announcement)
+        {
+            try
+            {
+                // Prüfe ob der Moderator in der Datenbank existiert, der als Autor der Nachricht eingetragen ist.
+                if (moderatorDatabaseManager.IsModeratorStored(announcement.AuthorId))
+                {
+                    // Speichere die Announcement ab.
+                    channelDatabaseManager.StoreAnnouncement(announcement);
+                }
+                else
+                {
+                    // Mache zunächst mal nichts. Die Nachricht wird einfach nicht gespeichert.
+
+                    //TODO - Möglicherweise frage den fehlenden Moderator vom Server ab.
+                }
+            }
+            catch (DatabaseException ex)
+            {
+                // Fehler wird nicht weitergereicht, da es sich hierbei um eine Aktion handelt,
+                // die normalerweise im Hintergrund ausgeführt wird und nicht aktiv durch den 
+                // Nutzer ausgelöst wird.
+                Debug.WriteLine("Couldn't store the received announcement of channel. Message was {0}.", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Extrahiere eine Liste von Announcement Objekten aus einem gegebenen JSON-Dokument.
+        /// </summary>
+        /// <param name="jsonString">Das JSON-Dokument.</param>
+        /// <returns>Liste von Announcement-Objekten.</returns>
+        /// <exception cref="ClientException">Wirft eine ClientException, wenn keine Liste von
+        ///     Announcements aus dem JSON-Dokument extrahiert werden konnte.</exception>
+        private List<Announcement> parseAnnouncementListFromJson(string jsonString)
+        {
+            List<Announcement> announcements;
+            try
+            {
+                announcements = JsonConvert.DeserializeObject<List<Announcement>>(jsonString);
+            }
+            catch(JsonException ex)
+            {
+                Debug.WriteLine("Error during deserialization. Exception is: " + ex.Message);
+                // Abbilden des aufgetretenen Fehlers auf eine ClientException.
+                throw new ClientException(ErrorCodes.JsonParserError, "Parsing of JSON object has failed.");
+            }
+            return announcements;
         }
 
         /// <summary>

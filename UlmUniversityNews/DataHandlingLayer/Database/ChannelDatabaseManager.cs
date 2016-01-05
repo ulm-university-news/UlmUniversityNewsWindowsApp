@@ -652,6 +652,199 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Trage einen Moderator als Verantwortlichen für einen Kanal in der Datenbank ein.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, zu dem der Moderator hinzugefügt werden soll-</param>
+        /// <param name="moderatorId">Die Id des hinzuzufügenden Moderators.</param>
+        /// <param name="isActive">Gibt an, ob der Moderator den Kanal aktiv verwaltet.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn der Moderator nicht hinzugefügt werden konnte.</exception>
+        public void AddModeratorToChannel(int channelId, int moderatorId, bool isActive)
+        {
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                // Prüfe, ob bereits ein Eintrag für diesen Moderator in der Datenbank ist.
+                using(var checkStmt = conn.Prepare(@"SELECT * FROM ModeratorChannel 
+                    WHERE Channel_Id=? AND Moderator_Id=?;"))
+                {
+                    checkStmt.Bind(1, channelId);
+                    checkStmt.Bind(2, moderatorId);
+
+                    if(checkStmt.Step() == SQLiteResult.ROW)
+                    {
+                        // Aktualisiere das IsActive Feld des bestehenden Eintrags.
+                        using(var stmt = conn.Prepare(@"UPDATE ModeratorChannel 
+                            SET Active=? 
+                            WHERE Channel_Id=? AND Moderator_Id=?;"))
+                        {
+                            stmt.Bind(1, isActive);
+                            stmt.Bind(2, channelId);
+                            stmt.Bind(3, moderatorId);
+
+                            stmt.Step();
+                        }
+                    }
+                    else
+                    {
+                        // Füge den Eintrag ein.
+                        using (var stmt = conn.Prepare(@"INSERT INTO ModeratorChannel (Channel_Id, Moderator_Id, Active) 
+                            VALUES (?,?,?);"))
+                        {
+                            stmt.Bind(1, channelId);
+                            stmt.Bind(2, moderatorId);
+                            stmt.Bind(3, isActive);
+
+                            stmt.Step();
+                        }
+                    }
+                }
+            }
+            catch (SQLiteException sqlEx)
+            {
+                Debug.WriteLine("SQLiteException has occurred in AddModeratorToChannel. The message is: {0}." + sqlEx.Message);
+                throw new DatabaseException("AddModeratorToChannel channel has failed.");
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("Exception has occurred in AddModeratorToChannel. The message is: {0}, " +
+                    "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                throw new DatabaseException("AddModeratorToChannel channel has failed.");
+            }
+        }
+
+        /// <summary>
+        /// Liefert eine Liste an Moderatoren, die in der Datenbank als aktive Verantwortliche des Kanals
+        /// eingetragen sind.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, zu dem die verantwortlichen Moderatoren abgefragt werden sollen.</param>
+        /// <returns>Eine Liste von Moderator Objekten.</returns>
+        /// <exception cref="DatabaseException">Wirft eine DatabaseException, wenn die Ausführung fehlschlägt.</exception>
+        public List<Moderator> GetResponsibleModeratorsForChannel(int channelId)
+        {
+            List<Moderator> responsibleModerators = new List<Moderator>();
+
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                using(var stmt = conn.Prepare(@"SELECT * 
+                    FROM Moderator AS m JOIN ModeratorChannel AS mc ON m.Id=mc.Moderator_Id 
+                    WHERE mc.Channel_Id=? AND mc.Active=?;"))
+                {
+                    stmt.Bind(1, channelId);
+                    stmt.Bind(2, 1);
+
+                    while (stmt.Step() == SQLiteResult.ROW)
+                    {
+                        int id = Convert.ToInt32(stmt["Id"]);
+                        string firstName = (string)stmt["FirstName"];
+                        string lastName = (string)stmt["LastName"];
+                        string email = (string)stmt["Email"];
+
+                        Moderator moderator = new Moderator()
+                        {
+                            Id = id,
+                            FirstName = firstName,
+                            LastName = lastName,
+                            Email = email
+                        };
+                        responsibleModerators.Add(moderator);
+                    }
+                }
+            }
+            catch(SQLiteException sqlEx)
+            {
+                Debug.WriteLine("SQLiteException has occurred in GetResponsibleModeratorsForChannel. The message is: {0}." + sqlEx.Message);
+                throw new DatabaseException("GetResponsibleModeratorsForChannel channel has failed.");
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("Exception has occurred in GetResponsibleModeratorsForChannel. The message is: {0}, " +
+                    "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                throw new DatabaseException("GetResponsibleModeratorsForChannel channel has failed.");
+            }
+            return responsibleModerators;
+        }
+
+        /// <summary>
+        /// Speichere die Daten der gegebenen Announcement in der Datenbank ab.
+        /// </summary>
+        /// <param name="announcement">Das Announcement Objekt mit den Announcement Daten.</param>
+        /// <exception cref="DatabaseException">Wirft eine Exception, wenn die Speicherung fehlschlägt.</exception>
+        public void StoreAnnouncement(Announcement announcement)
+        {
+            if(announcement == null)
+            {
+                Debug.WriteLine("No valid announcement object passed to the StoreAnnouncement method.");
+                return;
+            }
+
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                // Starte eine Transaktion.
+                using (var statement = conn.Prepare("BEGIN TRANSACTION"))
+                {
+                    statement.Step();
+                }
+
+                // Speichere Daten in Message Tabelle.
+                using (var insertMessageStmt = conn.Prepare(@"INSER INTO Message (Id, Text, CreationDate, Priority, Read) 
+                    VALUES (?,?,?,?,?);"))
+                {
+                    insertMessageStmt.Bind(1, announcement.Id);
+                    insertMessageStmt.Bind(2, announcement.Text);
+                    insertMessageStmt.Bind(3, DatabaseManager.DateTimeToSQLite(announcement.CreationDate));
+                    insertMessageStmt.Bind(4, (int)announcement.MessagePriority);
+                    insertMessageStmt.Bind(5, 0);   // Nachricht noch nicht gelesen.
+
+                    insertMessageStmt.Step();
+                }
+
+                // Speichere Daten in Announcement Tabelle.
+                using(var insertAnnouncementStmt = conn.Prepare(@"INSERT INTO Announcement (MessageNumber,
+                    Channel_Id, Title, Author_Moderator_Id, Message_Id) VALUES (?,?,?,?,?);"))
+                {
+                    insertAnnouncementStmt.Bind(1, announcement.MessageNumber);
+                    insertAnnouncementStmt.Bind(2, announcement.ChannelId);
+                    insertAnnouncementStmt.Bind(3, announcement.Title);
+                    insertAnnouncementStmt.Bind(4, announcement.AuthorId);
+                    insertAnnouncementStmt.Bind(5, announcement.Id);
+
+                    insertAnnouncementStmt.Step();
+                }
+
+                // Commit der Transaktion.
+                using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                {
+                    statement.Step();
+                }
+            }
+            catch(SQLiteException sqlEx)
+            {
+                Debug.WriteLine("SQLiteException has occurred in StoreAnnouncement. Exception message is: {0}.", sqlEx.Message);
+                // Rollback der Transaktion.
+                using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                {
+                    statement.Step();
+                }
+
+                throw new DatabaseException("Storing announcement data in database has failed.");
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("Exception has occurred in StoreAnnouncement. " +
+                    "Exception message is: {0}, and stack trace is {1}.", ex.Message, ex.StackTrace);
+                // Rollback der Transaktion.
+                using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                {
+                    statement.Step();
+                }
+
+                throw new DatabaseException("Storing announcement data in database has failed.");
+            }
+        }
+
+        /// <summary>
         /// Hilfsmethode, die aus einem durch eine Query zurückgelieferten Statement ein Objekt des Typs Kanal extrahiert.
         /// Je nach Typ des Kanals werden zusätzliche Informationen aus Subklassen-Tabellen abgefragt und ein Objekt
         /// der Subklasse extrahiert.
