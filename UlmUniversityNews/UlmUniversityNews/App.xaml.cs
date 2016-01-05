@@ -93,7 +93,7 @@ namespace UlmUniversityNews
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Lade die Datenbank.
-            //DatabaseManager.UpgradeDatabase();
+            // DatabaseManager.UpgradeDatabase();
             DatabaseManager.LoadDatabase();
 
             // TODO Test start
@@ -103,7 +103,7 @@ namespace UlmUniversityNews
 
             // TODO Test start
             // Füge lokalen Nutzer wieder ein.
-            // LocalUserDatabaseManager.InsertTestLocalUser();
+            LocalUserDatabaseManager.InsertTestLocalUser();
             // Test end
 
             // Prüfe, ob bereits ein lokaler Nutzer angelegt ist.
@@ -270,10 +270,6 @@ namespace UlmUniversityNews
             try
             {
                 localUser = localUserController.GetLocalUser();
-                // Start Test (TODO Remove after testing)
-                if(localUser != null)
-                    Debug.WriteLine("Just for test reasons: The current push token is: {0}", localUser.PushAccessToken);
-                // Ende Test
             }
             catch(ClientException ex){
                 // TODO - How to handle this error?
@@ -303,7 +299,7 @@ namespace UlmUniversityNews
                 if(channelURI != null){
                     try
                     {
-                        if(checkLocalUserExistence() == false)
+                        if(checkLocalUserExistence() == true)
                         {
                             // Aktualisiere das PushAccessToken falls notwendig.
                             await localUserController.UpdateLocalUserAsync(string.Empty, channelURI);

@@ -90,7 +90,6 @@ namespace DataHandlingLayer.Controller
         /// <exception cref="ClientException">Wirft ClientException, wenn beim Ermitteln des lokalen Nutzers ein Fehler aufgetreten ist.</exception>
         protected User getLocalUser()
         {
-            Debug.WriteLine("Get the local user.");
             // Frage zuerst das lokale Nutzerobjekt aus dem Cache ab.
             User localUser = LocalUser.GetInstance().GetCachedLocalUserObject();
             if (localUser == null)
@@ -98,6 +97,7 @@ namespace DataHandlingLayer.Controller
                 // Lokales Nutzerobjekt noch nicht im Cache. Frage es aus der DB ab.
                 try
                 {
+                    Debug.WriteLine("Retrieve local user object from DB.");
                     LocalUserDatabaseManager localUserDB = new LocalUserDatabaseManager();
                     localUser = localUserDB.GetLocalUser();
 
@@ -111,6 +111,10 @@ namespace DataHandlingLayer.Controller
                     // TODO - hier Exception werfen?
                     //throw new ClientException(ErrorCodes.LocalDatabaseException, "Retrieval of local user account has failed.");
                 }
+            }
+            else
+            {
+                Debug.WriteLine("Retrieved local user object from cache.");
             }
 
             return localUser;

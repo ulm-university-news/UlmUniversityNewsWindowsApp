@@ -402,6 +402,39 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Markiert den Kanal, der durch die angegbene Id identifiziert ist, als gelöscht.
+        /// Der Kanal bleibt jedoch in den Datensätzen vorhanden.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, der als gelöscht markiert werden soll.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn der Kanal nicht als gelöscht marktiert werden konnte.</exception>
+        public void MarkChannelAsDeleted(int channelId)
+        {
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                using(var stmt = conn.Prepare(@"UPDATE Channel 
+                    SET Deleted=? WHERE Id=?;"))
+                {
+                    stmt.Bind(1, 1);    // Setze Deleted auf true.
+                    stmt.Bind(2, channelId);
+
+                    stmt.Step();
+                }
+            }
+            catch (SQLiteException sqlEx)
+            {
+                Debug.WriteLine("SQLiteException has occurred in MarkChannelAsDeleted. The message is: {0}." + sqlEx.Message);
+                throw new DatabaseException("Mark channel as deleted failed. " + sqlEx.Message);
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("SQLiteException has occurred in MarkChannelAsDeleted. The message is: {0}, " +
+                    "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                throw new DatabaseException("Mark channel as deleted failed. " + ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Rufe den Kanal mit der angegebenen Id aus der Datenbank ab.
         /// </summary>
         /// <param name="channelId">Die Id des Kanals, der abgerufen werden soll.</param>
@@ -524,6 +557,7 @@ namespace DataHandlingLayer.Database
                     unsubscribeStmt.Bind(1, channelId);
 
                     unsubscribeStmt.Step();
+                    Debug.WriteLine("Unsubscribed from channel with id {0}.", channelId);
                 }
             }
             catch(SQLiteException sqlEx)
@@ -704,11 +738,43 @@ namespace DataHandlingLayer.Database
                 Debug.WriteLine("SQLiteException has occurred in AddModeratorToChannel. The message is: {0}." + sqlEx.Message);
                 throw new DatabaseException("AddModeratorToChannel channel has failed.");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Debug.WriteLine("Exception has occurred in AddModeratorToChannel. The message is: {0}, " +
                     "and the stack trace: {1}." + ex.Message, ex.StackTrace);
                 throw new DatabaseException("AddModeratorToChannel channel has failed.");
+            }
+        }
+
+        /// <summary>
+        /// Entfernt alle Einträge von verantwortlichen Moderatoren für einen Kanal 
+        /// aus der entsprechenden Datenbanktabelle. Löscht jedoch nicht die
+        /// eigentlichen Moderatoren-Datensätze.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, für den die Einträge von verantwortlichen 
+        ///     Moderatoren gelöscht werden sollen.</param>
+        public void RemoveAllModeratorsFromChannel(int channelId)
+        {
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                using(var stmt = conn.Prepare(@"DELETE FROM ModeratorChannel WHERE Channel_Id=?;"))
+                {
+                    stmt.Bind(1, channelId);
+
+                    stmt.Step();
+                }
+            }
+            catch (SQLiteException sqlEx)
+            {
+                // Werfe keine Exception. Schlägt Löschvorgang fehl bleiben Einträge zwar lokal gespeichert,
+                // werden spätestens aber entfernt, wenn der Kanal gelöscht wird.
+                Debug.WriteLine("RemoveAllModerators from channel has failed. Message is {0}.", sqlEx.Message);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("RemoveAllModerators from channel has failed. Message is {0} and stack trace is {1}.",
+                    ex.Message, ex.StackTrace);
             }
         }
 
@@ -928,6 +994,43 @@ namespace DataHandlingLayer.Database
                 }
 
                 throw new DatabaseException("Storing announcement data in database has failed.");
+            }
+        }
+
+        /// <summary>
+        /// Löscht alle Announcement Nachrichten aus der Datenbank, die 
+        /// für den Kanal mit der angegebenen Id gespeichert sind.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals dessen Announcements gelöscht werden sollen.</param>
+        public void DeleteAllAnnouncementsOfChannel(int channelId)
+        {
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                // Lösche die Einträge aus der Message Tabelle, für die 
+                // es einen entsprechenden Eintrag in der Announcement-Tabelle für den Kanal gibt.
+                // Die entsprechenden Announcement-Einträge werden dann automatisch gelöscht (CASCADE).
+                using(var deleteMsgStmt = conn.Prepare(@"DELETE FROM Message 
+                    WHERE Id IN (
+                        SELECT Message_Id as Id 
+                        FROM Announcement 
+                        WHERE Channel_Id=?
+                    );"))
+                {
+                    deleteMsgStmt.Bind(1, channelId);
+
+                    deleteMsgStmt.Step();
+                }
+            }
+            catch(SQLiteException sqlEx)
+            {
+                // Keine Abbildung auf eine DatabaseException bei dieser Operation.
+                Debug.WriteLine("DeleteAllAnnouncementsOfChannel has failed. The message is: {0}.", sqlEx.Message);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("DeleteAllAnnouncementsOfChannel has failed. The message is: {0} and stack trace is {1}.",
+                    ex.Message, ex.StackTrace);
             }
         }
 

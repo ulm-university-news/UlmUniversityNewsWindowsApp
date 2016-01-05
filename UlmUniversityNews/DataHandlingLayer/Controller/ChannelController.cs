@@ -323,10 +323,10 @@ namespace DataHandlingLayer.Controller
         /// <param name="channelId">Die Id des Kanals, der deabonniert werden soll.</param>
         /// <exception cref="ClientException">Wirft ClientException, wenn der Deabonnementvorgang fehlschlägt.</exception>
         public async Task UnsubscribeChannelAsync(int channelId)
-        {
-            // Setze Request zum Deabonnieren des Kanals an den Server ab.
+        {           
             try
             {
+                // Setze Request zum Deabonnieren des Kanals an den Server ab.
                 User localUser = getLocalUser();
                 await api.SendHttpDeleteRequestAsync(localUser.ServerAccessToken, "/channel/" + channelId + "/user");
             }
@@ -341,6 +341,11 @@ namespace DataHandlingLayer.Controller
 
                     // Nehme den Kanal aus der Menge der abonnierten Kanäle raus.
                     channelDatabaseManager.UnsubscribeChannel(channelId);
+                    // Lösche die Einträge für die verantwortlichen Moderatoren.
+                    channelDatabaseManager.RemoveAllModeratorsFromChannel(channelId);
+                    // Lösche die Announcements des Kanals.
+                    channelDatabaseManager.DeleteAllAnnouncementsOfChannel(channelId);
+                    // TODO - Entferne Reminder
                     return;
                 }
 
@@ -348,9 +353,13 @@ namespace DataHandlingLayer.Controller
                 throw new ClientException(ex.ErrorCode, "Error occurred during API call.");
             }
 
-            // TODO - eventuell doch nicht einfach löschen bei fehlgeschlagenem Request
             // Nehme den Kanal aus der Menge der abonnierten Kanäle raus.
             channelDatabaseManager.UnsubscribeChannel(channelId);
+            // Lösche die Einträge für die verantwortlichen Moderatoren.
+            channelDatabaseManager.RemoveAllModeratorsFromChannel(channelId);
+            // Lösche die Announcements des Kanals.
+            channelDatabaseManager.DeleteAllAnnouncementsOfChannel(channelId);
+            // TODO - Entferne Reminder.
         }
 
         /// <summary>

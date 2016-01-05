@@ -254,6 +254,12 @@ namespace DataHandlingLayer.ViewModel
             }
             catch(ClientException ex)
             {
+                // Markiere Kanal in lokaler Liste als gelöscht, wenn er nicht auf dem Server gefunden wurde.
+                if(ex.ErrorCode == ErrorCodes.ChannelNotFound)
+                {
+                    Channel.Deleted = true;
+                }
+
                 displayError(ex.ErrorCode);
             }
             finally

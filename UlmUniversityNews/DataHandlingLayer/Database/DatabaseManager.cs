@@ -23,6 +23,14 @@ namespace DataHandlingLayer.Database
 
             // Erzeuge die Connection.
             var conn = new SQLiteConnection(path);
+
+            // Schalte Foreign-Key Constraints ein.
+            string sql = @"PRAGMA foreign_keys = ON";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+
             return conn;
         }
 
@@ -493,7 +501,7 @@ namespace DataHandlingLayer.Database
                                             PRIMARY KEY(MessageNumber, Channel_Id),
                                             FOREIGN KEY(Channel_Id) REFERENCES Channel(Id),
                                             FOREIGN KEY(Author_Moderator_Id) REFERENCES Moderator(Id),
-                                            FOREIGN KEY(Message_Id) REFERENCES Message(Id)
+                                            FOREIGN KEY(Message_Id) REFERENCES Message(Id) ON DELETE CASCADE
                             );";
             using (var statment = conn.Prepare(sql))
             {
@@ -537,7 +545,7 @@ namespace DataHandlingLayer.Database
                                                 PRIMARY KEY(MessageNumber, Conversation_Id),
                                                 FOREIGN KEY(Conversation_Id) REFERENCES Conversation(Id),
                                                 FOREIGN KEY(Author_User_Id) REFERENCES User(Id),
-                                                FOREIGN KEY(Message_Id) REFERENCES Message(Id)
+                                                FOREIGN KEY(Message_Id) REFERENCES Message(Id) ON DELETE CASCADE
                             );";
             using (var statement = conn.Prepare(sql))
             {
