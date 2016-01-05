@@ -251,7 +251,7 @@ namespace DataHandlingLayer.Database
                                     Lecturer        TEXT,
                                     Assistant       TEXT,
                                     PRIMARY KEY(Channel_Id),
-                                    FOREIGN KEY(Channel_Id) REFERENCES Channel(Id)
+                                    FOREIGN KEY(Channel_Id) REFERENCES Channel(Id) ON DELETE CASCADE
                             );";
             using (var statement = conn.Prepare(sql))
             {
@@ -270,7 +270,7 @@ namespace DataHandlingLayer.Database
                                     Cost        TEXT,
                                     Organizer   TEXT,
                                     PRIMARY KEY(Channel_Id),
-                                    FOREIGN KEY(Channel_Id) REFERENCES Channel(Id)
+                                    FOREIGN KEY(Channel_Id) REFERENCES Channel(Id) ON DELETE CASCADE
                             );";
             using (var statement = conn.Prepare(sql))
             {
@@ -289,7 +289,7 @@ namespace DataHandlingLayer.Database
                                     Cost                    TEXT,
                                     NumberOfParticipants    TEXT,
                                     PRIMARY KEY(Channel_Id),
-                                    FOREIGN KEY(Channel_Id) REFERENCES Channel(Id)
+                                    FOREIGN KEY(Channel_Id) REFERENCES Channel(Id) ON DELETE CASCADE
                             );";
             using (var statement = conn.Prepare(sql))
             {
@@ -324,7 +324,7 @@ namespace DataHandlingLayer.Database
                                               Moderator_Id  INTEGER NOT NULL,
                                               Active        INTEGER NOT NULL,
                                               PRIMARY KEY(Channel_Id, Moderator_Id),
-                                              FOREIGN KEY(Channel_Id) REFERENCES Channel(Id),
+                                              FOREIGN KEY(Channel_Id) REFERENCES Channel(Id) ON DELETE CASCADE,
                                               FOREIGN KEY(Moderator_Id) REFERENCES Moderator(Id)
                             );";
             using (var statement = conn.Prepare(sql))
@@ -342,7 +342,7 @@ namespace DataHandlingLayer.Database
             string sql = @"CREATE TABLE IF NOT EXISTS 
                             SubscribedChannels (Channel_Id  INTEGER NOT NULL,
                                                 PRIMARY KEY(Channel_Id),
-                                                FOREIGN KEY(Channel_Id) REFERENCES Channel(Id)
+                                                FOREIGN KEY(Channel_Id) REFERENCES Channel(Id) ON DELETE CASCADE
                             );";
             using (var statement = conn.Prepare(sql))
             {

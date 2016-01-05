@@ -88,9 +88,21 @@ namespace UlmUniversityNews.NavigationService
         /// <summary>
         /// Entfernt das zuletzt gespeicherte Element aus dem Navigationsverlauf.
         /// </summary>
-        public void RemoveEntryFromBackStack()
+        public async void RemoveEntryFromBackStack()
         {
-            rootFrame.BackStack.RemoveAt(rootFrame.BackStack.Count - 1);
+            var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                if (rootFrame.BackStack.Count >= 1)
+                {
+                    rootFrame.BackStack.RemoveAt(rootFrame.BackStack.Count - 1);
+                }
+                else
+                {
+                    Debug.WriteLine("Cannot remove entry from back stack as there is no entry on the back stack.");
+                }
+            });
+
         }
     }
 }

@@ -91,8 +91,8 @@ namespace UlmUniversityNews
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Lade die Datenbank.
-            //DatabaseManager.UpgradeDatabase();
-            DatabaseManager.LoadDatabase();
+            DatabaseManager.UpgradeDatabase();
+            //DatabaseManager.LoadDatabase();
 
             // TODO Test start
             // Lösche lokalen Nutzer testweise:
