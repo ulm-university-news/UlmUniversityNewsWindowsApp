@@ -103,7 +103,7 @@ namespace UlmUniversityNews
 
             // TODO Test start
             // Füge lokalen Nutzer wieder ein.
-            LocalUserDatabaseManager.InsertTestLocalUser();
+            // LocalUserDatabaseManager.InsertTestLocalUser();
             // Test end
 
             // Prüfe, ob bereits ein lokaler Nutzer angelegt ist.

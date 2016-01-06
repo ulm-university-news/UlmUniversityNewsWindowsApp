@@ -1035,6 +1035,57 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Ruft zu den vom lokalen Nutzer abonnierten Kanälen die Anzahl an ungelesenen Nachrichten ab
+        /// und speichert diese in einem Verzeichnis. Das Verzeichnis bildet ab von der Kanal-Id auf 
+        /// die Anzahl an ungelesenen Announcements für diesen Kanal.
+        /// </summary>
+        /// <returns>Ein Verzeichnis, indem für jeden abonnierten Kanal die Anzahl der ungelesenen Announcements
+        ///     gespeichert werden. Die Anzahl kann über die Kanal-Id als Schlüssel extrahiert werden.</returns>
+        public Dictionary<int, int> DetermineAmountOfUnreadAnnouncementForMyChannels()
+        {
+            Dictionary<int, int> amountOfUnreadMsgMap = new Dictionary<int, int>();
+
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                // Frage zu allen abonnierten Kanälen die ungelesenen Nachrichten ab und zähle sie.
+                var stmt = conn.Prepare(@"SELECT a.Channel_Id AS Channel_Id, COUNT(*) AS NrUnreadMessages 
+                    FROM Message AS m JOIN Announcement AS a ON m.Id=a.Message_Id
+                    WHERE a.Channel_Id IN (
+                            SELECT Channel_Id 
+                            FROM SubscribedChannels)
+                          AND m.Read=? 
+                    GROUP BY a.Channel_Id;");
+
+                stmt.Bind(1, 0);    // Nachrichten, die nicht als gelesen markiert sind.
+
+                // Iteriere über Ergebnisse.
+                while(stmt.Step() == SQLiteResult.ROW)
+                {
+                    int channelId = Convert.ToInt32(stmt["Channel_Id"]);
+                    int amountOfUnreadMsg = Convert.ToInt32(stmt["NrUnreadMessages"]);
+
+                    // Speichere das Tupel im Verzeichnis.
+                    amountOfUnreadMsgMap.Add(channelId, amountOfUnreadMsg);
+                }
+
+            }
+            catch(SQLiteException sqlEx)
+            {
+                Debug.WriteLine("DetermineAmountOfUnreadAnnouncementForMyChannels has failed. The message is: {0}.", sqlEx.Message);
+                throw new DatabaseException(sqlEx.Message);
+            }
+            catch(DatabaseException ex)
+            {
+                Debug.WriteLine("DetermineAmountOfUnreadAnnouncementForMyChannels has failed. The message is: {0} and stack trace is {1}.",
+                    ex.Message, ex.StackTrace);
+                throw new DatabaseException(ex.Message);
+            }
+
+            return amountOfUnreadMsgMap;
+        }
+
+        /// <summary>
         /// Hilfsmethode, die aus einem durch eine Query zurückgelieferten Statement ein Objekt des Typs Kanal extrahiert.
         /// Je nach Typ des Kanals werden zusätzliche Informationen aus Subklassen-Tabellen abgefragt und ein Objekt
         /// der Subklasse extrahiert.

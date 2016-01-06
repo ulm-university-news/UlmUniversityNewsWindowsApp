@@ -168,6 +168,17 @@
     <Content Include="Assets\ChannelIcons\V_science.png" />
     <Content Include="Assets\Drawer\drawer_icon.png" />
     <Content Include="Assets\Logo.scale-240.png" />
+    <Content Include="Assets\NewMessagesIcons\+10_new_message.png" />
+    <Content Include="Assets\NewMessagesIcons\10_new_message.png" />
+    <Content Include="Assets\NewMessagesIcons\1_new_message.png" />
+    <Content Include="Assets\NewMessagesIcons\2_new_message.png" />
+    <Content Include="Assets\NewMessagesIcons\3_new_message.png" />
+    <Content Include="Assets\NewMessagesIcons\4_new_message.png" />
+    <Content Include="Assets\NewMessagesIcons\5_new_message.png" />
+    <Content Include="Assets\NewMessagesIcons\6_new_message.png" />
+    <Content Include="Assets\NewMessagesIcons\7_new_message.png" />
+    <Content Include="Assets\NewMessagesIcons\8_new_message.png" />
+    <Content Include="Assets\NewMessagesIcons\9_new_message.png" />
     <Content Include="Assets\SmallLogo.scale-240.png" />
     <Content Include="Assets\SplashScreen.scale-240.png" />
     <Content Include="Assets\Square71x71Logo.scale-240.png" />

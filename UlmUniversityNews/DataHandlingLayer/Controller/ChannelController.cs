@@ -535,6 +535,29 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Ermittelt die Anzahl an ungelesenen Announcements für die vom lokalen Nutzer 
+        /// abonnierten Kanäle. Gibt ein Verzeichnis zurück, indem mit der Kanal-Id
+        /// als Schlüssel die Anzahl an ungelesenen Announcement-Nachrichten ermittelt werden kann.
+        /// </summary>
+        /// <returns>Verzeichnis, indem die Anzahl an ungelesenen Announcements für jeden Kanal 
+        ///     gespeichert ist. Die Kanal-Id dient als Schlüssel.</returns>
+        public Dictionary<int, int> GetAmountOfUnreadAnnouncementsForMyChannels()
+        {
+            Dictionary<int, int> channelIdOnUnreadMsgMap = null;
+            try
+            {
+                channelIdOnUnreadMsgMap = channelDatabaseManager.DetermineAmountOfUnreadAnnouncementForMyChannels();
+            }
+            catch(DatabaseException ex)
+            {
+                // Gebe DatabaseException nicht an Aufrufer weiter.
+                // Seite kann ohne diese Information angezeigt werden.
+                Debug.WriteLine("Could not retrieve amount of unread announcements for my channels. Message is {0}.", ex.Message);
+            }
+            return channelIdOnUnreadMsgMap;
+        }
+
+        /// <summary>
         /// Extrahiere eine Liste von Announcement Objekten aus einem gegebenen JSON-Dokument.
         /// </summary>
         /// <param name="jsonString">Das JSON-Dokument.</param>

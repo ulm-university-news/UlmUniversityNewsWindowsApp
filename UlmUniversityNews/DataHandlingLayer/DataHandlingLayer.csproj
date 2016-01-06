@@ -110,6 +110,7 @@
     <Compile Include="DataModel\LocalUser.cs" />
     <Compile Include="DataModel\Message.cs" />
     <Compile Include="DataModel\Moderator.cs" />
+    <Compile Include="DataModel\PropertyChangedNotifier.cs" />
     <Compile Include="DataModel\Reminder.cs" />
     <Compile Include="DataModel\Sports.cs" />
     <Compile Include="DataModel\User.cs" />

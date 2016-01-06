@@ -126,6 +126,31 @@ namespace DataHandlingLayer.ViewModel
             {
                 displayError(e.ErrorCode);
             }
+
+            // Führe Aktualisierung von Anzahl ungelesener Nachrichten Properties der Kanäle aus.
+            await UpdateNumberOfUnreadAnnouncements();
+        }
+
+        /// <summary>
+        /// Aktualisiere die Werte für die noch ungelesenen Announcements in jedem Kanal aus 
+        /// der "MyChannels" Liste.
+        /// </summary>
+        public async Task UpdateNumberOfUnreadAnnouncements()
+        {
+            // Delegiere an Hintergrundthread.
+            Dictionary<int, int> numberOfUnreadAnnouncements = 
+                await Task.Run(() => channelController.GetAmountOfUnreadAnnouncementsForMyChannels());
+
+            foreach(Channel channel in MyChannels)
+            {
+                if (numberOfUnreadAnnouncements.ContainsKey(channel.Id))
+                {
+                    // Speichere den Wert aus dem Verzeichnis als neue Anzahl an ungelsenen Announcements.
+                    channel.NumberOfUnreadAnnouncements = numberOfUnreadAnnouncements[channel.Id];
+                    Debug.WriteLine("The new value for unreadMsg for channel with id {0} is {1}.",
+                        channel.Id, channel.NumberOfUnreadAnnouncements);
+                }
+            }
         }
 
         /// <summary>

@@ -12,7 +12,7 @@ namespace DataHandlingLayer.DataModel
     /// <summary>
     /// Die Channel Klasse repräsentiert einen Kanal, über den Nachrichten an die Abonnenten verteilt werden können.
     /// </summary>
-    public class Channel
+    public class Channel : PropertyChangedNotifier
     {
         #region Properties
         private int id;
@@ -146,7 +146,18 @@ namespace DataHandlingLayer.DataModel
             get { return deleted; }
             set { deleted = value; }
         }
-        
+
+        private int numberOfUnreadAnnouncements;
+        /// <summary>
+        /// Gibt an, wie viele ungelesenen Nachrichten der Kanal aktuell hat.
+        /// Ist der Kanal noch nicht abonniert ist die Anzahl immer 0.
+        /// </summary>
+        [JsonIgnore]
+        public int NumberOfUnreadAnnouncements
+        {
+            get { return numberOfUnreadAnnouncements; }
+            set { base.setProperty(ref this.numberOfUnreadAnnouncements, value); }
+        }   
         #endregion Properties
 
         /// <summary>
