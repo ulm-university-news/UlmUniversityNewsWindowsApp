@@ -70,11 +70,11 @@
       <RootProperty Name="TextTrimming" />
       <RootProperty Name="FontWeight" />
       <RootProperty Name="Foreground" />
-      <RootProperty Name="VerticalAlignment" />
+      <RootProperty Name="HorizontalAlignment" />
       <RootProperty Name="Style" />
       <RootProperty Name="Text" />
-      <RootProperty Name="HorizontalAlignment" />
       <RootProperty Name="Margin" />
+      <RootProperty Name="VerticalAlignment" />
       <RootProperty Name="CharacterSpacing" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.FrameworkElement">

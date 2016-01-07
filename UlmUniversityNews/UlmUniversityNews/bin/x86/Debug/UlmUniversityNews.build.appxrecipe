@@ -86,6 +86,39 @@
       <PackagePath>Assets\Logo.scale-240.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\NewMessagesIcons\+10_new_message.png">
+      <PackagePath>Assets\NewMessagesIcons\+10_new_message.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\NewMessagesIcons\10_new_message.png">
+      <PackagePath>Assets\NewMessagesIcons\10_new_message.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\NewMessagesIcons\1_new_message.png">
+      <PackagePath>Assets\NewMessagesIcons\1_new_message.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\NewMessagesIcons\2_new_message.png">
+      <PackagePath>Assets\NewMessagesIcons\2_new_message.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\NewMessagesIcons\3_new_message.png">
+      <PackagePath>Assets\NewMessagesIcons\3_new_message.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\NewMessagesIcons\4_new_message.png">
+      <PackagePath>Assets\NewMessagesIcons\4_new_message.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\NewMessagesIcons\5_new_message.png">
+      <PackagePath>Assets\NewMessagesIcons\5_new_message.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\NewMessagesIcons\6_new_message.png">
+      <PackagePath>Assets\NewMessagesIcons\6_new_message.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\NewMessagesIcons\7_new_message.png">
+      <PackagePath>Assets\NewMessagesIcons\7_new_message.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\NewMessagesIcons\8_new_message.png">
+      <PackagePath>Assets\NewMessagesIcons\8_new_message.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\NewMessagesIcons\9_new_message.png">
+      <PackagePath>Assets\NewMessagesIcons\9_new_message.png</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\SmallLogo.scale-240.png">
       <PackagePath>Assets\SmallLogo.scale-240.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>

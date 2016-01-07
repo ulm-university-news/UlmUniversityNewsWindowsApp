@@ -103,7 +103,7 @@
                         <!-- Blende Nachrichten PivotItem aus, wenn der Kanal noch nicht abonniert ist.-->
                         <!-- Behavior zum Ein- bzw. Ausblenden dieses PivotItems abhängig vom SubscribeStatus. -->
                         <i:Interaction.Behaviors>
-                            <common:HideablePivotItemBehavior x:Name="HidablePivotItemBehaviour" Visible="{Binding ChannelSubscribedStatus, UpdateSourceTrigger=PropertyChanged}" />
+                            <common:HideablePivotItemBehavior x:Name="HidablePivotItemBehaviorElement" Visible="{Binding ChannelSubscribedStatus, UpdateSourceTrigger=PropertyChanged}" />
                         </i:Interaction.Behaviors>
 
                         <!-- TODO -->

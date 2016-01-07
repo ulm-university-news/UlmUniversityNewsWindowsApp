@@ -125,6 +125,8 @@
     <Compile Include="Converters\ItemClickedConverter.cs" />
     <Compile Include="Converters\NullValuetoVisibilityConverter.cs" />
     <Compile Include="Converters\ValidationMessageOnLocalizedStringConverter.cs" />
+    <Compile Include="DataModel\FakeDataForDesign\FakeChannel.cs" />
+    <Compile Include="DataModel\MockHomescreenViewModel.cs" />
     <Compile Include="DataModel\SampleDataSource.cs" />
     <Compile Include="ErrorHandling\ErrorDescriptionMapper.cs" />
     <Compile Include="ItemPage.xaml.cs">

@@ -148,19 +148,33 @@
                 <!-- andere Informationen -->
                 <Grid Grid.Column="1" Margin="5,0,0,0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="35px" /> <!-- Zeile für Name des Kanals -->
+                        <RowDefinition Height="35px" /> <!-- Zeile für Name des Kanals und Icon für Anzahl ungelesener Nachrichten. -->
                         <RowDefinition Height="35px" /> <!-- Zeile für Typ und Semester -->
                     </Grid.RowDefinitions>
-                    
-                    <!-- Name -->
-                    <TextBlock Grid.Row="0"
+
+                    <!-- Anzeige für Name und Icon für ungelsesen Nachrichten -->
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- Name -->
+                        <TextBlock Grid.Column="0"
                                VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
                                TextWrapping="NoWrap"
                                TextTrimming="WordEllipsis"
                                x:Name="ChannelName"
                                Style="{StaticResource ListTextStyle}"
                                FontWeight="Bold"
                                Text="{Binding Name}"/>
+                        <Image
+                            Grid.Column="1"
+                            x:Name="UnreadAnnouncementsIcon"
+                            Source="/Assets/NewMessagesIcons/1_new_message.png" />
+                    </Grid>
+
 
                     <!-- Anzeige für Typ und Semester.-->
                     <Grid Grid.Row="1"
