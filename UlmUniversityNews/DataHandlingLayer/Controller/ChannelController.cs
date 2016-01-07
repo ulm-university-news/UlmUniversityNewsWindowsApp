@@ -279,37 +279,22 @@ namespace DataHandlingLayer.Controller
                 Debug.WriteLine("Couldn't subscribe channel. Server returned status code {0} and error code {1}.", ex.ResponseStatusCode, ex.ErrorCode);
                 // Abbilden auf ClientException.
                 throw new ClientException(ex.ErrorCode, "Error occurred during API call.");
-            }
+            } // Ende Fehlerbehandlung fehlgeschlagener Subscribe Request.
 
             try 
             {
                 // Frage die verantwortlichen Moderatoren für diesen Kanal ab und speichere sie in der Datenbank.
                 List<Moderator> responsibleModerators = await GetResponsibleModeratorsAsync(channelId);
-                foreach(Moderator moderator in responsibleModerators)
-                {
-                    if(!moderatorDatabaseManager.IsModeratorStored(moderator.Id))
-                    {
-                        Debug.WriteLine("Need to store the moderator with id {0} locally.", moderator.Id);
-                        moderatorDatabaseManager.StoreModerator(moderator);
-                    }
-                    // Füge Moderator noch als aktiven Verantwortlichen zum Kanal hinzu in der Datenbank.
-                    channelDatabaseManager.AddModeratorToChannel(channelId, moderator.Id, true);
-                }
+                StoreResponsibleModeratorsForChannel(channelId, responsibleModerators);
 
                 // Frage die Nachrichten zum Kanal ab und speichere Sie in der Datenbank.
                 List<Announcement> announcements = await GetAnnouncementsOfChannelAsync(channelId, 0);
-                StoreReceivedAnnouncements(announcements);
-            }
-            catch (DatabaseException dbEx)
-            {
-                // Keine weitere Aktion. Moderatoren und Announcements können im weiteren Verlauf erneut abgerufen werden.
-                // Es ist hier also nicht weiter dramatisch, wenn die Speicherung nicht erfolgreich war.
-                Debug.WriteLine("Exception occurred during storage of the responsible moderators or the announcements.");
-                Debug.WriteLine("Message is {0}.", dbEx.Message);
+                await StoreReceivedAnnouncementsAsync(announcements);
             }
             catch (ClientException ex)
             {
-                // Keine weitere Aktion.
+                // Keine weitere Aktion. Moderatoren und Announcements können im weiteren Verlauf erneut abgerufen werden.
+                // Es ist hier also nicht weiter dramatisch, wenn die Speicherung nicht erfolgreich war.
                 Debug.WriteLine("Exception occurred during request of the responsible moderators or the announcements.");
                 Debug.WriteLine("Message is: {0}, and ErrorCode is {1}.", ex.Message, ex.ErrorCode);
             }
@@ -438,7 +423,7 @@ namespace DataHandlingLayer.Controller
         /// Speichere eine empfangen Announcement ab.
         /// </summary>
         /// <param name="announcement">Das Announcement Objekt der empfangenen Announcement</param>
-        public void StoreReceivedAnnouncement(Announcement announcement)
+        public async Task StoreReceivedAnnouncementAsync(Announcement announcement)
         {
             if(announcement == null)
             {
@@ -458,13 +443,40 @@ namespace DataHandlingLayer.Controller
                 }
                 else
                 {
-                    Debug.WriteLine("We do not have the author of the announcement in the database. Cannot store announcement.");
+                    // Fehlerbehandlung.
+                    Debug.WriteLine("We do not have the author of the announcement in the database. Cannot store announcement without author reference.");
                     Debug.WriteLine("The missing author has the id {0}.", announcement.AuthorId);
-                    // Mache zunächst mal nichts. Die Nachricht wird einfach nicht gespeichert.
 
-                    //TODO - Möglicherweise frage den fehlenden Moderator vom Server ab.
-                    //TODO - oder bilde auf Dummy Moderator ab.
-                }
+                    Debug.WriteLine("Try querying the responsible moderators from the channel again.");
+                    try
+                    {
+                        List<Moderator> responsibleModerators = await GetResponsibleModeratorsAsync(announcement.ChannelId);
+                        StoreResponsibleModeratorsForChannel(announcement.ChannelId, responsibleModerators);
+
+                        // Prüfe erneut, ob Eintrag nun vorhanden ist.
+                        if (!moderatorDatabaseManager.IsModeratorStored(announcement.AuthorId))
+                        {
+                             // Bilde auf Dummy-Moderator ab und füge die Announcement ein.
+                            Debug.WriteLine("Could not recover from missing author. Set author for announcement with id {0} to the " +
+                                "dummy moderator.", announcement.Id);
+                            announcement.AuthorId = 0;
+                        }
+
+                        // Speichere die Announcement ab.
+                        channelDatabaseManager.StoreAnnouncement(announcement);
+                    }
+                    catch (ClientException ex)
+                    {
+                        Debug.WriteLine("Request to retrieve missing moderators has failed. Error code is {0}.", ex.ErrorCode);
+                        // Bilde auf Dummy-Moderator ab und füge die Announcement ein.
+                        Debug.WriteLine("Could not recover from missing author. Set author for announcement with id {0} to the " +
+                            "dummy moderator.", announcement.Id);
+                        announcement.AuthorId = 0;
+
+                        // Speichere die Announcement ab.
+                        channelDatabaseManager.StoreAnnouncement(announcement);
+                    }
+                } // Ende Fehlerbehandlung.
             }
             catch (DatabaseException ex)
             {
@@ -479,7 +491,7 @@ namespace DataHandlingLayer.Controller
         /// Speichere eine Menge von empfangenen Announcements in der Datenbank ab.
         /// </summary>
         /// <param name="announcements">Eine Liste von Announcement Objekten.</param>
-        public void StoreReceivedAnnouncements(List<Announcement> announcements)
+        public async Task StoreReceivedAnnouncementsAsync(List<Announcement> announcements)
         {
             if(announcements == null || announcements.Count == 0)
             {
@@ -487,10 +499,13 @@ namespace DataHandlingLayer.Controller
                 return;
             }
 
+            // Liste der Announcements, die dann in die Datenbank geschrieben werden.
             List<Announcement> announcementsToStore = new List<Announcement>();
+            bool performQueryOnMissingModerators = true;
 
             // Lookup-Verzeichnis, um schnell herauszufinden, ob ein Moderator lokale in der Datenbank gespeichert ist, oder nicht?
             Dictionary<int, bool> moderatorStoredMap = new Dictionary<int, bool>();
+
             // Iteriere über Announcements in Liste und speichere diese ab.
             foreach(Announcement announcement in announcements)
             {
@@ -506,22 +521,66 @@ namespace DataHandlingLayer.Controller
                     moderatorStoredMap.Add(announcement.AuthorId, isStored);
                 }
 
-                // Wenn eine gültige Referenz auf einen Autor existiert.
+                // Prüfe, ob eine gültige Referenz auf einen Autor existiert.
                 if(isStored)
                 {
                     announcementsToStore.Add(announcement);
                 }
                 else
                 {
+                    // Fehlerbehandlung.
                     Debug.WriteLine("No local entry for the moderator which is author of that announcement. The author id is {0}.", 
                         announcement.AuthorId);
-                    // TODO - retrieve missing moderator or map onto a dummy moderator object.
-                }
-            }
+                    if(performQueryOnMissingModerators)
+                    {
+                        Debug.WriteLine("Try querying the responsible moderators from the channel again.");
+                        try
+                        {
+                            List<Moderator> responsibleModerators = await GetResponsibleModeratorsAsync(announcement.ChannelId);
+                            StoreResponsibleModeratorsForChannel(announcement.ChannelId, responsibleModerators);
+
+                            // Prüfe erneut, ob Eintrag nun vorhanden ist.
+                            if(moderatorDatabaseManager.IsModeratorStored(announcement.AuthorId))
+                            {
+                                announcementsToStore.Add(announcement);
+                            }
+                            else
+                            {
+                                // Bilde auf Dummy-Moderator ab und füge die Announcement ein.
+                                Debug.WriteLine("Could not recover from missing author. Set author for announcement with id {0} to the " + 
+                                    "dummy moderator.", announcement.Id);
+                                announcement.AuthorId = 0;
+                                announcementsToStore.Add(announcement);
+                            }
+                        }
+                        catch(ClientException ex)
+                        {
+                            Debug.WriteLine("Request to retrieve missing moderators has failed. Error code is {0}.", ex.ErrorCode);
+                            // Bilde auf Dummy-Moderator ab und füge die Announcement ein.
+                            Debug.WriteLine("Could not recover from missing author. Set author for announcement with id {0} to the " +
+                                "dummy moderator.", announcement.Id);
+                            announcement.AuthorId = 0;
+                            announcementsToStore.Add(announcement);
+                        }
+                        // Führe im weiteren Verlauf keine weitere Abfrage an den Server mehr durch. Wenn der Fehler bei der ersten Abfrage nicht behoben wurde,
+                        // dann wird er auch bei weiteren Abfragen nicht behoben.
+                        performQueryOnMissingModerators = false;
+                    }
+                    else
+                    {
+                        // Abfragen der fehlenden Moderatoren wurde schon versucht. Bilde stattdessen direkt auf den Dummy-Moderator ab.
+                        Debug.WriteLine("Could not recover from missing author. Set author for announcement with id {0} to the " +
+                            "dummy moderator.", announcement.Id);
+                        announcement.AuthorId = 0;
+                        announcementsToStore.Add(announcement);
+                    }
+                } // Ende der Fehlerbehandlung von fehlendem Moderator-Eintrag.
+            } // Ende der Foreach Schleife.
 
             try
             {
                 Debug.WriteLine("Start bulk insert of announcements.");
+
                 //Speichere die Announcements ab in der Datenbank.
                 channelDatabaseManager.BulkInsertOfAnnouncements(announcementsToStore);
             }
@@ -555,6 +614,39 @@ namespace DataHandlingLayer.Controller
                 Debug.WriteLine("Could not retrieve amount of unread announcements for my channels. Message is {0}.", ex.Message);
             }
             return channelIdOnUnreadMsgMap;
+        }
+
+        /// <summary>
+        /// Speichere für den Kanal mit der angegebenen Id die in der Liste definierten 
+        /// Moderatoren als die für diesen Kanal verantwortlichen Moderatoren ab.
+        /// Die Methode speichert die Datensätze der Moderatoren lokal in der Datenbank, falls sie dort
+        /// noch nicht gespeichert sind und trägt die Moderatoren als Verantwortliche für den Kanal ein.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, für den die Moderatoren als Verantworliche eingetragen werden sollen. </param>
+        /// <param name="responsibleModerators">Die Liste an Moderatoren, die als die Verantwortlichen eingetragen werden sollen.</param>
+        public void StoreResponsibleModeratorsForChannel(int channelId, List<Moderator> responsibleModerators)
+        {
+            try
+            {
+                foreach (Moderator moderator in responsibleModerators)
+                {
+                    if (!moderatorDatabaseManager.IsModeratorStored(moderator.Id))
+                    {
+                        Debug.WriteLine("Need to store the moderator with id {0} locally.", moderator.Id);
+                        moderatorDatabaseManager.StoreModerator(moderator);
+                    }
+                    // Füge Moderator noch als aktiven Verantwortlichen zum Kanal hinzu in der Datenbank.
+                    channelDatabaseManager.AddModeratorToChannel(channelId, moderator.Id, moderator.IsActive);
+                }
+            }
+            catch(DatabaseException ex)
+            {
+                // Fehler wird nicht weitergereicht, da es sich hierbei um eine Aktion handelt,
+                // die normalerweise im Hintergrund ausgeführt wird und nicht aktiv durch den 
+                // Nutzer ausgelöst wird.
+                Debug.WriteLine("Could not store responsible moderators for the channel with id {0}." + 
+                    "The message is {1}.", channelId, ex.Message);
+            }
         }
 
         /// <summary>

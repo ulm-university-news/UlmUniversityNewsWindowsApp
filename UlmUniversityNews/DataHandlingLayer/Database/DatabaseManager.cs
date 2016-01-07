@@ -103,6 +103,10 @@ namespace DataHandlingLayer.Database
                 // Erstelle Reminder Tabelle.
                 createReminderTable(conn);
 
+                // Füge einen Dummy-Moderator ein, um Announcements mit fehlerhaften Referenz auf einen Autor
+                // im Notfall auf diesen Moderator abbilden zu können.
+                addDummyModerator(conn);
+
                 // Schalte Foreign-Key Constraints ein.
                 string sql = @"PRAGMA foreign_keys = ON";
                 using (var statement = conn.Prepare(sql))
@@ -579,6 +583,33 @@ namespace DataHandlingLayer.Database
             using (var statement = conn.Prepare(sql))
             {
                 statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Methode, um einen Dummy-Moderator Datensatz in die Moderatoren-Tabelle
+        /// einzügen. Dieser dient dazu fehlende Autorenreferenzen bei Announcements abzufangen.
+        /// </summary>
+        /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
+        private static void addDummyModerator(SQLiteConnection conn)
+        {
+            string checkQuery = @"SELECT FROM Moderator WHERE Id=?;";
+            using (var checkStmt = conn.Prepare(checkQuery))
+            {
+                checkStmt.Bind(1, 0);       // Prüfe auf einen Eintrag mit Id=0.
+
+                if (checkStmt.Step() != SQLiteResult.ROW)
+                {
+                    // Füge einen Dummy-Moderator ein, um Announcements mit einem fehlenden Autor
+                    // auf diesen Dummy-Moderator abbilden zu können.
+                    string sql = @"INSERT INTO Moderator (id, FirstName, LastName, Email) 
+                            VALUES (0, 'Unknown', 'Author', 'not specified')";
+                    using (var statement = conn.Prepare(sql))
+                    {
+                        statement.Step();
+                        Debug.WriteLine("Inserted the dummy moderator object.");
+                    }
+                }
             }
         }
     }

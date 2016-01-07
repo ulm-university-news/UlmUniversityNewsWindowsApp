@@ -101,6 +101,17 @@ namespace DataHandlingLayer.DataModel
         {
             get { return isAdmin; }
             set { isAdmin = value; }
+        }
+
+        private bool isActive;
+        /// <summary>
+        /// Gibt an, ob der Moderator aktiv ist bezüglich einer Ressource, z.B. einem Kanal.
+        /// </summary>
+        [JsonProperty("active", NullValueHandling = NullValueHandling.Ignore)]
+        public bool IsActive
+        {
+            get { return isActive; }
+            set { isActive = value; }
         }     
         #endregion Properties
 
