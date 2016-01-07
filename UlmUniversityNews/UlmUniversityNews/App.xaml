@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:UlmUniversityNews"
     xmlns:converter="using:UlmUniversityNews.Converters"
-    RequestedTheme="Light">
+    RequestedTheme="Light"> <!-- TODO - entferne Requested Theme -->
     
     <Application.Resources>
 
@@ -138,6 +138,7 @@
                     <ColumnDefinition Width="*" /> <!-- Spalte für restliche Information-->
                 </Grid.ColumnDefinitions>
                 
+                <!-- TODO - entferne Icon und erstetze durch Kreis mit definiertem Text -->
                 <!-- Icon -->
                 <Image Source="{Binding Converter={StaticResource ChannelToIconPathConverter}}" 
                        Grid.Column="0"

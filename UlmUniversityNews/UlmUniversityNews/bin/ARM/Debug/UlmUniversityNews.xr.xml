@@ -50,6 +50,7 @@
     <RootPropertyPathName Name="SearchChannelsCommand" />
     <RootPropertyPathName Name="MyChannels" />
     <RootPropertyPathName Name="ChannelSelected" />
+    <RootPropertyPathName Name="Count" />
     <RootPropertyPathName Name="CreateUserCommand" />
     <RootPropertyPathName Name="ValidationMessages" />
   </Roots.PropertyPathNames>
@@ -79,6 +80,8 @@
       <RootProperty Name="VerticalAlignment" />
       <RootProperty Name="TextAlignment" />
       <RootProperty Name="CharacterSpacing" />
+      <RootProperty Name="Visibility" />
+      <RootProperty Name="Inlines" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.FrameworkElement">
       <RootProperty Name="Margin" />
@@ -278,6 +281,8 @@
       <RootProperty Name="ImageSource" />
     </RootType>
     <RootType FullName="UlmUniversityNews.Views.ChannelSearch.ChannelSearch" />
+    <RootType FullName="UlmUniversityNews.Converters.ListCountToVisibilityConverter" />
+    <RootType FullName="Windows.UI.Xaml.Documents.LineBreak" />
     <RootType FullName="UlmUniversityNews.Views.Homescreen.Homescreen" />
     <RootType FullName="UlmUniversityNews.Converters.ValidationMessageOnLocalizedStringConverter" />
     <RootType FullName="UlmUniversityNews.Views.StartPage" />

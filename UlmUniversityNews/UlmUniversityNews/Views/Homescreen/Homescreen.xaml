@@ -18,6 +18,8 @@
         <valueconverter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <!-- Konvertierung eines ItemClickEventArgs auf das geklickte Objekt. -->
         <valueconverter:ItemClickedConverter x:Key="ItemClickedConverter" />
+        <!-- Konvertierung auf Sichtbarkeitswert abhängig von der Anzahl an Elementen einer Liste. -->
+        <valueconverter:ListCountToVisibilityConverter x:Key="ListCountToVisibilityConverter" />
     </Page.Resources>
     
     <!--<UserControl.Resources>
@@ -96,30 +98,47 @@
                     <PivotItem x:Uid="HomescreenMyChannelsPivotItem"
                            Style="{StaticResource PivotItemStyle}"
                            Header="Meine Kanäle">
-                        <!-- Definiere Liste für Kanäle. -->
-                        <!-- Beachte, IsItemClickEnabled muss explizit aktiviert werden, sonst funktioniert das Binding auf das Command über das Behaviour nicht.-->
-                        <ListView
-                            ItemTemplate="{StaticResource ChannelListItemStyle}"
-                            ItemsSource="{Binding MyChannels}"
-                            IsItemClickEnabled="True"
-                            HorizontalContentAlignment="Stretch"
-                            HorizontalAlignment="Stretch">
-                            <!--d:DataContext="{Binding Source={d:DesignData Source=../../DataModel/ChannelSampleData.xaml}}-->
-                            <!---d:DataContext="{Binding , Source={d:DesignData Source=../../DataModel/SampleChannelData.json, Type=data:Channel}}"-->
-                            <ListView.ItemContainerStyle>
-                                <Style TargetType="ListViewItem">
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                </Style>
-                            </ListView.ItemContainerStyle>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
 
-                            <!-- Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
-                            <i:Interaction.Behaviors>
-                                <core:EventTriggerBehavior EventName="ItemClick">
-                                    <core:InvokeCommandAction Command="{Binding ChannelSelected}"
+                            <TextBlock 
+                                Grid.Row="0"
+                                Style="{StaticResource BaseTextBlockStyle}"
+                                Visibility="{Binding MyChannels.Count, Converter={StaticResource ListCountToVisibilityConverter}}">
+                                    Es wurde noch kein Kanal abonniert.
+                                    <LineBreak/>
+                                    Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.
+                            </TextBlock>
+
+                            <!-- Definiere Liste für Kanäle. -->
+                            <!-- Beachte, IsItemClickEnabled muss explizit aktiviert werden, sonst funktioniert das Binding auf das Command über das Behaviour nicht.-->
+                            <ListView
+                                Grid.Row="1"
+                                ItemTemplate="{StaticResource ChannelListItemStyle}"
+                                ItemsSource="{Binding MyChannels}"
+                                IsItemClickEnabled="True"
+                                HorizontalContentAlignment="Stretch"
+                                HorizontalAlignment="Stretch">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+
+                                <!-- Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
+                                <i:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="ItemClick">
+                                        <core:InvokeCommandAction Command="{Binding ChannelSelected}"
                                                               InputConverter="{StaticResource ItemClickedConverter}" />
-                                </core:EventTriggerBehavior>
-                            </i:Interaction.Behaviors>
-                        </ListView>
+                                    </core:EventTriggerBehavior>
+                                </i:Interaction.Behaviors>
+                            </ListView>
+
+                        </Grid>
+                        
                     </PivotItem>
                     
                     <!-- Pivotelement 2-->
@@ -133,7 +152,7 @@
             
             
              <!--Inhalt des Drawer Menüs-->
-            <Grid x:Name="ListFragment" Background="{StaticResource UniUlmAccentColor}">
+            <Grid x:Name="ListFragment" Background="{StaticResource UniUlmMainBackgroundColor}">
                 <ListView x:Name="ListMenuItems">
                     <ListView.ItemTemplate>
                         <DataTemplate>
