@@ -593,23 +593,30 @@ namespace DataHandlingLayer.Database
         /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
         private static void addDummyModerator(SQLiteConnection conn)
         {
-            string checkQuery = @"SELECT FROM Moderator WHERE Id=?;";
-            using (var checkStmt = conn.Prepare(checkQuery))
+            try
             {
-                checkStmt.Bind(1, 0);       // Prüfe auf einen Eintrag mit Id=0.
-
-                if (checkStmt.Step() != SQLiteResult.ROW)
+                string checkQuery = @"SELECT * FROM Moderator WHERE Id=?;";
+                using (var checkStmt = conn.Prepare(checkQuery))
                 {
-                    // Füge einen Dummy-Moderator ein, um Announcements mit einem fehlenden Autor
-                    // auf diesen Dummy-Moderator abbilden zu können.
-                    string sql = @"INSERT INTO Moderator (id, FirstName, LastName, Email) 
-                            VALUES (0, 'Unknown', 'Author', 'not specified')";
-                    using (var statement = conn.Prepare(sql))
+                    checkStmt.Bind(1, 0);       // Prüfe auf einen Eintrag mit Id=0.
+
+                    if (checkStmt.Step() != SQLiteResult.ROW)
                     {
-                        statement.Step();
-                        Debug.WriteLine("Inserted the dummy moderator object.");
+                        // Füge einen Dummy-Moderator ein, um Announcements mit einem fehlenden Autor
+                        // auf diesen Dummy-Moderator abbilden zu können.
+                        string sql = @"INSERT INTO Moderator (id, FirstName, LastName, Email) 
+                            VALUES (0, 'Unknown', 'Author', 'not specified')";
+                        using (var statement = conn.Prepare(sql))
+                        {
+                            statement.Step();
+                            Debug.WriteLine("Inserted the dummy moderator object.");
+                        }
                     }
                 }
+            }
+            catch(SQLiteException sqlEx)
+            {
+                Debug.WriteLine("Adding the dummy moderator has failed. Message is {0}.", sqlEx.Message);
             }
         }
     }

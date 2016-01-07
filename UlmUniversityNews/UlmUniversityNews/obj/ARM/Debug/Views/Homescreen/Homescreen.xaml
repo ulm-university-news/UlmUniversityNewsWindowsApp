@@ -9,8 +9,9 @@
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:drawerLayout="using:DrawerLayout"
     xmlns:valueconverter="using:UlmUniversityNews.Converters"
-    xmlns:data="using:DataHandlingLayer.DataModel"
+    xmlns:mockData="using:UlmUniversityNews.DataModel"
     mc:Ignorable="d"
+    d:DataContext="{Binding Source={d:DesignInstance Type=mockData:MockHomescreenViewModel, IsDesignTimeCreatable=True}}"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
         <!-- Konvertierung eines Boolean Wertes auf eine Sichtbarkeit. -->
@@ -18,6 +19,10 @@
         <!-- Konvertierung eines ItemClickEventArgs auf das geklickte Objekt. -->
         <valueconverter:ItemClickedConverter x:Key="ItemClickedConverter" />
     </Page.Resources>
+    
+    <!--<UserControl.Resources>
+        <mockData:MockHomescreenViewModel x:Key="MockHomescreenViewModel" />
+    </UserControl.Resources>-->
     
     <!-- CommandBar -->
     <Page.BottomAppBar>
@@ -93,19 +98,20 @@
                            Header="Meine Kanäle">
                         <!-- Definiere Liste für Kanäle. -->
                         <!-- Beachte, IsItemClickEnabled muss explizit aktiviert werden, sonst funktioniert das Binding auf das Command über das Behaviour nicht.-->
-                        <ListView 
+                        <ListView
                             ItemTemplate="{StaticResource ChannelListItemStyle}"
                             ItemsSource="{Binding MyChannels}"
                             IsItemClickEnabled="True"
                             HorizontalContentAlignment="Stretch"
                             HorizontalAlignment="Stretch">
+                            <!--d:DataContext="{Binding Source={d:DesignData Source=../../DataModel/ChannelSampleData.xaml}}-->
                             <!---d:DataContext="{Binding , Source={d:DesignData Source=../../DataModel/SampleChannelData.json, Type=data:Channel}}"-->
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem">
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                                 </Style>
                             </ListView.ItemContainerStyle>
-                            
+
                             <!-- Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
                             <i:Interaction.Behaviors>
                                 <core:EventTriggerBehavior EventName="ItemClick">
@@ -126,7 +132,7 @@
             </Grid>
             
             
-            <!-- Inhalt des Drawer Menüs-->
+             <!--Inhalt des Drawer Menüs-->
             <Grid x:Name="ListFragment" Background="{StaticResource UniUlmAccentColor}">
                 <ListView x:Name="ListMenuItems">
                     <ListView.ItemTemplate>

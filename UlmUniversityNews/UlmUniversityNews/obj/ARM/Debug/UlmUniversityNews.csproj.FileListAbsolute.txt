@@ -156,7 +156,3 @@ C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmU
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\pri.resfiles.intermediate
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\priconfig.xml
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\priconfig.xml.intermediate
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\DataModel\ChannelSampleData.g.i.cs
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\DataModel\ChannelSampleData.g.cs
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\DataModel\ChannelSampleData.xaml
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\DataModel\ChannelSampleData.xbf

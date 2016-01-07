@@ -12,6 +12,7 @@
         <!-- <valueconverter:ValidationMessageOnLocalizedStringConverter x:Key="ValidationMessageOnLocalizedStringConverter" /> -->
         <converter:ChannelTypeToStringConverter x:Key="ChannelTypeToStringConverter" />
         <converter:ChannelToIconPathConverter x:Key="ChannelToIconPathConverter" />
+        <converter:ZeroIntegerToVisibilityConverter x:Key="ZeroIntegerToVisibilityConverter" />
         
         
         <!-- Colors -->
@@ -152,6 +153,7 @@
                         <RowDefinition Height="35px" /> <!-- Zeile für Typ und Semester -->
                     </Grid.RowDefinitions>
 
+                    <!-- Zeile 1 -->
                     <!-- Anzeige für Name und Icon für ungelsesen Nachrichten -->
                     <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
@@ -169,13 +171,30 @@
                                Style="{StaticResource ListTextStyle}"
                                FontWeight="Bold"
                                Text="{Binding Name}"/>
-                        <Image
+                        
+                        <!-- Anzahl ungelesener Nachrichten -->
+                        <Grid
                             Grid.Column="1"
                             x:Name="UnreadAnnouncementsIcon"
-                            Source="/Assets/NewMessagesIcons/1_new_message.png" />
+                            Visibility="{Binding NumberOfUnreadAnnouncements, FallbackValue=Collapsed, TargetNullValue=Collapsed, Converter={StaticResource ZeroIntegerToVisibilityConverter}}">
+                            <Ellipse 
+                                Fill="Gray" 
+                                Height="30px"
+                                Width="30px"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />   <!-- Hintergrund der Anzeige der ungelesenen Nachrichten-->
+                            <TextBlock 
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                Foreground="White"
+                                FontSize="15"
+                                TextWrapping="NoWrap"
+                                TextAlignment="Center"
+                                Text="{Binding NumberOfUnreadAnnouncements}"/>
+                        </Grid>
                     </Grid>
 
-
+                    <!-- Zeile 2 -->
                     <!-- Anzeige für Typ und Semester.-->
                     <Grid Grid.Row="1"
                           x:Name="TypAndSemester"

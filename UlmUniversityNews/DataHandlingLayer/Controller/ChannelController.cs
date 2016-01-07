@@ -733,27 +733,6 @@ namespace DataHandlingLayer.Controller
             return channels;
         }
 
-        // TODO - Remove after testing
-        // Testzweck
-        public async void TestJsonParsing()
-        {
-            List<Channel> channels = await RetrieveUpdatedChannelsFromServerAsync();
-
-            foreach(var entry in channels){
-                Debug.WriteLine(channels.ToString());
-            }
-        }
-
-        // TODO - Remove after testing
-        // Rein für Testzwecke
-        public void storeTestChannel(Channel channel)
-        {
-            // Speichere Kanal in Datenbank.
-            channelDatabaseManager.StoreChannel(channel);
-
-            // Trage Kanal als subscribed ein.
-            channelDatabaseManager.SubscribeChannel(channel.Id);
-        }
 
     }
 }
