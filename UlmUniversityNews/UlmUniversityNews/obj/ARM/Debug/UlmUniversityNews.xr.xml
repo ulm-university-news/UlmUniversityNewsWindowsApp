@@ -4,13 +4,15 @@
     <RootInterface FullName="Windows.UI.Xaml.Data.IValueConverter" />
   </Roots.Interfaces>
   <Roots.PropertyPathNames>
+    <RootPropertyPathName Name="Text" />
+    <RootPropertyPathName Name="CreationDate" />
+    <RootPropertyPathName Name="Title" />
     <RootPropertyPathName Name="Term" />
     <RootPropertyPathName Name="Type" />
     <RootPropertyPathName Name="NumberOfUnreadAnnouncements" />
     <RootPropertyPathName Name="Name" />
     <RootPropertyPathName Name="DefaultViewModel" />
     <RootPropertyPathName Name="Item" />
-    <RootPropertyPathName Name="Title" />
     <RootPropertyPathName Name="SecondGroup" />
     <RootPropertyPathName Name="Items" />
     <RootPropertyPathName Name="Description" />
@@ -37,8 +39,8 @@
     <RootPropertyPathName Name="Dates" />
     <RootPropertyPathName Name="Locations" />
     <RootPropertyPathName Name="ModificationDate" />
-    <RootPropertyPathName Name="CreationDate" />
     <RootPropertyPathName Name="ChannelSubscribedStatus" />
+    <RootPropertyPathName Name="Announcements" />
     <RootPropertyPathName Name="OrderByTypeChecked" />
     <RootPropertyPathName Name="ReorderChannelsCommand" />
     <RootPropertyPathName Name="Channels" />
@@ -73,9 +75,9 @@
       <RootProperty Name="TextTrimming" />
       <RootProperty Name="FontWeight" />
       <RootProperty Name="Foreground" />
-      <RootProperty Name="HorizontalAlignment" />
       <RootProperty Name="Style" />
       <RootProperty Name="Text" />
+      <RootProperty Name="HorizontalAlignment" />
       <RootProperty Name="Margin" />
       <RootProperty Name="VerticalAlignment" />
       <RootProperty Name="TextAlignment" />
@@ -93,19 +95,19 @@
       <RootProperty Name="Background" />
       <RootProperty Name="Height" />
       <RootProperty Name="Margin" />
-      <RootProperty Name="ColumnDefinitions" />
-      <RootProperty Name="Children" />
       <RootProperty Name="RowDefinitions" />
+      <RootProperty Name="Children" />
+      <RootProperty Name="ColumnDefinitions" />
       <RootProperty Name="VerticalAlignment" />
       <RootProperty Name="Visibility" />
       <RootProperty Name="ChildrenTransitions" />
       <RootProperty Name="Style" />
       <RootProperty Name="HorizontalAlignment" />
       <RootProperty Name="DataContext" />
-      <RootMethod Name="GetColumn" />
-      <RootMethod Name="SetColumn" />
       <RootMethod Name="GetRow" />
       <RootMethod Name="SetRow" />
+      <RootMethod Name="GetColumn" />
+      <RootMethod Name="SetColumn" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.Panel">
       <RootProperty Name="Background" />
@@ -130,9 +132,6 @@
       <RootProperty Name="Template" />
     </RootType>
     <RootType FullName="Microsoft.Xaml.Tools.DirectUI.ProxyTypes.StaticResourceExtension" />
-    <RootType FullName="Windows.UI.Xaml.Controls.ColumnDefinition">
-      <RootProperty Name="Width" />
-    </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.RowDefinition">
       <RootProperty Name="Height" />
     </RootType>
@@ -145,6 +144,9 @@
       <RootProperty Name="Path" />
       <RootProperty Name="Mode" />
       <RootProperty Name="UpdateSourceTrigger" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.ColumnDefinition">
+      <RootProperty Name="Width" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Shapes.Ellipse">
       <RootProperty Name="Fill" />
@@ -203,10 +205,10 @@
       <RootProperty Name="ItemsSource" />
       <RootProperty Name="IsItemClickEnabled" />
       <RootProperty Name="ItemTemplate" />
-      <RootProperty Name="Margin" />
       <RootProperty Name="HorizontalContentAlignment" />
       <RootProperty Name="HorizontalAlignment" />
       <RootProperty Name="ItemContainerStyle" />
+      <RootProperty Name="Margin" />
       <RootEvent Name="ItemClick" />
       <RootEvent Name="Loaded" />
     </RootType>
@@ -241,6 +243,10 @@
     <RootType FullName="UlmUniversityNews.Common.HideablePivotItemBehavior">
       <RootProperty Name="Visible" />
     </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.ListViewItem" />
+    <RootType FullName="Windows.UI.Xaml.Controls.Control">
+      <RootProperty Name="HorizontalContentAlignment" />
+    </RootType>
     <RootType FullName="UlmUniversityNews.Views.ChannelDetails.ChannelDetails" />
     <RootType FullName="UlmUniversityNews.Converters.ItemClickedConverter" />
     <RootType FullName="Windows.UI.Xaml.Controls.AppBarToggleButton">
@@ -248,10 +254,6 @@
       <RootProperty Name="Icon" />
       <RootProperty Name="IsChecked" />
       <RootProperty Name="Command" />
-    </RootType>
-    <RootType FullName="Windows.UI.Xaml.Controls.ListViewItem" />
-    <RootType FullName="Windows.UI.Xaml.Controls.Control">
-      <RootProperty Name="HorizontalContentAlignment" />
     </RootType>
     <RootType FullName="Microsoft.Xaml.Interactions.Core.EventTriggerBehavior">
       <RootProperty Name="EventName" />

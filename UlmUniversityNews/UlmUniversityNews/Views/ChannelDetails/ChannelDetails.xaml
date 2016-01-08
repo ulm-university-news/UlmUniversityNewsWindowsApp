@@ -106,7 +106,28 @@
                             <common:HideablePivotItemBehavior x:Name="HidablePivotItemBehaviorElement" Visible="{Binding ChannelSubscribedStatus, UpdateSourceTrigger=PropertyChanged}" />
                         </i:Interaction.Behaviors>
 
-                        <!-- TODO -->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Liste mit Announcements -->
+                            <ListView
+                                Grid.Row="1"
+                                ItemTemplate="{StaticResource AnnouncementListItemStyle}"
+                                ItemsSource="{Binding Announcements}"
+                                HorizontalContentAlignment="Stretch"
+                                HorizontalAlignment="Stretch">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                            </ListView>
+                            
+                        </Grid>                      
+                    <!-- TODO -->
                     </PivotItem>
 
                     <!-- Pivotelement 2-->

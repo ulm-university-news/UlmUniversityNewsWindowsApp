@@ -616,6 +616,13 @@ namespace DataHandlingLayer.Controller
             return channelIdOnUnreadMsgMap;
         }
 
+        public List<Announcement> GetAllAnnouncementsOfChannel()
+        {
+            List<Announcement> announcements = null;
+            // TODO
+            return announcements;
+        }
+
         /// <summary>
         /// Speichere für den Kanal mit der angegebenen Id die in der Liste definierten 
         /// Moderatoren als die für diesen Kanal verantwortlichen Moderatoren ab.

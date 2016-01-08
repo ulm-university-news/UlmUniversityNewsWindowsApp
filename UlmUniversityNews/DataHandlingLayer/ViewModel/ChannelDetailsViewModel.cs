@@ -11,6 +11,7 @@ using DataHandlingLayer.DataModel.Enums;
 using System.Diagnostics;
 using DataHandlingLayer.CommandRelays;
 using DataHandlingLayer.Exceptions;
+using DataHandlingLayer.Common;
 
 namespace DataHandlingLayer.ViewModel
 {
@@ -98,6 +99,17 @@ namespace DataHandlingLayer.ViewModel
                 checkCommandExecution();
             }
         }
+
+        private IncrementalLoadingCollection<IncrementalAnnouncementLoaderController, Announcement> announcements = null;
+        /// <summary>
+        /// Die zum Kanal gehörenden Announcements in einer Collection. Hierbei handelt es sich um eine Collection,
+        /// die dynamisches Laden von Announcements ermöglicht.
+        /// </summary>
+        public IncrementalLoadingCollection<IncrementalAnnouncementLoaderController, Announcement> Announcements
+        {
+            get { return announcements; }
+            set { this.setProperty(ref this.announcements, value); }
+        }       
         #endregion Properties
 
         #region Commands
@@ -211,6 +223,12 @@ namespace DataHandlingLayer.ViewModel
 
                 // Prüfe, ob Kanal bereits abonniert wurde.
                 ChannelSubscribedStatus = channelController.IsChannelSubscribed(Channel.Id);
+
+                if(ChannelSubscribedStatus == true)
+                {
+                    Debug.WriteLine("Call constructor of IncrementalLoadingCollection. Selected channel id is {0}.", selectedChannelId);
+                    Announcements = new IncrementalLoadingCollection<IncrementalAnnouncementLoaderController, Announcement>(selectedChannelId, 300);
+                }
             }
         }
 
