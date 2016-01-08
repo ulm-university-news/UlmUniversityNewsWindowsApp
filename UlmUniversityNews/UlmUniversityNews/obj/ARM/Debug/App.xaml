@@ -13,6 +13,8 @@
         <converter:ChannelTypeToStringConverter x:Key="ChannelTypeToStringConverter" />
         <converter:ChannelToIconPathConverter x:Key="ChannelToIconPathConverter" />
         <converter:ZeroIntegerToVisibilityConverter x:Key="ZeroIntegerToVisibilityConverter" />
+        <converter:DateTimeToStringConverter x:Key="DateTimeToStringConverter" />
+        <converter:MessageReadPropertyToBackgroundColorConverter x:Key="MessageReadPropertyToBackgroundColorConverter" />
         
         
         <!-- Colors -->
@@ -21,6 +23,7 @@
         <SolidColorBrush x:Key="UniUlmAccentColorListItemBackground" Color="#A9A280" Opacity="0.1"  />
         <SolidColorBrush x:Key="UniUlmAccentColorElementBackground" Color="#A9A280" Opacity="0.4"  />
         <SolidColorBrush x:Key="MainFragmentBackgroundColor" Color="White" />
+        <SolidColorBrush x:Key="UnreadMessageBackgroundColor" Color="Gray" Opacity="0.9" />
         
         <!-- Style für Schriften in Listen und Aufzählungen. -->
         <Style 
@@ -54,7 +57,7 @@
             TargetType="TextBlock">
             <Setter Property="TextWrapping" Value="NoWrap" />
             <Setter Property="TextTrimming" Value="None" />
-            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontSize" Value="16" />
             <Setter Property="FontFamily" Value="Arial" />
         </Style>
         
@@ -248,10 +251,11 @@
                 <!-- 1. Zeile -->
                 <!-- Grid für Announcement Titel und Datum.-->
                 <Grid
+                    Background="{Binding Read, Converter={StaticResource MessageReadPropertyToBackgroundColorConverter}}"
                     Grid.Row="0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />   <!-- Spalte für Titel -->
-                        <ColumnDefinition Width="Auto" />   <!-- Spalte für Datum -->
+                        <ColumnDefinition Width="2*" />   <!-- Spalte für Titel -->
+                        <ColumnDefinition Width="*" />   <!-- Spalte für Datum -->
                     </Grid.ColumnDefinitions>
                     
                     <!-- Titel -->
@@ -259,6 +263,8 @@
                         Grid.Column="0"
                         x:Name="AnnouncementTitle"
                         HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        TextAlignment="Left"
                         Style="{StaticResource HeaderTextInPropertyDescriptions}"
                         Text="{Binding Title}" />
                     
@@ -266,9 +272,11 @@
                     <TextBlock
                         Grid.Column="1"
                         x:Name="AnnouncementCreationDate"
+                        VerticalAlignment="Center"
                         HorizontalAlignment="Right"
+                        TextAlignment="Right"
                         Style="{StaticResource DateTimeFieldinList}"
-                        Text="{Binding CreationDate}"/> <!-- TODO Add converter-->
+                        Text="{Binding CreationDate, Converter={StaticResource DateTimeToStringConverter}}"/> <!-- TODO Add converter-->
                 </Grid>
                 
                 <!-- 2.Zeile -->

@@ -5,6 +5,7 @@
   </Roots.Interfaces>
   <Roots.PropertyPathNames>
     <RootPropertyPathName Name="Text" />
+    <RootPropertyPathName Name="Read" />
     <RootPropertyPathName Name="CreationDate" />
     <RootPropertyPathName Name="Title" />
     <RootPropertyPathName Name="Term" />
@@ -64,6 +65,8 @@
     <RootType FullName="UlmUniversityNews.Converters.ChannelTypeToStringConverter" />
     <RootType FullName="UlmUniversityNews.Converters.ChannelToIconPathConverter" />
     <RootType FullName="UlmUniversityNews.Converters.ZeroIntegerToVisibilityConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.DateTimeToStringConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.MessageReadPropertyToBackgroundColorConverter" />
     <RootType FullName="Windows.UI.Xaml.Media.SolidColorBrush">
       <RootProperty Name="Color" />
       <RootProperty Name="Opacity" />
@@ -78,9 +81,9 @@
       <RootProperty Name="Style" />
       <RootProperty Name="Text" />
       <RootProperty Name="HorizontalAlignment" />
-      <RootProperty Name="Margin" />
       <RootProperty Name="VerticalAlignment" />
       <RootProperty Name="TextAlignment" />
+      <RootProperty Name="Margin" />
       <RootProperty Name="CharacterSpacing" />
       <RootProperty Name="Visibility" />
       <RootProperty Name="Inlines" />

@@ -50,6 +50,25 @@ namespace UlmUniversityNews.Views.ChannelDetails
             
             channelDetailsViewModel = new ChannelDetailsViewModel(App.NavigationService, App.ErrorMapper);
             this.DataContext = channelDetailsViewModel;
+
+            channelDetailsViewModel.PropertyChanged += channelDetailsViewModel_PropertyChanged;
+        }
+
+        /// <summary>
+        /// Event-Handler, der aufgerufen wird, wenn das PropertyChanged Event vom ViewModel gefeuert wird.
+        /// Wird hier für Workaround bezüglich HideablePivotItemBehavior.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void channelDetailsViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "ChannelSubscribedStatus")
+            {
+                // Workaround to call an update of the Visible attribute and thus force the evaluation of the
+                // visibility status of the pivot item once againg when the pivot element is actually loaded.
+                HidablePivotItemBehaviorElement.ClearValue(HideablePivotItemBehavior.VisibleProperty);
+                HidablePivotItemBehaviorElement.Visible = channelDetailsViewModel.ChannelSubscribedStatus;
+            }
         }
 
         /// <summary>
@@ -118,9 +137,14 @@ namespace UlmUniversityNews.Views.ChannelDetails
         /// <param name="sender">Die Quelle des Ereignisses, normalerweise <see cref="NavigationHelper"/></param>
         /// <param name="e">Ereignisdaten, die ein leeres Wörterbuch zum Auffüllen bereitstellen
         /// serialisierbarer Zustand.</param>
-        private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
+        private async void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
             Debug.WriteLine("In SaveState of ChannelDetails page.");
+            if(channelDetailsViewModel.ChannelSubscribedStatus)
+            {
+                // Markiere die Nachrichten dieses Kanals nun als gelsen.
+                await channelDetailsViewModel.MarkAnnouncementsAsReadAsync();
+            }
         }
 
         #region NavigationHelper-Registrierung

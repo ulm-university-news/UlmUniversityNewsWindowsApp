@@ -80,6 +80,7 @@ namespace DataHandlingLayer.ViewModel
             set 
             { 
                 this.setProperty(ref this.channelSubscribedStatus, value);
+                Debug.WriteLine("Channel subscribed status changed.");
                 checkCommandExecution();
             }
         }
@@ -226,10 +227,29 @@ namespace DataHandlingLayer.ViewModel
 
                 if(ChannelSubscribedStatus == true)
                 {
+                    // Aktiviere dynamisches Laden der Announcements.
+                    // Es sollen mindestens immer alle noch nicht gelesenen Nachrichten geladen werden, immer aber mindestens 20.
+                    int numberOfItems = Channel.NumberOfUnreadAnnouncements;
+                    if(numberOfItems < 20)
+                    {
+                        numberOfItems = 20;
+                    }
+
                     Debug.WriteLine("Call constructor of IncrementalLoadingCollection. Selected channel id is {0}.", selectedChannelId);
-                    Announcements = new IncrementalLoadingCollection<IncrementalAnnouncementLoaderController, Announcement>(selectedChannelId, 300);
+                    Announcements = new IncrementalLoadingCollection<IncrementalAnnouncementLoaderController, Announcement>(selectedChannelId, numberOfItems);
                 }
             }
+        }
+
+        /// <summary>
+        /// Markiere die Announcements dieses Kanals als gelesen.
+        /// </summary>
+        public async Task MarkAnnouncementsAsReadAsync()
+        {
+            await Task.Run(() => {
+                    // Markiere ungelesene Nachrichten nun als gelesen.
+                    channelController.MarkAnnouncementsAsRead(Channel.Id);
+            });
         }
 
         /// <summary>
@@ -267,8 +287,15 @@ namespace DataHandlingLayer.ViewModel
             {
                 displayProgressBar();
                 await channelController.SubscribeChannelAsync(Channel.Id);
-                // Gehe zurück auf die Kanalsuche.
-                _navService.Navigate("ChannelSearch");
+
+                //Setze Kanal als abonniert.
+                ChannelSubscribedStatus = true;
+
+                // Bleibe auf der Seite, aber lade die Nachrichten nach.
+                List<Announcement> announcements = await Task.Run(() => channelController.GetAllAnnouncementsOfChannel(Channel.Id));
+                // Setze PageSize auf 0, d.h. lade keine Elemente nach.
+                Announcements = new IncrementalLoadingCollection<IncrementalAnnouncementLoaderController, Announcement>(Channel.Id, 0);
+                await Announcements.LoadExistingCollectionAsync(announcements);
             }
             catch(ClientException ex)
             {
@@ -311,6 +338,7 @@ namespace DataHandlingLayer.ViewModel
             {
                 displayProgressBar();
                 await channelController.UnsubscribeChannelAsync(Channel.Id);
+                ChannelSubscribedStatus = false;
                 // Gehe zurück auf den Homescreen.
                 _navService.Navigate("Homescreen");
             }

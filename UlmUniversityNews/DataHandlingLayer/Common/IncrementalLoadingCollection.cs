@@ -55,6 +55,23 @@ namespace DataHandlingLayer.Common
         }
 
         /// <summary>
+        /// Lade eine bestehende Collection von Elementen in die IncrementalLoadingCollection.
+        /// </summary>
+        /// <param name="collection">Eine Collection mit Elementen des Typs <typeparamref name="T"/>.</param>
+        public async Task LoadExistingCollectionAsync(List<I> collection)
+        {
+            var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                // Füge die neu hinzugekommenen Einträge der Collection hinzu.
+                foreach (I item in collection)
+                {
+                    this.Add(item);
+                }
+            });
+        }
+
+        /// <summary>
         /// Wird aufgerufen, wenn neue Elemente geladen werden sollen.
         /// </summary>
         /// <param name="count"></param>

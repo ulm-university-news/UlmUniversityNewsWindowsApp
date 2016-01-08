@@ -1,6 +1,7 @@
 ﻿using DataHandlingLayer.Common;
 using DataHandlingLayer.Database;
 using DataHandlingLayer.DataModel;
+using DataHandlingLayer.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -41,7 +42,19 @@ namespace DataHandlingLayer.Controller
             {
                 Debug.WriteLine("GetPagedItems in IncrementalAnnouncementLoaderController is called. Parameters are: resId {0}, pageIndex {1}, pageSize {2}.",
                     resourceId, pageIndex, pageSize);
-                List<Announcement> retrievedAnnouncements = channelDatabaseManager.GetAllAnnouncementsOfChannel(resourceId);
+                List<Announcement> retrievedAnnouncements = null;
+                try
+                {
+                    // Rufe genau so viele Announcements ab, wie die PageSize angibt. 
+                    // Der Offset gibt dabei an, ab welcher Stelle man die Announcements abrufen will.
+                    retrievedAnnouncements = channelDatabaseManager.GetLatestAnnouncements(resourceId, pageSize, pageIndex * pageSize);
+                }
+                catch(DatabaseException ex)
+                {
+                    // Gebe Exception nicht an Aufrufer weiter, da diese Methode automatisch vom System aufgerufen wird.
+                    Debug.WriteLine("Retrieving latest announcements in GetPagedItems has failed. Message is: {0}.", ex.Message);
+                }
+                
                 return retrievedAnnouncements;
             });
         }

@@ -616,10 +616,42 @@ namespace DataHandlingLayer.Controller
             return channelIdOnUnreadMsgMap;
         }
 
-        public List<Announcement> GetAllAnnouncementsOfChannel()
+        /// <summary>
+        /// Markiere diejenigen Announcements des Kanals, der durch die angegebene Id identifieziert wird, als gelesen,
+        /// die bisher noch als ungelsen markiert sind.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, für den die Markierung der Announcements erfolgen soll.</param>
+        public void MarkAnnouncementsAsRead(int channelId)
+        {
+            try
+            {
+                channelDatabaseManager.MarkAnnouncementsAsRead(channelId);
+            }
+            catch(DatabaseException ex)
+            {
+                // Gebe Exception nicht an den Aufrufer weiter.
+                Debug.WriteLine("Mark announcements as read has failed. Message is {0}.", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Ruft alle Announcements ab, die für den Kanal mit der angegebenen Id im lokelen
+        /// Speicher vorhanden sind.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, für den alle lokal vorhandenen Announcements abgefragt werden sollen.</param>
+        /// <returns>Eine Liste von Announcement Objekten.</returns>
+        public List<Announcement> GetAllAnnouncementsOfChannel(int channelId)
         {
             List<Announcement> announcements = null;
-            // TODO
+            try
+            {
+                announcements = channelDatabaseManager.GetAllAnnouncementsOfChannel(channelId);
+            }
+            catch(DatabaseException ex)
+            {
+                // Gebe Exception nicht an den Aufrufer weiter.
+                Debug.WriteLine("Retrieval of announcements has failed. Message is {0}.", ex.Message);
+            }
             return announcements;
         }
 

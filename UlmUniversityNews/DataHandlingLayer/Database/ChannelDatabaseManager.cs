@@ -435,7 +435,8 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
-        /// Rufe den Kanal mit der angegebenen Id aus der Datenbank ab.
+        /// Rufe den Kanal mit der angegebenen Id aus der Datenbank ab ung gibt ein Objekt
+        /// vom Typ Channel mit den Daten zurück.
         /// </summary>
         /// <param name="channelId">Die Id des Kanals, der abgerufen werden soll.</param>
         /// <returns>Eine Instanz der Klasse Channel. Kann null liefer, wenn der Kanal nicht in der Datenbank existiert.</returns>
@@ -456,6 +457,24 @@ namespace DataHandlingLayer.Database
                     if(getChannelStmt.Step() == SQLiteResult.ROW)
                     {
                         channel = retrieveChannelObjectFromStatement(conn, getChannelStmt);
+
+                        // Ermittle noch die Anzahl an ungelesenen Announcements für diesen Kanal.
+                        string unreadAnnouncementsQuery = @"SELECT COUNT(*) AS UnreadAnnouncements 
+                            FROM Announcement AS a JOIN Message AS m ON a.Message_Id=m.Id 
+                            WHERE a.Channel_Id=? AND m.Read=?;";
+
+                        using(var stmt = conn.Prepare(unreadAnnouncementsQuery))
+                        {
+                            stmt.Bind(1, channelId);
+                            stmt.Bind(2, 0);    // Read soll false sein.
+
+                            stmt.Step();
+
+                            int nrOfUnreadAnnouncements = Convert.ToInt32(stmt["UnreadAnnouncements"]);
+                            Debug.WriteLine("Retrieved number of unread announcements for channel with id {0}. " + 
+                                "The channel has {1} unread announcements.", channelId, nrOfUnreadAnnouncements);
+                            channel.NumberOfUnreadAnnouncements = nrOfUnreadAnnouncements;
+                        }
                     }
                 }
             }
@@ -1135,6 +1154,107 @@ namespace DataHandlingLayer.Database
                 throw new DatabaseException(ex.Message);
             }
             return announcements;
+        }
+
+        /// <summary>
+        /// Holt die angegebene Anzahl an aktuellesten Announcements aus der Datenbank. Die aktuellesten
+        /// Announcements sind dabei diejenigen, die zeitlich gesehen zuletzt gesendet wurden. Über den Offset 
+        /// kann angegeben werden, dass diese Anzahl an Announcements übersprungen werden soll. Das ist für das 
+        /// inkrementelle Laden von älteren Announcements wichtig.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, von dem die Announcements abgerufen werden sollen.</param>
+        /// <param name="number">Die Anzahl an Announcements, die abgerufen werden soll.</param>
+        /// <param name="offset">Der Offset, der angibt wie viele der neusten Announcements übersprungen werden sollen.</param>
+        /// <returns>Eine Liste von Announcement Objekten.</returns>
+        /// <exception cref="DatbaseException">Wirft DatabaseException, wenn der Abfruf der Announcements fehlschlägt.</exception>
+        public List<Announcement> GetLatestAnnouncements(int channelId, int number, int offset)
+        {
+            List<Announcement> latestAnnouncements = new List<Announcement>();
+
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                string query = @"SELECT * 
+                    FROM Message AS m JOIN Announcement AS a ON m.Id=a.Message_Id 
+                    WHERE Channel_Id=? 
+                    ORDER BY a.MessageNumber DESC 
+                    LIMIT ? OFFSET ?;";
+
+                using (var stmt = conn.Prepare(query))
+                {
+                    stmt.Bind(1, channelId);
+                    stmt.Bind(2, number);
+                    stmt.Bind(3, offset);
+
+                    while (stmt.Step() == SQLiteResult.ROW)
+                    {
+                        int id = Convert.ToInt32(stmt["Id"]);
+                        string text = (string)stmt["Text"];
+                        DateTime creationDate = DatabaseManager.DateTimeFromSQLite(stmt["CreationDate"].ToString());
+                        Priority priority = (Priority)Enum.ToObject(typeof(Priority), stmt["Priority"]);
+                        bool read = ((long)stmt["Read"] == 1) ? true : false;
+                        int messageNr = Convert.ToInt32(stmt["MessageNumber"]);
+                        int authorId = Convert.ToInt32(stmt["Author_Moderator_Id"]);
+                        string title = (string)stmt["Title"];
+
+                        Announcement announcement = new Announcement(id, text, messageNr, creationDate, priority, read, channelId, authorId, title);
+                        latestAnnouncements.Add(announcement);
+                    }
+                }
+            }
+            catch(SQLiteException sqlEx)
+            {
+                Debug.WriteLine("GetLatestAnnouncements has failed. The message is: {0}.", sqlEx.Message);
+                throw new DatabaseException(sqlEx.Message);
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("GetLatestAnnouncements has failed. The message is: {0} and stack trace is {1}.",
+                    ex.Message, ex.StackTrace);
+                throw new DatabaseException(ex.Message);
+            }
+            return latestAnnouncements;
+        }
+
+        /// <summary>
+        /// Markiert die bislang als ungelesen markierten Announcements des Kanals mit 
+        /// der angegebenen Id in der Datenbank als gelesen.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, dessen Nachrichten als gelesen markiert werden sollen.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Markierung der Announcements fehlschlägt.</exception>
+        public void MarkAnnouncementsAsRead(int channelId)
+        {
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                string query = @"UPDATE Message 
+                    SET Read=? 
+                    WHERE Read=? AND Id IN (
+                        SELECT Message_Id As Id 
+                        FROM Announcement 
+                        WHERE Channel_Id=?);";
+
+                using(var stmt = conn.Prepare(query))
+                {
+                    stmt.Bind(1, 1);    // Setze Read auf true.
+                    stmt.Bind(2, 0);
+                    stmt.Bind(3, channelId);
+
+                    stmt.Step();
+                    Debug.WriteLine("Marked announcements as read for channel with id {0}.", channelId);
+                }
+            }
+            catch(SQLiteException sqlEx)
+            {
+                Debug.WriteLine("MarkAnnouncementsAsRead has failed.");
+                throw new DatabaseException(sqlEx.Message);
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("MarkAnnouncementsAsRead has failed. The message is: {0} and stack trace is {1}.",
+                    ex.Message, ex.StackTrace);
+                throw new DatabaseException(ex.Message);
+            }
         }
 
         /// <summary>

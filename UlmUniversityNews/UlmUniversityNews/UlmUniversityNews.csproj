@@ -121,9 +121,11 @@
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\ChannelToIconPathConverter.cs" />
     <Compile Include="Converters\ChannelTypeToStringConverter.cs" />
+    <Compile Include="Converters\DateTimeToStringConverter.cs" />
     <Compile Include="Converters\FacultyToLocalizedStringConverter.cs" />
     <Compile Include="Converters\ItemClickedConverter.cs" />
     <Compile Include="Converters\ListCountToVisibilityConverter.cs" />
+    <Compile Include="Converters\MessageReadPropertyToBackgroundColorConverter.cs" />
     <Compile Include="Converters\NullValuetoVisibilityConverter.cs" />
     <Compile Include="Converters\ValidationMessageOnLocalizedStringConverter.cs" />
     <Compile Include="Converters\ZeroIntegerToVisibilityConverter.cs" />
