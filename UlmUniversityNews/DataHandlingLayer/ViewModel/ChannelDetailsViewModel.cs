@@ -320,7 +320,6 @@ namespace DataHandlingLayer.ViewModel
         private bool canUnsubscribeChannel()
         {
             if (Channel != null &&
-                SelectedPivotItemIndex == 1 &&
                 ChannelSubscribedStatus == true)    // In "Kanalinformationen" PivotItem und der Kanal wurde bereits abonniert.
             {
                 return true;

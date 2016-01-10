@@ -67,6 +67,16 @@
             <Setter Property="FontFamily" Value="Arial" />
         </Style>
         
+        <Style
+            x:Key="TextInFlyoutsStyle"
+            TargetType="TextBlock">
+            <Setter Property="Margin" Value="10" />
+            <Setter Property="TextWrapping" Value="WrapWholeWords" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontFamily" Value="Arial" />
+        </Style>
+        
         <!-- *************************************************************************************************************************************-->
         <!-- Grid Style für Aufzählung der Eigenschaften eines Kanals. -->
         <Style
@@ -141,6 +151,15 @@
                            FontSize="30"/>
             </ContentPresenter>
         </DataTemplate>
+        
+        <!-- ************************************************************************************************************************************ -->
+        <!-- Definiere den Style für Fylout Elemente -->
+        <Style
+            x:Key="FlyoutStyle"
+            TargetType="FlyoutPresenter">
+            <Setter Property="BorderBrush" Value="Black" />
+            <Setter Property="BorderThickness" Value="5" />
+        </Style>
 
         <!-- ************************************************************************************************************************************ -->
         <!-- Layout eines Eintrages einer Kanal-Ressource in der Übersichtliste von Kanälen.-->

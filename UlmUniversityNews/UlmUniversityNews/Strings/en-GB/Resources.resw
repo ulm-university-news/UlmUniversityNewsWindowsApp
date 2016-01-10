@@ -300,4 +300,13 @@
   <data name="ChannelDetailsUnsubscribeChannelButton.Label" xml:space="preserve">
     <value>unsubscribe channel</value>
   </data>
+  <data name="ChannelDetailsNoMessagesInChannelInfo.Text" xml:space="preserve">
+    <value>This channel doesn't contain any messages.</value>
+  </data>
+  <data name="ChannelDetailsUnsubscribeChannelFlyoutButton.Content" xml:space="preserve">
+    <value>Unsubscribe</value>
+  </data>
+  <data name="ChannelDetailsUnsubscribeChannelWarning.Text" xml:space="preserve">
+    <value>Do you really want to unsubscribe from this channel?</value>
+  </data>
 </root>
