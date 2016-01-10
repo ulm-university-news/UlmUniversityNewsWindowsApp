@@ -25,6 +25,9 @@
         
         <!-- Konverter zur Umwandlung von Boolean Werten auf eine Sichtbarkeit. -->
         <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        
+        <!-- Konverter zum Anpassen der Hintergrundfarbe des Drawer Menüs auf Basis der geladenen Kanaldaten. -->
+        <converter:ChannelToDrawerMenuBackgroundConverter x:Key="ChannelToDrawerMenuBackgroundConverter" />
     </Page.Resources>
 
     <!-- CommandBar -->
@@ -63,7 +66,9 @@
         </Grid.RowDefinitions>
 
         <!-- Titelbereich - Drawer -->
-        <Grid Grid.Row="0" Style="{StaticResource DrawerMenuTitleBar}">
+        <Grid Grid.Row="0" 
+              Style="{StaticResource DrawerMenuTitleBar}"
+              Background="{Binding Channel, Converter={StaticResource ChannelToDrawerMenuBackgroundConverter}}" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />

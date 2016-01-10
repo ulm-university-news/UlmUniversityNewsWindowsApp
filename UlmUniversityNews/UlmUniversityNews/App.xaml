@@ -22,6 +22,10 @@
         <SolidColorBrush x:Key="UniUlmAccentColor" Color="#A9A280" Opacity="0.5"  />
         <SolidColorBrush x:Key="UniUlmAccentColorListItemBackground" Color="#A9A280" Opacity="0.1"  />
         <SolidColorBrush x:Key="UniUlmAccentColorElementBackground" Color="#A9A280" Opacity="0.4"  />
+        <SolidColorBrush x:Key="UniUlmFacultyColorInformaticsAndEngineering" Color="#A32638" />
+        <SolidColorBrush x:Key="UniUlmFacultyColorMathematicsAndEconomics" Color="#56AA1C" />
+        <SolidColorBrush x:Key="UniUlmFacultyColorMedicine" Color="#26247C" />
+        <SolidColorBrush x:Key="UniUlmFacultyColorNaturalSciences" Color="#BD6005" />
         <SolidColorBrush x:Key="MainFragmentBackgroundColor" Color="White" />
         <SolidColorBrush x:Key="UnreadMessageBackgroundColor" Color="Gray" Opacity="0.9" />
         
@@ -40,6 +44,7 @@
             <Setter Property="TextTrimming" Value="WordEllipsis" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="FontSize" Value="20" />
+            <Setter Property="Margin" Value="5,0,0,5" />
             <Setter Property="FontFamily" Value="Arial" />
         </Style>
 
@@ -47,7 +52,7 @@
             x:Key="TextInPropertyDescriptions"
             TargetType="TextBlock">
             <Setter Property="TextWrapping" Value="Wrap" />
-            <Setter Property="Margin" Value="0, 5, 0, 0" />
+            <Setter Property="Margin" Value="5,5,5,0" />
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontFamily" Value="Arial" />
         </Style>
@@ -55,6 +60,7 @@
         <Style 
             x:Key="DateTimeFieldinList"
             TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,0,5,0" />
             <Setter Property="TextWrapping" Value="NoWrap" />
             <Setter Property="TextTrimming" Value="None" />
             <Setter Property="FontSize" Value="16" />
@@ -242,7 +248,7 @@
             <Grid
                 Background="{StaticResource UniUlmAccentColorListItemBackground}"
                 Height="Auto"       
-                Margin="0,5,19,0">
+                Margin="0,5,19,5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" /> <!-- 1.Zeile für Announcement Titel und Datum -->
                     <RowDefinition Height="Auto" /> <!-- 2.Zeile für Inhalt der Nachricht -->

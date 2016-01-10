@@ -231,6 +231,7 @@
     <RootType FullName="UlmUniversityNews.Converters.FacultyToLocalizedStringConverter" />
     <RootType FullName="UlmUniversityNews.Converters.NullValuetoVisibilityConverter" />
     <RootType FullName="UlmUniversityNews.Converters.BooleanToVisibilityConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.ChannelToDrawerMenuBackgroundConverter" />
     <RootType FullName="DrawerLayout.DrawerLayout">
       <RootProperty Name="Children" />
     </RootType>
