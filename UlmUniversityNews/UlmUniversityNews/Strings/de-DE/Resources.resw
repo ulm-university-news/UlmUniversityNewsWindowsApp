@@ -309,4 +309,7 @@
   <data name="ChannelDetailsUnsubscribeChannelWarning.Text" xml:space="preserve">
     <value>Wollen Sie diesen Kanal wirklich deabonnieren?</value>
   </data>
+  <data name="ChannelDetailsUpdateAnnouncementsButton.Label" xml:space="preserve">
+    <value>aktualisiere nachrichten</value>
+  </data>
 </root>

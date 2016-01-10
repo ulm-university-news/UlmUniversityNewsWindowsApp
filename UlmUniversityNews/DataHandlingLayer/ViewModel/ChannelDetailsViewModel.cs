@@ -17,10 +17,18 @@ namespace DataHandlingLayer.ViewModel
 {
     public class ChannelDetailsViewModel : ViewModel
     {
+        #region Fields
         /// <summary>
         /// Eine Referenz auf eine Instanz des ChannelController.
         /// </summary>
         private ChannelController channelController;
+
+        /// <summary>
+        /// Gibt an, ob ein automatischer, vom System ausgelöster Aktualisierungsrequest für die Announcements
+        /// des Kanals verschickt werden soll.
+        /// </summary>
+        private bool performOnlineAnnouncementUpdate;
+        #endregion Fields
 
         #region Properties
         private Channel channel;
@@ -80,7 +88,6 @@ namespace DataHandlingLayer.ViewModel
             set 
             { 
                 this.setProperty(ref this.channelSubscribedStatus, value);
-                Debug.WriteLine("Channel subscribed status changed.");
                 checkCommandExecution();
             }
         }
@@ -95,7 +102,6 @@ namespace DataHandlingLayer.ViewModel
             get { return selectedPivotItemIndex; }
             set
             {
-                Debug.WriteLine("In setter method of selected pivot item index. The new index is: " + value);
                 selectedPivotItemIndex = value;
                 checkCommandExecution();
             }
@@ -133,6 +139,17 @@ namespace DataHandlingLayer.ViewModel
             get { return unsubscribeChannelCommand; }
             set { unsubscribeChannelCommand = value; }
         }
+
+        private AsyncRelayCommand updateAnnouncementsCommand;
+        /// <summary>
+        /// Das Kommando löst die Aktualisierung der Announcements des Kanals aus.
+        /// </summary>
+        public AsyncRelayCommand UpdateAnnouncementsCommand
+        {
+            get { return updateAnnouncementsCommand; }
+            set { updateAnnouncementsCommand = value; }
+        }
+        
         #endregion Commands
 
         /// <summary>
@@ -148,6 +165,10 @@ namespace DataHandlingLayer.ViewModel
             // Initialisiere Kommandos.
             SubscribeChannelCommand = new AsyncRelayCommand(param => executeSubscribeChannel(), param => canSubscribeChannel());
             UnsubscribeChannelCommand = new AsyncRelayCommand(param => executeUnsubscribeChannel(), param => canUnsubscribeChannel());
+            UpdateAnnouncementsCommand = new AsyncRelayCommand(param => executeUpdateAnnouncementsCommand(), param => canUpdateAnnouncements());
+
+            // Führe Online Aktualisierung am Anfang durch, d.h. wenn das ViewModel geladen wurde.
+            performOnlineAnnouncementUpdate = true;
         }
 
         /// <summary>
@@ -242,14 +263,50 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Aktualisiert die Announcements des Kanals. Führt Online
+        /// Aktualisierung der Announcements durch, wenn entsprechendes Boolean Feld
+        /// auf true gesetzt ist. Ansonsten Offline Aktualisierung (noch nicht implementiert).
+        /// Setzt nach Online Aktualisierung das Boolean Feld performOnlinceAnnouncementUpdate auf false,
+        /// so dass keine weiteren Online Aktualisierungen mehr vorgenommen werden, es sei denn sie sind
+        /// explizit durch eine Nutzeraktion ausgelöst.
+        /// </summary>
+        public async Task PerformAnnouncementUpdate()
+        {
+            Debug.WriteLine("PerformAnnouncementUpdate called.");
+            // Prüfe, ob eine Online-Aktualisierung vorgenommen werden soll.
+            if(performOnlineAnnouncementUpdate)
+            {
+                try
+                {
+                    displayProgressBar();
+                    // Führe Online Aktualisierung durch.
+                    await updateAnnouncements();
+                }
+                catch(ClientException ex)
+                {
+                    // bei Fehler keine Nachricht an Nutzer, da Operation im Hintergrund ausgeführt wird.
+                    Debug.WriteLine("ClientException occurred during updateAnnouncements. Error code is: {0}.", ex.ErrorCode);
+                }
+                finally
+                {
+                    hideProgressBar();
+                }
+               
+                performOnlineAnnouncementUpdate = false;
+            }
+            else
+            {
+                // TODO - Führe Offline Update durch.
+            }
+        }
+
+        /// <summary>
         /// Markiere die Announcements dieses Kanals als gelesen.
         /// </summary>
-        public async Task MarkAnnouncementsAsReadAsync()
+        public void MarkAnnouncementsAsReadAsync()
         {
-            await Task.Run(() => {
-                    // Markiere ungelesene Nachrichten nun als gelesen.
-                    channelController.MarkAnnouncementsAsRead(Channel.Id);
-            });
+            // Markiere ungelesene Nachrichten nun als gelesen.
+            channelController.MarkAnnouncementsAsRead(Channel.Id);
         }
 
         /// <summary>
@@ -260,6 +317,7 @@ namespace DataHandlingLayer.ViewModel
         {
             SubscribeChannelCommand.OnCanExecuteChanged();
             UnsubscribeChannelCommand.OnCanExecuteChanged();
+            UpdateAnnouncementsCommand.OnCanExecuteChanged();
         }
 
         /// <summary>
@@ -348,6 +406,76 @@ namespace DataHandlingLayer.ViewModel
             finally
             {
                 hideProgressBar();
+            }
+        }
+
+        /// <summary>
+        /// Gibt an, ob das Kommando UpdateAnnouncements ausgeführt werden kann.
+        /// </summary>
+        /// <returns>Liefert true zurück, wenn das Kommando ausgeführt werden kann, ansonsten false.</returns>
+        private bool canUpdateAnnouncements()
+        {
+            if(Channel != null &&
+               SelectedPivotItemIndex == 0 && 
+               channelSubscribedStatus == true)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Wird durch das Kommando UpdateAnnouncements ausgelöst und stößt die Aktualisierung
+        /// der Announcements des Kanals an.
+        /// </summary>
+        private async Task executeUpdateAnnouncementsCommand()
+        {
+            try
+            {
+                displayProgressBar();
+                await updateAnnouncements();
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("Something went wrong during updateAnnouncments. The message is: {0}", ex.Message);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideProgressBar();
+            }
+        }
+
+        /// <summary>
+        /// Eine Hilfsmethode, die die Aktualisierung der Announcements des aktuellen Kanals ausführt.
+        /// </summary>
+        /// <exception cref="ClientException">Wirft ClientException, wenn die Aktualisierung der Announcements fehlschlägt.</exception>
+        private async Task updateAnnouncements()
+        {
+            // Extrahiere als erstes die aktuell höchste MessageNr einer Announcement in diesem Kanal.
+            int maxMsgNr = 0;
+            maxMsgNr = channelController.GetHighestMsgNrForChannel(Channel.Id);
+            Debug.WriteLine("Perform update announcement operation with max messageNumber of {0}.", maxMsgNr);
+
+            var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+
+            // Frage die Announcements ab.
+            List<Announcement> receivedAnnouncements = await channelController.GetAnnouncementsOfChannelAsync(Channel.Id, maxMsgNr);
+
+            if (receivedAnnouncements != null && receivedAnnouncements.Count > 0)
+            {
+                await Task.Run(() => channelController.StoreReceivedAnnouncementsAsync(receivedAnnouncements));
+
+                // Trage die empfangenen Announcements in die Liste aktueller Announcements ein.
+                // Führe das auf dem UI Thread aus, da die Collection an die View gebunden ist.
+                await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    foreach (Announcement announcement in receivedAnnouncements)
+                    {
+                        Announcements.Insert(0, announcement);
+                        //Announcements.Add(announcement);
+                    }
+                });
             }
         }
     }

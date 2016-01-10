@@ -141,16 +141,19 @@ namespace DataHandlingLayer.ViewModel
             Dictionary<int, int> numberOfUnreadAnnouncements = 
                 await Task.Run(() => channelController.GetAmountOfUnreadAnnouncementsForMyChannels());
 
-            foreach(Channel channel in MyChannels)
+            if(numberOfUnreadAnnouncements != null)
             {
-                if (numberOfUnreadAnnouncements.ContainsKey(channel.Id))
+                foreach (Channel channel in MyChannels)
                 {
-                    // Speichere den Wert aus dem Verzeichnis als neue Anzahl an ungelsenen Announcements.
-                    channel.NumberOfUnreadAnnouncements = numberOfUnreadAnnouncements[channel.Id];
-                    Debug.WriteLine("The new value for unreadMsg for channel with id {0} is {1}.",
-                        channel.Id, channel.NumberOfUnreadAnnouncements);
+                    if (numberOfUnreadAnnouncements.ContainsKey(channel.Id))
+                    {
+                        // Speichere den Wert aus dem Verzeichnis als neue Anzahl an ungelesenen Announcements.
+                        channel.NumberOfUnreadAnnouncements = numberOfUnreadAnnouncements[channel.Id];
+                        Debug.WriteLine("The new value for unreadMsg for channel with id {0} is {1}.",
+                            channel.Id, channel.NumberOfUnreadAnnouncements);
+                    }
                 }
-            }
+            }    
         }
 
         /// <summary>

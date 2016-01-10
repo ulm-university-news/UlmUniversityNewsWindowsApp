@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:UlmUniversityNews"
     xmlns:converter="using:UlmUniversityNews.Converters"
-    RequestedTheme="Light">
+    RequestedTheme="Light"> <!-- TODO - entferne Requested Theme -->
     
     <Application.Resources>
 
@@ -12,6 +12,9 @@
         <!-- <valueconverter:ValidationMessageOnLocalizedStringConverter x:Key="ValidationMessageOnLocalizedStringConverter" /> -->
         <converter:ChannelTypeToStringConverter x:Key="ChannelTypeToStringConverter" />
         <converter:ChannelToIconPathConverter x:Key="ChannelToIconPathConverter" />
+        <converter:ZeroIntegerToVisibilityConverter x:Key="ZeroIntegerToVisibilityConverter" />
+        <converter:DateTimeToStringConverter x:Key="DateTimeToStringConverter" />
+        <converter:MessageReadPropertyToBackgroundColorConverter x:Key="MessageReadPropertyToBackgroundColorConverter" />
         
         
         <!-- Colors -->
@@ -19,7 +22,12 @@
         <SolidColorBrush x:Key="UniUlmAccentColor" Color="#A9A280" Opacity="0.5"  />
         <SolidColorBrush x:Key="UniUlmAccentColorListItemBackground" Color="#A9A280" Opacity="0.1"  />
         <SolidColorBrush x:Key="UniUlmAccentColorElementBackground" Color="#A9A280" Opacity="0.4"  />
+        <SolidColorBrush x:Key="UniUlmFacultyColorInformaticsAndEngineering" Color="#A32638" />
+        <SolidColorBrush x:Key="UniUlmFacultyColorMathematicsAndEconomics" Color="#56AA1C" />
+        <SolidColorBrush x:Key="UniUlmFacultyColorMedicine" Color="#26247C" />
+        <SolidColorBrush x:Key="UniUlmFacultyColorNaturalSciences" Color="#BD6005" />
         <SolidColorBrush x:Key="MainFragmentBackgroundColor" Color="White" />
+        <SolidColorBrush x:Key="UnreadMessageBackgroundColor" Color="Gray" Opacity="0.9" />
         
         <!-- Style für Schriften in Listen und Aufzählungen. -->
         <Style 
@@ -36,6 +44,7 @@
             <Setter Property="TextTrimming" Value="WordEllipsis" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="FontSize" Value="20" />
+            <Setter Property="Margin" Value="5,0,0,5" />
             <Setter Property="FontFamily" Value="Arial" />
         </Style>
 
@@ -43,7 +52,27 @@
             x:Key="TextInPropertyDescriptions"
             TargetType="TextBlock">
             <Setter Property="TextWrapping" Value="Wrap" />
-            <Setter Property="Margin" Value="0, 5, 0, 0" />
+            <Setter Property="Margin" Value="5,5,5,0" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontFamily" Value="Arial" />
+        </Style>
+        
+        <Style 
+            x:Key="DateTimeFieldinList"
+            TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,0,5,0" />
+            <Setter Property="TextWrapping" Value="NoWrap" />
+            <Setter Property="TextTrimming" Value="None" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontFamily" Value="Arial" />
+        </Style>
+        
+        <Style
+            x:Key="TextInFlyoutsStyle"
+            TargetType="TextBlock">
+            <Setter Property="Margin" Value="10" />
+            <Setter Property="TextWrapping" Value="WrapWholeWords" />
+            <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontFamily" Value="Arial" />
         </Style>
@@ -122,6 +151,15 @@
                            FontSize="30"/>
             </ContentPresenter>
         </DataTemplate>
+        
+        <!-- ************************************************************************************************************************************ -->
+        <!-- Definiere den Style für Fylout Elemente -->
+        <Style
+            x:Key="FlyoutStyle"
+            TargetType="FlyoutPresenter">
+            <Setter Property="BorderBrush" Value="Black" />
+            <Setter Property="BorderThickness" Value="5" />
+        </Style>
 
         <!-- ************************************************************************************************************************************ -->
         <!-- Layout eines Eintrages einer Kanal-Ressource in der Übersichtliste von Kanälen.-->
@@ -137,6 +175,7 @@
                     <ColumnDefinition Width="*" /> <!-- Spalte für restliche Information-->
                 </Grid.ColumnDefinitions>
                 
+                <!-- TODO - entferne Icon und erstetze durch Kreis mit definiertem Text -->
                 <!-- Icon -->
                 <Image Source="{Binding Converter={StaticResource ChannelToIconPathConverter}}" 
                        Grid.Column="0"
@@ -152,6 +191,7 @@
                         <RowDefinition Height="35px" /> <!-- Zeile für Typ und Semester -->
                     </Grid.RowDefinitions>
 
+                    <!-- Zeile 1 -->
                     <!-- Anzeige für Name und Icon für ungelsesen Nachrichten -->
                     <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
@@ -169,13 +209,30 @@
                                Style="{StaticResource ListTextStyle}"
                                FontWeight="Bold"
                                Text="{Binding Name}"/>
-                        <Image
+                        
+                        <!-- Anzahl ungelesener Nachrichten -->
+                        <Grid
                             Grid.Column="1"
                             x:Name="UnreadAnnouncementsIcon"
-                            Source="/Assets/NewMessagesIcons/1_new_message.png" />
+                            Visibility="{Binding NumberOfUnreadAnnouncements, FallbackValue=Collapsed, TargetNullValue=Collapsed, Converter={StaticResource ZeroIntegerToVisibilityConverter}}">
+                            <Ellipse 
+                                Fill="Gray" 
+                                Height="30px"
+                                Width="30px"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />   <!-- Hintergrund der Anzeige der ungelesenen Nachrichten-->
+                            <TextBlock 
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                Foreground="White"
+                                FontSize="15"
+                                TextWrapping="NoWrap"
+                                TextAlignment="Center"
+                                Text="{Binding NumberOfUnreadAnnouncements}"/>
+                        </Grid>
                     </Grid>
 
-
+                    <!-- Zeile 2 -->
                     <!-- Anzeige für Typ und Semester.-->
                     <Grid Grid.Row="1"
                           x:Name="TypAndSemester"
@@ -204,7 +261,58 @@
             </Grid>
         </DataTemplate>
         
-        
+        <!-- Data Template eines Eintrags einer Announcement-Ressource in der Detailansicht eines Kanals. -->
+        <DataTemplate
+            x:Key="AnnouncementListItemStyle">
+            <Grid
+                Background="{StaticResource UniUlmAccentColorListItemBackground}"
+                Height="Auto"       
+                Margin="0,5,19,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" /> <!-- 1.Zeile für Announcement Titel und Datum -->
+                    <RowDefinition Height="Auto" /> <!-- 2.Zeile für Inhalt der Nachricht -->
+                </Grid.RowDefinitions>
+                
+                <!-- 1. Zeile -->
+                <!-- Grid für Announcement Titel und Datum.-->
+                <Grid
+                    Background="{Binding Read, Converter={StaticResource MessageReadPropertyToBackgroundColorConverter}}"
+                    Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />   <!-- Spalte für Titel -->
+                        <ColumnDefinition Width="*" />   <!-- Spalte für Datum -->
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- Titel -->
+                    <TextBlock
+                        Grid.Column="0"
+                        x:Name="AnnouncementTitle"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        TextAlignment="Left"
+                        Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                        Text="{Binding Title}" />
+                    
+                    <!-- Datum -->
+                    <TextBlock
+                        Grid.Column="1"
+                        x:Name="AnnouncementCreationDate"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Right"
+                        TextAlignment="Right"
+                        Style="{StaticResource DateTimeFieldinList}"
+                        Text="{Binding CreationDate, Converter={StaticResource DateTimeToStringConverter}}"/> <!-- TODO Add converter-->
+                </Grid>
+                
+                <!-- 2.Zeile -->
+                <!-- Nachrichteninhalt -->
+                <TextBlock
+                    Grid.Row="1"
+                    x:Name="AnnouncementContent"
+                    Style="{StaticResource TextInPropertyDescriptions}"
+                    Text="{Binding Text}" />
+            </Grid>
+        </DataTemplate>
             
         <!-- Command Bar:-->
         <!-- Definiere die Hintergrundfarbe für die CommandBar. -->

@@ -160,6 +160,7 @@ namespace DataHandlingLayer.API
 
             // Definiere HTTP-Request und Http-Request Header.
             httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
+            httpClient.DefaultRequestHeaders.Add("IfModifiedSince", DateTime.UtcNow.ToString("r"));     // Prevent caching for get requests.
             httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
 
             // Füge URL Parameter an, falls vorhanden.

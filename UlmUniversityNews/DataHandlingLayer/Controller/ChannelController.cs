@@ -491,6 +491,8 @@ namespace DataHandlingLayer.Controller
         /// Speichere eine Menge von empfangenen Announcements in der Datenbank ab.
         /// </summary>
         /// <param name="announcements">Eine Liste von Announcement Objekten.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn die übergebene Menge an Announcements nicht 
+        ///     in der lokalen Datenbank gespeichert werden konnte.</exception>
         public async Task StoreReceivedAnnouncementsAsync(List<Announcement> announcements)
         {
             if(announcements == null || announcements.Count == 0)
@@ -586,10 +588,9 @@ namespace DataHandlingLayer.Controller
             }
             catch(DatabaseException ex)
             {
-                // Fehler wird nicht weitergereicht, da es sich hierbei um eine Aktion handelt,
-                // die normalerweise im Hintergrund ausgeführt wird und nicht aktiv durch den 
-                // Nutzer ausgelöst wird.
+                // Fehler wird an Aufrufer weitergereicht.
                 Debug.WriteLine("Couldn't store the received announcements of channel. Message was {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, "Local database failure.");
             }
         }
 
@@ -614,6 +615,16 @@ namespace DataHandlingLayer.Controller
                 Debug.WriteLine("Could not retrieve amount of unread announcements for my channels. Message is {0}.", ex.Message);
             }
             return channelIdOnUnreadMsgMap;
+        }
+
+        /// <summary>
+        /// Rufe die höchste MessageNumber ab, die aktuell einer Announcement des Kanals zugeordnet ist. 
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, von dem die höchste MessageNr abgerufen werden soll.</param>
+        /// <returns>Die höchste MessageNumber.</returns>
+        public int GetHighestMsgNrForChannel(int channelId)
+        {
+            return channelDatabaseManager.GetHighestMessageNumberOfChannel(channelId);
         }
 
         /// <summary>

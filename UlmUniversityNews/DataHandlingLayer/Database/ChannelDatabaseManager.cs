@@ -502,31 +502,33 @@ namespace DataHandlingLayer.Database
         {
             List<Channel> channels = new List<Channel>();
 
-            SQLiteConnection conn = DatabaseManager.GetConnection();
-            try
+            using (SQLiteConnection conn = DatabaseManager.GetConnection())
             {
-                // Frage alle Kanäle ab, die in SubscribedChannels eingetragen sind.
-                using(var getSubscribedChannelsStmt = conn.Prepare("SELECT * FROM Channel WHERE Id IN (" +
-                    "SELECT Channel_Id AS Id FROM SubscribedChannels);"))
+                try
                 {
-                    // Iteriere über Ergebnisse.
-                    while (getSubscribedChannelsStmt.Step() == SQLiteResult.ROW)
+                    // Frage alle Kanäle ab, die in SubscribedChannels eingetragen sind.
+                    using (var getSubscribedChannelsStmt = conn.Prepare("SELECT * FROM Channel WHERE Id IN (" +
+                        "SELECT Channel_Id AS Id FROM SubscribedChannels);"))
                     {
-                        Channel channelTmp = retrieveChannelObjectFromStatement(conn, getSubscribedChannelsStmt);
-                        channels.Add(channelTmp);
+                        // Iteriere über Ergebnisse.
+                        while (getSubscribedChannelsStmt.Step() == SQLiteResult.ROW)
+                        {
+                            Channel channelTmp = retrieveChannelObjectFromStatement(conn, getSubscribedChannelsStmt);
+                            channels.Add(channelTmp);
+                        }
                     }
                 }
-            }
-            catch(SQLiteException sqlEx)
-            {
-                Debug.WriteLine("SQLiteException has occurred in GetSubscribedChannels. The message is: {0}." + sqlEx.Message);
-                throw new DatabaseException("Get subscribed channels has failed.");
-            }
-            catch(Exception ex)
-            {
-                Debug.WriteLine("Exception has occurred in GetSubscribedChannels. The message is: {0}, " + 
-                    "and the stack trace: {1}." + ex.Message, ex.StackTrace);
-                throw new DatabaseException("Get subscribed channel has failed.");
+                catch (SQLiteException sqlEx)
+                {
+                    Debug.WriteLine("SQLiteException has occurred in GetSubscribedChannels. The message is: {0}." + sqlEx.Message);
+                    throw new DatabaseException("Get subscribed channels has failed.");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Exception has occurred in GetSubscribedChannels. The message is: {0}, " +
+                        "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                    throw new DatabaseException("Get subscribed channel has failed.");
+                }
             }
 
             return channels;
@@ -1217,6 +1219,45 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Liefert die höchste MessageNumber, die einer der 
+        /// in der Datenbank für den angegebenen Kanal gespeicherten Announcement zugeordnet ist.
+        /// </summary>
+        /// <param name="channelId">Die Kanal-Id des Kanals, für den die höchste gespeicherte MessageNr abgerufen werden soll.</param>
+        /// <returns>Die höchste MessageNr.</returns>
+        public int GetHighestMessageNumberOfChannel(int channelId)
+        {
+            int highestNr = 0;
+            SQLiteConnection conn = DatabaseManager.GetConnection();
+            try
+            {
+                string query = @"SELECT MAX(MessageNumber) AS HighestMsgNr
+                    FROM Announcement 
+                    WHERE Channel_Id=?;";
+
+                using(var stmt = conn.Prepare(query))
+                {
+                    stmt.Bind(1, channelId);
+
+                    if(stmt.Step() == SQLiteResult.ROW)
+                    {
+                        highestNr = Convert.ToInt32(stmt["HighestMsgNr"]);
+                    }
+                }
+            }
+            catch(SQLiteException sqlEx)
+            {
+                Debug.WriteLine("Retrieval of highest message number for channel with id {0} has failed. " + 
+                    "Message is {1}.", channelId, sqlEx.Message);
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("Retrieval of highest message number has failed." 
+                    + " Message is {0} and stack trace is {1}.", ex.Message, ex.StackTrace);
+            }
+            return highestNr;
+        }
+
+        /// <summary>
         /// Markiert die bislang als ungelesen markierten Announcements des Kanals mit 
         /// der angegebenen Id in der Datenbank als gelesen.
         /// </summary>
@@ -1224,37 +1265,39 @@ namespace DataHandlingLayer.Database
         /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Markierung der Announcements fehlschlägt.</exception>
         public void MarkAnnouncementsAsRead(int channelId)
         {
-            SQLiteConnection conn = DatabaseManager.GetConnection();
-            try
+            using (SQLiteConnection conn = DatabaseManager.GetConnection())
             {
-                string query = @"UPDATE Message 
+                try
+                {
+                    string query = @"UPDATE Message 
                     SET Read=? 
                     WHERE Read=? AND Id IN (
                         SELECT Message_Id As Id 
                         FROM Announcement 
                         WHERE Channel_Id=?);";
 
-                using(var stmt = conn.Prepare(query))
-                {
-                    stmt.Bind(1, 1);    // Setze Read auf true.
-                    stmt.Bind(2, 0);
-                    stmt.Bind(3, channelId);
+                    using (var stmt = conn.Prepare(query))
+                    {
+                        stmt.Bind(1, 1);    // Setze Read auf true.
+                        stmt.Bind(2, 0);
+                        stmt.Bind(3, channelId);
 
-                    stmt.Step();
-                    Debug.WriteLine("Marked announcements as read for channel with id {0}.", channelId);
+                        stmt.Step();
+                        Debug.WriteLine("Marked announcements as read for channel with id {0}.", channelId);
+                    }
                 }
-            }
-            catch(SQLiteException sqlEx)
-            {
-                Debug.WriteLine("MarkAnnouncementsAsRead has failed.");
-                throw new DatabaseException(sqlEx.Message);
-            }
-            catch(Exception ex)
-            {
-                Debug.WriteLine("MarkAnnouncementsAsRead has failed. The message is: {0} and stack trace is {1}.",
-                    ex.Message, ex.StackTrace);
-                throw new DatabaseException(ex.Message);
-            }
+                catch (SQLiteException sqlEx)
+                {
+                    Debug.WriteLine("MarkAnnouncementsAsRead has failed.");
+                    throw new DatabaseException(sqlEx.Message);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("MarkAnnouncementsAsRead has failed. The message is: {0} and stack trace is {1}.",
+                        ex.Message, ex.StackTrace);
+                    throw new DatabaseException(ex.Message);
+                }
+            }         
         }
 
         /// <summary>

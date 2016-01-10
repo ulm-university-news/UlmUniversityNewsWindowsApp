@@ -38,6 +38,14 @@
         <CommandBar x:Name="ChannelDetailsCommandBar"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
             <AppBarButton
+                x:Name="UpdateAnnouncementsButton"
+                x:Uid="ChannelDetailsUpdateAnnouncementsButton"
+                Icon="Sync"
+                Label="update messages"
+                Visibility="{Binding ElementName=UpdateAnnouncementsButton,Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding UpdateAnnouncementsCommand}"
+                />
+            <AppBarButton
                 x:Name="SubscribeChannelButton"
                 x:Uid="ChannelDetailsSubscribeChannelButton"
                 Icon="Favorite"

@@ -47,11 +47,28 @@ namespace UlmUniversityNews.Views.ChannelDetails
             DrawerLayout.InitializeDrawerLayout();
 
             ChannelDetailsPivot.Loaded += ChannelDetailsPivot_Loaded;
+            this.Loaded += ChannelDetails_Loaded;
             
             channelDetailsViewModel = new ChannelDetailsViewModel(App.NavigationService, App.ErrorMapper);
             this.DataContext = channelDetailsViewModel;
 
             channelDetailsViewModel.PropertyChanged += channelDetailsViewModel_PropertyChanged;
+        }
+
+        /// <summary>
+        /// Wird aufgerufen, wenn die Seite ChannelDetails geladen wurde. 
+        /// Zeigt die Seite aktuell einen abonnierten Kanal an, so wird ein
+        /// Aktualisierungsrequest für die Announcements des Kanals abgesetzt.
+        /// </summary>
+        /// <param name="sender">Der Sender des Loaded Events.</param>
+        /// <param name="e">Die Eventparameter.</param>
+        async void ChannelDetails_Loaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("In ChannelDetails_Loaded event handler.");
+            if(channelDetailsViewModel != null && channelDetailsViewModel.ChannelSubscribedStatus == true)
+            {
+                await channelDetailsViewModel.PerformAnnouncementUpdate();
+            }
         }
 
         /// <summary>
@@ -124,8 +141,10 @@ namespace UlmUniversityNews.Views.ChannelDetails
                 // Lade den Zustand im ViewModel mit dem übergebenen Parameterwert.
                 int selectedChannelId;
                 bool successful = int.TryParse(e.NavigationParameter.ToString(), out selectedChannelId);
-                if(successful)
+                if (successful)
+                {
                     channelDetailsViewModel.LoadSelectedChannel(selectedChannelId);
+                }       
             }
         }
 
@@ -137,13 +156,13 @@ namespace UlmUniversityNews.Views.ChannelDetails
         /// <param name="sender">Die Quelle des Ereignisses, normalerweise <see cref="NavigationHelper"/></param>
         /// <param name="e">Ereignisdaten, die ein leeres Wörterbuch zum Auffüllen bereitstellen
         /// serialisierbarer Zustand.</param>
-        private async void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
+        private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
             Debug.WriteLine("In SaveState of ChannelDetails page.");
             if(channelDetailsViewModel.ChannelSubscribedStatus)
             {
                 // Markiere die Nachrichten dieses Kanals nun als gelsen.
-                await channelDetailsViewModel.MarkAnnouncementsAsReadAsync();
+                channelDetailsViewModel.MarkAnnouncementsAsReadAsync();
             }
         }
 

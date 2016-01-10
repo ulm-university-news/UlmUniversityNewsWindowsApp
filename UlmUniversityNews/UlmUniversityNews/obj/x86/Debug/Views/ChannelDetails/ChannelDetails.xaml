@@ -25,12 +25,24 @@
         
         <!-- Konverter zur Umwandlung von Boolean Werten auf eine Sichtbarkeit. -->
         <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        
+        <!-- Konverter zum Anpassen der Hintergrundfarbe des Drawer Menüs auf Basis der geladenen Kanaldaten. -->
+        <converter:ChannelToDrawerMenuBackgroundConverter x:Key="ChannelToDrawerMenuBackgroundConverter" />
+
+        <!-- Konverter zum Ausblenden/Einblenden einer Nachricht, wenn die Liste der Announcements leer ist. -->
+        <converter:ListCountToVisibilityConverter x:Key="ListCountToVisibilityConverter" />
     </Page.Resources>
 
     <!-- CommandBar -->
     <Page.BottomAppBar>
         <CommandBar x:Name="ChannelDetailsCommandBar"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
+            <AppBarButton
+                x:Name="UpdateAnnouncementsButton"
+                x:Uid="ChannelDetailsUpdateAnnouncementsButton"
+                Icon="Accept"
+                Label="update messages"
+                />
             <AppBarButton
                 x:Name="SubscribeChannelButton"
                 x:Uid="ChannelDetailsSubscribeChannelButton"
@@ -43,8 +55,40 @@
                 x:Uid="ChannelDetailsUnsubscribeChannelButton"
                 Icon="UnFavorite"
                 Label="unsubscribe channel"
-                Visibility="{Binding ElementName=UnsubscribeChannelButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
-                Command="{Binding UnsubscribeChannelCommand}" />
+                Visibility="{Binding ChannelSubscribedStatus, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <!--Visibility="{Binding ElementName=UnsubscribeChannelButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding UnsubscribeChannelCommand}"-->
+                <AppBarButton.Flyout>
+                    <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}">
+                        <Grid
+                            HorizontalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            
+                            <!-- Warnhinweis bezüglich Löschoperation. -->
+                            <TextBlock 
+                                Grid.Row="0"
+                                x:Name="UnsubscribeChannelWarning"
+                                x:Uid="ChannelDetailsUnsubscribeChannelWarning"
+                                Style="{StaticResource TextInFlyoutsStyle}" >
+                                Wollen Sie den Kanal wirklich deabonnieren?
+                            </TextBlock>
+                            
+                            <!-- Löschen Button-->
+                            <Button
+                                Grid.Row="1"
+                                x:Name="UnsubscribeChannelFlyoutButton"
+                                x:Uid="ChannelDetailsUnsubscribeChannelFlyoutButton"
+                                Margin="0,0,15,15"
+                                HorizontalAlignment="Right"
+                                Content="Delete"
+                                Command="{Binding UnsubscribeChannelCommand}"/>
+                        </Grid>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
         </CommandBar>
     </Page.BottomAppBar>
 
@@ -63,7 +107,9 @@
         </Grid.RowDefinitions>
 
         <!-- Titelbereich - Drawer -->
-        <Grid Grid.Row="0" Style="{StaticResource DrawerMenuTitleBar}">
+        <Grid Grid.Row="0" 
+              Style="{StaticResource DrawerMenuTitleBar}"
+              Background="{Binding Channel, Converter={StaticResource ChannelToDrawerMenuBackgroundConverter}}" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -106,7 +152,38 @@
                             <common:HideablePivotItemBehavior x:Name="HidablePivotItemBehaviorElement" Visible="{Binding ChannelSubscribedStatus, UpdateSourceTrigger=PropertyChanged}" />
                         </i:Interaction.Behaviors>
 
-                        <!-- TODO -->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            
+                            <!-- Text, der angezeigt wird, wenn keine Nachrichten vorhanden sind. -->
+                            <TextBlock
+                                Grid.Row="0"
+                                x:Name="NoMessagesInChannelInfo"
+                                x:Uid="ChannelDetailsNoMessagesInChannelInfo"
+                                Style="{StaticResource BaseTextBlockStyle}" 
+                                Visibility="{Binding Announcements.Count, Converter={StaticResource ListCountToVisibilityConverter}}">
+                                    In diesem Kanal sind noch keine Nachrichten vorhanden.
+                            </TextBlock>
+
+                            <!-- Liste mit Announcements -->
+                            <ListView
+                                Grid.Row="1"
+                                ItemTemplate="{StaticResource AnnouncementListItemStyle}"
+                                ItemsSource="{Binding Announcements}"
+                                HorizontalContentAlignment="Stretch"
+                                HorizontalAlignment="Stretch">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                            </ListView>
+                            
+                        </Grid>                      
+                    <!-- TODO -->
                     </PivotItem>
 
                     <!-- Pivotelement 2-->
