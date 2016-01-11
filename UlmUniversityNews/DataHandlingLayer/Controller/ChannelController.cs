@@ -135,7 +135,7 @@ namespace DataHandlingLayer.Controller
             string serverResponse;
             try
             {
-                serverResponse = await api.SendHttpGetRequestAsync(getLocalUser().ServerAccessToken, "/channel", parameters);
+                serverResponse = await api.SendHttpGetRequestAsync(getLocalUser().ServerAccessToken, "/channel", parameters, true);
             }
             catch(APIException ex)
             {
@@ -288,7 +288,7 @@ namespace DataHandlingLayer.Controller
                 StoreResponsibleModeratorsForChannel(channelId, responsibleModerators);
 
                 // Frage die Nachrichten zum Kanal ab und speichere Sie in der Datenbank.
-                List<Announcement> announcements = await GetAnnouncementsOfChannelAsync(channelId, 0);
+                List<Announcement> announcements = await GetAnnouncementsOfChannelAsync(channelId, 0, false);
                 await StoreReceivedAnnouncementsAsync(announcements);
             }
             catch (ClientException ex)
@@ -360,7 +360,7 @@ namespace DataHandlingLayer.Controller
             {
                 // Frage die verantwortlichen Moderatoren für den Kanal ab. 
                 string serverResponse =
-                    await api.SendHttpGetRequestAsync(getLocalUser().ServerAccessToken, "/channel/" + channelId + "/moderator", null);
+                    await api.SendHttpGetRequestAsync(getLocalUser().ServerAccessToken, "/channel/" + channelId + "/moderator", null, true);
 
                 // Extrahiere Moderatoren-Objekte aus der Antwort.
                 // Parse JSON List in eine JArray Repräsentation. JArray repräsentiert ein JSON Array. 
@@ -394,9 +394,11 @@ namespace DataHandlingLayer.Controller
         /// </summary>
         /// <param name="channelId">Die Id des Kanals, zu dem die Announcements abgefragt werden sollen.</param>
         /// <param name="messageNr">Die Nachrichtennummer, ab der die Announcements abgefragt werden sollen.</param>
+        /// <param name="withCaching">Gibt an, ob der Request bei mehrfachen gleichen Requests innerhalb eines Zeitraums erneut ausgeführt werden soll,
+        ///     oder ob der Eintrag aus dem Cache verwendet werden soll.</param>
         /// <returns>Eine Liste von Announcement Objekten. Die Liste kann auch leer sein.</returns>
         /// <exception cref="ClientException">Wirft eine ClientException, wenn der Abfruf der Nachrichten fehlgeschlagen ist.</exception>
-        public async Task<List<Announcement>> GetAnnouncementsOfChannelAsync(int channelId, int messageNr)
+        public async Task<List<Announcement>> GetAnnouncementsOfChannelAsync(int channelId, int messageNr, bool withCaching)
         {
             List<Announcement> announcements = new List<Announcement>();
             try
@@ -405,7 +407,7 @@ namespace DataHandlingLayer.Controller
                 Dictionary<string, string> parameters = new Dictionary<string, string>();
                 parameters.Add("messageNr", messageNr.ToString());
                 string serverResponse =
-                    await api.SendHttpGetRequestAsync(getLocalUser().ServerAccessToken, "/channel/" + channelId + "/announcement", parameters);
+                    await api.SendHttpGetRequestAsync(getLocalUser().ServerAccessToken, "/channel/" + channelId + "/announcement", parameters, withCaching);
 
                 // Extrahiere Announcements aus JSON-Dokument.
                 announcements = parseAnnouncementListFromJson(serverResponse);

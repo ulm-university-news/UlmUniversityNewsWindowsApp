@@ -151,16 +151,20 @@ namespace DataHandlingLayer.API
         /// <param name="restResourcePath">Der REST Ressourcen Pfad, der an die Basis URI des Requests angehängt wird. Dieser Teil
         /// der URI spezifiziert die exakte Ressource, die über den Request angesprochen wird.</param>
         /// <param name="urlParameters">Per URI zu übergebene Parameter. Dieser Parameter kann null sein, wenn keine Parameter übergeben werden sollen.</param>
+        /// <param name="withCaching">Gibt an, ob Caching durch den HttpClient bei diesem Request gewünscht ist oder nicht.</param>
         /// <returns>Die Antwort des Servers bei erfolgreicher Bearbeitung des Requests in Form eines JSON-Dokuments.</returns>
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
-        public async Task<string> SendHttpGetRequestAsync(string serverAccessToken, string restResourcePath, Dictionary<string, string> urlParameters)
+        public async Task<string> SendHttpGetRequestAsync(string serverAccessToken, string restResourcePath, Dictionary<string, string> urlParameters, bool withCaching)
         {
             // Erstelle einen HTTP Request.
             HttpClient httpClient = new HttpClient();
 
             // Definiere HTTP-Request und Http-Request Header.
             httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Add("IfModifiedSince", DateTime.UtcNow.ToString("r"));     // Prevent caching for get requests.
+            if(!withCaching)
+            {
+                httpClient.DefaultRequestHeaders.Add("IfModifiedSince", DateTime.UtcNow.ToString("r"));     // Prevent caching for get requests.
+            }
             httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
 
             // Füge URL Parameter an, falls vorhanden.

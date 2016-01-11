@@ -265,7 +265,7 @@ namespace DataHandlingLayer.ViewModel
         /// <summary>
         /// Aktualisiert die Announcements des Kanals. Führt Online
         /// Aktualisierung der Announcements durch, wenn entsprechendes Boolean Feld
-        /// auf true gesetzt ist. Ansonsten Offline Aktualisierung (noch nicht implementiert).
+        /// auf true gesetzt ist.
         /// Setzt nach Online Aktualisierung das Boolean Feld performOnlinceAnnouncementUpdate auf false,
         /// so dass keine weiteren Online Aktualisierungen mehr vorgenommen werden, es sei denn sie sind
         /// explizit durch eine Nutzeraktion ausgelöst.
@@ -279,8 +279,9 @@ namespace DataHandlingLayer.ViewModel
                 try
                 {
                     displayProgressBar();
-                    // Führe Online Aktualisierung durch.
-                    await updateAnnouncements();
+                    // Führe Online Aktualisierung durch. Caching hier erlaubt, d.h. wurde die Abfrage innerhalb eines Zeitraums bereits ausgeführt,
+                    // so kann das System entscheiden den Request an den Server nicht abzusetzen.
+                    await updateAnnouncements(true);
                 }
                 catch(ClientException ex)
                 {
@@ -296,7 +297,7 @@ namespace DataHandlingLayer.ViewModel
             }
             else
             {
-                // TODO - Führe Offline Update durch.
+                Debug.WriteLine("No online update for announcements. The announcements should already be up to date.");
             }
         }
 
@@ -433,7 +434,7 @@ namespace DataHandlingLayer.ViewModel
             try
             {
                 displayProgressBar();
-                await updateAnnouncements();
+                await updateAnnouncements(false);   // Kein caching hier. Der Request soll jedes mal auch tatsächlich abgesetzt werden, wenn der Benutzer es will.
             }
             catch (ClientException ex)
             {
@@ -449,8 +450,10 @@ namespace DataHandlingLayer.ViewModel
         /// <summary>
         /// Eine Hilfsmethode, die die Aktualisierung der Announcements des aktuellen Kanals ausführt.
         /// </summary>
+        /// <param name="withCaching">Gibt an, ob der Request bei mehrfachen gleichen Requests innerhalb eines Zeitraums erneut ausgeführt werden soll,
+        ///     oder ob der Eintrag aus dem Cache verwendet werden soll.</param>
         /// <exception cref="ClientException">Wirft ClientException, wenn die Aktualisierung der Announcements fehlschlägt.</exception>
-        private async Task updateAnnouncements()
+        private async Task updateAnnouncements(bool withCaching)
         {
             // Extrahiere als erstes die aktuell höchste MessageNr einer Announcement in diesem Kanal.
             int maxMsgNr = 0;
@@ -460,7 +463,7 @@ namespace DataHandlingLayer.ViewModel
             var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
 
             // Frage die Announcements ab.
-            List<Announcement> receivedAnnouncements = await channelController.GetAnnouncementsOfChannelAsync(Channel.Id, maxMsgNr);
+            List<Announcement> receivedAnnouncements = await channelController.GetAnnouncementsOfChannelAsync(Channel.Id, maxMsgNr, withCaching);
 
             if (receivedAnnouncements != null && receivedAnnouncements.Count > 0)
             {
