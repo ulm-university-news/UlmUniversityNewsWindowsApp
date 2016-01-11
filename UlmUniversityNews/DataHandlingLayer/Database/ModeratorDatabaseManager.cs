@@ -25,31 +25,33 @@ namespace DataHandlingLayer.Database
                 return;
             }
 
-            SQLiteConnection conn = DatabaseManager.GetConnection();
-            try
+            using (SQLiteConnection conn = DatabaseManager.GetConnection())
             {
-                using(var insertStmt = conn.Prepare(@"INSERT INTO Moderator (Id, FirstName, LastName, Email) 
-                    VALUES (?,?,?,?);"))
+                try
                 {
-                    insertStmt.Bind(1, moderator.Id);
-                    insertStmt.Bind(2, moderator.FirstName);
-                    insertStmt.Bind(3, moderator.LastName);
-                    insertStmt.Bind(4, moderator.Email);
+                    using (var insertStmt = conn.Prepare(@"INSERT INTO Moderator (Id, FirstName, LastName, Email) 
+                    VALUES (?,?,?,?);"))
+                    {
+                        insertStmt.Bind(1, moderator.Id);
+                        insertStmt.Bind(2, moderator.FirstName);
+                        insertStmt.Bind(3, moderator.LastName);
+                        insertStmt.Bind(4, moderator.Email);
 
-                    insertStmt.Step();
+                        insertStmt.Step();
+                    }
                 }
-            }
-            catch(SQLiteException sqlEx)
-            {
-                Debug.WriteLine("SQLiteException occurred in StoreModerator. The message is: {0}.", sqlEx.Message);
-                throw new DatabaseException("Moderator could not be stored.");
-            }
-            catch(Exception ex)
-            {
-                Debug.WriteLine("Exception occurred in StoreModerator. The message is: {0} and the stack trace is {1}.",
-                    ex.Message, 
-                    ex.StackTrace);
-                throw new DatabaseException("Moderator could not be stored.");
+                catch (SQLiteException sqlEx)
+                {
+                    Debug.WriteLine("SQLiteException occurred in StoreModerator. The message is: {0}.", sqlEx.Message);
+                    throw new DatabaseException("Moderator could not be stored.");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Exception occurred in StoreModerator. The message is: {0} and the stack trace is {1}.",
+                        ex.Message,
+                        ex.StackTrace);
+                    throw new DatabaseException("Moderator could not be stored.");
+                }
             }
         }
 
@@ -61,31 +63,35 @@ namespace DataHandlingLayer.Database
         public bool IsModeratorStored(int moderatorId)
         {
             bool isStored = false;
-            SQLiteConnection conn = DatabaseManager.GetConnection();
-            try
-            {
-                using (var stmt = conn.Prepare(@"SELECT Id FROM Moderator WHERE Id=?;"))
-                {
-                    stmt.Bind(1, moderatorId);
 
-                    if(stmt.Step() == SQLiteResult.ROW)
+            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+            {
+                try
+                {
+                    using (var stmt = conn.Prepare(@"SELECT Id FROM Moderator WHERE Id=?;"))
                     {
-                        isStored = true;
+                        stmt.Bind(1, moderatorId);
+
+                        if (stmt.Step() == SQLiteResult.ROW)
+                        {
+                            isStored = true;
+                        }
                     }
                 }
+                catch (SQLiteException sqlEx)
+                {
+                    Debug.WriteLine("SQLiteException occurred in IsModeratorStored. The message is: {0}.", sqlEx.Message);
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Exception occurred in IsModeratorStored. The message is: {0} and the stack trace is {1}.",
+                        ex.Message,
+                        ex.StackTrace);
+                    return false;
+                }
             }
-            catch(SQLiteException sqlEx)
-            {
-                Debug.WriteLine("SQLiteException occurred in IsModeratorStored. The message is: {0}.", sqlEx.Message);
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Exception occurred in IsModeratorStored. The message is: {0} and the stack trace is {1}.",
-                    ex.Message,
-                    ex.StackTrace);
-                return false;
-            }
+            
             return isStored;
         }
 
@@ -98,42 +104,45 @@ namespace DataHandlingLayer.Database
         public Moderator GetModerator(int moderatorId)
         {
             Moderator moderator = null;
-            SQLiteConnection conn = DatabaseManager.GetConnection();
-            try
+            using (SQLiteConnection conn = DatabaseManager.GetConnection())
             {
-                using (var stmt = conn.Prepare(@"SELECT * FROM Moderator WHERE Id=?;"))
+                try
                 {
-                    stmt.Bind(1, moderatorId);
-
-                    if(stmt.Step() == SQLiteResult.ROW)
+                    using (var stmt = conn.Prepare(@"SELECT * FROM Moderator WHERE Id=?;"))
                     {
-                        int id = Convert.ToInt32(stmt["Id"]);
-                        string firstName = (string)stmt["FirstName"];
-                        string lastName = (string)stmt["LastName"];
-                        string email = (string)stmt["Email"];
+                        stmt.Bind(1, moderatorId);
 
-                        moderator = new Moderator()
+                        if (stmt.Step() == SQLiteResult.ROW)
                         {
-                            Id = id,
-                            FirstName = firstName,
-                            LastName = lastName,
-                            Email = email
-                        };
+                            int id = Convert.ToInt32(stmt["Id"]);
+                            string firstName = (string)stmt["FirstName"];
+                            string lastName = (string)stmt["LastName"];
+                            string email = (string)stmt["Email"];
+
+                            moderator = new Moderator()
+                            {
+                                Id = id,
+                                FirstName = firstName,
+                                LastName = lastName,
+                                Email = email
+                            };
+                        }
                     }
                 }
+                catch (SQLiteException sqlEx)
+                {
+                    Debug.WriteLine("SQLiteException occurred in GetModerator. The message is: {0}.", sqlEx.Message);
+                    throw new DatabaseException("Could not retrieve Moderator.");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Exception occurred in IsModeratorStored. The message is: {0} and the stack trace is {1}.",
+                        ex.Message,
+                        ex.StackTrace);
+                    throw new DatabaseException("Could not retrieve Moderator.");
+                }
             }
-            catch(SQLiteException sqlEx)
-            {
-                Debug.WriteLine("SQLiteException occurred in GetModerator. The message is: {0}.", sqlEx.Message);
-                throw new DatabaseException("Could not retrieve Moderator.");
-            }
-            catch(Exception ex)
-            {
-                Debug.WriteLine("Exception occurred in IsModeratorStored. The message is: {0} and the stack trace is {1}.",
-                    ex.Message,
-                    ex.StackTrace);
-                throw new DatabaseException("Could not retrieve Moderator.");
-            }
+           
             return moderator;
         }
     }

@@ -25,34 +25,35 @@ namespace DataHandlingLayer.Database
                 return;
             }
 
-            SQLiteConnection conn = DatabaseManager.GetConnection();
-
-            try
+            using (SQLiteConnection conn = DatabaseManager.GetConnection())
             {
-                using (var insertLocalUser = conn.Prepare("INSERT INTO LocalUser (Id, Name, ServerAccessToken, PushAccessToken, Platform) VALUES (?,?,?,?,?);"))
+                try
                 {
-                    insertLocalUser.Bind(1, localUser.Id);
-                    insertLocalUser.Bind(2, localUser.Name);
-                    insertLocalUser.Bind(3, localUser.ServerAccessToken);
-                    insertLocalUser.Bind(4, localUser.PushAccessToken);
-                    insertLocalUser.Bind(5, (int) localUser.Platform);
+                    using (var insertLocalUser = conn.Prepare("INSERT INTO LocalUser (Id, Name, ServerAccessToken, PushAccessToken, Platform) VALUES (?,?,?,?,?);"))
+                    {
+                        insertLocalUser.Bind(1, localUser.Id);
+                        insertLocalUser.Bind(2, localUser.Name);
+                        insertLocalUser.Bind(3, localUser.ServerAccessToken);
+                        insertLocalUser.Bind(4, localUser.PushAccessToken);
+                        insertLocalUser.Bind(5, (int)localUser.Platform);
 
-                    insertLocalUser.Step();
+                        insertLocalUser.Step();
+                    }
                 }
-            }
-            catch (SQLiteException sqlEx)
-            {
-                Debug.WriteLine("SQLException occured in storeLocalUser.");
-                Debug.WriteLine("SQLException: " + sqlEx.HResult + " and message: " + sqlEx.Message);
+                catch (SQLiteException sqlEx)
+                {
+                    Debug.WriteLine("SQLException occured in storeLocalUser.");
+                    Debug.WriteLine("SQLException: " + sqlEx.HResult + " and message: " + sqlEx.Message);
 
-                throw new DatabaseException("Storing local user account in database has failed.");
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("Exception occured in storeLocalUser.");
-                Debug.WriteLine("Exception: " + e.HResult + " and message: " + e.Message);
+                    throw new DatabaseException("Storing local user account in database has failed.");
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Exception occured in storeLocalUser.");
+                    Debug.WriteLine("Exception: " + e.HResult + " and message: " + e.Message);
 
-                throw new DatabaseException("Storing local user account in database has failed.");
+                    throw new DatabaseException("Storing local user account in database has failed.");
+                }
             }
         }
 
@@ -63,38 +64,40 @@ namespace DataHandlingLayer.Database
         /// <exception cref="DatabaseException">Wirft eine DatabaseException, wenn bei der Ausführung der Operation ein Fehler auftritt.</exception>
         public User GetLocalUser()
         {
-            SQLiteConnection conn = DatabaseManager.GetConnection();
-
             User localUser = null;
-            try
+
+            using (SQLiteConnection conn = DatabaseManager.GetConnection())
             {
-                using (var statement = conn.Prepare("SELECT * FROM LocalUser;"))
+                try
                 {
-                    if (SQLiteResult.ROW == statement.Step())
+                    using (var statement = conn.Prepare("SELECT * FROM LocalUser;"))
                     {
-                        // Erstelle das Nutzerobjekt aus den Daten.
-                        localUser = new User();
-                        localUser.Id = Convert.ToInt32(statement["Id"]);
-                        localUser.Name = (string)statement["Name"];
-                        localUser.ServerAccessToken = (string)statement["ServerAccessToken"];
-                        localUser.PushAccessToken = (string)statement["PushAccessToken"];
-                        localUser.Platform = (DataModel.Enums.Platform)Enum.ToObject(typeof(DataModel.Enums.Platform), statement["Platform"]);
+                        if (SQLiteResult.ROW == statement.Step())
+                        {
+                            // Erstelle das Nutzerobjekt aus den Daten.
+                            localUser = new User();
+                            localUser.Id = Convert.ToInt32(statement["Id"]);
+                            localUser.Name = (string)statement["Name"];
+                            localUser.ServerAccessToken = (string)statement["ServerAccessToken"];
+                            localUser.PushAccessToken = (string)statement["PushAccessToken"];
+                            localUser.Platform = (DataModel.Enums.Platform)Enum.ToObject(typeof(DataModel.Enums.Platform), statement["Platform"]);
+                        }
                     }
                 }
-            }
-            catch(SQLiteException sqlEx)
-            {
-                Debug.WriteLine("SQLException occured in getLocalUser.");
-                Debug.WriteLine("SQLException: " + sqlEx.HResult + " and message: " + sqlEx.Message);
+                catch (SQLiteException sqlEx)
+                {
+                    Debug.WriteLine("SQLException occured in getLocalUser.");
+                    Debug.WriteLine("SQLException: " + sqlEx.HResult + " and message: " + sqlEx.Message);
 
-                throw new DatabaseException("Retrieving local user data from database has failed.");
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("Exception occured in getLocalUser.");
-                Debug.WriteLine("Exception: " + e.HResult + " and message: " + e.Message);
+                    throw new DatabaseException("Retrieving local user data from database has failed.");
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Exception occured in getLocalUser.");
+                    Debug.WriteLine("Exception: " + e.HResult + " and message: " + e.Message);
 
-                throw new DatabaseException("Retrieving local user data from database has failed.");
+                    throw new DatabaseException("Retrieving local user data from database has failed.");
+                }
             }
 
             return localUser;
@@ -113,35 +116,35 @@ namespace DataHandlingLayer.Database
                 return;
             }
 
-            SQLiteConnection conn = DatabaseManager.GetConnection();
-
-            try
+            using (SQLiteConnection conn = DatabaseManager.GetConnection())
             {
-                using (var updateStmt = conn.Prepare("UPDATE LocalUser SET Name = ?, PushAccessToken = ? WHERE Id = ?;"))
+                try
                 {
-                    updateStmt.Bind(1, localUser.Name);
-                    updateStmt.Bind(2, localUser.PushAccessToken);
-                    updateStmt.Bind(3, localUser.Id);
+                    using (var updateStmt = conn.Prepare("UPDATE LocalUser SET Name = ?, PushAccessToken = ? WHERE Id = ?;"))
+                    {
+                        updateStmt.Bind(1, localUser.Name);
+                        updateStmt.Bind(2, localUser.PushAccessToken);
+                        updateStmt.Bind(3, localUser.Id);
 
-                    // Update ausführen.
-                    updateStmt.Step();
+                        // Update ausführen.
+                        updateStmt.Step();
+                    }
+                }
+                catch (SQLiteException sqlEx)
+                {
+                    Debug.WriteLine("SQLException occured in updateLocalUser.");
+                    Debug.WriteLine("SQLException: " + sqlEx.HResult + " and message: " + sqlEx.Message);
+
+                    throw new DatabaseException("Updating local user data in database has failed.");
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Exception occured in updateLocalUser.");
+                    Debug.WriteLine("Exception: " + e.HResult + " and message: " + e.Message);
+
+                    throw new DatabaseException("Updating local user data in database has failed.");
                 }
             }
-            catch (SQLiteException sqlEx)
-            {
-                Debug.WriteLine("SQLException occured in updateLocalUser.");
-                Debug.WriteLine("SQLException: " + sqlEx.HResult + " and message: " + sqlEx.Message);
-
-                throw new DatabaseException("Updating local user data in database has failed.");
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("Exception occured in updateLocalUser.");
-                Debug.WriteLine("Exception: " + e.HResult + " and message: " + e.Message);
-
-                throw new DatabaseException("Updating local user data in database has failed.");
-            }
-
         }
 
         /// <summary>

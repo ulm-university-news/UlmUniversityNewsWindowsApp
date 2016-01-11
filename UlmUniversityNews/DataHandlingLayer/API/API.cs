@@ -163,7 +163,9 @@ namespace DataHandlingLayer.API
             httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
             if(!withCaching)
             {
-                httpClient.DefaultRequestHeaders.Add("IfModifiedSince", DateTime.UtcNow.ToString("r"));     // Prevent caching for get requests.
+                Debug.WriteLine("Adding header to prevent caching.");
+                httpClient.DefaultRequestHeaders.IfModifiedSince = new DateTimeOffset(DateTime.UtcNow);
+                //httpClient.DefaultRequestHeaders.Add("IfModifiedSince", DateTime.UtcNow.ToString("r"));     // Prevent caching for get requests.
             }
             httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
 
