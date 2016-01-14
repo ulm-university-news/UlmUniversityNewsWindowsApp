@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using SQLitePCL;
 using DataHandlingLayer.Exceptions;
 using DataHandlingLayer.DataModel.Enums;
+using System.Threading;
 
 namespace DataHandlingLayer.Database
 {
@@ -26,127 +27,143 @@ namespace DataHandlingLayer.Database
                 return;
             }
 
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
             {
-                try
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
-                    // Starte eine Transaktion.
-                    using (var statement = conn.Prepare("BEGIN TRANSACTION"))
+                    try
                     {
-                        statement.Step();
-                    }
+                        // Starte eine Transaktion.
+                        using (var statement = conn.Prepare("BEGIN TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
 
-                    // Speichere Kanaldaten.
-                    using (var insertStmt = conn.Prepare("INSERT INTO Channel (Id, Name, Description, " +
-                        "CreationDate, ModificationDate, Type, Term, Location, Dates, Contact, Website, Deleted) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"))
+                        // Speichere Kanaldaten.
+                        using (var insertStmt = conn.Prepare("INSERT INTO Channel (Id, Name, Description, " +
+                            "CreationDate, ModificationDate, Type, Term, Location, Dates, Contact, Website, Deleted) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"))
+                        {
+                            insertStmt.Bind(1, channel.Id);
+                            insertStmt.Bind(2, channel.Name);
+                            insertStmt.Bind(3, channel.Description);
+                            insertStmt.Bind(4, DatabaseManager.DateTimeToSQLite(channel.CreationDate));
+                            insertStmt.Bind(5, DatabaseManager.DateTimeToSQLite(channel.ModificationDate));
+                            insertStmt.Bind(6, (int)channel.Type);
+                            insertStmt.Bind(7, channel.Term);
+                            insertStmt.Bind(8, channel.Locations);
+                            insertStmt.Bind(9, channel.Dates);
+                            insertStmt.Bind(10, channel.Contacts);
+                            insertStmt.Bind(11, channel.Website);
+                            insertStmt.Bind(12, (channel.Deleted) ? 1 : 0);
+
+                            insertStmt.Step();
+                        }
+
+                        // Speichere Subklassen Parameter abhängig vom Typ des Kanals.
+                        switch (channel.Type)
+                        {
+                            case DataModel.Enums.ChannelType.LECTURE:
+                                Lecture lecture = (Lecture)channel;
+
+                                // Speichere Vorlesungsdaten.
+                                using (var insertLectureStmt = conn.Prepare("INSERT INTO Lecture (Channel_Id, " +
+                                    "Faculty, StartDate, EndDate, Lecturer, Assistant) " +
+                                    "VALUES (?, ?, ?, ?, ?, ?);"))
+                                {
+                                    insertLectureStmt.Bind(1, channel.Id);
+                                    insertLectureStmt.Bind(2, (int)lecture.Faculty);
+                                    insertLectureStmt.Bind(3, lecture.StartDate);
+                                    insertLectureStmt.Bind(4, lecture.EndDate);
+                                    insertLectureStmt.Bind(5, lecture.Lecturer);
+                                    insertLectureStmt.Bind(6, lecture.Assistant);
+
+                                    insertLectureStmt.Step();
+                                }
+
+                                Debug.WriteLine("Stored lecture channel.");
+                                break;
+                            case DataModel.Enums.ChannelType.EVENT:
+                                Event eventChannel = (Event)channel;
+
+                                // Speichere Eventdaten.
+                                using (var insertEventStmt = conn.Prepare("INSERT INTO Event (Channel_Id, Cost, Organizer) " +
+                                    "VALUES (?, ?, ?);"))
+                                {
+                                    insertEventStmt.Bind(1, channel.Id);
+                                    insertEventStmt.Bind(2, eventChannel.Cost);
+                                    insertEventStmt.Bind(3, eventChannel.Organizer);
+
+                                    insertEventStmt.Step();
+                                }
+
+                                Debug.WriteLine("Stored event channel.");
+                                break;
+                            case DataModel.Enums.ChannelType.SPORTS:
+                                Sports sportsChannel = (Sports)channel;
+
+                                // Speichere Sportgruppendaten.
+                                using (var insertSportsStmt = conn.Prepare("INSERT INTO Sports (Channel_Id, Cost, NumberOfParticipants) " +
+                                    "VALUES (?, ?, ?);"))
+                                {
+                                    insertSportsStmt.Bind(1, channel.Id);
+                                    insertSportsStmt.Bind(2, sportsChannel.Cost);
+                                    insertSportsStmt.Bind(3, sportsChannel.NumberOfParticipants);
+
+                                    insertSportsStmt.Step();
+                                }
+
+                                Debug.WriteLine("Stored sports channel.");
+                                break;
+                            default:
+                                Debug.WriteLine("There is no subclass for channel type OTHER and STUDENT_GROUP, so storing is already complete.");
+                                break;
+                        }
+
+                        // Commit der Transaktion.
+                        using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
                     {
-                        insertStmt.Bind(1, channel.Id);
-                        insertStmt.Bind(2, channel.Name);
-                        insertStmt.Bind(3, channel.Description);
-                        insertStmt.Bind(4, DatabaseManager.DateTimeToSQLite(channel.CreationDate));
-                        insertStmt.Bind(5, DatabaseManager.DateTimeToSQLite(channel.ModificationDate));
-                        insertStmt.Bind(6, (int)channel.Type);
-                        insertStmt.Bind(7, channel.Term);
-                        insertStmt.Bind(8, channel.Locations);
-                        insertStmt.Bind(9, channel.Dates);
-                        insertStmt.Bind(10, channel.Contacts);
-                        insertStmt.Bind(11, channel.Website);
-                        insertStmt.Bind(12, (channel.Deleted) ? 1 : 0);
+                        Debug.WriteLine("SQLiteException has occurred in StoreChannel. Exception message is: {0}.", sqlEx.Message);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
 
-                        insertStmt.Step();
+                        throw new DatabaseException("Storing channel data in database has failed.");
                     }
-
-                    // Speichere Subklassen Parameter abhängig vom Typ des Kanals.
-                    switch (channel.Type)
+                    catch (Exception ex)
                     {
-                        case DataModel.Enums.ChannelType.LECTURE:
-                            Lecture lecture = (Lecture)channel;
+                        Debug.WriteLine("Exception has occurred in StoreChannel. " +
+                            "Exception message is: {0}, and stack trace is {1}.", ex.Message, ex.StackTrace);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
 
-                            // Speichere Vorlesungsdaten.
-                            using (var insertLectureStmt = conn.Prepare("INSERT INTO Lecture (Channel_Id, " +
-                                "Faculty, StartDate, EndDate, Lecturer, Assistant) " +
-                                "VALUES (?, ?, ?, ?, ?, ?);"))
-                            {
-                                insertLectureStmt.Bind(1, channel.Id);
-                                insertLectureStmt.Bind(2, (int)lecture.Faculty);
-                                insertLectureStmt.Bind(3, lecture.StartDate);
-                                insertLectureStmt.Bind(4, lecture.EndDate);
-                                insertLectureStmt.Bind(5, lecture.Lecturer);
-                                insertLectureStmt.Bind(6, lecture.Assistant);
-
-                                insertLectureStmt.Step();
-                            }
-
-                            Debug.WriteLine("Stored lecture channel.");
-                            break;
-                        case DataModel.Enums.ChannelType.EVENT:
-                            Event eventChannel = (Event)channel;
-
-                            // Speichere Eventdaten.
-                            using (var insertEventStmt = conn.Prepare("INSERT INTO Event (Channel_Id, Cost, Organizer) " +
-                                "VALUES (?, ?, ?);"))
-                            {
-                                insertEventStmt.Bind(1, channel.Id);
-                                insertEventStmt.Bind(2, eventChannel.Cost);
-                                insertEventStmt.Bind(3, eventChannel.Organizer);
-
-                                insertEventStmt.Step();
-                            }
-
-                            Debug.WriteLine("Stored event channel.");
-                            break;
-                        case DataModel.Enums.ChannelType.SPORTS:
-                            Sports sportsChannel = (Sports)channel;
-
-                            // Speichere Sportgruppendaten.
-                            using (var insertSportsStmt = conn.Prepare("INSERT INTO Sports (Channel_Id, Cost, NumberOfParticipants) " +
-                                "VALUES (?, ?, ?);"))
-                            {
-                                insertSportsStmt.Bind(1, channel.Id);
-                                insertSportsStmt.Bind(2, sportsChannel.Cost);
-                                insertSportsStmt.Bind(3, sportsChannel.NumberOfParticipants);
-
-                                insertSportsStmt.Step();
-                            }
-
-                            Debug.WriteLine("Stored sports channel.");
-                            break;
-                        default:
-                            Debug.WriteLine("There is no subclass for channel type OTHER and STUDENT_GROUP, so storing is already complete.");
-                            break;
+                        throw new DatabaseException("Storing channel data in database has failed.");
                     }
-
-                    // Commit der Transaktion.
-                    using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                    finally
                     {
-                        statement.Step();
+                        mutex.ReleaseMutex();
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in StoreChannel. Exception message is: {0}.", sqlEx.Message);
-                    // Rollback der Transaktion.
-                    using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
-                    {
-                        statement.Step();
-                    }
-
-                    throw new DatabaseException("Storing channel data in database has failed.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Exception has occurred in StoreChannel. " +
-                        "Exception message is: {0}, and stack trace is {1}.", ex.Message, ex.StackTrace);
-                    // Rollback der Transaktion.
-                    using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
-                    {
-                        statement.Step();
-                    }
-
-                    throw new DatabaseException("Storing channel data in database has failed.");
-                }
-            }           
+                }    // Ende using block.
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }               
         }
 
         /// <summary>
@@ -163,43 +180,59 @@ namespace DataHandlingLayer.Database
                 return;
             }
 
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
-            {
-                try
-                {
-                    // Aktualisiere Daten in Kanal-Tabelle.
-                    using (var updateChannelStmt = conn.Prepare("UPDATE Channel SET Name=?, Description=?, " +
-                        "CreationDate=?, ModificationDate=?, Type=?, Term=?, Location=?, Dates=?, Contact=?, Website=?, Deleted=? " +
-                        "WHERE Id=?;"))
-                    {
-                        updateChannelStmt.Bind(1, channel.Name);
-                        updateChannelStmt.Bind(2, channel.Description);
-                        updateChannelStmt.Bind(3, DatabaseManager.DateTimeToSQLite(channel.CreationDate));
-                        updateChannelStmt.Bind(4, DatabaseManager.DateTimeToSQLite(channel.ModificationDate));
-                        updateChannelStmt.Bind(5, (int)channel.Type);
-                        updateChannelStmt.Bind(6, channel.Term);
-                        updateChannelStmt.Bind(7, channel.Locations);
-                        updateChannelStmt.Bind(8, channel.Dates);
-                        updateChannelStmt.Bind(9, channel.Contacts);
-                        updateChannelStmt.Bind(10, channel.Website);
-                        updateChannelStmt.Bind(11, (channel.Deleted) ? 1 : 0);
-                        updateChannelStmt.Bind(12, channel.Id);
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
 
-                        updateChannelStmt.Step();
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        // Aktualisiere Daten in Kanal-Tabelle.
+                        using (var updateChannelStmt = conn.Prepare("UPDATE Channel SET Name=?, Description=?, " +
+                            "CreationDate=?, ModificationDate=?, Type=?, Term=?, Location=?, Dates=?, Contact=?, Website=?, Deleted=? " +
+                            "WHERE Id=?;"))
+                        {
+                            updateChannelStmt.Bind(1, channel.Name);
+                            updateChannelStmt.Bind(2, channel.Description);
+                            updateChannelStmt.Bind(3, DatabaseManager.DateTimeToSQLite(channel.CreationDate));
+                            updateChannelStmt.Bind(4, DatabaseManager.DateTimeToSQLite(channel.ModificationDate));
+                            updateChannelStmt.Bind(5, (int)channel.Type);
+                            updateChannelStmt.Bind(6, channel.Term);
+                            updateChannelStmt.Bind(7, channel.Locations);
+                            updateChannelStmt.Bind(8, channel.Dates);
+                            updateChannelStmt.Bind(9, channel.Contacts);
+                            updateChannelStmt.Bind(10, channel.Website);
+                            updateChannelStmt.Bind(11, (channel.Deleted) ? 1 : 0);
+                            updateChannelStmt.Bind(12, channel.Id);
+
+                            updateChannelStmt.Step();
+                        }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in UpdateChannel. The message is: {0}." + sqlEx.Message);
-                    throw new DatabaseException("Update of the channel with id " + channel.Id + " has failed.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Exception has occurred in UpdateChannel. The message is: {0}, " +
-                        "and the stack trace is: {1}.", ex.Message, ex.StackTrace);
-                    throw new DatabaseException("Update of channel has failed.");
-                }
-            }       
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in UpdateChannel. The message is: {0}." + sqlEx.Message);
+                        throw new DatabaseException("Update of the channel with id " + channel.Id + " has failed.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Exception has occurred in UpdateChannel. The message is: {0}, " +
+                            "and the stack trace is: {1}.", ex.Message, ex.StackTrace);
+                        throw new DatabaseException("Update of channel has failed.");
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }   // Ende using Block.
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }              
         }
 
         /// <summary>
@@ -216,124 +249,140 @@ namespace DataHandlingLayer.Database
                 return;
             }
 
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
             {
-                try
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
-                    // Starte eine Transaktion.
-                    using (var statement = conn.Prepare("BEGIN TRANSACTION"))
+                    try
                     {
-                        statement.Step();
-                    }
+                        // Starte eine Transaktion.
+                        using (var statement = conn.Prepare("BEGIN TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
 
-                    // Setze Aktualisierungsquery für Kanal-Tabelle ab.
-                    using (var updateChannelStmt = conn.Prepare("UPDATE Channel " +
-                        "SET Name=?, Description=?, CreationDate=?, ModificationDate=?, " +
-                        "Type=?, Term=?, Location=?, Dates=?, Contact=?, Website=?, Deleted=? WHERE Id=?;"))
+                        // Setze Aktualisierungsquery für Kanal-Tabelle ab.
+                        using (var updateChannelStmt = conn.Prepare("UPDATE Channel " +
+                            "SET Name=?, Description=?, CreationDate=?, ModificationDate=?, " +
+                            "Type=?, Term=?, Location=?, Dates=?, Contact=?, Website=?, Deleted=? WHERE Id=?;"))
+                        {
+                            updateChannelStmt.Bind(1, channel.Name);
+                            updateChannelStmt.Bind(2, channel.Description);
+                            updateChannelStmt.Bind(3, DatabaseManager.DateTimeToSQLite(channel.CreationDate));
+                            updateChannelStmt.Bind(4, DatabaseManager.DateTimeToSQLite(channel.ModificationDate));
+                            updateChannelStmt.Bind(5, (int)channel.Type);
+                            updateChannelStmt.Bind(6, channel.Term);
+                            updateChannelStmt.Bind(7, channel.Locations);
+                            updateChannelStmt.Bind(8, channel.Dates);
+                            updateChannelStmt.Bind(9, channel.Contacts);
+                            updateChannelStmt.Bind(10, channel.Website);
+                            updateChannelStmt.Bind(11, (channel.Deleted) ? 1 : 0);
+                            updateChannelStmt.Bind(12, channel.Id);
+
+                            updateChannelStmt.Step();
+                        }
+
+                        // Aktualisiere auch Subklassen-Tabelle abhängig vom Typ des Kanals.
+                        switch (channel.Type)
+                        {
+                            case DataModel.Enums.ChannelType.LECTURE:
+                                Lecture lecture = (Lecture)channel;
+
+                                // Aktualisierung von Vorlesungs-Tabelle.
+                                using (var updateLectureStmt = conn.Prepare("UPDATE Lecture SET " +
+                                    "StartDate=?, EndDate=?, Lecturer=?, Assistant=? " +
+                                    "WHERE Channel_Id=?;"))
+                                {
+                                    updateLectureStmt.Bind(1, lecture.StartDate);
+                                    updateLectureStmt.Bind(2, lecture.EndDate);
+                                    updateLectureStmt.Bind(3, lecture.Lecturer);
+                                    updateLectureStmt.Bind(4, lecture.Assistant);
+                                    updateLectureStmt.Bind(5, channel.Id);
+
+                                    updateLectureStmt.Step();
+                                }
+
+                                Debug.WriteLine("Updated lecture.");
+                                break;
+                            case DataModel.Enums.ChannelType.EVENT:
+                                Event channelEvent = (Event)channel;
+
+                                // Aktualisierung von Event-Tabelle.
+                                using (var updateEventStmt = conn.Prepare("UPDATE Event SET Cost=?, Organizer=? " +
+                                    "WHERE Channel_Id=?;"))
+                                {
+                                    updateEventStmt.Bind(1, channelEvent.Cost);
+                                    updateEventStmt.Bind(2, channelEvent.Organizer);
+                                    updateEventStmt.Bind(3, channel.Id);
+
+                                    updateEventStmt.Step();
+                                }
+
+                                Debug.WriteLine("Updated event.");
+                                break;
+                            case DataModel.Enums.ChannelType.SPORTS:
+                                Sports channelSports = (Sports)channel;
+
+                                // Aktualisierung von Sports-Tabelle.
+                                using (var updateSportsStmt = conn.Prepare("UPDATE Sports SET Cost=?, NumberOfParticipants=? " +
+                                    "WHERE Channel_Id=?;"))
+                                {
+                                    updateSportsStmt.Bind(1, channelSports.Cost);
+                                    updateSportsStmt.Bind(2, channelSports.NumberOfParticipants);
+                                    updateSportsStmt.Bind(3, channel.Id);
+
+                                    updateSportsStmt.Step();
+                                }
+
+                                Debug.WriteLine("Updated sports.");
+                                break;
+                            default:
+                                Debug.WriteLine("There is no subclass for channel type OTHER and STUDENT_GROUP, so updating is already complete.");
+                                break;
+                        }
+
+                        // Commit der Transaktion.
+                        using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
                     {
-                        updateChannelStmt.Bind(1, channel.Name);
-                        updateChannelStmt.Bind(2, channel.Description);
-                        updateChannelStmt.Bind(3, DatabaseManager.DateTimeToSQLite(channel.CreationDate));
-                        updateChannelStmt.Bind(4, DatabaseManager.DateTimeToSQLite(channel.ModificationDate));
-                        updateChannelStmt.Bind(5, (int)channel.Type);
-                        updateChannelStmt.Bind(6, channel.Term);
-                        updateChannelStmt.Bind(7, channel.Locations);
-                        updateChannelStmt.Bind(8, channel.Dates);
-                        updateChannelStmt.Bind(9, channel.Contacts);
-                        updateChannelStmt.Bind(10, channel.Website);
-                        updateChannelStmt.Bind(11, (channel.Deleted) ? 1 : 0);
-                        updateChannelStmt.Bind(12, channel.Id);
-
-                        updateChannelStmt.Step();
+                        Debug.WriteLine("SQLiteException has occurred in UpdateChannelWithSubclass. The message is: {0}." + sqlEx.Message);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+                        throw new DatabaseException("Update of the channel with id " + channel.Id + " has failed.");
                     }
-
-                    // Aktualisiere auch Subklassen-Tabelle abhängig vom Typ des Kanals.
-                    switch (channel.Type)
+                    catch (Exception ex)
                     {
-                        case DataModel.Enums.ChannelType.LECTURE:
-                            Lecture lecture = (Lecture)channel;
-
-                            // Aktualisierung von Vorlesungs-Tabelle.
-                            using (var updateLectureStmt = conn.Prepare("UPDATE Lecture SET " +
-                                "StartDate=?, EndDate=?, Lecturer=?, Assistant=? " +
-                                "WHERE Channel_Id=?;"))
-                            {
-                                updateLectureStmt.Bind(1, lecture.StartDate);
-                                updateLectureStmt.Bind(2, lecture.EndDate);
-                                updateLectureStmt.Bind(3, lecture.Lecturer);
-                                updateLectureStmt.Bind(4, lecture.Assistant);
-                                updateLectureStmt.Bind(5, channel.Id);
-
-                                updateLectureStmt.Step();
-                            }
-
-                            Debug.WriteLine("Updated lecture.");
-                            break;
-                        case DataModel.Enums.ChannelType.EVENT:
-                            Event channelEvent = (Event)channel;
-
-                            // Aktualisierung von Event-Tabelle.
-                            using (var updateEventStmt = conn.Prepare("UPDATE Event SET Cost=?, Organizer=? " +
-                                "WHERE Channel_Id=?;"))
-                            {
-                                updateEventStmt.Bind(1, channelEvent.Cost);
-                                updateEventStmt.Bind(2, channelEvent.Organizer);
-                                updateEventStmt.Bind(3, channel.Id);
-
-                                updateEventStmt.Step();
-                            }
-
-                            Debug.WriteLine("Updated event.");
-                            break;
-                        case DataModel.Enums.ChannelType.SPORTS:
-                            Sports channelSports = (Sports)channel;
-
-                            // Aktualisierung von Sports-Tabelle.
-                            using (var updateSportsStmt = conn.Prepare("UPDATE Sports SET Cost=?, NumberOfParticipants=? " +
-                                "WHERE Channel_Id=?;"))
-                            {
-                                updateSportsStmt.Bind(1, channelSports.Cost);
-                                updateSportsStmt.Bind(2, channelSports.NumberOfParticipants);
-                                updateSportsStmt.Bind(3, channel.Id);
-
-                                updateSportsStmt.Step();
-                            }
-
-                            Debug.WriteLine("Updated sports.");
-                            break;
-                        default:
-                            Debug.WriteLine("There is no subclass for channel type OTHER and STUDENT_GROUP, so updating is already complete.");
-                            break;
+                        Debug.WriteLine("Exception has occurred in UpdateChannelWithSubclass. The message is: {0}, " +
+                            "and the stack trace is: {1}.", ex.Message, ex.StackTrace);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+                        throw new DatabaseException("Update of channel has failed.");
                     }
-
-                    // Commit der Transaktion.
-                    using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                    finally
                     {
-                        statement.Step();
+                        mutex.ReleaseMutex();
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in UpdateChannelWithSubclass. The message is: {0}." + sqlEx.Message);
-                    // Rollback der Transaktion.
-                    using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
-                    {
-                        statement.Step();
-                    }
-                    throw new DatabaseException("Update of the channel with id " + channel.Id + " has failed.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Exception has occurred in UpdateChannelWithSubclass. The message is: {0}, " +
-                        "and the stack trace is: {1}.", ex.Message, ex.StackTrace);
-                    // Rollback der Transaktion.
-                    using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
-                    {
-                        statement.Step();
-                    }
-                    throw new DatabaseException("Update of channel has failed.");
-                }
-            }          
+                }   // Ende using Block.
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }       
         }
 
         /// <summary>
@@ -346,33 +395,49 @@ namespace DataHandlingLayer.Database
         {
             List<Channel> channels = new List<Channel>();
 
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
             {
-                try
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
-                    // Frage zunächst Daten der Tabelle Kanal ab.
-                    using (var getChannelsStmt = conn.Prepare("SELECT * FROM Channel;"))
+                    try
                     {
-                        // Iteriere über Ergebnisse.
-                        while (getChannelsStmt.Step() == SQLiteResult.ROW)
+                        // Frage zunächst Daten der Tabelle Kanal ab.
+                        using (var getChannelsStmt = conn.Prepare("SELECT * FROM Channel;"))
                         {
-                            Channel channelTmp = retrieveChannelObjectFromStatement(conn, getChannelsStmt);
-                            channels.Add(channelTmp);
+                            // Iteriere über Ergebnisse.
+                            while (getChannelsStmt.Step() == SQLiteResult.ROW)
+                            {
+                                Channel channelTmp = retrieveChannelObjectFromStatement(conn, getChannelsStmt);
+                                channels.Add(channelTmp);
+                            }
                         }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in GetChannels. The message is: {0}." + sqlEx.Message);
-                    throw new DatabaseException("Get channels has failed.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in GetChannels. The message is: {0}, " +
-                        "and the stack trace: {1}." + ex.Message, ex.StackTrace);
-                    throw new DatabaseException("Get channels has failed.");
-                }
-            }         
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in GetChannels. The message is: {0}." + sqlEx.Message);
+                        throw new DatabaseException("Get channels has failed.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in GetChannels. The message is: {0}, " +
+                            "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                        throw new DatabaseException("Get channels has failed.");
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }   // Ende using Block.      
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
 
             Debug.WriteLine("Return a channel list with {0} elements.", channels.Count);
             return channels;
@@ -387,28 +452,44 @@ namespace DataHandlingLayer.Database
         /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Löschvorgang nicht erfolgreich ist.</exception>
         public void DeleteChannel(int channelId)
         {
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
             {
-                try
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
-                    using (var deleteChannelStmt = conn.Prepare(@"DELETE FROM Channel WHERE Id=?;"))
+                    try
                     {
-                        deleteChannelStmt.Bind(1, channelId);
-                        deleteChannelStmt.Step();
+                        using (var deleteChannelStmt = conn.Prepare(@"DELETE FROM Channel WHERE Id=?;"))
+                        {
+                            deleteChannelStmt.Bind(1, channelId);
+                            deleteChannelStmt.Step();
+                        }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in DeleteChannel. The message is: {0}." + sqlEx.Message);
-                    throw new DatabaseException("Delete channel has failed.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in DeleteChannel. The message is: {0}, " +
-                        "and the stack trace: {1}." + ex.Message, ex.StackTrace);
-                    throw new DatabaseException("Delete channel has failed.");
-                }
-            }         
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in DeleteChannel. The message is: {0}." + sqlEx.Message);
+                        throw new DatabaseException("Delete channel has failed.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in DeleteChannel. The message is: {0}, " +
+                            "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                        throw new DatabaseException("Delete channel has failed.");
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }      
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }   
         }
 
         /// <summary>
@@ -419,31 +500,47 @@ namespace DataHandlingLayer.Database
         /// <exception cref="DatabaseException">Wirft DatabaseException, wenn der Kanal nicht als gelöscht marktiert werden konnte.</exception>
         public void MarkChannelAsDeleted(int channelId)
         {
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
-            {
-                try
-                {
-                    using (var stmt = conn.Prepare(@"UPDATE Channel 
-                    SET Deleted=? WHERE Id=?;"))
-                    {
-                        stmt.Bind(1, 1);    // Setze Deleted auf true.
-                        stmt.Bind(2, channelId);
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
 
-                        stmt.Step();
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        using (var stmt = conn.Prepare(@"UPDATE Channel 
+                            SET Deleted=? WHERE Id=?;"))
+                        {
+                            stmt.Bind(1, 1);    // Setze Deleted auf true.
+                            stmt.Bind(2, channelId);
+
+                            stmt.Step();
+                        }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in MarkChannelAsDeleted. The message is: {0}." + sqlEx.Message);
-                    throw new DatabaseException("Mark channel as deleted failed. " + sqlEx.Message);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in MarkChannelAsDeleted. The message is: {0}, " +
-                        "and the stack trace: {1}." + ex.Message, ex.StackTrace);
-                    throw new DatabaseException("Mark channel as deleted failed. " + ex.Message);
-                }
-            }           
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in MarkChannelAsDeleted. The message is: {0}." + sqlEx.Message);
+                        throw new DatabaseException("Mark channel as deleted failed. " + sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in MarkChannelAsDeleted. The message is: {0}, " +
+                            "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                        throw new DatabaseException("Mark channel as deleted failed. " + ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }    
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }      
         }
 
         /// <summary>
@@ -456,52 +553,67 @@ namespace DataHandlingLayer.Database
         public Channel GetChannel(int channelId)
         {
             Channel channel = null;
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
 
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
             {
-                try
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
-                    // Frage Daten aus Kanal-Tabelle ab.
-                    using (var getChannelStmt = conn.Prepare("SELECT * FROM Channel WHERE Id=?;"))
+                    try
                     {
-                        getChannelStmt.Bind(1, channelId);
-
-                        // Wurde ein Eintrag zurückgeliefert?
-                        if (getChannelStmt.Step() == SQLiteResult.ROW)
+                        // Frage Daten aus Kanal-Tabelle ab.
+                        using (var getChannelStmt = conn.Prepare("SELECT * FROM Channel WHERE Id=?;"))
                         {
-                            channel = retrieveChannelObjectFromStatement(conn, getChannelStmt);
+                            getChannelStmt.Bind(1, channelId);
 
-                            // Ermittle noch die Anzahl an ungelesenen Announcements für diesen Kanal.
-                            string unreadAnnouncementsQuery = @"SELECT COUNT(*) AS UnreadAnnouncements 
-                            FROM Announcement AS a JOIN Message AS m ON a.Message_Id=m.Id 
-                            WHERE a.Channel_Id=? AND m.Read=?;";
-
-                            using (var stmt = conn.Prepare(unreadAnnouncementsQuery))
+                            // Wurde ein Eintrag zurückgeliefert?
+                            if (getChannelStmt.Step() == SQLiteResult.ROW)
                             {
-                                stmt.Bind(1, channelId);
-                                stmt.Bind(2, 0);    // Read soll false sein.
+                                channel = retrieveChannelObjectFromStatement(conn, getChannelStmt);
 
-                                stmt.Step();
+                                // Ermittle noch die Anzahl an ungelesenen Announcements für diesen Kanal.
+                                string unreadAnnouncementsQuery = @"SELECT COUNT(*) AS UnreadAnnouncements 
+                                    FROM Announcement AS a JOIN Message AS m ON a.Message_Id=m.Id 
+                                    WHERE a.Channel_Id=? AND m.Read=?;";
 
-                                int nrOfUnreadAnnouncements = Convert.ToInt32(stmt["UnreadAnnouncements"]);
-                                Debug.WriteLine("Retrieved number of unread announcements for channel with id {0}. " +
-                                    "The channel has {1} unread announcements.", channelId, nrOfUnreadAnnouncements);
-                                channel.NumberOfUnreadAnnouncements = nrOfUnreadAnnouncements;
+                                using (var stmt = conn.Prepare(unreadAnnouncementsQuery))
+                                {
+                                    stmt.Bind(1, channelId);
+                                    stmt.Bind(2, 0);    // Read soll false sein.
+
+                                    stmt.Step();
+
+                                    int nrOfUnreadAnnouncements = Convert.ToInt32(stmt["UnreadAnnouncements"]);
+                                    Debug.WriteLine("Retrieved number of unread announcements for channel with id {0}. " +
+                                        "The channel has {1} unread announcements.", channelId, nrOfUnreadAnnouncements);
+                                    channel.NumberOfUnreadAnnouncements = nrOfUnreadAnnouncements;
+                                }
                             }
                         }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in GetChannel. The message is: {0}." + sqlEx.Message);
-                    throw new DatabaseException("Get channel has failed.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in GetChannel. The message is: {0}, " +
-                        "and the stack trace: {1}." + ex.Message, ex.StackTrace);
-                    throw new DatabaseException("Get channel has failed.");
-                }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in GetChannel. The message is: {0}." + sqlEx.Message);
+                        throw new DatabaseException("Get channel has failed.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in GetChannel. The message is: {0}, " +
+                            "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                        throw new DatabaseException("Get channel has failed.");
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }   // Ende des using Block.
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
             }
             
             return channel;
@@ -515,34 +627,49 @@ namespace DataHandlingLayer.Database
         public List<Channel> GetSubscribedChannels()
         {
             List<Channel> channels = new List<Channel>();
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
 
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
             {
-                try
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
-                    // Frage alle Kanäle ab, die in SubscribedChannels eingetragen sind.
-                    using (var getSubscribedChannelsStmt = conn.Prepare("SELECT * FROM Channel WHERE Id IN (" +
-                        "SELECT Channel_Id AS Id FROM SubscribedChannels);"))
+                    try
                     {
-                        // Iteriere über Ergebnisse.
-                        while (getSubscribedChannelsStmt.Step() == SQLiteResult.ROW)
+                        // Frage alle Kanäle ab, die in SubscribedChannels eingetragen sind.
+                        using (var getSubscribedChannelsStmt = conn.Prepare("SELECT * FROM Channel WHERE Id IN (" +
+                            "SELECT Channel_Id AS Id FROM SubscribedChannels);"))
                         {
-                            Channel channelTmp = retrieveChannelObjectFromStatement(conn, getSubscribedChannelsStmt);
-                            channels.Add(channelTmp);
+                            // Iteriere über Ergebnisse.
+                            while (getSubscribedChannelsStmt.Step() == SQLiteResult.ROW)
+                            {
+                                Channel channelTmp = retrieveChannelObjectFromStatement(conn, getSubscribedChannelsStmt);
+                                channels.Add(channelTmp);
+                            }
                         }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in GetSubscribedChannels. The message is: {0}." + sqlEx.Message);
-                    throw new DatabaseException("Get subscribed channels has failed.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Exception has occurred in GetSubscribedChannels. The message is: {0}, " +
-                        "and the stack trace: {1}." + ex.Message, ex.StackTrace);
-                    throw new DatabaseException("Get subscribed channel has failed.");
-                }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in GetSubscribedChannels. The message is: {0}.", sqlEx.Message);
+                        throw new DatabaseException("Get subscribed channels has failed.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Exception has occurred in GetSubscribedChannels. The message is: {0}, " +
+                            "and the stack trace: {1}.", ex.Message, ex.StackTrace);
+                        throw new DatabaseException("Get subscribed channel has failed.");
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }   // Ende des using Block.
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
             }
 
             return channels;
@@ -555,29 +682,45 @@ namespace DataHandlingLayer.Database
         /// <exception cref="DatabaseException">Wirft DatabaseException, wenn das Markieren des Kanals als abonniert in der DB fehlschlägt.</exception>
         public void SubscribeChannel(int channelId)
         {
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
-            {
-                try
-                {
-                    using (var subscribeStmt = conn.Prepare(@"INSERT INTO SubscribedChannels (Channel_Id) VALUES (?);"))
-                    {
-                        subscribeStmt.Bind(1, channelId);
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
 
-                        subscribeStmt.Step();
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        using (var subscribeStmt = conn.Prepare(@"INSERT INTO SubscribedChannels (Channel_Id) VALUES (?);"))
+                        {
+                            subscribeStmt.Bind(1, channelId);
+
+                            subscribeStmt.Step();
+                        }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in SubscribeChannel. The message is: {0}." + sqlEx.Message);
-                    throw new DatabaseException("Subscribe channel has failed.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Exception has occurred in SubscribeChannel. The message is: {0}, " +
-                        "and the stack trace: {1}." + ex.Message, ex.StackTrace);
-                    throw new DatabaseException("Subscribe channel has failed.");
-                }
-            }       
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in SubscribeChannel. The message is: {0}.", sqlEx.Message);
+                        throw new DatabaseException("Subscribe channel has failed.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Exception has occurred in SubscribeChannel. The message is: {0}, " +
+                            "and the stack trace: {1}.", ex.Message, ex.StackTrace);
+                        throw new DatabaseException("Subscribe channel has failed.");
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }     
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }  
         }
 
         /// <summary>
@@ -586,29 +729,44 @@ namespace DataHandlingLayer.Database
         /// <param name="channelId">Die Id des Kanals, der deabonniert werden soll.</param>
         public void UnsubscribeChannel(int channelId)
         {
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
-            {
-                try
-                {
-                    using (var unsubscribeStmt = conn.Prepare(@"DELETE FROM SubscribedChannels WHERE Channel_Id=?;"))
-                    {
-                        unsubscribeStmt.Bind(1, channelId);
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
 
-                        unsubscribeStmt.Step();
-                        Debug.WriteLine("Unsubscribed from channel with id {0}.", channelId);
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        using (var unsubscribeStmt = conn.Prepare(@"DELETE FROM SubscribedChannels WHERE Channel_Id=?;"))
+                        {
+                            unsubscribeStmt.Bind(1, channelId);
+
+                            unsubscribeStmt.Step();
+                            Debug.WriteLine("Unsubscribed from channel with id {0}.", channelId);
+                        }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    // Hier keine Abbildung auf DatabaseException.
-                    Debug.WriteLine("SQLiteException has occurred in UnsubscribeChannel. The message is: {0}." + sqlEx.Message);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Exception has occurred in UnubscribeChannel. The message is: {0}, " +
-                        "and the stack trace: {1}." + ex.Message, ex.StackTrace);
-                }
-            }       
+                    catch (SQLiteException sqlEx)
+                    {
+                        // Hier keine Abbildung auf DatabaseException.
+                        Debug.WriteLine("SQLiteException has occurred in UnsubscribeChannel. The message is: {0}.", sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Exception has occurred in UnubscribeChannel. The message is: {0}, " +
+                            "and the stack trace: {1}.", ex.Message, ex.StackTrace);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }       
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+            }
         }
 
         /// <summary>
@@ -619,31 +777,47 @@ namespace DataHandlingLayer.Database
         /// <exception cref="DatabaseException">Wirft DatabaseException, wenn die Prüfung fehlschlägt.</exception>
         public bool IsChannelSubscribed(int channelId)
         {
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
-            {
-                try
-                {
-                    using (var stmt = conn.Prepare(@"SELECT * FROM SubscribedChannels WHERE Channel_Id=? LIMIT 1;"))
-                    {
-                        stmt.Bind(1, channelId);
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
 
-                        if (stmt.Step() == SQLiteResult.ROW)
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        using (var stmt = conn.Prepare(@"SELECT * FROM SubscribedChannels WHERE Channel_Id=? LIMIT 1;"))
                         {
-                            return true;
+                            stmt.Bind(1, channelId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                return true;
+                            }
                         }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in IsChannelSubscribed. The message is: {0}." + sqlEx.Message);
-                    throw new DatabaseException("Check of subscription status of channel has failed.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Exception has occurred in IsChannelSubscribed. The message is: {0}, " +
-                        "and the stack trace: {1}." + ex.Message, ex.StackTrace);
-                    throw new DatabaseException("Check of subscription status of channel has failed.");
-                }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in IsChannelSubscribed. The message is: {0}.", sqlEx.Message);
+                        throw new DatabaseException("Check of subscription status of channel has failed.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Exception has occurred in IsChannelSubscribed. The message is: {0}, " +
+                            "and the stack trace: {1}.", ex.Message, ex.StackTrace);
+                        throw new DatabaseException("Check of subscription status of channel has failed.");
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }   // Ende des using Block.
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
             }
             
             return false;
@@ -675,12 +849,12 @@ namespace DataHandlingLayer.Database
                 catch (SQLiteException sqlEx)
                 {
                     Debug.WriteLine("SQLiteException has occurred in GetDateOfLastChannelListUpdate. The message is: {0}, " +
-                        "and the stack trace: {1}." + sqlEx.Message, sqlEx.StackTrace);
+                        "and the stack trace: {1}.", sqlEx.Message, sqlEx.StackTrace);
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine("Exception has occurred in GetDateOfLastChannelListUpdate. The message is: {0}, " +
-                        "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                        "and the stack trace: {1}.", ex.Message, ex.StackTrace);
                 }
             }
             
@@ -691,51 +865,67 @@ namespace DataHandlingLayer.Database
         /// Setzt das Datum der letzten Aktualisierung der Kanäle, die in der Anwendung verwaltet werden.
         /// </summary>
         /// <param name="lastUpdate">Das Datum der letzten Änderung in Form eines DateTime Objekts.</param>
-        /// /// <exception cref="DatabaseException">Wirft DatabaseException, wenn das Setzen des letzten Änderungsdatums fehlschlägt.</exception>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn das Setzen des letzten Änderungsdatums fehlschlägt.</exception>
         public void SetDateOfLastChannelListUpdate(DateTime lastUpdate)
         {
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
             {
-                try
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
-                    // Frage zunächst ab, ob es schon ein Änderungsdatum in der Tabelle gibt.
-                    DateTime tableEntry = GetDateOfLastChannelListUpdate();
-                    if (tableEntry == DateTime.MinValue)
+                    try
                     {
-                        // Noch kein Eintrag in Tabelle, füge also einen ein.
-                        using (var statement = conn.Prepare(@"INSERT INTO LastUpdateOnChannelsList (Id, LastUpdate) VALUES (?,?);"))
+                        // Frage zunächst ab, ob es schon ein Änderungsdatum in der Tabelle gibt.
+                        DateTime tableEntry = GetDateOfLastChannelListUpdate();
+                        if (tableEntry == DateTime.MinValue)
                         {
-                            statement.Bind(1, 0);
-                            statement.Bind(2, DatabaseManager.DateTimeToSQLite(lastUpdate));
+                            // Noch kein Eintrag in Tabelle, füge also einen ein.
+                            using (var statement = conn.Prepare(@"INSERT INTO LastUpdateOnChannelsList (Id, LastUpdate) VALUES (?,?);"))
+                            {
+                                statement.Bind(1, 0);
+                                statement.Bind(2, DatabaseManager.DateTimeToSQLite(lastUpdate));
 
-                            statement.Step();
+                                statement.Step();
+                            }
                         }
-                    }
-                    else
-                    {
-                        // Aktualisiere bereits vorhandenen Eintrag.
-                        using (var statement = conn.Prepare(@"  UPDATE LastUpdateOnChannelsList 
+                        else
+                        {
+                            // Aktualisiere bereits vorhandenen Eintrag.
+                            using (var statement = conn.Prepare(@"  UPDATE LastUpdateOnChannelsList 
                                                             SET LastUpdate=? WHERE Id=0;"))
-                        {
-                            statement.Bind(1, DatabaseManager.DateTimeToSQLite(lastUpdate));
+                            {
+                                statement.Bind(1, DatabaseManager.DateTimeToSQLite(lastUpdate));
 
-                            statement.Step();
+                                statement.Step();
+                            }
                         }
-                    }
 
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in SetDateOfLastChannelListUpdate. The message is: {0}." + sqlEx.Message);
-                    throw new DatabaseException("SetDateOfLastChannelListUpdate channel has failed.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Exception has occurred in SetDateOfLastChannelListUpdate. The message is: {0}, " +
-                        "and the stack trace: {1}." + ex.Message, ex.StackTrace);
-                    throw new DatabaseException("Setting the date of the last update on the channel list has failed.");
-                }
-            }       
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in SetDateOfLastChannelListUpdate. The message is: {0}.", sqlEx.Message);
+                        throw new DatabaseException("SetDateOfLastChannelListUpdate channel has failed.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Exception has occurred in SetDateOfLastChannelListUpdate. The message is: {0}, " +
+                            "and the stack trace: {1}.", ex.Message, ex.StackTrace);
+                        throw new DatabaseException("Setting the date of the last update on the channel list has failed.");
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }   // Ende des using Block.       
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
         }
 
         /// <summary>
@@ -747,58 +937,74 @@ namespace DataHandlingLayer.Database
         /// <exception cref="DatabaseException">Wirft DatabaseException, wenn der Moderator nicht hinzugefügt werden konnte.</exception>
         public void AddModeratorToChannel(int channelId, int moderatorId, bool isActive)
         {
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
             {
-                try
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
-                    // Prüfe, ob bereits ein Eintrag für diesen Moderator in der Datenbank ist.
-                    using (var checkStmt = conn.Prepare(@"SELECT * FROM ModeratorChannel 
-                    WHERE Channel_Id=? AND Moderator_Id=?;"))
+                    try
                     {
-                        checkStmt.Bind(1, channelId);
-                        checkStmt.Bind(2, moderatorId);
-
-                        if (checkStmt.Step() == SQLiteResult.ROW)
-                        {
-                            // Aktualisiere das IsActive Feld des bestehenden Eintrags.
-                            using (var stmt = conn.Prepare(@"UPDATE ModeratorChannel 
-                            SET Active=? 
+                        // Prüfe, ob bereits ein Eintrag für diesen Moderator in der Datenbank ist.
+                        using (var checkStmt = conn.Prepare(@"SELECT * FROM ModeratorChannel 
                             WHERE Channel_Id=? AND Moderator_Id=?;"))
-                            {
-                                stmt.Bind(1, (isActive) ? 1 : 0);
-                                stmt.Bind(2, channelId);
-                                stmt.Bind(3, moderatorId);
-
-                                stmt.Step();
-                            }
-                        }
-                        else
                         {
-                            // Füge den Eintrag ein.
-                            using (var stmt = conn.Prepare(@"INSERT INTO ModeratorChannel (Channel_Id, Moderator_Id, Active) 
-                            VALUES (?,?,?);"))
-                            {
-                                stmt.Bind(1, channelId);
-                                stmt.Bind(2, moderatorId);
-                                stmt.Bind(3, (isActive) ? 1 : 0);
+                            checkStmt.Bind(1, channelId);
+                            checkStmt.Bind(2, moderatorId);
 
-                                stmt.Step();
+                            if (checkStmt.Step() == SQLiteResult.ROW)
+                            {
+                                // Aktualisiere das IsActive Feld des bestehenden Eintrags.
+                                using (var stmt = conn.Prepare(@"UPDATE ModeratorChannel 
+                                    SET Active=? 
+                                    WHERE Channel_Id=? AND Moderator_Id=?;"))
+                                {
+                                    stmt.Bind(1, (isActive) ? 1 : 0);
+                                    stmt.Bind(2, channelId);
+                                    stmt.Bind(3, moderatorId);
+
+                                    stmt.Step();
+                                }
+                            }
+                            else
+                            {
+                                // Füge den Eintrag ein.
+                                using (var stmt = conn.Prepare(@"INSERT INTO ModeratorChannel (Channel_Id, Moderator_Id, Active) 
+                                    VALUES (?,?,?);"))
+                                {
+                                    stmt.Bind(1, channelId);
+                                    stmt.Bind(2, moderatorId);
+                                    stmt.Bind(3, (isActive) ? 1 : 0);
+
+                                    stmt.Step();
+                                }
                             }
                         }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in AddModeratorToChannel. The message is: {0}." + sqlEx.Message);
-                    throw new DatabaseException("AddModeratorToChannel channel has failed.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Exception has occurred in AddModeratorToChannel. The message is: {0}, " +
-                        "and the stack trace: {1}." + ex.Message, ex.StackTrace);
-                    throw new DatabaseException("AddModeratorToChannel channel has failed.");
-                }
-            }       
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in AddModeratorToChannel. The message is: {0}.", sqlEx.Message);
+                        throw new DatabaseException("AddModeratorToChannel channel has failed.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Exception has occurred in AddModeratorToChannel. The message is: {0}, " +
+                            "and the stack trace: {1}.", ex.Message, ex.StackTrace);
+                        throw new DatabaseException("AddModeratorToChannel channel has failed.");
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }   // Ende des using Block.       
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
         }
 
         /// <summary>
@@ -810,29 +1016,44 @@ namespace DataHandlingLayer.Database
         ///     Moderatoren gelöscht werden sollen.</param>
         public void RemoveAllModeratorsFromChannel(int channelId)
         {
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
-            {
-                try
-                {
-                    using (var stmt = conn.Prepare(@"DELETE FROM ModeratorChannel WHERE Channel_Id=?;"))
-                    {
-                        stmt.Bind(1, channelId);
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
 
-                        stmt.Step();
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        using (var stmt = conn.Prepare(@"DELETE FROM ModeratorChannel WHERE Channel_Id=?;"))
+                        {
+                            stmt.Bind(1, channelId);
+
+                            stmt.Step();
+                        }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    // Werfe keine Exception. Schlägt Löschvorgang fehl bleiben Einträge zwar lokal gespeichert,
-                    // werden spätestens aber entfernt, wenn der Kanal gelöscht wird.
-                    Debug.WriteLine("RemoveAllModerators from channel has failed. Message is {0}.", sqlEx.Message);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("RemoveAllModerators from channel has failed. Message is {0} and stack trace is {1}.",
-                        ex.Message, ex.StackTrace);
-                }
-            }          
+                    catch (SQLiteException sqlEx)
+                    {
+                        // Werfe keine Exception. Schlägt Löschvorgang fehl bleiben Einträge zwar lokal gespeichert,
+                        // werden spätestens aber entfernt, wenn der Kanal gelöscht wird.
+                        Debug.WriteLine("RemoveAllModerators from channel has failed. Message is {0}.", sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("RemoveAllModerators from channel has failed. Message is {0} and stack trace is {1}.",
+                            ex.Message, ex.StackTrace);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }          
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+            }   
         }
 
         /// <summary>
@@ -846,46 +1067,62 @@ namespace DataHandlingLayer.Database
         {
             List<Moderator> responsibleModerators = new List<Moderator>();
 
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
             {
-                try
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
-                    using (var stmt = conn.Prepare(@"SELECT * 
-                    FROM Moderator AS m JOIN ModeratorChannel AS mc ON m.Id=mc.Moderator_Id 
-                    WHERE mc.Channel_Id=? AND mc.Active=?;"))
+                    try
                     {
-                        stmt.Bind(1, channelId);
-                        stmt.Bind(2, 1);
-
-                        while (stmt.Step() == SQLiteResult.ROW)
+                        using (var stmt = conn.Prepare(@"SELECT * 
+                            FROM Moderator AS m JOIN ModeratorChannel AS mc ON m.Id=mc.Moderator_Id 
+                            WHERE mc.Channel_Id=? AND mc.Active=?;"))
                         {
-                            int id = Convert.ToInt32(stmt["Id"]);
-                            string firstName = (string)stmt["FirstName"];
-                            string lastName = (string)stmt["LastName"];
-                            string email = (string)stmt["Email"];
+                            stmt.Bind(1, channelId);
+                            stmt.Bind(2, 1);
 
-                            Moderator moderator = new Moderator()
+                            while (stmt.Step() == SQLiteResult.ROW)
                             {
-                                Id = id,
-                                FirstName = firstName,
-                                LastName = lastName,
-                                Email = email
-                            };
-                            responsibleModerators.Add(moderator);
+                                int id = Convert.ToInt32(stmt["Id"]);
+                                string firstName = (string)stmt["FirstName"];
+                                string lastName = (string)stmt["LastName"];
+                                string email = (string)stmt["Email"];
+
+                                Moderator moderator = new Moderator()
+                                {
+                                    Id = id,
+                                    FirstName = firstName,
+                                    LastName = lastName,
+                                    Email = email
+                                };
+                                responsibleModerators.Add(moderator);
+                            }
                         }
                     }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in GetResponsibleModeratorsForChannel. The message is: {0}.", sqlEx.Message);
+                        throw new DatabaseException("GetResponsibleModeratorsForChannel channel has failed.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Exception has occurred in GetResponsibleModeratorsForChannel. The message is: {0}, " +
+                            "and the stack trace: {1}.", ex.Message, ex.StackTrace);
+                        throw new DatabaseException("GetResponsibleModeratorsForChannel channel has failed.");
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
                 }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in GetResponsibleModeratorsForChannel. The message is: {0}." + sqlEx.Message);
-                    throw new DatabaseException("GetResponsibleModeratorsForChannel channel has failed.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Exception has occurred in GetResponsibleModeratorsForChannel. The message is: {0}, " +
-                        "and the stack trace: {1}." + ex.Message, ex.StackTrace);
-                    throw new DatabaseException("GetResponsibleModeratorsForChannel channel has failed.");
-                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
             }
             
             return responsibleModerators;
@@ -904,73 +1141,89 @@ namespace DataHandlingLayer.Database
                 return;
             }
 
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
             {
-                try
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
-                    // Starte eine Transaktion.
-                    using (var statement = conn.Prepare("BEGIN TRANSACTION"))
+                    try
                     {
-                        statement.Step();
-                    }
+                        // Starte eine Transaktion.
+                        using (var statement = conn.Prepare("BEGIN TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
 
-                    // Speichere Daten in Message Tabelle.
-                    using (var insertMessageStmt = conn.Prepare(@"INSERT INTO Message (Id, Text, CreationDate, Priority, Read) 
-                    VALUES (?,?,?,?,?);"))
+                        // Speichere Daten in Message Tabelle.
+                        using (var insertMessageStmt = conn.Prepare(@"INSERT INTO Message (Id, Text, CreationDate, Priority, Read) 
+                            VALUES (?,?,?,?,?);"))
+                        {
+                            insertMessageStmt.Bind(1, announcement.Id);
+                            insertMessageStmt.Bind(2, announcement.Text);
+                            insertMessageStmt.Bind(3, DatabaseManager.DateTimeToSQLite(announcement.CreationDate));
+                            insertMessageStmt.Bind(4, (int)announcement.MessagePriority);
+                            insertMessageStmt.Bind(5, 0);   // Nachricht noch nicht gelesen.
+
+                            insertMessageStmt.Step();
+                        }
+
+                        // Speichere Daten in Announcement Tabelle.
+                        using (var insertAnnouncementStmt = conn.Prepare(@"INSERT INTO Announcement (MessageNumber,
+                            Channel_Id, Title, Author_Moderator_Id, Message_Id) VALUES (?,?,?,?,?);"))
+                        {
+                            insertAnnouncementStmt.Bind(1, announcement.MessageNumber);
+                            insertAnnouncementStmt.Bind(2, announcement.ChannelId);
+                            insertAnnouncementStmt.Bind(3, announcement.Title);
+                            insertAnnouncementStmt.Bind(4, announcement.AuthorId);
+                            insertAnnouncementStmt.Bind(5, announcement.Id);
+
+                            insertAnnouncementStmt.Step();
+                        }
+
+                        // Commit der Transaktion.
+                        using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                        {
+                            statement.Step();
+                            Debug.WriteLine("Announcement with id {0} stored.", announcement.Id);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
                     {
-                        insertMessageStmt.Bind(1, announcement.Id);
-                        insertMessageStmt.Bind(2, announcement.Text);
-                        insertMessageStmt.Bind(3, DatabaseManager.DateTimeToSQLite(announcement.CreationDate));
-                        insertMessageStmt.Bind(4, (int)announcement.MessagePriority);
-                        insertMessageStmt.Bind(5, 0);   // Nachricht noch nicht gelesen.
+                        Debug.WriteLine("SQLiteException has occurred in StoreAnnouncement. Exception message is: {0}.", sqlEx.Message);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
 
-                        insertMessageStmt.Step();
+                        throw new DatabaseException("Storing announcement data in database has failed.");
                     }
-
-                    // Speichere Daten in Announcement Tabelle.
-                    using (var insertAnnouncementStmt = conn.Prepare(@"INSERT INTO Announcement (MessageNumber,
-                    Channel_Id, Title, Author_Moderator_Id, Message_Id) VALUES (?,?,?,?,?);"))
+                    catch (Exception ex)
                     {
-                        insertAnnouncementStmt.Bind(1, announcement.MessageNumber);
-                        insertAnnouncementStmt.Bind(2, announcement.ChannelId);
-                        insertAnnouncementStmt.Bind(3, announcement.Title);
-                        insertAnnouncementStmt.Bind(4, announcement.AuthorId);
-                        insertAnnouncementStmt.Bind(5, announcement.Id);
+                        Debug.WriteLine("Exception has occurred in StoreAnnouncement. " +
+                            "Exception message is: {0}, and stack trace is {1}.", ex.Message, ex.StackTrace);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
 
-                        insertAnnouncementStmt.Step();
+                        throw new DatabaseException("Storing announcement data in database has failed.");
                     }
-
-                    // Commit der Transaktion.
-                    using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                    finally
                     {
-                        statement.Step();
-                        Debug.WriteLine("Announcement with id {0} stored.", announcement.Id);
+                        mutex.ReleaseMutex();
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in StoreAnnouncement. Exception message is: {0}.", sqlEx.Message);
-                    // Rollback der Transaktion.
-                    using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
-                    {
-                        statement.Step();
-                    }
-
-                    throw new DatabaseException("Storing announcement data in database has failed.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Exception has occurred in StoreAnnouncement. " +
-                        "Exception message is: {0}, and stack trace is {1}.", ex.Message, ex.StackTrace);
-                    // Rollback der Transaktion.
-                    using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
-                    {
-                        statement.Step();
-                    }
-
-                    throw new DatabaseException("Storing announcement data in database has failed.");
-                }
-            }        
+                }   // Ende des using Block.        
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
         }
 
         /// <summary>
@@ -986,79 +1239,95 @@ namespace DataHandlingLayer.Database
                 return;
             }
 
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
             {
-                try
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
-                    // Starte eine Transaktion.
-                    using (var statement = conn.Prepare("BEGIN TRANSACTION"))
+                    try
                     {
-                        statement.Step();
+                        // Starte eine Transaktion.
+                        using (var statement = conn.Prepare("BEGIN TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+
+                        // Statement für die Message-Tabelle.
+                        var insertMessageStmt = conn.Prepare(@"INSERT INTO Message (Id, Text,
+                            CreationDate, Priority, Read) VALUES (?,?,?,?,?);");
+                        // Statement für die Announcement-Tabelle.
+                        var insertAnnouncementStmt = conn.Prepare(@"INSERT INTO Announcement (MessageNumber,
+                            Channel_Id, Title, Author_Moderator_Id, Message_Id) VALUES (?,?,?,?,?);");
+
+                        // Führe insert-Statements durch.
+                        foreach (Announcement announcement in announcements)
+                        {
+                            insertMessageStmt.Bind(1, announcement.Id);
+                            insertMessageStmt.Bind(2, announcement.Text);
+                            insertMessageStmt.Bind(3, DatabaseManager.DateTimeToSQLite(announcement.CreationDate));
+                            insertMessageStmt.Bind(4, (int)announcement.MessagePriority);
+                            insertMessageStmt.Bind(5, 0);   // Nachricht noch nicht gelesen.
+
+                            if (insertMessageStmt.Step() != SQLiteResult.DONE)
+                                Debug.WriteLine("Failed to store the current announcement with id {0}.", announcement.Id);
+
+                            insertAnnouncementStmt.Bind(1, announcement.MessageNumber);
+                            insertAnnouncementStmt.Bind(2, announcement.ChannelId);
+                            insertAnnouncementStmt.Bind(3, announcement.Title);
+                            insertAnnouncementStmt.Bind(4, announcement.AuthorId);
+                            insertAnnouncementStmt.Bind(5, announcement.Id);
+
+                            if (insertAnnouncementStmt.Step() != SQLiteResult.DONE)
+                                Debug.WriteLine("Failed to store the current announcement with id {0}.", announcement.Id);
+
+                            insertMessageStmt.Reset();
+                            insertAnnouncementStmt.Reset();
+                        }
+
+                        // Commit der Transaktion.
+                        using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                        {
+                            statement.Step();
+                            Debug.WriteLine("Stored {0} announcements in the database.", announcements.Count);
+                        }
                     }
-
-                    // Statement für die Message-Tabelle.
-                    var insertMessageStmt = conn.Prepare(@"INSERT INTO Message (Id, Text,
-                    CreationDate, Priority, Read) VALUES (?,?,?,?,?);");
-                    // Statement für die Announcement-Tabelle.
-                    var insertAnnouncementStmt = conn.Prepare(@"INSERT INTO Announcement (MessageNumber,
-                    Channel_Id, Title, Author_Moderator_Id, Message_Id) VALUES (?,?,?,?,?);");
-
-                    // Führe insert-Statements durch.
-                    foreach (Announcement announcement in announcements)
+                    catch (SQLiteException sqlEx)
                     {
-                        insertMessageStmt.Bind(1, announcement.Id);
-                        insertMessageStmt.Bind(2, announcement.Text);
-                        insertMessageStmt.Bind(3, DatabaseManager.DateTimeToSQLite(announcement.CreationDate));
-                        insertMessageStmt.Bind(4, (int)announcement.MessagePriority);
-                        insertMessageStmt.Bind(5, 0);   // Nachricht noch nicht gelesen.
+                        Debug.WriteLine("SQLiteException has occurred in BulkInsertOfAnnouncements. Exception message is: {0}.", sqlEx.Message);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
 
-                        if (insertMessageStmt.Step() != SQLiteResult.DONE)
-                            Debug.WriteLine("Failed to store the current announcement with id {0}.", announcement.Id);
-
-                        insertAnnouncementStmt.Bind(1, announcement.MessageNumber);
-                        insertAnnouncementStmt.Bind(2, announcement.ChannelId);
-                        insertAnnouncementStmt.Bind(3, announcement.Title);
-                        insertAnnouncementStmt.Bind(4, announcement.AuthorId);
-                        insertAnnouncementStmt.Bind(5, announcement.Id);
-
-                        if (insertAnnouncementStmt.Step() != SQLiteResult.DONE)
-                            Debug.WriteLine("Failed to store the current announcement with id {0}.", announcement.Id);
-
-                        insertMessageStmt.Reset();
-                        insertAnnouncementStmt.Reset();
+                        throw new DatabaseException("Storing announcement data in database has failed.");
                     }
-
-                    // Commit der Transaktion.
-                    using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                    catch (Exception ex)
                     {
-                        statement.Step();
-                        Debug.WriteLine("Stored {0} announcements in the database.", announcements.Count);
-                    }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException has occurred in BulkInsertOfAnnouncements. Exception message is: {0}.", sqlEx.Message);
-                    // Rollback der Transaktion.
-                    using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
-                    {
-                        statement.Step();
-                    }
+                        Debug.WriteLine("Exception has occurred in BulkInsertOfAnnouncements. " +
+                            "Exception message is: {0}, and stack trace is {1}.", ex.Message, ex.StackTrace);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
 
-                    throw new DatabaseException("Storing announcement data in database has failed.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Exception has occurred in BulkInsertOfAnnouncements. " +
-                        "Exception message is: {0}, and stack trace is {1}.", ex.Message, ex.StackTrace);
-                    // Rollback der Transaktion.
-                    using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
-                    {
-                        statement.Step();
+                        throw new DatabaseException("Storing announcement data in database has failed.");
                     }
-
-                    throw new DatabaseException("Storing announcement data in database has failed.");
-                }
-            }   // Ende using Block         
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }   // Ende using Block     
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }       
         }
 
         /// <summary>
@@ -1068,36 +1337,51 @@ namespace DataHandlingLayer.Database
         /// <param name="channelId">Die Id des Kanals dessen Announcements gelöscht werden sollen.</param>
         public void DeleteAllAnnouncementsOfChannel(int channelId)
         {
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
-            {
-                try
-                {
-                    // Lösche die Einträge aus der Message Tabelle, für die 
-                    // es einen entsprechenden Eintrag in der Announcement-Tabelle für den Kanal gibt.
-                    // Die entsprechenden Announcement-Einträge werden dann automatisch gelöscht (CASCADE).
-                    using (var deleteMsgStmt = conn.Prepare(@"DELETE FROM Message 
-                    WHERE Id IN (
-                        SELECT Message_Id as Id 
-                        FROM Announcement 
-                        WHERE Channel_Id=?
-                    );"))
-                    {
-                        deleteMsgStmt.Bind(1, channelId);
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
 
-                        deleteMsgStmt.Step();
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        // Lösche die Einträge aus der Message Tabelle, für die 
+                        // es einen entsprechenden Eintrag in der Announcement-Tabelle für den Kanal gibt.
+                        // Die entsprechenden Announcement-Einträge werden dann automatisch gelöscht (CASCADE).
+                        using (var deleteMsgStmt = conn.Prepare(@"DELETE FROM Message 
+                            WHERE Id IN (
+                                SELECT Message_Id as Id 
+                                FROM Announcement 
+                                WHERE Channel_Id=?
+                            );"))
+                        {
+                            deleteMsgStmt.Bind(1, channelId);
+
+                            deleteMsgStmt.Step();
+                        }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    // Keine Abbildung auf eine DatabaseException bei dieser Operation.
-                    Debug.WriteLine("DeleteAllAnnouncementsOfChannel has failed. The message is: {0}.", sqlEx.Message);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("DeleteAllAnnouncementsOfChannel has failed. The message is: {0} and stack trace is {1}.",
-                        ex.Message, ex.StackTrace);
-                }
-            }          
+                    catch (SQLiteException sqlEx)
+                    {
+                        // Keine Abbildung auf eine DatabaseException bei dieser Operation.
+                        Debug.WriteLine("DeleteAllAnnouncementsOfChannel has failed. The message is: {0}.", sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("DeleteAllAnnouncementsOfChannel has failed. The message is: {0} and stack trace is {1}.",
+                            ex.Message, ex.StackTrace);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }   // Ende des using Block.    
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+            } 
         }
 
         /// <summary>
@@ -1111,48 +1395,64 @@ namespace DataHandlingLayer.Database
         {
             Dictionary<int, int> amountOfUnreadMsgMap = new Dictionary<int, int>();
 
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
             {
-                try
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
-                    // Frage zu allen abonnierten Kanälen die ungelesenen Nachrichten ab und zähle sie.
-                    string query = @"SELECT a.Channel_Id AS Channel_Id, COUNT(*) AS NrUnreadMessages 
-                    FROM Message AS m JOIN Announcement AS a ON m.Id=a.Message_Id
-                    WHERE a.Channel_Id IN (
-                            SELECT Channel_Id 
-                            FROM SubscribedChannels)
-                          AND m.Read=? 
-                    GROUP BY a.Channel_Id;";
-
-                    using (var stmt = conn.Prepare(query))
+                    try
                     {
-                        stmt.Bind(1, 0);    // Nachrichten, die nicht als gelesen markiert sind.
+                        // Frage zu allen abonnierten Kanälen die ungelesenen Nachrichten ab und zähle sie.
+                        string query = @"SELECT a.Channel_Id AS Channel_Id, COUNT(*) AS NrUnreadMessages 
+                            FROM Message AS m JOIN Announcement AS a ON m.Id=a.Message_Id
+                            WHERE a.Channel_Id IN (
+                                    SELECT Channel_Id 
+                                    FROM SubscribedChannels)
+                                AND m.Read=? 
+                            GROUP BY a.Channel_Id;";
 
-                        // Iteriere über Ergebnisse.
-                        while (stmt.Step() == SQLiteResult.ROW)
+                        using (var stmt = conn.Prepare(query))
                         {
-                            int channelId = Convert.ToInt32(stmt["Channel_Id"]);
-                            int amountOfUnreadMsg = Convert.ToInt32(stmt["NrUnreadMessages"]);
+                            stmt.Bind(1, 0);    // Nachrichten, die nicht als gelesen markiert sind.
 
-                            // Speichere das Tupel im Verzeichnis.
-                            amountOfUnreadMsgMap.Add(channelId, amountOfUnreadMsg);
+                            // Iteriere über Ergebnisse.
+                            while (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                int channelId = Convert.ToInt32(stmt["Channel_Id"]);
+                                int amountOfUnreadMsg = Convert.ToInt32(stmt["NrUnreadMessages"]);
+
+                                // Speichere das Tupel im Verzeichnis.
+                                amountOfUnreadMsgMap.Add(channelId, amountOfUnreadMsg);
+                            }
                         }
-                    }
 
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("DetermineAmountOfUnreadAnnouncementForMyChannels has failed. The message is: {0}.", sqlEx.Message);
-                    throw new DatabaseException(sqlEx.Message);
-                }
-                catch (DatabaseException ex)
-                {
-                    Debug.WriteLine("DetermineAmountOfUnreadAnnouncementForMyChannels has failed. The message is: {0} and stack trace is {1}.",
-                        ex.Message, ex.StackTrace);
-                    throw new DatabaseException(ex.Message);
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("DetermineAmountOfUnreadAnnouncementForMyChannels has failed. The message is: {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (DatabaseException ex)
+                    {
+                        Debug.WriteLine("DetermineAmountOfUnreadAnnouncementForMyChannels has failed. The message is: {0} and stack trace is {1}.",
+                            ex.Message, ex.StackTrace);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
                 }
             }
-            
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+
             return amountOfUnreadMsgMap;
         }
 
@@ -1167,47 +1467,63 @@ namespace DataHandlingLayer.Database
         {
             List<Announcement> announcements = new List<Announcement>();
 
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
             {
-                try
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
-                    string query = @"SELECT * 
-                    FROM Message AS m JOIN Announcement AS a ON m.Id=a.Message_Id 
-                    WHERE Channel_Id=?;";
-
-                    using (var stmt = conn.Prepare(query))
+                    try
                     {
-                        stmt.Bind(1, channelId);
+                        string query = @"SELECT * 
+                            FROM Message AS m JOIN Announcement AS a ON m.Id=a.Message_Id 
+                            WHERE Channel_Id=?;";
 
-                        while (stmt.Step() == SQLiteResult.ROW)
+                        using (var stmt = conn.Prepare(query))
                         {
-                            int id = Convert.ToInt32(stmt["Id"]);
-                            string text = (string)stmt["Text"];
-                            DateTime creationDate = DatabaseManager.DateTimeFromSQLite(stmt["CreationDate"].ToString());
-                            Priority priority = (Priority)Enum.ToObject(typeof(Priority), stmt["Priority"]);
-                            bool read = ((long)stmt["Read"] == 1) ? true : false;
-                            int messageNr = Convert.ToInt32(stmt["MessageNumber"]);
-                            int authorId = Convert.ToInt32(stmt["Author_Moderator_Id"]);
-                            string title = (string)stmt["Title"];
+                            stmt.Bind(1, channelId);
 
-                            Announcement announcement = new Announcement(id, text, messageNr, creationDate, priority, read, channelId, authorId, title);
-                            announcements.Add(announcement);
+                            while (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                int id = Convert.ToInt32(stmt["Id"]);
+                                string text = (string)stmt["Text"];
+                                DateTime creationDate = DatabaseManager.DateTimeFromSQLite(stmt["CreationDate"].ToString());
+                                Priority priority = (Priority)Enum.ToObject(typeof(Priority), stmt["Priority"]);
+                                bool read = ((long)stmt["Read"] == 1) ? true : false;
+                                int messageNr = Convert.ToInt32(stmt["MessageNumber"]);
+                                int authorId = Convert.ToInt32(stmt["Author_Moderator_Id"]);
+                                string title = (string)stmt["Title"];
+
+                                Announcement announcement = new Announcement(id, text, messageNr, creationDate, priority, read, channelId, authorId, title);
+                                announcements.Add(announcement);
+                            }
                         }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("GetAllAnnouncementsOfChannel has failed. The message is: {0}.", sqlEx.Message);
-                    throw new DatabaseException(sqlEx.Message);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("GetAllAnnouncementsOfChannel has failed. The message is: {0} and stack trace is {1}.",
-                        ex.Message, ex.StackTrace);
-                    throw new DatabaseException(ex.Message);
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetAllAnnouncementsOfChannel has failed. The message is: {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetAllAnnouncementsOfChannel has failed. The message is: {0} and stack trace is {1}.",
+                            ex.Message, ex.StackTrace);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
                 }
             }
-            
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+
             return announcements;
         }
 
@@ -1226,49 +1542,65 @@ namespace DataHandlingLayer.Database
         {
             List<Announcement> latestAnnouncements = new List<Announcement>();
 
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
             {
-                try
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
-                    string query = @"SELECT * 
-                    FROM Message AS m JOIN Announcement AS a ON m.Id=a.Message_Id 
-                    WHERE Channel_Id=? 
-                    ORDER BY a.MessageNumber DESC 
-                    LIMIT ? OFFSET ?;";
-
-                    using (var stmt = conn.Prepare(query))
+                    try
                     {
-                        stmt.Bind(1, channelId);
-                        stmt.Bind(2, number);
-                        stmt.Bind(3, offset);
+                        string query = @"SELECT * 
+                            FROM Message AS m JOIN Announcement AS a ON m.Id=a.Message_Id 
+                            WHERE Channel_Id=? 
+                            ORDER BY a.MessageNumber DESC 
+                            LIMIT ? OFFSET ?;";
 
-                        while (stmt.Step() == SQLiteResult.ROW)
+                        using (var stmt = conn.Prepare(query))
                         {
-                            int id = Convert.ToInt32(stmt["Id"]);
-                            string text = (string)stmt["Text"];
-                            DateTime creationDate = DatabaseManager.DateTimeFromSQLite(stmt["CreationDate"].ToString());
-                            Priority priority = (Priority)Enum.ToObject(typeof(Priority), stmt["Priority"]);
-                            bool read = ((long)stmt["Read"] == 1) ? true : false;
-                            int messageNr = Convert.ToInt32(stmt["MessageNumber"]);
-                            int authorId = Convert.ToInt32(stmt["Author_Moderator_Id"]);
-                            string title = (string)stmt["Title"];
+                            stmt.Bind(1, channelId);
+                            stmt.Bind(2, number);
+                            stmt.Bind(3, offset);
 
-                            Announcement announcement = new Announcement(id, text, messageNr, creationDate, priority, read, channelId, authorId, title);
-                            latestAnnouncements.Add(announcement);
+                            while (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                int id = Convert.ToInt32(stmt["Id"]);
+                                string text = (string)stmt["Text"];
+                                DateTime creationDate = DatabaseManager.DateTimeFromSQLite(stmt["CreationDate"].ToString());
+                                Priority priority = (Priority)Enum.ToObject(typeof(Priority), stmt["Priority"]);
+                                bool read = ((long)stmt["Read"] == 1) ? true : false;
+                                int messageNr = Convert.ToInt32(stmt["MessageNumber"]);
+                                int authorId = Convert.ToInt32(stmt["Author_Moderator_Id"]);
+                                string title = (string)stmt["Title"];
+
+                                Announcement announcement = new Announcement(id, text, messageNr, creationDate, priority, read, channelId, authorId, title);
+                                latestAnnouncements.Add(announcement);
+                            }
                         }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("GetLatestAnnouncements has failed. The message is: {0}.", sqlEx.Message);
-                    throw new DatabaseException(sqlEx.Message);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("GetLatestAnnouncements has failed. The message is: {0} and stack trace is {1}.",
-                        ex.Message, ex.StackTrace);
-                    throw new DatabaseException(ex.Message);
-                }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetLatestAnnouncements has failed. The message is: {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetLatestAnnouncements has failed. The message is: {0} and stack trace is {1}.",
+                            ex.Message, ex.StackTrace);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }   // Ende des using Block.
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
             }
             
             return latestAnnouncements;
@@ -1283,35 +1615,52 @@ namespace DataHandlingLayer.Database
         public int GetHighestMessageNumberOfChannel(int channelId)
         {
             int highestNr = 0;
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
             {
-                try
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
-                    string query = @"SELECT MAX(MessageNumber) AS HighestMsgNr
-                    FROM Announcement 
-                    WHERE Channel_Id=?;";
-
-                    using (var stmt = conn.Prepare(query))
+                    try
                     {
-                        stmt.Bind(1, channelId);
+                        string query = @"SELECT MAX(MessageNumber) AS HighestMsgNr
+                            FROM Announcement 
+                            WHERE Channel_Id=?;";
 
-                        if (stmt.Step() == SQLiteResult.ROW)
+                        using (var stmt = conn.Prepare(query))
                         {
-                            highestNr = Convert.ToInt32(stmt["HighestMsgNr"]);
+                            stmt.Bind(1, channelId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                highestNr = Convert.ToInt32(stmt["HighestMsgNr"]);
+                            }
                         }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("Retrieval of highest message number for channel with id {0} has failed. " +
-                        "Message is {1}.", channelId, sqlEx.Message);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Retrieval of highest message number has failed."
-                        + " Message is {0} and stack trace is {1}.", ex.Message, ex.StackTrace);
-                }
-            }          
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("Retrieval of highest message number for channel with id {0} has failed. " +
+                            "Message is {1}.", channelId, sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Retrieval of highest message number has failed."
+                            + " Message is {0} and stack trace is {1}.", ex.Message, ex.StackTrace);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }   // Ende des using Block.      
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+            }
+
             return highestNr;
         }
 
@@ -1323,39 +1672,55 @@ namespace DataHandlingLayer.Database
         /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Markierung der Announcements fehlschlägt.</exception>
         public void MarkAnnouncementsAsRead(int channelId)
         {
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
             {
-                try
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
-                    string query = @"UPDATE Message 
-                    SET Read=? 
-                    WHERE Read=? AND Id IN (
-                        SELECT Message_Id As Id 
-                        FROM Announcement 
-                        WHERE Channel_Id=?);";
-
-                    using (var stmt = conn.Prepare(query))
+                    try
                     {
-                        stmt.Bind(1, 1);    // Setze Read auf true.
-                        stmt.Bind(2, 0);
-                        stmt.Bind(3, channelId);
+                        string query = @"UPDATE Message 
+                            SET Read=? 
+                            WHERE Read=? AND Id IN (
+                                SELECT Message_Id As Id 
+                                FROM Announcement 
+                                WHERE Channel_Id=?);";
 
-                        stmt.Step();
-                        Debug.WriteLine("Marked announcements as read for channel with id {0}.", channelId);
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, 1);    // Setze Read auf true.
+                            stmt.Bind(2, 0);
+                            stmt.Bind(3, channelId);
+
+                            stmt.Step();
+                            Debug.WriteLine("Marked announcements as read for channel with id {0}.", channelId);
+                        }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("MarkAnnouncementsAsRead has failed.");
-                    throw new DatabaseException(sqlEx.Message);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("MarkAnnouncementsAsRead has failed. The message is: {0} and stack trace is {1}.",
-                        ex.Message, ex.StackTrace);
-                    throw new DatabaseException(ex.Message);
-                }
-            }         
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("MarkAnnouncementsAsRead has failed.");
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("MarkAnnouncementsAsRead has failed. The message is: {0} and stack trace is {1}.",
+                            ex.Message, ex.StackTrace);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }   // Ende des using Block.     
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
         }
 
         /// <summary>
