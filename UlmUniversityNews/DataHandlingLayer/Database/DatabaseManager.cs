@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 
@@ -12,6 +13,19 @@ namespace DataHandlingLayer.Database
 {
     public class DatabaseManager
     {
+        #region Fields
+        /// <summary>
+        /// Ein Mutex Objekt, welches verwendet werden kann, um den Zugriff auf die SQLite Datenbank zu synchronisieren.
+        /// Paralleler Zugriff auf die Datenbank kann dadurch gesteuert werden.
+        /// </summary>
+        private static Mutex databaseAccessControlMutex;
+        /// <summary>
+        /// Der Name des Mutex Objekts. Über diesen Namen wird das Objekt eindeutig identifiziert und kann von verschiedenen
+        /// Prozessen aus abgerufen werden.
+        /// </summary>
+        private static string accessControlMutexName = "DatabaseAccessControlMutex";
+        #endregion Fields
+
         /// <summary>
         /// Öffnet eine Verbindung zur Datenbank und gibt diese zurück.
         /// </summary>
@@ -32,6 +46,22 @@ namespace DataHandlingLayer.Database
             }
 
             return conn;
+        }
+
+        /// <summary>
+        /// Die Methode ruft das Mutex Objekt zur Steuerung des Zugriffs auf die Datenbank ab.
+        /// </summary>
+        /// <returns>Liefert das Mutex Objekt zurück.</returns>
+        public static Mutex GetDatabaseAccessMutexObject()
+        {
+            lock (typeof(DatabaseManager))
+            {
+                if (databaseAccessControlMutex == null)
+                {
+                    databaseAccessControlMutex = new Mutex(false, accessControlMutexName);
+                }
+            }
+            return databaseAccessControlMutex;
         }
 
         /// <summary>
@@ -63,63 +93,69 @@ namespace DataHandlingLayer.Database
         public static void LoadDatabase()
         {
             Debug.WriteLine("Start loading the SQLite database.");
-            try
+            // Rufe das Mutex Objekt ab.
+            Mutex mutex = GetDatabaseAccessMutexObject();
+
+            // Frage Zugriff auf Datenbank an.
+            if (mutex.WaitOne())
             {
-                SQLiteConnection conn = GetConnection();
-
-                // Erstelle LocalUser Tabelle.
-                createLocalUserTable(conn);
-
-                // Erstelle User Tabelle.
-                createUserTable(conn);
-
-                // Erstelle Moderator Tabelle.
-                createModeratorTable(conn);
-
-                // Erstelle Channel Tabelle und zugehörige Sub-Tabellen.
-                createChannelTable(conn);
-                createLectureTable(conn);
-                createEventTable(conn);
-                createSportsTable(conn);
-                createSubscribedChannelsTable(conn);
-                createModerartorChannelTable(conn);
-                createLastUpdateOnChannelsListTable(conn);
-
-                // Erstelle Group Tabelle und zugehörige Sub-Tabellen.
-                createGroupTable(conn);
-                createBallotTable(conn);
-                createOptionTable(conn);
-                createUserOptionTable(conn);
-                createUserGroupTable(conn);
-
-                // Erstelle Conversation Tabelle.
-                createConversationTable(conn);
-
-                // Erstelle Message Tabelle und zugehörige Sub-Tabellen.
-                createMessageTable(conn);
-                createAnnouncementTable(conn);
-                createConversationMessageTable(conn);
-
-                // Erstelle Reminder Tabelle.
-                createReminderTable(conn);
-
-                // Füge einen Dummy-Moderator ein, um Announcements mit fehlerhaften Referenz auf einen Autor
-                // im Notfall auf diesen Moderator abbilden zu können.
-                addDummyModerator(conn);
-
-                // Schalte Foreign-Key Constraints ein.
-                string sql = @"PRAGMA foreign_keys = ON";
-                using (var statement = conn.Prepare(sql))
+                try
                 {
-                    statement.Step();
+                    SQLiteConnection conn = GetConnection();
+
+                    // Erstelle LocalUser Tabelle.
+                    createLocalUserTable(conn);
+
+                    // Erstelle User Tabelle.
+                    createUserTable(conn);
+
+                    // Erstelle Moderator Tabelle.
+                    createModeratorTable(conn);
+
+                    // Erstelle Channel Tabelle und zugehörige Sub-Tabellen.
+                    createChannelTable(conn);
+                    createLectureTable(conn);
+                    createEventTable(conn);
+                    createSportsTable(conn);
+                    createSubscribedChannelsTable(conn);
+                    createModerartorChannelTable(conn);
+                    createLastUpdateOnChannelsListTable(conn);
+
+                    // Erstelle Group Tabelle und zugehörige Sub-Tabellen.
+                    createGroupTable(conn);
+                    createBallotTable(conn);
+                    createOptionTable(conn);
+                    createUserOptionTable(conn);
+                    createUserGroupTable(conn);
+
+                    // Erstelle Conversation Tabelle.
+                    createConversationTable(conn);
+
+                    // Erstelle Message Tabelle und zugehörige Sub-Tabellen.
+                    createMessageTable(conn);
+                    createAnnouncementTable(conn);
+                    createConversationMessageTable(conn);
+
+                    // Erstelle Reminder Tabelle.
+                    createReminderTable(conn);
+
+                    // Füge einen Dummy-Moderator ein, um Announcements mit fehlerhaften Referenz auf einen Autor
+                    // im Notfall auf diesen Moderator abbilden zu können.
+                    addDummyModerator(conn);
+
+                    conn.Dispose();
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Failed to load database.");
+                    Debug.WriteLine("Exception e: " + e.Message + " and HResult: " + e.HResult + "source: " + e.Source + " stack trace: " + e.StackTrace);
+                }
+                finally
+                {
+                    mutex.ReleaseMutex();
                 }
             }
-            catch(Exception e)
-            {
-                Debug.WriteLine("Failed to load database.");
-                Debug.WriteLine("Exception e: " + e.Message + " and HResult: " + e.HResult + "source: " + e.Source + " stack trace: " + e.StackTrace);
-            }
-            
+                        
             Debug.WriteLine("Finished loading the SQLite database.");
         }
 
@@ -129,38 +165,47 @@ namespace DataHandlingLayer.Database
         public static void UpgradeDatabase()
         {
             Debug.WriteLine("Start upgrading the database. This will remove all data and recreate the database schema.");
-            try
+            Mutex mutex = GetDatabaseAccessMutexObject();
+            if (mutex.WaitOne(4000))
             {
-                SQLiteConnection conn = GetConnection();
-
-                // Schalte Foreign-Key Constraints aus.
-                string sqlFK = @"PRAGMA foreign_keys = OFF";
-                using (var statement = conn.Prepare(sqlFK))
+                try
                 {
-                    statement.Step();
-                }
+                    SQLiteConnection conn = GetConnection();
 
-                string[] tableNames = { "User", "LocalUser", "Moderator", "Channel", "Lecture", "Event", "Sports", "SubscribedChannels", "ModeratorChannel",
-                                          "Group", "UserGroup", "Ballot", "Option", "UserOption", "Message", "Conversation", "ConversationMessage", "Announcement", "Reminder", "LastUpdateOnChannelsList"};
-                for (int i = 0; i < tableNames.Length; i++)
-                {
-                    // Drop tables.
-                    string sql = "DROP TABLE IF EXISTS \"" + tableNames[i] + "\";";
-                    using (var statement = conn.Prepare(sql))
+                    // Schalte Foreign-Key Constraints aus.
+                    string sqlFK = @"PRAGMA foreign_keys = OFF";
+                    using (var statement = conn.Prepare(sqlFK))
                     {
                         statement.Step();
                     }
-                }
 
-                // Foreign Key Constraints werden bei der Erstellung der Datenbank Tabellen wieder eingeschaltet.
-                // Recreate the database scheme.
-                LoadDatabase();                              
-            } 
-            catch(Exception e)
-            {
-                Debug.WriteLine("Failed to upgrade database.");
-                Debug.WriteLine("Exception e: " + e.Message + " and HResult: " + e.HResult + "source: " + e.Source + " stack trace: " + e.StackTrace);
+                    string[] tableNames = { "User", "LocalUser", "Moderator", "Channel", "Lecture", "Event", "Sports", "SubscribedChannels", "ModeratorChannel",
+                                          "Group", "UserGroup", "Ballot", "Option", "UserOption", "Message", "Conversation", "ConversationMessage", "Announcement", "Reminder", "LastUpdateOnChannelsList"};
+                    for (int i = 0; i < tableNames.Length; i++)
+                    {
+                        // Drop tables.
+                        string sql = "DROP TABLE IF EXISTS \"" + tableNames[i] + "\";";
+                        using (var statement = conn.Prepare(sql))
+                        {
+                            statement.Step();
+                        }
+                    }
+
+                    conn.Dispose();
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Failed to upgrade database.");
+                    Debug.WriteLine("Exception e: " + e.Message + " and HResult: " + e.HResult + "source: " + e.Source + " stack trace: " + e.StackTrace);
+                }
+                finally
+                {
+                    mutex.ReleaseMutex();
+                }
             }
+            
+            // Recreate the database scheme.
+            LoadDatabase();      
             Debug.WriteLine("Finished upgrading the database.");
         }
 

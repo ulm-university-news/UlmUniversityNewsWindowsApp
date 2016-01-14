@@ -91,6 +91,12 @@
                     </Flyout>
                 </AppBarButton.Flyout>
             </AppBarButton>
+            <!-- Testweise mal ein Secondary Command eingefügt. -->
+            <CommandBar.SecondaryCommands>
+                <AppBarButton
+                    x:Name="ChannelDetailsAboutUniversityNewsButton"
+                    Label="about" />
+            </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
 
@@ -185,7 +191,7 @@
                             </ListView>
                             
                         </Grid>                      
-                    <!-- TODO -->
+
                     </PivotItem>
 
                     <!-- Pivotelement 2-->
