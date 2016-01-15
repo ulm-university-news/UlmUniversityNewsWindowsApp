@@ -141,7 +141,9 @@ namespace DataHandlingLayer.ViewModel
             Dictionary<int, int> numberOfUnreadAnnouncements = 
                 await Task.Run(() => channelController.GetAmountOfUnreadAnnouncementsForMyChannels());
 
-            if(numberOfUnreadAnnouncements != null)
+            Debug.WriteLine("Im on thread with id {0}. ", Environment.CurrentManagedThreadId);
+            Debug.WriteLine("NumberOfUnreadAnnouncements dictionary is {0}.", numberOfUnreadAnnouncements);
+            if (numberOfUnreadAnnouncements != null)
             {
                 foreach (Channel channel in MyChannels)
                 {
@@ -153,7 +155,7 @@ namespace DataHandlingLayer.ViewModel
                             channel.Id, channel.NumberOfUnreadAnnouncements);
                     }
                 }
-            }    
+            }     
         }
 
         /// <summary>

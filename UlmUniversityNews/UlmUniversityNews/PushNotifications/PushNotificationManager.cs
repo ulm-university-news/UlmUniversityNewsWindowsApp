@@ -1,4 +1,6 @@
-﻿using DataHandlingLayer.Exceptions;
+﻿using DataHandlingLayer.Controller;
+using DataHandlingLayer.DataModel;
+using DataHandlingLayer.Exceptions;
 using DataHandlingLayer.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -17,6 +19,7 @@ namespace UlmUniversityNews.PushNotifications
     /// </summary>
     public class PushNotificationManager
     {
+        #region Fields
         private static PushNotificationManager _instance = null;
 
         /// <summary>
@@ -25,15 +28,25 @@ namespace UlmUniversityNews.PushNotifications
         private PushNotificationChannel _pushChannel;
 
         /// <summary>
+        /// Eine Instanz der Klasse PushNotificationController.
+        /// </summary>
+        private PushNotificationController pushController;
+
+        /// <summary>
         /// Eine Instanz der LocalUserViewModel Klasse.
         /// </summary>
         //private LocalUserViewModel localUserViewModel;
+        #endregion Fields
+
+        #region Events
+        public event EventHandler ReceivedAnnouncement;
+        #endregion Events
 
         /// <summary>
         /// Erzeugt eine Instanz der PushNotificationManager Klasse.
         /// </summary>
         private PushNotificationManager(){
-            //localUserViewModel = new LocalUserViewModel();
+            pushController = new PushNotificationController();
         }
 
         /// <summary>
@@ -126,59 +139,47 @@ namespace UlmUniversityNews.PushNotifications
             return channelURI;
         }
 
-        ///// <summary>
-        ///// Aktualisiert die Kanal-URI lokal in der Anwendung und auf dem Server falls notwendig.
-        ///// Eine Aktualisierung ist nur dann erforderlich, wenn die Kanal-URI sich seit der letzten
-        ///// Aktualisierung geändert hat. Ist keine Aktualisierung erforderlich, so wird keine Aktion
-        ///// durchgeführt.
-        ///// </summary>
-        ///// <returns>Liefert true zurück, wenn die Aktualisierung erfolgreich war, sonst false.</returns>
-        //public async Task<bool> UpdateRemoteChannelURIAsync()
-        //{
-        //    bool successful = false;
-
-        //    String localUserChannelURI = localUserViewModel.GetPushChannelURIOfLocalUser();
-        //    if(localUserChannelURI != null && _pushChannel != null){
-        //        String currentChannelURI = _pushChannel.Uri;
-        //        if(String.Compare(localUserChannelURI,currentChannelURI) == 0){
-        //            Debug.WriteLine("Channel URI hasn't changed. No update required.");
-        //            // Keine Aktualisierung erforderlich.
-        //            successful = true;
-        //        }
-        //        else
-        //        {
-        //            Debug.WriteLine("Need to update the channel URI, i.e. the push token of the local user. Starting updating process.");
-        //            // Aktualisierung des Push Access Token des lokalen Nutzers erforderlich.
-        //            try
-        //            {
-        //                await localUserViewModel.UpdateLocalUserAsync(string.Empty, currentChannelURI);
-        //                successful = true;
-        //                Debug.WriteLine("Updated channel URI (push access token) successfully.");
-        //            }
-        //            catch(ClientException ex)
-        //            {
-        //                Debug.WriteLine("Client exception occurred. Updating channel URI (push access token) has failed. Error code is: " + ex.ErrorCode);
-        //            }
-        //        }
-        //    }
-
-        //    return successful;
-        //}
-
         /// <summary>
         /// Handler Methode, die das PushNotificationReceived Event behandelt. Bei einer eingehenden Push Nachricht wird dieses Event gefeuert
         /// und der Handler aufgerufen. 
         /// </summary>
         /// <param name="sender">Der Kanal über den die Push Nachricht geschickt wurde.</param>
         /// <param name="args">Die eingegangene Push Nachricht.</param>
-        void _pushChannel_PushNotificationReceived(PushNotificationChannel sender, PushNotificationReceivedEventArgs args)
+        async void _pushChannel_PushNotificationReceived(PushNotificationChannel sender, PushNotificationReceivedEventArgs args)
         {
             if (args.NotificationType == PushNotificationType.Raw){
                 Debug.WriteLine("RawNotification received within the app.");
-                // TODO
-
+                
+                // Extrahiere die PushNotification.
+                RawNotification receivedNotification = args.RawNotification;
                 // Spezifiziere das Event als behandelt, so dass es nicht an die Background Task geht.
                 args.Cancel = true;
+
+                // Stoße Behandlung der Push Notification an.
+                bool handledSuccessfully = await pushController.HandlePushNotificationAsync(receivedNotification);
+
+                if(handledSuccessfully)
+                {
+                    PushMessage pushMsg = pushController.GetPushMessageFromNotification(receivedNotification);
+                    // TODO - Benachrichtige View, so dass diese sich aktualisieren können.
+                    if (pushMsg != null)
+                    {
+                        switch (pushMsg.PushType)
+                        {
+                            case DataHandlingLayer.DataModel.Enums.PushType.ANNOUNCEMENT_NEW:
+                                // Sende Event an Listener.
+                                if (ReceivedAnnouncement != null)
+                                {
+                                    ReceivedAnnouncement(this, new EventArgs());
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+                // TODO - Benachrichtigung des Nutzers?
             }
         }
     }

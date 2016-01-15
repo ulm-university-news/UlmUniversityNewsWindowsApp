@@ -17,7 +17,9 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using DataHandlingLayer.ViewModel;
+using UlmUniversityNews.PushNotifications;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -53,7 +55,30 @@ namespace UlmUniversityNews.Views.Homescreen
             string[] menuItems = new string[5] { "Test Item 1", "Test Item 2", "Test Item 3", "Test Item 4", "Test Item 5" };
             ListMenuItems.ItemsSource = menuItems.ToList();
 
+            // Registriere PushNotification Events, die für die Homescreen View von Interesse sind.
+            PushNotificationManager pushManager = PushNotificationManager.GetInstance();
+            pushManager.ReceivedAnnouncement += pushManager_ReceivedAnnouncement;
+
             Debug.WriteLine("Finished constructor of Homescreen.");
+        }
+
+        /// <summary>
+        /// Event-Handler, der ausgeführt wird, wenn vom PushNotificationManager ein
+        /// ReceivedAnnouncement-Event verschickt wird.
+        /// </summary>
+        /// <param name="sender">Der Sender des Events, d.h. hier der PushNotificationManager.</param>
+        /// <param name="e">Eventparameter</param>
+        async void pushManager_ReceivedAnnouncement(object sender, EventArgs e)
+        {
+            if(homescreenViewModel != null)
+            {
+                // Ausführung auf UI-Thread abbilden.
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                {
+                    await homescreenViewModel.UpdateNumberOfUnreadAnnouncements();
+                });
+            }
         }
 
         /// <summary>
@@ -67,8 +92,6 @@ namespace UlmUniversityNews.Views.Homescreen
             Debug.WriteLine("Homescreen_Pivot Loaded.");
             // Prüfe, ob Zugriff auf LockScreen gewährt ist, um Hintergrundaufgaben ausführen zu dürfen.
             await checkLockScreenAccessPermissionAsync();
-
-            Debug.WriteLine("Finished Homescreen_Pivot Loaded Event Handler.");
         }
 
         /// <summary>
@@ -162,47 +185,6 @@ namespace UlmUniversityNews.Views.Homescreen
                 DrawerLayout.OpenDrawer();
             }
         }
-
-        # region commandBar
-        ///// <summary>
-        ///// Erstellt und initiiert eine CommandBar.
-        ///// </summary>
-        //private void initializeAppBar()
-        //{
-        //    Debug.WriteLine("Creating AppBar.");
-        //    CommandBar commandBar = HomescreenCommandBar;
-
-        //    // Erstelle einen AppBarButton.
-        //    AppBarButton testButton = new AppBarButton();
-        //    testButton.Label = "hinzufügen";
-        //    testButton.IsEnabled = true;
-        //    testButton.Icon = new SymbolIcon(Symbol.Add);
-        //    testButton.Click += testButton_Click;
-
-        //    // Füge ihn als Primary Command hinzu.
-        //    commandBar.PrimaryCommands.Add(testButton);
-
-        //    // Erstelle noch einen AppBarButton.
-        //    AppBarButton secondaryButtonTest = new AppBarButton();
-        //    secondaryButtonTest.Label = "secondary Element";
-        //    secondaryButtonTest.IsEnabled = true;
-        //    secondaryButtonTest.Click += secondaryButtonTest_Click;
-
-        //    // Füge den zweiten Button als Secondary Element hinzu.
-        //    commandBar.SecondaryCommands.Add(secondaryButtonTest);
-        //    Debug.WriteLine("AppBar created.");
-        //}
-
-        //void secondaryButtonTest_Click(object sender, RoutedEventArgs e)
-        //{
-        //    Debug.WriteLine("Secondary Element clicked!");
-        //}
-
-        //void testButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    Debug.WriteLine("Button clicked!");
-        //}
-        # endregion commandBar
 
         # region checkLockScreenAccessContentDialog
         /// <summary>

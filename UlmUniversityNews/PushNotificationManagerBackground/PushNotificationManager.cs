@@ -1,10 +1,15 @@
-﻿using System;
+﻿using DataHandlingLayer.Controller;
+using DataHandlingLayer.DataModel;
+using DataHandlingLayer.DataModel.Enums;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
+using Windows.Data.Xml.Dom;
 using Windows.Networking.PushNotifications;
 using Windows.UI.Notifications;
 
@@ -14,10 +19,9 @@ namespace PushNotificationManagerBackground
     {
         private const string BG_TASK_NAME = "RawNotificationReceiverBG"; 
 
-        public void Run(IBackgroundTaskInstance taskInstance)
+        public async void Run(IBackgroundTaskInstance taskInstance)
         {
             Debug.WriteLine("Started RawNotificationReceiver background task.");
-
             // Füge einen CancelationHandler hinzu, der gerufen wird sollte die BackgroundTask abgebrochen werden.
             taskInstance.Canceled += new BackgroundTaskCanceledEventHandler(OnCanceled);
 
@@ -25,25 +29,64 @@ namespace PushNotificationManagerBackground
             // dann wird ein solches Objekt benötigt, um das vorzeitige Schließen der Task zu verhindern.
             BackgroundTaskDeferral deferral = taskInstance.GetDeferral();
 
-            // Hole die RawNotification über die TriggerDetails und lese den Inhalt aus.
+            // Hole die RawNotification über die TriggerDetails.
             RawNotification notification = (RawNotification)taskInstance.TriggerDetails;
-            string content = notification.Content;
+            
+            // Stoße die Behandlung der Nachricht an.
+            PushNotificationController pushController = new PushNotificationController();
+            bool handledSuccessfully = await pushController.HandlePushNotificationAsync(notification);
 
+            // Frage PushMessage Objekt zur Notification ab.
+            PushMessage pm = pushController.GetPushMessageFromNotification(notification);
+
+            // Soll der Nutzer benachrichtigt werden?
+            if(pushController.IsUserNotificationRequired(pm))
+            {
+                // Frage bevorzugte Sprache ab.
+                CultureInfo ci = new CultureInfo(Windows.System.UserProfile.GlobalizationPreferences.Languages[0]);
+
+                // Benachrichtige abhängig vom Typ der Push-Nachricht.
+                switch(pm.PushType)
+                {
+                    case PushType.ANNOUNCEMENT_NEW:
+                        if(ci.TwoLetterISOLanguageName == "de-DE")
+                        {
+                            showToastNotification("Neue Kanalnachricht empfangen");
+                        }
+                        else
+                        {
+                            showToastNotification("Received a new channel announcement");
+                        }
+                        break;
+                }
+            }
+
+            Debug.WriteLine("Finished background task.");
+            // Task als abgeschlossen kennzeichnen.
+            deferral.Complete();
+        }
+
+        /// <summary>
+        /// Zeige den Text in einer ToastNotification an, um den Nutzer über ein Ereignis zu informieren.
+        /// </summary>
+        /// <param name="text">Der anzuzeigende Text.</param>
+        private void showToastNotification(string text)
+        {
             // Für den Anfang, sende nur eine ToastNotification mit dem Typ der PushNachricht und mache weiter nichts.
-            var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText02);
+            var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastImageAndText01);
 
+            // Setze das Icon.
+            var toastImageAttributes = toastDescriptor.GetElementsByTagName("image");
+            ((XmlElement)toastImageAttributes[0]).SetAttribute("src", "ms-appx:///ToastIcon/Logo-Uni.png");
+            ((XmlElement)toastImageAttributes[0]).SetAttribute("alt", "UUNLogo");
+
+            // Setze den Text.
             var txtNodes = toastDescriptor.GetElementsByTagName("text");
-            txtNodes[0].AppendChild(toastDescriptor.CreateTextNode("I received a raw"));
-            txtNodes[1].AppendChild(toastDescriptor.CreateTextNode(content));
+            txtNodes[0].AppendChild(toastDescriptor.CreateTextNode(text));
 
             var toast = new ToastNotification(toastDescriptor);
             var toastNotifier = ToastNotificationManager.CreateToastNotifier();
             toastNotifier.Show(toast);
-
-            Debug.WriteLine("Finished background task.");
-
-            // Task als abgeschlossen kennzeichnen.
-            deferral.Complete();
         }
 
         /// <summary>
