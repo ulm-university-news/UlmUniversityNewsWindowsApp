@@ -12,6 +12,7 @@ using System.Diagnostics;
 using DataHandlingLayer.CommandRelays;
 using DataHandlingLayer.Exceptions;
 using DataHandlingLayer.Common;
+using Windows.ApplicationModel.Core;
 
 namespace DataHandlingLayer.ViewModel
 {
@@ -460,7 +461,7 @@ namespace DataHandlingLayer.ViewModel
             maxMsgNr = channelController.GetHighestMsgNrForChannel(Channel.Id);
             Debug.WriteLine("Perform update announcement operation with max messageNumber of {0}.", maxMsgNr);
 
-            var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
 
             // Frage die Announcements ab.
             List<Announcement> receivedAnnouncements = await channelController.GetAnnouncementsOfChannelAsync(Channel.Id, maxMsgNr, withCaching);

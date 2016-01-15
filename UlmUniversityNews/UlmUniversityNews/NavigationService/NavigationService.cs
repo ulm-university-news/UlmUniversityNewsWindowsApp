@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.UI.Xaml.Controls;
 
 namespace UlmUniversityNews.NavigationService
@@ -48,7 +49,7 @@ namespace UlmUniversityNews.NavigationService
         {
             Debug.WriteLine("In Navigate(pageKey) method of the NavigationService and the current Thread ID is: {0}.", Environment.CurrentManagedThreadId);
 
-            var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => rootFrame.Navigate(pageMap[pageKey]));
         }
 
@@ -61,7 +62,7 @@ namespace UlmUniversityNews.NavigationService
         {
             Debug.WriteLine("In Navigate(pageKey, object) method of the NavigationService and the current Thread ID is: {0}.", Environment.CurrentManagedThreadId);
 
-            var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher; 
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher; 
             await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => rootFrame.Navigate(pageMap[pageKey], parameter));
         }
 
@@ -81,7 +82,7 @@ namespace UlmUniversityNews.NavigationService
         {
             Debug.WriteLine("In GoBack() method of the NavigationService and the current Thread ID is: {0}.", Environment.CurrentManagedThreadId);
 
-            var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => rootFrame.GoBack());
         }
 
@@ -90,7 +91,7 @@ namespace UlmUniversityNews.NavigationService
         /// </summary>
         public async void RemoveEntryFromBackStack()
         {
-            var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
                 if (rootFrame.BackStack.Count >= 1)

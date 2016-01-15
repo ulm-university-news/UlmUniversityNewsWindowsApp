@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.UI.Xaml.Data;
 
 namespace DataHandlingLayer.Common
@@ -60,7 +61,7 @@ namespace DataHandlingLayer.Common
         /// <param name="collection">Eine Collection mit Elementen des Typs <typeparamref name="T"/>.</param>
         public async Task LoadExistingCollectionAsync(List<I> collection)
         {
-            var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
                 // Füge die neu hinzugekommenen Einträge der Collection hinzu.
@@ -79,7 +80,7 @@ namespace DataHandlingLayer.Common
         {
             Debug.WriteLine("LoadMoreItemsAsync is called with current count parameter {0}.", count);
 
-            var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
 
             // Führe folgenden Code als asynchronen Code aus.
             return Task.Run<LoadMoreItemsResult>(async () =>
