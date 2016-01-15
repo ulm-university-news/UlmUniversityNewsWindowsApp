@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DataHandlingLayer.Database
@@ -25,34 +26,50 @@ namespace DataHandlingLayer.Database
                 return;
             }
 
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
-            {
-                try
-                {
-                    using (var insertStmt = conn.Prepare(@"INSERT INTO Moderator (Id, FirstName, LastName, Email) 
-                    VALUES (?,?,?,?);"))
-                    {
-                        insertStmt.Bind(1, moderator.Id);
-                        insertStmt.Bind(2, moderator.FirstName);
-                        insertStmt.Bind(3, moderator.LastName);
-                        insertStmt.Bind(4, moderator.Email);
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
 
-                        insertStmt.Step();
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        using (var insertStmt = conn.Prepare(@"INSERT INTO Moderator (Id, FirstName, LastName, Email) 
+                            VALUES (?,?,?,?);"))
+                        {
+                            insertStmt.Bind(1, moderator.Id);
+                            insertStmt.Bind(2, moderator.FirstName);
+                            insertStmt.Bind(3, moderator.LastName);
+                            insertStmt.Bind(4, moderator.Email);
+
+                            insertStmt.Step();
+                        }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException occurred in StoreModerator. The message is: {0}.", sqlEx.Message);
-                    throw new DatabaseException("Moderator could not be stored.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Exception occurred in StoreModerator. The message is: {0} and the stack trace is {1}.",
-                        ex.Message,
-                        ex.StackTrace);
-                    throw new DatabaseException("Moderator could not be stored.");
-                }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException occurred in StoreModerator. The message is: {0}.", sqlEx.Message);
+                        throw new DatabaseException("Moderator could not be stored.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Exception occurred in StoreModerator. The message is: {0} and the stack trace is {1}.",
+                            ex.Message,
+                            ex.StackTrace);
+                        throw new DatabaseException("Moderator could not be stored.");
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }   // Ende des using Block.
             }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }    
         }
 
         /// <summary>
@@ -64,34 +81,50 @@ namespace DataHandlingLayer.Database
         {
             bool isStored = false;
 
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
-            {
-                try
-                {
-                    using (var stmt = conn.Prepare(@"SELECT Id FROM Moderator WHERE Id=?;"))
-                    {
-                        stmt.Bind(1, moderatorId);
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
 
-                        if (stmt.Step() == SQLiteResult.ROW)
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        using (var stmt = conn.Prepare(@"SELECT Id FROM Moderator WHERE Id=?;"))
                         {
-                            isStored = true;
+                            stmt.Bind(1, moderatorId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                isStored = true;
+                            }
                         }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException occurred in IsModeratorStored. The message is: {0}.", sqlEx.Message);
-                    return false;
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Exception occurred in IsModeratorStored. The message is: {0} and the stack trace is {1}.",
-                        ex.Message,
-                        ex.StackTrace);
-                    return false;
-                }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException occurred in IsModeratorStored. The message is: {0}.", sqlEx.Message);
+                        return false;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Exception occurred in IsModeratorStored. The message is: {0} and the stack trace is {1}.",
+                            ex.Message,
+                            ex.StackTrace);
+                        return false;
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }   // Ende des using Block.
             }
-            
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+
             return isStored;
         }
 
@@ -104,45 +137,62 @@ namespace DataHandlingLayer.Database
         public Moderator GetModerator(int moderatorId)
         {
             Moderator moderator = null;
-            using (SQLiteConnection conn = DatabaseManager.GetConnection())
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
             {
-                try
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
-                    using (var stmt = conn.Prepare(@"SELECT * FROM Moderator WHERE Id=?;"))
+                    try
                     {
-                        stmt.Bind(1, moderatorId);
-
-                        if (stmt.Step() == SQLiteResult.ROW)
+                        using (var stmt = conn.Prepare(@"SELECT * FROM Moderator WHERE Id=?;"))
                         {
-                            int id = Convert.ToInt32(stmt["Id"]);
-                            string firstName = (string)stmt["FirstName"];
-                            string lastName = (string)stmt["LastName"];
-                            string email = (string)stmt["Email"];
+                            stmt.Bind(1, moderatorId);
 
-                            moderator = new Moderator()
+                            if (stmt.Step() == SQLiteResult.ROW)
                             {
-                                Id = id,
-                                FirstName = firstName,
-                                LastName = lastName,
-                                Email = email
-                            };
+                                int id = Convert.ToInt32(stmt["Id"]);
+                                string firstName = (string)stmt["FirstName"];
+                                string lastName = (string)stmt["LastName"];
+                                string email = (string)stmt["Email"];
+
+                                moderator = new Moderator()
+                                {
+                                    Id = id,
+                                    FirstName = firstName,
+                                    LastName = lastName,
+                                    Email = email
+                                };
+                            }
                         }
                     }
-                }
-                catch (SQLiteException sqlEx)
-                {
-                    Debug.WriteLine("SQLiteException occurred in GetModerator. The message is: {0}.", sqlEx.Message);
-                    throw new DatabaseException("Could not retrieve Moderator.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Exception occurred in IsModeratorStored. The message is: {0} and the stack trace is {1}.",
-                        ex.Message,
-                        ex.StackTrace);
-                    throw new DatabaseException("Could not retrieve Moderator.");
-                }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException occurred in GetModerator. The message is: {0}.", sqlEx.Message);
+                        throw new DatabaseException("Could not retrieve Moderator.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Exception occurred in IsModeratorStored. The message is: {0} and the stack trace is {1}.",
+                            ex.Message,
+                            ex.StackTrace);
+                        throw new DatabaseException("Could not retrieve Moderator.");
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }   // Ende des using Block.
             }
-           
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+
             return moderator;
         }
     }
