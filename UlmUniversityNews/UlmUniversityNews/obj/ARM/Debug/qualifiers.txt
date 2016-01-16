@@ -1,3 +1,5 @@
 Scale=240
+Scale=140
+Scale=100
 Language=DE-DE
 Language=EN-GB

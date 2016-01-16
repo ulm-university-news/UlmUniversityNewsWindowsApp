@@ -1,5 +1,6 @@
 ﻿using DataHandlingLayer.Controller;
 using DataHandlingLayer.DataModel;
+using DataHandlingLayer.DataModel.Enums;
 using DataHandlingLayer.Exceptions;
 using DataHandlingLayer.ViewModel;
 using System;
@@ -8,7 +9,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Data.Xml.Dom;
 using Windows.Networking.PushNotifications;
+using Windows.UI.Notifications;
 
 namespace UlmUniversityNews.PushNotifications
 {
@@ -177,10 +180,45 @@ namespace UlmUniversityNews.PushNotifications
                                 break;
                         }
                     }
-                }
 
-                // TODO - Benachrichtigung des Nutzers?
+                    // TODO - Benachrichtigung des Nutzers?
+                    if(pushController.IsUserNotificationRequired(pushMsg))
+                    {
+                        // Benachrichtige abhängig vom Typ der Push-Nachricht.
+                        switch (pushMsg.PushType)
+                        {
+                            case PushType.ANNOUNCEMENT_NEW:
+                                    showToastNotification("Neue Kanalnachricht empfangen");
+                                break;
+                        }
+                    }
+                }   // Ende if handledSuccessfully.
             }
+        }
+
+        /// <summary>
+        /// Zeige den Text in einer ToastNotification an, um den Nutzer über ein Ereignis zu informieren.
+        /// </summary>
+        /// <param name="text">Der anzuzeigende Text.</param>
+        private void showToastNotification(string text)
+        {
+            // Für den Anfang, sende nur eine ToastNotification mit dem Typ der PushNachricht und mache weiter nichts.
+            var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastImageAndText01);
+
+            // Setze das Icon.
+            var toastImageAttributes = toastDescriptor.GetElementsByTagName("image");
+            //toastImageAttributes[0].Attributes[1].NodeValue = "ms-appx:///UlmUniversityNews/Assets/AppIcons/AppLogoUni.png";
+
+            ((XmlElement)toastImageAttributes[0]).SetAttribute("src", "ms-appdata:///Local/PushMsgLogoUni.png");
+            //((XmlElement)toastImageAttributes[0]).SetAttribute("alt", "UUNLogo");
+
+            // Setze den Text.
+            var txtNodes = toastDescriptor.GetElementsByTagName("text");
+            txtNodes[0].AppendChild(toastDescriptor.CreateTextNode(text));
+
+            var toast = new ToastNotification(toastDescriptor);
+            var toastNotifier = ToastNotificationManager.CreateToastNotifier();
+            toastNotifier.Show(toast);
         }
     }
 }

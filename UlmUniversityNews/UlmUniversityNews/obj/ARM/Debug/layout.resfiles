@@ -1,6 +1,18 @@
 SQLitePCL.Ext.dll
 SQLitePCL.Ext.pri
+Assets\AppIcons\AppLogoUni.png
+Assets\AppIcons\AppLogoUni-106-106.png
+Assets\AppIcons\AppLogoUni-120-120.png
 Assets\AppIcons\Logo-Uni.png
+Assets\AppIcons\splash_screen_uun_1152-1920.png
+Assets\AppIcons\splash_screen_uun_2.png
+Assets\AppIcons\splash_screen_uun_480-800.png
+Assets\AppIcons\splash_screen_uun_672-1120.png
+Assets\AppIcons\UUNLogoInfoanzeige-24-24.scale-100.png
+Assets\AppIcons\UUNLogoInfoanzeige-24-24.scale-140.png
+Assets\AppIcons\UUNLogoInfoanzeige-24-24.scale-240.png
+Assets\AppIcons\UUNLogoInfoanzeige-33-33.png
+Assets\AppIcons\UUNLogoInfoanzeige-58-58.png
 Assets\AppIcons\welcome_screen.png
 Assets\ButtonIcons\feature.search.png
 Assets\ChannelIcons\event.png
@@ -25,6 +37,8 @@ Assets\NewMessagesIcons\7_new_message.png
 Assets\NewMessagesIcons\8_new_message.png
 Assets\NewMessagesIcons\9_new_message.png
 Assets\SmallLogo.scale-240.png
+Assets\SplashScreen.scale-100.png
+Assets\SplashScreen.scale-140.png
 Assets\SplashScreen.scale-240.png
 Assets\Square71x71Logo.scale-240.png
 Assets\StoreLogo.scale-240.png

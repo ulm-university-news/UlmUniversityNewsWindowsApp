@@ -46,8 +46,47 @@
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\packages\SQLitePCL.3.8.7.2\build\wpa81\SQLitePCL.Ext.dll">
       <PackagePath>DataHandlingLayer\SQLitePCL.Ext.dll</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\AppLogoUni-106-106.png">
+      <PackagePath>Assets\AppIcons\AppLogoUni-106-106.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\AppLogoUni-120-120.png">
+      <PackagePath>Assets\AppIcons\AppLogoUni-120-120.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\AppLogoUni.png">
+      <PackagePath>Assets\AppIcons\AppLogoUni.png</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\Logo-Uni.png">
       <PackagePath>Assets\AppIcons\Logo-Uni.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\splash_screen_uun_1152-1920.png">
+      <PackagePath>Assets\AppIcons\splash_screen_uun_1152-1920.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\splash_screen_uun_2.png">
+      <PackagePath>Assets\AppIcons\splash_screen_uun_2.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\splash_screen_uun_480-800.png">
+      <PackagePath>Assets\AppIcons\splash_screen_uun_480-800.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\splash_screen_uun_672-1120.png">
+      <PackagePath>Assets\AppIcons\splash_screen_uun_672-1120.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\UUNLogoInfoanzeige-24-24.scale-100.png">
+      <PackagePath>Assets\AppIcons\UUNLogoInfoanzeige-24-24.scale-100.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\UUNLogoInfoanzeige-24-24.scale-140.png">
+      <PackagePath>Assets\AppIcons\UUNLogoInfoanzeige-24-24.scale-140.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\UUNLogoInfoanzeige-24-24.scale-240.png">
+      <PackagePath>Assets\AppIcons\UUNLogoInfoanzeige-24-24.scale-240.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\UUNLogoInfoanzeige-33-33.png">
+      <PackagePath>Assets\AppIcons\UUNLogoInfoanzeige-33-33.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\UUNLogoInfoanzeige-58-58.png">
+      <PackagePath>Assets\AppIcons\UUNLogoInfoanzeige-58-58.png</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\AppIcons\welcome_screen.png">
       <PackagePath>Assets\AppIcons\welcome_screen.png</PackagePath>
@@ -123,6 +162,14 @@
       <PackagePath>Assets\SmallLogo.scale-240.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\SplashScreen.scale-100.png">
+      <PackagePath>Assets\SplashScreen.scale-100.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\SplashScreen.scale-140.png">
+      <PackagePath>Assets\SplashScreen.scale-140.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\SplashScreen.scale-240.png">
       <PackagePath>Assets\SplashScreen.scale-240.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
@@ -138,6 +185,9 @@
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\WideLogo.scale-240.png">
       <PackagePath>Assets\WideLogo.scale-240.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\ToastIcon\AppLogoUni-106-106.png">
+      <PackagePath>PushNotificationManagerBackground\ToastIcon\AppLogoUni-106-106.png</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\ToastIcon\Logo-Uni.png">
       <PackagePath>PushNotificationManagerBackground\ToastIcon\Logo-Uni.png</PackagePath>

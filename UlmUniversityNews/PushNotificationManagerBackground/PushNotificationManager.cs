@@ -49,7 +49,7 @@ namespace PushNotificationManagerBackground
                 switch(pm.PushType)
                 {
                     case PushType.ANNOUNCEMENT_NEW:
-                        if(ci.TwoLetterISOLanguageName == "de-DE")
+                        if(ci.TwoLetterISOLanguageName == "de")
                         {
                             showToastNotification("Neue Kanalnachricht empfangen");
                         }
@@ -77,8 +77,10 @@ namespace PushNotificationManagerBackground
 
             // Setze das Icon.
             var toastImageAttributes = toastDescriptor.GetElementsByTagName("image");
-            ((XmlElement)toastImageAttributes[0]).SetAttribute("src", "ms-appx:///ToastIcon/Logo-Uni.png");
-            ((XmlElement)toastImageAttributes[0]).SetAttribute("alt", "UUNLogo");
+            //toastImageAttributes[0].Attributes[1].NodeValue = "ms-appx:///PushNotificationManagerBackground/ToastIcon/AppLogoUni-106-106.png";
+
+            ((XmlElement)toastImageAttributes[0]).SetAttribute("src", "ms-appdata:///local/PushMsgLogoUni.png");
+            // ((XmlElement)toastImageAttributes[0]).SetAttribute("alt", "UUNLogo");
 
             // Setze den Text.
             var txtNodes = toastDescriptor.GetElementsByTagName("text");
