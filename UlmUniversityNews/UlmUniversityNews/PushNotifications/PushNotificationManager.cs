@@ -122,6 +122,10 @@ namespace UlmUniversityNews.PushNotifications
         public bool IsInitialized()
         {
             if(_pushChannel != null && _pushChannel.Uri != string.Empty){
+
+                //// Registriere nur den Event Handler neu.
+                //_pushChannel.PushNotificationReceived += _pushChannel_PushNotificationReceived;
+
                 Debug.WriteLine("The push channel seems to be initialized.");
                 return true;
             }
@@ -141,6 +145,20 @@ namespace UlmUniversityNews.PushNotifications
             }
             return channelURI;
         }
+
+        ///// <summary>
+        ///// Schaltet den Empfang von Push Notifications innerhalb der App aus.
+        ///// Diese Methode kann verwendet werden, um zu verhindern, dass die App weiterhin Push Notifications entgegen nimmt, wenn 
+        ///// die Anwendung im Suspended Zustand ist.
+        ///// </summary>
+        //public void SuspendAppPushNotificationManager()
+        //{
+        //    if(_pushChannel != null)
+        //    {
+        //        Debug.WriteLine("Unsubscribe in app push notifcation event handler.");
+        //        _pushChannel.PushNotificationReceived -= _pushChannel_PushNotificationReceived;
+        //    }
+        //}
 
         /// <summary>
         /// Handler Methode, die das PushNotificationReceived Event behandelt. Bei einer eingehenden Push Nachricht wird dieses Event gefeuert
@@ -209,7 +227,7 @@ namespace UlmUniversityNews.PushNotifications
             var toastImageAttributes = toastDescriptor.GetElementsByTagName("image");
             //toastImageAttributes[0].Attributes[1].NodeValue = "ms-appx:///UlmUniversityNews/Assets/AppIcons/AppLogoUni.png";
 
-            ((XmlElement)toastImageAttributes[0]).SetAttribute("src", "ms-appdata:///Local/PushMsgLogoUni.png");
+            ((XmlElement)toastImageAttributes[0]).SetAttribute("src", "ms-appx:///UlmUniversityNews/Assets/AppIcons/AppLogoUni-50-50.png");
             //((XmlElement)toastImageAttributes[0]).SetAttribute("alt", "UUNLogo");
 
             // Setze den Text.

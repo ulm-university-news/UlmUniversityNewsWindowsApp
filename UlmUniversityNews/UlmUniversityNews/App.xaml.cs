@@ -93,7 +93,7 @@ namespace UlmUniversityNews
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Lade die Datenbank.
-            // DatabaseManager.UpgradeDatabase();
+            //DatabaseManager.UpgradeDatabase();
             DatabaseManager.LoadDatabase();
 
             // TODO Test start
@@ -334,6 +334,10 @@ namespace UlmUniversityNews
         private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
+
+            //// Deregistrierung des PushNotificationManagers der App.
+            //PushNotifications.PushNotificationManager.GetInstance().SuspendAppPushNotificationManager();
+
             await SuspensionManager.SaveAsync();
             deferral.Complete();
         }
