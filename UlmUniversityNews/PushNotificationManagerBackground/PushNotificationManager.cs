@@ -73,13 +73,13 @@ namespace PushNotificationManagerBackground
         private void showToastNotification(string text)
         {
             // Für den Anfang, sende nur eine ToastNotification mit dem Typ der PushNachricht und mache weiter nichts.
-            var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastImageAndText01);
+            var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);
 
             // Setze das Icon.
-            var toastImageAttributes = toastDescriptor.GetElementsByTagName("image");
+            // var toastImageAttributes = toastDescriptor.GetElementsByTagName("image");
             //toastImageAttributes[0].Attributes[1].NodeValue = "ms-appx:///PushNotificationManagerBackground/ToastIcon/AppLogoUni-106-106.png";
 
-            ((XmlElement)toastImageAttributes[0]).SetAttribute("src", "ms-appdata:///local/AppLogoUni-50-50.scale-100.png");
+            // ((XmlElement)toastImageAttributes[0]).SetAttribute("src", "ms-appdata:///local/AppLogoUni-50-50.scale-100.png");
             // ((XmlElement)toastImageAttributes[0]).SetAttribute("alt", "UUNLogo");
 
             // Setze den Text.

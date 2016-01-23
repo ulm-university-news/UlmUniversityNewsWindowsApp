@@ -305,10 +305,28 @@ namespace DataHandlingLayer.ViewModel
         /// <summary>
         /// Markiere die Announcements dieses Kanals als gelesen.
         /// </summary>
-        public void MarkAnnouncementsAsReadAsync()
+        public void MarkAnnouncementsAsRead()
         {
             // Markiere ungelesene Nachrichten nun als gelesen.
             channelController.MarkAnnouncementsAsRead(Channel.Id);
+        }
+
+        /// <summary>
+        /// Aktualisiert den View Zustand, wenn eine neue Announcement per PushNachricht empfangen wurde.
+        /// </summary>
+        public async Task UpdateAnnouncementsOnAnnouncementReceived()
+        {
+            Debug.WriteLine("Update announcements on ReceivedAnnouncement event.");
+            if(Channel != null)
+            {
+                Announcement receivedAnnouncement = await Task.Run(() => channelController.GetLastReceivedAnnouncement(Channel.Id));
+                if(Announcements != null && receivedAnnouncement != null
+                    && !Announcements.Contains(receivedAnnouncement))
+                {
+                    // Füge die Announcement der Liste hinzu.
+                    Announcements.Insert(0, receivedAnnouncement);
+                }
+            }
         }
 
         /// <summary>
@@ -477,7 +495,6 @@ namespace DataHandlingLayer.ViewModel
                     foreach (Announcement announcement in receivedAnnouncements)
                     {
                         Announcements.Insert(0, announcement);
-                        //Announcements.Add(announcement);
                     }
                 });
             }

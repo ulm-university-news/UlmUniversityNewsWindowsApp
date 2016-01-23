@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UlmUniversityNews.PushNotifications.EventArgClasses;
 using Windows.Data.Xml.Dom;
 using Windows.Networking.PushNotifications;
 using Windows.UI.Notifications;
@@ -42,7 +43,7 @@ namespace UlmUniversityNews.PushNotifications
         #endregion Fields
 
         #region Events
-        public event EventHandler ReceivedAnnouncement;
+        public event EventHandler<AnnouncementReceivedEventArgs> ReceivedAnnouncement;
         #endregion Events
 
         /// <summary>
@@ -191,7 +192,8 @@ namespace UlmUniversityNews.PushNotifications
                                 // Sende Event an Listener.
                                 if (ReceivedAnnouncement != null)
                                 {
-                                    ReceivedAnnouncement(this, new EventArgs());
+                                    // Sende ReceivedAnnouncement Event mit Kanal-Id des betroffenen Kanals.
+                                    ReceivedAnnouncement(this, new AnnouncementReceivedEventArgs(pushMsg.Id1));
                                 }
                                 break;
                             default:
@@ -221,13 +223,13 @@ namespace UlmUniversityNews.PushNotifications
         private void showToastNotification(string text)
         {
             // Für den Anfang, sende nur eine ToastNotification mit dem Typ der PushNachricht und mache weiter nichts.
-            var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastImageAndText01);
+            var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);
 
             // Setze das Icon.
-            var toastImageAttributes = toastDescriptor.GetElementsByTagName("image");
+            // var toastImageAttributes = toastDescriptor.GetElementsByTagName("image");
             //toastImageAttributes[0].Attributes[1].NodeValue = "ms-appx:///UlmUniversityNews/Assets/AppIcons/AppLogoUni.png";
 
-            ((XmlElement)toastImageAttributes[0]).SetAttribute("src", "ms-appx:///UlmUniversityNews/Assets/AppIcons/AppLogoUni-50-50.png");
+            // ((XmlElement)toastImageAttributes[0]).SetAttribute("src", "ms-appx:///UlmUniversityNews/Assets/AppIcons/AppLogoUni-50-50.png");
             //((XmlElement)toastImageAttributes[0]).SetAttribute("alt", "UUNLogo");
 
             // Setze den Text.

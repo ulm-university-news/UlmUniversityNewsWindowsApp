@@ -669,6 +669,30 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Gibt die Announcement für den Kanal mit der angegebenen Id zurück, die zuletzt empfangen wurde.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, von dem die Announcement abgefragt wird.</param>
+        /// <returns>Liefert ein Announcement Objekt zurück, oder null, falls keine entsprechende Announcement existiert.</returns>
+        public Announcement GetLastReceivedAnnouncement(int channelId)
+        {
+            Announcement lastReceivedAnnouncement = null;
+            try
+            {
+                List<Announcement> announcements = channelDatabaseManager.GetLatestAnnouncements(channelId, 1, 0);
+                if(announcements != null && announcements.Count == 1)
+                {
+                    lastReceivedAnnouncement = announcements[0];
+                }
+            }
+            catch(DatabaseException ex)
+            {
+                // Gebe Exception nicht an den Aufrufer weiter.
+                Debug.WriteLine("Retrieval of announcement has failed. Message is {0}.", ex.Message);
+            }
+            return lastReceivedAnnouncement;
+        }
+
+        /// <summary>
         /// Speichere für den Kanal mit der angegebenen Id die in der Liste definierten 
         /// Moderatoren als die für diesen Kanal verantwortlichen Moderatoren ab.
         /// Die Methode speichert die Datensätze der Moderatoren lokal in der Datenbank, falls sie dort

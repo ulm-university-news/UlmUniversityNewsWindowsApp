@@ -55,30 +55,7 @@ namespace UlmUniversityNews.Views.Homescreen
             string[] menuItems = new string[5] { "Test Item 1", "Test Item 2", "Test Item 3", "Test Item 4", "Test Item 5" };
             ListMenuItems.ItemsSource = menuItems.ToList();
 
-            // Registriere PushNotification Events, die für die Homescreen View von Interesse sind.
-            PushNotificationManager pushManager = PushNotificationManager.GetInstance();
-            pushManager.ReceivedAnnouncement += pushManager_ReceivedAnnouncement;
-
             Debug.WriteLine("Finished constructor of Homescreen.");
-        }
-
-        /// <summary>
-        /// Event-Handler, der ausgeführt wird, wenn vom PushNotificationManager ein
-        /// ReceivedAnnouncement-Event verschickt wird.
-        /// </summary>
-        /// <param name="sender">Der Sender des Events, d.h. hier der PushNotificationManager.</param>
-        /// <param name="e">Eventparameter</param>
-        async void pushManager_ReceivedAnnouncement(object sender, EventArgs e)
-        {
-            if(homescreenViewModel != null)
-            {
-                // Ausführung auf UI-Thread abbilden.
-                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
-                    Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-                {
-                    await homescreenViewModel.UpdateNumberOfUnreadAnnouncements();
-                });
-            }
         }
 
         /// <summary>
@@ -125,6 +102,10 @@ namespace UlmUniversityNews.Views.Homescreen
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             Debug.WriteLine("LoadState Homescreen");
+
+            // Registriere für Homescreen View relevante Events des PushNotificationManagers.
+            subscribeToPushManagerEvents();
+
             // Lade "Meine Kanäle"
             await homescreenViewModel.LoadMyChannelsAsync();
         }
@@ -139,7 +120,51 @@ namespace UlmUniversityNews.Views.Homescreen
         /// serialisierbarer Zustand.</param>
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
+            // Deregistriere von PushNotificationEvents beim Verlassen der Seite.
+            unsubscribeFromPushManagerEvents();
         }
+
+        #region PushNotificationManagerEvents
+        /// <summary>
+        /// Abonniere für die HomescreenView relevante Events, die vom PushNotificationManager bereitgestellt werden.
+        /// Beim Empfangen dieser Events wird die Homescreen View ihren Zustand aktualisieren.
+        /// </summary>
+        private void subscribeToPushManagerEvents()
+        {
+            // Registriere PushNotification Events, die für die Homescreen View von Interesse sind.
+            PushNotificationManager pushManager = PushNotificationManager.GetInstance();
+            pushManager.ReceivedAnnouncement += pushManager_ReceivedAnnouncement;
+        }
+
+        /// <summary>
+        /// Deabonniere alle Events des PushNotificationManager, für die sich die View registriert hat.
+        /// </summary>
+        private void unsubscribeFromPushManagerEvents()
+        {
+            // Deregistriere PushNotification Events, die für die Homescreen View von Interesse sind.
+            PushNotificationManager pushManager = PushNotificationManager.GetInstance();
+            pushManager.ReceivedAnnouncement -= pushManager_ReceivedAnnouncement;
+        }
+
+        /// <summary>
+        /// Event-Handler, der ausgeführt wird, wenn vom PushNotificationManager ein
+        /// ReceivedAnnouncement-Event verschickt wird.
+        /// </summary>
+        /// <param name="sender">Der Sender des Events, d.h. hier der PushNotificationManager.</param>
+        /// <param name="e">Eventparameter</param>
+        async void pushManager_ReceivedAnnouncement(object sender, EventArgs e)
+        {
+            if (homescreenViewModel != null)
+            {
+                // Ausführung auf UI-Thread abbilden.
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                    {
+                        await homescreenViewModel.UpdateNumberOfUnreadAnnouncements();
+                    });
+            }
+        }
+        #endregion PushNotificationManagerEvents
 
         #region NavigationHelper-Registrierung
 

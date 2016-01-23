@@ -17,6 +17,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using DataHandlingLayer.ViewModel;
 using System.Diagnostics;
+using Windows.ApplicationModel.Core;
+using UlmUniversityNews.PushNotifications.EventArgClasses;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -144,7 +146,10 @@ namespace UlmUniversityNews.Views.ChannelDetails
                 if (successful)
                 {
                     channelDetailsViewModel.LoadSelectedChannel(selectedChannelId);
-                }       
+                }
+       
+                // Registriere View für PushNotificationManager Events.
+                subscribeToPushManagerEvents();
             }
         }
 
@@ -162,9 +167,57 @@ namespace UlmUniversityNews.Views.ChannelDetails
             if(channelDetailsViewModel.ChannelSubscribedStatus)
             {
                 // Markiere die Nachrichten dieses Kanals nun als gelsen.
-                channelDetailsViewModel.MarkAnnouncementsAsReadAsync();
+                channelDetailsViewModel.MarkAnnouncementsAsRead();
+            }
+
+            // Deregistriere View von PushNotificationManager Events.
+            unsubscribeFromPushManagerEvents();
+        }
+
+        #region PushNotificationManagerEvents
+        /// <summary>
+        /// Abonniere für die ChannelDetails View relevante Events, die vom PushNotificationManager bereitgestellt werden.
+        /// Beim Empfangen dieser Events wird die ChannelDetails View ihren Zustand aktualisieren.
+        /// </summary>
+        private void subscribeToPushManagerEvents()
+        {
+            PushNotifications.PushNotificationManager pushManager = PushNotifications.PushNotificationManager.GetInstance();
+            pushManager.ReceivedAnnouncement += pushManager_ReceivedAnnouncement;
+        }
+
+        /// <summary>
+        /// Deabonniere alle Events des PushNotificationManager, für die sich die View registriert hat.
+        /// </summary>
+        private void unsubscribeFromPushManagerEvents()
+        {
+            PushNotifications.PushNotificationManager pushManager = PushNotifications.PushNotificationManager.GetInstance();
+            pushManager.ReceivedAnnouncement -= pushManager_ReceivedAnnouncement;
+        }
+
+        /// <summary>
+        /// EventHandler für das ReceivedAnnouncement Event. Dieser EventHandler wird aufgerufen, wenn eine
+        /// neue Announcement per PushNachricht empfangen wurde.
+        /// </summary>
+        /// <param name="sender">Der Sender des Events, hier der PushNotificationManager.</param>
+        /// <param name="e">Die Eventparameter.</param>
+        async void pushManager_ReceivedAnnouncement(object sender, AnnouncementReceivedEventArgs e)
+        {
+            if(channelDetailsViewModel != null)
+            {
+                // Ausführung auf UI-Thread abbilden.
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                    {
+                        // Aktualisiere View, wenn eigener Kanal betroffen.
+                        if(channelDetailsViewModel.Channel != null 
+                            && channelDetailsViewModel.Channel.Id == e.ChannelId)
+                        {
+                            await channelDetailsViewModel.UpdateAnnouncementsOnAnnouncementReceived();
+                        }
+                    });
             }
         }
+        #endregion PushNotificationManagerEvents
 
         #region NavigationHelper-Registrierung
 
