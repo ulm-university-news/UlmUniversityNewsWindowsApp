@@ -100,7 +100,7 @@
                             MinWidth="40"
                             HorizontalContentAlignment="Stretch" 
                             HorizontalAlignment="Stretch"
-                            Command="{Binding StartChannelSearchCommand}">
+                            Command="{Binding StartChannelSearchCommand}" BorderThickness="0">
                             <Button.Background>
                                 <ImageBrush Stretch="None" 
                                             ImageSource="/Assets/ButtonIcons/feature.search.png"/>

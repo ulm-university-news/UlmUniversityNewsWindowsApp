@@ -20,7 +20,8 @@
         <!-- Colors -->
         <SolidColorBrush x:Key="UniUlmMainBackgroundColor" Color="#7D9AAA" />
         <SolidColorBrush x:Key="UniUlmAccentColor" Color="#A9A280" Opacity="0.5"  />
-        <SolidColorBrush x:Key="UniUlmAccentColorListItemBackground" Color="#A9A280" Opacity="0.1"  />
+        <SolidColorBrush x:Key="UniUlmAccentColorListItemBackground" Color="Gray" Opacity="0.1"  />
+        <!--<SolidColorBrush x:Key="UniUlmAccentColorListItemBackground" Color="#A9A280" Opacity="0.1"  />-->
         <SolidColorBrush x:Key="UniUlmAccentColorElementBackground" Color="#A9A280" Opacity="0.4"  />
         <SolidColorBrush x:Key="UniUlmFacultyColorInformaticsAndEngineering" Color="#A32638" />
         <SolidColorBrush x:Key="UniUlmFacultyColorMathematicsAndEconomics" Color="#56AA1C" />
@@ -45,7 +46,7 @@
             <Setter Property="TextTrimming" Value="WordEllipsis" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="FontSize" Value="20" />
-            <Setter Property="Margin" Value="5,2,0,5" />
+            <Setter Property="Margin" Value="5,3,0,5" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Padding" Value="10" />
         </Style>
