@@ -45,14 +45,15 @@ namespace UlmUniversityNews.Views.ChannelDetails
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
 
-            // Initialisiere das Drawer Layout.
-            DrawerLayout.InitializeDrawerLayout();
-
             ChannelDetailsPivot.Loaded += ChannelDetailsPivot_Loaded;
             this.Loaded += ChannelDetails_Loaded;
             
             channelDetailsViewModel = new ChannelDetailsViewModel(App.NavigationService, App.ErrorMapper);
             this.DataContext = channelDetailsViewModel;
+
+            // Initialisiere das Drawer Layout.
+            DrawerLayout.InitializeDrawerLayout();
+            ListMenuItems.ItemsSource = channelDetailsViewModel.DrawerMenuEntriesStatusNoLogin;
 
             channelDetailsViewModel.PropertyChanged += channelDetailsViewModel_PropertyChanged;
         }

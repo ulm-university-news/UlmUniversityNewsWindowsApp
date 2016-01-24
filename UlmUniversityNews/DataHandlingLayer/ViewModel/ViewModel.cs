@@ -12,6 +12,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using DataHandlingLayer.CommandRelays;
 
 namespace DataHandlingLayer.ViewModel
 {
@@ -77,6 +78,18 @@ namespace DataHandlingLayer.ViewModel
         }  
         #endregion properties
 
+        #region Commands
+        private RelayCommand drawerButtonCommand;
+        /// <summary>
+        /// Der Befehl zur Behandlung eines Klicks auf einen Button im Drawer Menü.
+        /// </summary>
+        public RelayCommand DrawerButtonCommand
+        {
+            get { return drawerButtonCommand; }
+            set { drawerButtonCommand = value; }
+        }      
+        #endregion Commands
+
         /// <summary>
         /// Konstruktor zur Initialisierung der ViewModel Klasse.
         /// </summary>
@@ -88,6 +101,9 @@ namespace DataHandlingLayer.ViewModel
             ValidationMessages = new DataHandlingLayer.Common.ObservableDictionary();
             drawerMenuEntriesStatusNoLogin = new List<DrawerMenuEntry>();
             drawerMenuEntriesStatusLoggedIn = new List<DrawerMenuEntry>();
+
+            // Erzeuge die Commands.
+            DrawerButtonCommand = new RelayCommand(param => executeDrawerButtonCommand(param));
 
             // Erzeuge Drawer Menüeinträge.
             createDrawerMenuEntries();
@@ -215,6 +231,24 @@ namespace DataHandlingLayer.ViewModel
             drawerMenuEntriesStatusNoLogin.Add(homescreenEntry);
             drawerMenuEntriesStatusNoLogin.Add(applicationSettingsEntry);
             drawerMenuEntriesStatusNoLogin.Add(loginEntry);
+        }
+
+        /// <summary>
+        /// Behandle Klick auf einen Button im Drawer Menü.
+        /// </summary>
+        private void executeDrawerButtonCommand(object clickedButton)
+        {
+            DrawerMenuEntry menuEntry = clickedButton as DrawerMenuEntry;
+            if(menuEntry != null)
+            {
+                Debug.WriteLine("Drawer Button is clicked. Button with name {0}.", menuEntry.MenuEntryName);
+
+                if(menuEntry.MenuEntryName == "Homescreen")
+                {
+                    // Navigiere auf die Homepage.
+                    _navService.Navigate(menuEntry.ReferencedPageKey);
+                }
+            }
         }
     }
 }

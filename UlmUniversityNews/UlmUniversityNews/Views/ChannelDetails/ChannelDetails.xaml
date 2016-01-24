@@ -31,6 +31,9 @@
 
         <!-- Konverter zum Ausblenden/Einblenden einer Nachricht, wenn die Liste der Announcements leer ist. -->
         <converter:ListCountToVisibilityConverter x:Key="ListCountToVisibilityConverter" />
+
+        <!-- Konvertierung eines ItemClickEventArgs auf das geklickte Objekt. -->
+        <converter:ItemClickedConverter x:Key="ItemClickedConverter" />
     </Page.Resources>
 
     <!-- CommandBar -->
@@ -1064,20 +1067,25 @@
             </Grid>
 
             <!-- Inhalt des Drawer Menüs-->
-            <!--<Grid x:Name="ListFragment" Background="{StaticResource UniUlmAccentColor}">
-                <ListView x:Name="ListMenuItems">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}"
-                                       Margin="10"
-                                       HorizontalAlignment="Left"
-                                       VerticalAlignment="Center"
-                                       FontSize="18"
-                                       Foreground="Black" />
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
+            <Grid x:Name="ListFragment" Background="{StaticResource DrawerMenuContentPanelBackgroundColor}">
+                <ListView x:Name="ListMenuItems"
+                          ItemTemplate="{StaticResource DrawerMenuEntryDataTemplate}"
+                          IsItemClickEnabled="True">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+
+                    <!-- Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
+                    <i:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{Binding DrawerButtonCommand}"
+                                                              InputConverter="{StaticResource ItemClickedConverter}" />
+                        </core:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
                 </ListView>
-            </Grid>-->
+            </Grid>
 
         </drawerLayout:DrawerLayout>
 
