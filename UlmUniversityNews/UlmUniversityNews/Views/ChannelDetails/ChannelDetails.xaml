@@ -641,7 +641,7 @@
                                             Grid.Row="1"
                                             x:Name="ChannelWebsiteContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
-                                            Text="{Binding Website, TargetNullValue='', FallbackValue=''}" />
+                                            common:HyperLinkedTextBlock.Text="{Binding Website, TargetNullValue='', FallbackValue=''}" />
                                                 <!--{Binding Website, TargetNullValue='', FallbackValue=''}-->
 
                                         <Line Grid.Row="2"
