@@ -15,6 +15,7 @@
         <converter:ZeroIntegerToVisibilityConverter x:Key="ZeroIntegerToVisibilityConverter" />
         <converter:DateTimeToStringConverter x:Key="DateTimeToStringConverter" />
         <converter:MessageReadPropertyToBackgroundColorConverter x:Key="MessageReadPropertyToBackgroundColorConverter" />
+        <converter:DrawerMenuEntryNameToLocalizedStringConverter x:Key="DrawerMenuEntryNameToLocalizedStringConverter" />
         
         
         <!-- Colors -->
@@ -29,6 +30,7 @@
         <SolidColorBrush x:Key="UniUlmFacultyColorNaturalSciences" Color="#BD6005" />
         <SolidColorBrush x:Key="MainFragmentBackgroundColor" Color="White" />
         <SolidColorBrush x:Key="UnreadMessageBackgroundColor" Color="Gray" Opacity="0.3" />
+        <SolidColorBrush x:Key="DrawerMenuContentPanelBackgroundColor" Color="White" />
         
         <!-- Style für Schriften in Listen und Aufzählungen. -->
         <Style 
@@ -174,6 +176,36 @@
             <Setter Property="Margin" Value="0,0,0,0" />
             <Setter Property="Height" Value="60" />
         </Style>
+        
+        <!-- Definition des DataTemplates für die Menüeinträge.-->
+        <DataTemplate
+            x:Key="DrawerMenuEntryDataTemplate">
+            <Grid
+                Margin="0, 5, 0, 5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <!-- 1. Spalte: Icon -->
+                <Image
+                    Width="65px"
+                    Height="65px"
+                    Grid.Column="0"
+                    Source="{Binding IconPath, TargetNullValue='', FallbackValue=''}" />
+                
+                <!-- 2. Spalte: Name des Menüeintrags. -->          
+                <TextBlock 
+                    Grid.Column="1"
+                    Text="{Binding DisplayableNameResourceKey, TargetNullValue='', FallbackValue='', Converter={StaticResource DrawerMenuEntryNameToLocalizedStringConverter}}"
+                    TextWrapping="Wrap"
+                    FontSize="20"
+                    FontFamily="Arial"
+                    FontWeight="Bold"
+                    VerticalAlignment="Center"
+                    Padding="10"/>
+            </Grid>
+        </DataTemplate>
 
         <!-- ************************************************************************************************************************************* -->
         <!-- Pivot elements: --> 

@@ -124,6 +124,7 @@
     <Compile Include="Converters\ChannelToDrawerMenuBackgroundConverter.cs" />
     <Compile Include="Converters\ChannelTypeToStringConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
+    <Compile Include="Converters\DrawerMenuEntryNameToLocalizedStringConverter.cs" />
     <Compile Include="Converters\FacultyToLocalizedStringConverter.cs" />
     <Compile Include="Converters\ItemClickedConverter.cs" />
     <Compile Include="Converters\ListCountToVisibilityConverter.cs" />
@@ -182,6 +183,10 @@
     <Content Include="Assets\AppIcons\UUNLogoInfoanzeige-58-58.png" />
     <Content Include="Assets\AppIcons\welcome_screen.png" />
     <Content Include="Assets\ButtonIcons\feature.search.png" />
+    <Content Include="Assets\Drawer\feature.settings.png" />
+    <Content Include="Assets\extIcons\appbar.door.enter.png" />
+    <Content Include="Assets\extIcons\appbar.home.empty.png" />
+    <Content Include="Assets\extIcons\license.txt" />
     <Content Include="Assets\ResourceDetailsIcons\ContactsInfo.png" />
     <Content Include="Assets\ResourceDetailsIcons\FacultyInfo.png" />
     <Content Include="Assets\ResourceDetailsIcons\CostInfo.png" />
@@ -278,6 +283,7 @@
       <Name>Behaviors SDK %28XAML%29</Name>
     </SDKReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>

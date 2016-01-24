@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using DataHandlingLayer.ViewModel;
 using UlmUniversityNews.PushNotifications;
+using DataHandlingLayer.DataModel;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -52,8 +53,8 @@ namespace UlmUniversityNews.Views.Homescreen
 
             // Initialisiere das Drawer Layout.
             DrawerLayout.InitializeDrawerLayout();
-            string[] menuItems = new string[5] { "Test Item 1", "Test Item 2", "Test Item 3", "Test Item 4", "Test Item 5" };
-            ListMenuItems.ItemsSource = menuItems.ToList();
+            List<DrawerMenuEntry> test = homescreenViewModel.DrawerMenuEntriesStatusNoLogin;
+            ListMenuItems.ItemsSource = test;            
 
             Debug.WriteLine("Finished constructor of Homescreen.");
         }

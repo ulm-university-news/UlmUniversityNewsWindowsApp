@@ -152,18 +152,14 @@
             
             
              <!--Inhalt des Drawer Menüs-->
-            <Grid x:Name="ListFragment" Background="{StaticResource UniUlmMainBackgroundColor}">
-                <ListView x:Name="ListMenuItems">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}"
-                                       Margin="10"
-                                       HorizontalAlignment="Left"
-                                       VerticalAlignment="Center"
-                                       FontSize="18"
-                                       Foreground="Black" />
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
+            <Grid x:Name="ListFragment" Background="{StaticResource DrawerMenuContentPanelBackgroundColor}">
+                <ListView x:Name="ListMenuItems"
+                          ItemTemplate="{StaticResource DrawerMenuEntryDataTemplate}">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
                 </ListView>
             </Grid>
 

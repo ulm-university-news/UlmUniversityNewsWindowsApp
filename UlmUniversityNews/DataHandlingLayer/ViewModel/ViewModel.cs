@@ -22,6 +22,7 @@ namespace DataHandlingLayer.ViewModel
     /// </summary>
     public abstract class ViewModel : INotifyPropertyChanged, IValidationErrorReport
     {
+        #region Fields
         /// <summary>
         ///  Eine Referenz auf den Navigationsdienst, über den die Seitennavigation erfolgt.
         /// </summary>
@@ -36,6 +37,7 @@ namespace DataHandlingLayer.ViewModel
         /// PropertyChanged Event wird gefeuert, wenn sich Werte von bestimmten Properties geändert haben.
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+        #endregion Fields
 
         # region properties
         private DataHandlingLayer.Common.ObservableDictionary validationMessages;
@@ -51,6 +53,28 @@ namespace DataHandlingLayer.ViewModel
                 onPropertyChanged("ValidationMessages");
             }
         }
+
+        private List<DrawerMenuEntry> drawerMenuEntriesStatusNoLogin;
+        /// <summary>
+        /// Eine Liste aller Drawer Menüeinträge, die angezeigt werden sollen,
+        /// wenn der aktuelle Nutzer nicht eingeloggt ist.
+        /// </summary>
+        public List<DrawerMenuEntry> DrawerMenuEntriesStatusNoLogin
+        {
+            get { return drawerMenuEntriesStatusNoLogin; }
+            set { drawerMenuEntriesStatusNoLogin = value; }
+        }
+
+        private List<DrawerMenuEntry> drawerMenuEntriesStatusLoggedIn;
+        /// <summary>
+        /// Eine Liste aller Drawer Menüeinträge, die angezeigt werden sollen,
+        /// wenn der aktuelle Nutzer eingeloggt ist.
+        /// </summary>
+        public List<DrawerMenuEntry> DrawerMenuEntriesStatusLoggedIn
+        {
+            get { return drawerMenuEntriesStatusLoggedIn; }
+            set { drawerMenuEntriesStatusLoggedIn = value; }
+        }  
         #endregion properties
 
         /// <summary>
@@ -62,6 +86,11 @@ namespace DataHandlingLayer.ViewModel
             _errorMapper = errorMapper;
 
             ValidationMessages = new DataHandlingLayer.Common.ObservableDictionary();
+            drawerMenuEntriesStatusNoLogin = new List<DrawerMenuEntry>();
+            drawerMenuEntriesStatusLoggedIn = new List<DrawerMenuEntry>();
+
+            // Erzeuge Drawer Menüeinträge.
+            createDrawerMenuEntries();
         }
 
         // Property Change Logik:
@@ -148,6 +177,44 @@ namespace DataHandlingLayer.ViewModel
         public void RemoveAllFailureMessages()
         {
             ValidationMessages.Clear();
+        }
+
+        /// <summary>
+        /// Erzeugt die Menüeinträge für das Drawer Menü.
+        /// </summary>
+        private void createDrawerMenuEntries()
+        {
+            // Homescreen
+            DrawerMenuEntry homescreenEntry = new DrawerMenuEntry()
+            {
+                MenuEntryName = "Homescreen",
+                DisplayableNameResourceKey = "DrawerMenuEntryHomescreen",
+                ReferencedPageKey = "Homescreen",
+                IconPath = "/Assets/extIcons/appbar.home.empty.png"
+            };
+
+            // Login Seite
+            DrawerMenuEntry loginEntry = new DrawerMenuEntry()
+            {
+                MenuEntryName = "Login",
+                DisplayableNameResourceKey = "DrawerMenuEntryLogin",
+                ReferencedPageKey = "Login",
+                IconPath = "/Assets/extIcons/appbar.door.enter.png"
+            };
+
+            // Anwendungseinstellung
+            DrawerMenuEntry applicationSettingsEntry = new DrawerMenuEntry()
+            {
+                MenuEntryName = "Anwendungseinstellungen",
+                DisplayableNameResourceKey = "DrawerMenuEntryApplicationSettings",
+                ReferencedPageKey = "ApplicationSettings",
+                IconPath = "/Assets/Drawer/feature.settings.png"
+            };
+
+            // Füge Einträge der Liste hinzu, die den nicht eingeloggten Zustand repräsentiert.
+            drawerMenuEntriesStatusNoLogin.Add(homescreenEntry);
+            drawerMenuEntriesStatusNoLogin.Add(applicationSettingsEntry);
+            drawerMenuEntriesStatusNoLogin.Add(loginEntry);
         }
     }
 }

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using UlmUniversityNews.PushNotifications.EventArgClasses;
 using Windows.Data.Xml.Dom;
 using Windows.Networking.PushNotifications;
+using Windows.Phone.Devices.Notification;
 using Windows.UI.Notifications;
 
 namespace UlmUniversityNews.PushNotifications
@@ -208,7 +209,7 @@ namespace UlmUniversityNews.PushNotifications
                         switch (pushMsg.PushType)
                         {
                             case PushType.ANNOUNCEMENT_NEW:
-                                    showToastNotification("Neue Kanalnachricht empfangen");
+                                alertUser();
                                 break;
                         }
                     }
@@ -217,28 +218,37 @@ namespace UlmUniversityNews.PushNotifications
         }
 
         /// <summary>
-        /// Zeige den Text in einer ToastNotification an, um den Nutzer über ein Ereignis zu informieren.
+        /// Lässt das Telefon vibrieren, um den Nutzer über ein Event zu benachrichtigen.
         /// </summary>
-        /// <param name="text">Der anzuzeigende Text.</param>
-        private void showToastNotification(string text)
+        private void alertUser()
         {
-            // Für den Anfang, sende nur eine ToastNotification mit dem Typ der PushNachricht und mache weiter nichts.
-            var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);
-
-            // Setze das Icon.
-            // var toastImageAttributes = toastDescriptor.GetElementsByTagName("image");
-            //toastImageAttributes[0].Attributes[1].NodeValue = "ms-appx:///UlmUniversityNews/Assets/AppIcons/AppLogoUni.png";
-
-            // ((XmlElement)toastImageAttributes[0]).SetAttribute("src", "ms-appx:///UlmUniversityNews/Assets/AppIcons/AppLogoUni-50-50.png");
-            //((XmlElement)toastImageAttributes[0]).SetAttribute("alt", "UUNLogo");
-
-            // Setze den Text.
-            var txtNodes = toastDescriptor.GetElementsByTagName("text");
-            txtNodes[0].AppendChild(toastDescriptor.CreateTextNode(text));
-
-            var toast = new ToastNotification(toastDescriptor);
-            var toastNotifier = ToastNotificationManager.CreateToastNotifier();
-            toastNotifier.Show(toast);
+            VibrationDevice vibrationDevice = VibrationDevice.GetDefault();
+            vibrationDevice.Vibrate(TimeSpan.FromSeconds(1));
         }
+
+        ///// <summary>
+        ///// Zeige den Text in einer ToastNotification an, um den Nutzer über ein Ereignis zu informieren.
+        ///// </summary>
+        ///// <param name="text">Der anzuzeigende Text.</param>
+        //private void showToastNotification(string text)
+        //{
+        //    // Für den Anfang, sende nur eine ToastNotification mit dem Typ der PushNachricht und mache weiter nichts.
+        //    var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);
+
+        //    // Setze das Icon.
+        //    // var toastImageAttributes = toastDescriptor.GetElementsByTagName("image");
+        //    //toastImageAttributes[0].Attributes[1].NodeValue = "ms-appx:///UlmUniversityNews/Assets/AppIcons/AppLogoUni.png";
+
+        //    // ((XmlElement)toastImageAttributes[0]).SetAttribute("src", "ms-appx:///UlmUniversityNews/Assets/AppIcons/AppLogoUni-50-50.png");
+        //    //((XmlElement)toastImageAttributes[0]).SetAttribute("alt", "UUNLogo");
+
+        //    // Setze den Text.
+        //    var txtNodes = toastDescriptor.GetElementsByTagName("text");
+        //    txtNodes[0].AppendChild(toastDescriptor.CreateTextNode(text));
+
+        //    var toast = new ToastNotification(toastDescriptor);
+        //    var toastNotifier = ToastNotificationManager.CreateToastNotifier();
+        //    toastNotifier.Show(toast);
+        //}
     }
 }

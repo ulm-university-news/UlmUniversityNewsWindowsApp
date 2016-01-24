@@ -312,4 +312,13 @@
   <data name="ChannelDetailsUpdateAnnouncementsButton.Label" xml:space="preserve">
     <value>update messages</value>
   </data>
+  <data name="DrawerMenuEntryApplicationSettings" xml:space="preserve">
+    <value>Application Settings</value>
+  </data>
+  <data name="DrawerMenuEntryHomescreen" xml:space="preserve">
+    <value>Homescreen</value>
+  </data>
+  <data name="DrawerMenuEntryLogin" xml:space="preserve">
+    <value>Login</value>
+  </data>
 </root>

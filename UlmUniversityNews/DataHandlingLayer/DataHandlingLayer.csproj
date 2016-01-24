@@ -104,6 +104,7 @@
     <Compile Include="DataModel\Announcement.cs" />
     <Compile Include="DataModel\Channel.cs" />
     <Compile Include="DataModel\ConversationMessage.cs" />
+    <Compile Include="DataModel\DrawerMenuEntry.cs" />
     <Compile Include="DataModel\Enums\ChannelType.cs" />
     <Compile Include="DataModel\Enums\Language.cs" />
     <Compile Include="DataModel\Enums\Priority.cs" />
