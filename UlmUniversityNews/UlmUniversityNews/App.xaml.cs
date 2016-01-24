@@ -273,7 +273,7 @@ namespace UlmUniversityNews
             }
             catch(ClientException ex){
                 // TODO - How to handle this error?
-                Debug.WriteLine("Error while trying to retrieve local user account.");
+                Debug.WriteLine("Error while trying to retrieve local user account. Error code is: {0}.", ex.ErrorCode);
             }
 
             if(localUser == null){

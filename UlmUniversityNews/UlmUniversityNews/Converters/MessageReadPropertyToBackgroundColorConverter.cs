@@ -19,7 +19,7 @@ namespace UlmUniversityNews.Converters
             bool isRead = (bool)value;
             if(isRead)
             {
-                return App.Current.Resources["UniUlmAccentColorListItemBackground"];
+                return App.Current.Resources["MainFragmentBackgroundColor"];
             }
             return App.Current.Resources["UnreadMessageBackgroundColor"];
         }

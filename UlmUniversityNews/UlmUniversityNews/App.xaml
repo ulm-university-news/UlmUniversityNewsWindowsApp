@@ -27,7 +27,7 @@
         <SolidColorBrush x:Key="UniUlmFacultyColorMedicine" Color="#26247C" />
         <SolidColorBrush x:Key="UniUlmFacultyColorNaturalSciences" Color="#BD6005" />
         <SolidColorBrush x:Key="MainFragmentBackgroundColor" Color="White" />
-        <SolidColorBrush x:Key="UnreadMessageBackgroundColor" Color="Gray" Opacity="0.9" />
+        <SolidColorBrush x:Key="UnreadMessageBackgroundColor" Color="Gray" Opacity="0.3" />
         
         <!-- Style für Schriften in Listen und Aufzählungen. -->
         <Style 
@@ -39,42 +39,74 @@
         
         <Style 
             x:Key="HeaderTextInPropertyDescriptions"
-            TargetType="TextBlock">
+            TargetType="TextBlock"
+            BasedOn="{StaticResource ListTextStyle}">
+            <Setter Property="TextWrapping" Value="NoWrap" />
+            <Setter Property="TextTrimming" Value="WordEllipsis" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="Margin" Value="5,2,0,5" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Padding" Value="10" />
+        </Style>
+
+        <Style 
+            x:Key="TextInPropertyDescriptions"
+            TargetType="TextBlock"
+            BasedOn="{StaticResource ListTextStyle}">
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="5,5,5,0" />
+        </Style>
+
+        <Style
+            x:Key="HeaderTextInAnnouncementList"
+            TargetType="TextBlock"
+            BasedOn="{StaticResource ListTextStyle}">
             <Setter Property="TextWrapping" Value="NoWrap" />
             <Setter Property="TextTrimming" Value="WordEllipsis" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="FontSize" Value="20" />
             <Setter Property="Margin" Value="5,0,0,5" />
-            <Setter Property="FontFamily" Value="Arial" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Padding" Value="0, 10, 10, 10" />
         </Style>
 
-        <Style 
-            x:Key="TextInPropertyDescriptions"
-            TargetType="TextBlock">
+        <Style
+            x:Key="TextInAnnouncementList"
+            TargetType="TextBlock"
+            BasedOn="{StaticResource ListTextStyle}">
             <Setter Property="TextWrapping" Value="Wrap" />
             <Setter Property="Margin" Value="5,5,5,0" />
-            <Setter Property="FontSize" Value="18" />
-            <Setter Property="FontFamily" Value="Arial" />
         </Style>
         
         <Style 
             x:Key="DateTimeFieldinList"
-            TargetType="TextBlock">
+            TargetType="TextBlock"
+            BasedOn="{StaticResource ListTextStyle}">
             <Setter Property="Margin" Value="0,0,5,0" />
             <Setter Property="TextWrapping" Value="NoWrap" />
             <Setter Property="TextTrimming" Value="None" />
             <Setter Property="FontSize" Value="16" />
-            <Setter Property="FontFamily" Value="Arial" />
         </Style>
         
         <Style
             x:Key="TextInFlyoutsStyle"
-            TargetType="TextBlock">
+            TargetType="TextBlock"
+            BasedOn="{StaticResource ListTextStyle}">
             <Setter Property="Margin" Value="10" />
             <Setter Property="TextWrapping" Value="WrapWholeWords" />
             <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="FontSize" Value="18" />
-            <Setter Property="FontFamily" Value="Arial" />
+        </Style>
+
+        <!-- *************************************************************************************************************************************-->
+        <!-- Image Style für Aufzählung der Eigenschaften eines Kanals. -->
+        <Style
+            x:Key="EnumerationOfPropertiesIconStyle"
+            TargetType="Image">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Width" Value="30px" />
+            <Setter Property="Height" Value="30px" />
         </Style>
         
         <!-- *************************************************************************************************************************************-->
@@ -84,7 +116,19 @@
             TargetType="Grid">
             <Setter Property="Margin" Value="0,0,0,10" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="Background" Value="{StaticResource UniUlmAccentColorListItemBackground}" />
+            <!--<Setter Property="Background" Value="{StaticResource UniUlmAccentColorListItemBackground}" />-->
+        </Style>
+        
+        <Style
+            x:Key="EnumerationOfPropertiesSeperatorStyle"
+            TargetType="Line">
+            <Setter Property="X1" Value="0" />
+            <Setter Property="X2" Value="1" />
+            <Setter Property="Stretch" Value="Fill" />
+            <Setter Property="Stroke" Value="Black" />
+            <Setter Property="StrokeThickness" Value="2" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Margin" Value="-5, 5, -5, 0" />
         </Style>
                 
         <!-- ************************************************************************************************************************************* -->
@@ -264,54 +308,69 @@
         <!-- Data Template eines Eintrags einer Announcement-Ressource in der Detailansicht eines Kanals. -->
         <DataTemplate
             x:Key="AnnouncementListItemStyle">
-            <Grid
-                Background="{StaticResource UniUlmAccentColorListItemBackground}"
-                Height="Auto"       
-                Margin="0,5,19,5">
+            <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" /> <!-- 1.Zeile für Announcement Titel und Datum -->
-                    <RowDefinition Height="Auto" /> <!-- 2.Zeile für Inhalt der Nachricht -->
+                    <RowDefinition Height="Auto" />    <!-- 1. Zeile: Announcement-->
+                    <RowDefinition Height="Auto" />    <!-- 2.Zeile:  Seperator-->
                 </Grid.RowDefinitions>
-                
-                <!-- 1. Zeile -->
-                <!-- Grid für Announcement Titel und Datum.-->
+
                 <Grid
                     Background="{Binding Read, Converter={StaticResource MessageReadPropertyToBackgroundColorConverter}}"
+                    Height="Auto"       
+                    Margin="0,5,19,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />              <!-- 1.Zeile für Announcement Titel und Datum -->
+                        <RowDefinition Height="Auto" />              <!-- 2.Zeile für Inhalt der Nachricht -->
+                    </Grid.RowDefinitions>
+
+                    <!-- 1. Zeile -->
+                    <!-- Grid für Announcement Titel und Datum.-->
+                    <Grid
                     Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*" />   <!-- Spalte für Titel -->
-                        <ColumnDefinition Width="*" />   <!-- Spalte für Datum -->
-                    </Grid.ColumnDefinitions>
-                    
-                    <!-- Titel -->
-                    <TextBlock
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*" />
+                            <!-- Spalte für Titel -->
+                            <ColumnDefinition Width="*" />
+                            <!-- Spalte für Datum -->
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Titel -->
+                        <TextBlock
                         Grid.Column="0"
                         x:Name="AnnouncementTitle"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         TextAlignment="Left"
-                        Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                        Style="{StaticResource HeaderTextInAnnouncementList}"
                         Text="{Binding Title}" />
-                    
-                    <!-- Datum -->
-                    <TextBlock
+
+                        <!-- Datum -->
+                        <TextBlock
                         Grid.Column="1"
                         x:Name="AnnouncementCreationDate"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Right"
                         TextAlignment="Right"
                         Style="{StaticResource DateTimeFieldinList}"
-                        Text="{Binding CreationDate, Converter={StaticResource DateTimeToStringConverter}}"/> <!-- TODO Add converter-->
-                </Grid>
-                
-                <!-- 2.Zeile -->
-                <!-- Nachrichteninhalt -->
-                <TextBlock
+                        Text="{Binding CreationDate, Converter={StaticResource DateTimeToStringConverter}}"/>
+                        <!-- TODO Add converter-->
+                    </Grid>
+
+                    <!-- 2.Zeile -->
+                    <!-- Nachrichteninhalt -->
+                    <TextBlock
                     Grid.Row="1"
                     x:Name="AnnouncementContent"
-                    Style="{StaticResource TextInPropertyDescriptions}"
+                    Style="{StaticResource TextInAnnouncementList}"
                     Text="{Binding Text}" />
-            </Grid>
+                </Grid>
+
+                <!-- 3. Zeile Sepeartor-->
+                <Line 
+                    Grid.Row="1"
+                    Margin="-5, 5, 19, 5"
+                    Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
+            </Grid>          
         </DataTemplate>
             
         <!-- Command Bar:-->

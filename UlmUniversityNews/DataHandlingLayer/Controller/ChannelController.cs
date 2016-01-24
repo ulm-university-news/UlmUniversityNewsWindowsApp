@@ -16,6 +16,7 @@ namespace DataHandlingLayer.Controller
 {
     public class ChannelController : MainController
     {
+        #region Fields
         /// <summary>
         /// Eine Referenz auf den DatabaseManager, der Funktionalität bezüglich der Kanal-Ressourcen und den zugehörigen Subressourcen beinhaltet.
         /// </summary>
@@ -30,6 +31,7 @@ namespace DataHandlingLayer.Controller
         /// Eine Referenz auf eine Instanz der API Klasse mittels der Requests an den Server abgesetzt werden können.
         /// </summary>
         private API.API api;
+        #endregion Fields
 
         /// <summary>
         /// Erzeugt eine Instanz der ChannelController Klasse.

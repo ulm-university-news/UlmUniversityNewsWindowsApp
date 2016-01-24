@@ -242,85 +242,193 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsChannelNameField"
-                                            x:Name="ChannelName"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Name" />
+                                        <!-- Icon und Title für Kanalname. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
 
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/NameInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsChannelNameField"
+                                                x:Name="ChannelName"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Name"
+                                                />
+                                        </Grid>
+           
                                         <TextBlock
                                             Grid.Row="1"
                                             x:Name="ChannelNameContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding Name, TargetNullValue='', FallbackValue=''}" />
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                     </Grid>
 
-                                    <!-- Kanalbeschreibung -->
+                                    <!-- Kanaltyp -->
                                     <Grid
-                                        x:Name="ChannelNameGrid"
                                         Grid.Row="1"
                                         Style="{StaticResource EnumerationOfPropertiesGridStyle}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsChannelDescriptionField"
-                                            x:Name="ChannelDescription"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"/>
-
-                                        <TextBlock
-                                            Grid.Row="1"
-                                            x:Name="ChannelDescriptionContent"
-                                            Style="{StaticResource TextInPropertyDescriptions}"
-                                            Text="{Binding Description, TargetNullValue='', FallbackValue=''}" />
-                                        <!--{Binding Description, TargetNullValue='', FallbackValue=''}-->
-                                    </Grid>
-
-                                    <!-- Kanaltyp -->
-                                    <Grid
-                                        Grid.Row="2"
-                                        Style="{StaticResource EnumerationOfPropertiesGridStyle}">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsChannelTypeField"
-                                            x:Name="ChannelType"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Typ" />
+                                        <!-- Icon und Title für Kanaltyp. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/TypeInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsChannelTypeField"
+                                                x:Name="ChannelType"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Typ" />
+                                        </Grid>
 
                                         <TextBlock
                                             Grid.Row="1"
                                             x:Name="ChannelTypeContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding Type, Converter={StaticResource ChannelTypeToStringConverterLocal}, TargetNullValue='', FallbackValue=''}" />
-                                            <!--{Binding Type, TargetNullValue='', FallbackValue='', Converter={StaticResource ChannelTypeToStringConverterLocal}}-->
+                                        <!--{Binding Type, TargetNullValue='', FallbackValue='', Converter={StaticResource ChannelTypeToStringConverterLocal}}-->
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                     </Grid>
 
-                                    <!-- Erstellungsdatum -->
+                                    <!-- Kanalbeschreibung -->
+                                    <Grid
+                                        x:Name="ChannelNameGrid"
+                                        Grid.Row="2"
+                                        Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Icon und Title für Kanalbeschreibung. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/DescriptionInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsChannelDescriptionField"
+                                                x:Name="ChannelDescription"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Beschreibung"/>
+                                        </Grid>
+                                        
+                                        <TextBlock
+                                            Grid.Row="1"
+                                            x:Name="ChannelDescriptionContent"
+                                            Style="{StaticResource TextInPropertyDescriptions}"
+                                            Text="{Binding Description, TargetNullValue='', FallbackValue=''}" />
+                                        <!--{Binding Description, TargetNullValue='', FallbackValue=''}-->
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
+                                    </Grid>
+
+                                    <!-- Semester -->
                                     <Grid
                                         Grid.Row="3"
                                         Style="{StaticResource EnumerationOfPropertiesGridStyle}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
+                                        <!-- Icon und Title für Semester. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/TermInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsChannelTermField"
+                                                x:Name="ChannelTerm"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Semester" />                                       
+                                        </Grid>
+                                  
                                         <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsChannelCreationDateField"
-                                            x:Name="ChannelCreationDate"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Erstellungsdatum" />
+                                            Grid.Row="1"
+                                            x:Name="ChannelTermContent"
+                                            Style="{StaticResource TextInPropertyDescriptions}"
+                                            Text="{Binding Term, TargetNullValue='', FallbackValue=''}" />
+                                        <!--{Binding Term, TargetNullValue='', FallbackValue=''}-->
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
+                                    </Grid>
+
+                                    <!-- Erstellungsdatum -->
+                                    <Grid
+                                        Grid.Row="4"
+                                        Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Icon und Title für Erstellungsdatum. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/CreationDateInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+                                            
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsChannelCreationDateField"
+                                                x:Name="ChannelCreationDate"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Erstellungsdatum" />                                                 
+                                        </Grid>
 
                                         <TextBlock
                                             Grid.Row="1"
@@ -328,23 +436,41 @@
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding CreationDate, TargetNullValue='', FallbackValue=''}" />
                                                 <!--{Binding Channel.CreationDate, TargetNullValue='', FallbackValue=''}-->
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                     </Grid>
 
                                     <!-- Änderungsdatum -->
                                     <Grid
-                                        Grid.Row="4"
+                                        Grid.Row="5"
                                         Style="{StaticResource EnumerationOfPropertiesGridStyle}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsChannelModificationDateField"
-                                            x:Name="ChannelModificationDate"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Änderungsdatum" />
+
+                                        <!-- Icon und Title für Änderungsdatum. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/ModificationDateInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+                                            
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsChannelModificationDateField"
+                                                x:Name="ChannelModificationDate"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Änderungsdatum" />
+                                        </Grid>               
 
                                         <TextBlock
                                             Grid.Row="1"
@@ -352,30 +478,9 @@
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding ModificationDate, TargetNullValue='', FallbackValue=''}" />
                                                 <!--{Binding Channel.ModificationDate, TargetNullValue='', FallbackValue=''}-->
-                                    </Grid>
 
-                                    <!-- Semester -->
-                                    <Grid
-                                        Grid.Row="5"
-                                        Style="{StaticResource EnumerationOfPropertiesGridStyle}">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto" />
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsChannelTermField"
-                                            x:Name="ChannelTerm"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Semester" />
-
-                                        <TextBlock
-                                            Grid.Row="1"
-                                            x:Name="ChannelTermContent"
-                                            Style="{StaticResource TextInPropertyDescriptions}"
-                                            Text="{Binding Term, TargetNullValue='', FallbackValue=''}" />
-                                             <!--{Binding Term, TargetNullValue='', FallbackValue=''}-->
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                     </Grid>
 
                                     <!-- Lokalitäten -->
@@ -385,21 +490,38 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsChannelLocationsField"
-                                            x:Name="ChannelLocations"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Locations" />
+                                        <!-- Icon und Title für Lokalitäten. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
 
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/LocationsInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+                                            
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsChannelLocationsField"
+                                                x:Name="ChannelLocations"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Locations" />
+                                        </Grid>
+                                        
                                         <TextBlock
                                             Grid.Row="1"
                                             x:Name="ChannelLocationsContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding Locations, TargetNullValue='', FallbackValue=''}" />
                                             <!--{Binding Locations, TargetNullValue='', FallbackValue=''}-->
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                     </Grid>
 
                                     <!-- Termine -->
@@ -409,21 +531,38 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsChannelDatesField"
-                                            x:Name="ChannelDates"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Termine" />
+                                        <!-- Icon und Title für Termine. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
 
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/TimesInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsChannelDatesField"
+                                                x:Name="ChannelDates"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Termine" />
+                                        </Grid>
+                                        
                                         <TextBlock
                                             Grid.Row="1"
                                             x:Name="ChannelDatesContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding Dates, TargetNullValue='', FallbackValue=''}" />
                                                 <!--{Binding Dates, TargetNullValue='', FallbackValue=''}-->
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                     </Grid>
 
                                     <!-- Kontaktinformationen -->
@@ -433,21 +572,38 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsChannelContactsField"
-                                            x:Name="ChannelContacts"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Kontaktinformationen" />
+                                        <!-- Icon und Title für Kontaktinformationen. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
 
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/ContactsInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+                                            
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsChannelContactsField"
+                                                x:Name="ChannelContacts"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Kontaktinformationen" />
+                                        </Grid>
+                                        
                                         <TextBlock
                                             Grid.Row="1"
                                             x:Name="ChannelContactsContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding Contacts, TargetNullValue='', FallbackValue=''}" />
                                                 <!--{Binding Contacts, TargetNullValue='', FallbackValue=''}-->
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                     </Grid>
 
 
@@ -458,14 +614,28 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsChannelWebsiteField"
-                                            x:Name="ChannelWebsite"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Website" />
+                                        <!-- Icon und Title für Website. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/WebsiteInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsChannelWebsiteField"
+                                                x:Name="ChannelWebsite"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Website" />
+                                        </Grid>
 
                                         <TextBlock
                                             Grid.Row="1"
@@ -473,6 +643,9 @@
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding Website, TargetNullValue='', FallbackValue=''}" />
                                                 <!--{Binding Website, TargetNullValue='', FallbackValue=''}-->
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                     </Grid>
                                 </Grid> <!-- Ende Grid für Kanaldaten. -->
 
@@ -498,20 +671,38 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsLectureFacultyField"
-                                            x:Name="LectureFaculty"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Fakultät" />
+                                        <!-- Icon und Title für Fakultät. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/FacultyInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsLectureFacultyField"
+                                                x:Name="LectureFaculty"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Fakultät" />
+
+                                        </Grid>
 
                                         <TextBlock
                                             Grid.Row="1"
                                             x:Name="LectureFacultyContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding Faculty, Converter={StaticResource FacultyToLocalizedStringConverter}, TargetNullValue='', FallbackValue=''}" />
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                     </Grid>
 
                                     <!-- Vorlesungsbeginn -->
@@ -521,20 +712,37 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsLectureStartDateField"
-                                            x:Name="LectureStartDate"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Vorlesungsbeginn" />
+                                        <!-- Icon und Title für Vorlesungsbeginn. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/StartDateInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsLectureStartDateField"
+                                                x:Name="LectureStartDate"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Vorlesungsbeginn" />
+                                        </Grid>
 
                                         <TextBlock
                                             Grid.Row="1"
                                             x:Name="LectureStartDateContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding StartDate, TargetNullValue='', FallbackValue=''}" />
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                     </Grid>
 
                                     <!-- Vorlesungsende -->
@@ -544,20 +752,37 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsLectureEndDateField"
-                                            x:Name="LectureEndDate"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Vorlesungsende" />
+                                        <!-- Icon und Title für Vorlesungsende. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
 
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/EndDateInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsLectureEndDateField"
+                                                x:Name="LectureEndDate"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Vorlesungsende" />
+                                        </Grid>    
+                                        
                                         <TextBlock
                                             Grid.Row="1"
                                             x:Name="LectureEndDateContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding EndDate, TargetNullValue='', FallbackValue=''}" />
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                     </Grid>
 
                                     <!-- Dozent -->
@@ -567,20 +792,37 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsLectureLecturerField"
-                                            x:Name="LectureLecturer"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Dozent" />
+                                        <!-- Icon und Title für Dozent. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
 
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/LecturerInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsLectureLecturerField"
+                                                x:Name="LectureLecturer"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Dozent" />
+                                        </Grid>
+                                            
                                         <TextBlock
                                             Grid.Row="1"
                                             x:Name="LectureLecturerContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding Lecturer, TargetNullValue='', FallbackValue=''}" />
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                     </Grid>
 
                                     <!-- Übungsleiter/Assistent -->
@@ -590,20 +832,37 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsLectureAssistantField"
-                                            x:Name="LectureAssistant"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Übungsleiter/Assistent" />
+                                        <!-- Icon und Title für Übungsleiter/Assistent. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/AssistantInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsLectureAssistantField"
+                                                x:Name="LectureAssistant"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Übungsleiter/Assistent" />
+                                        </Grid>
 
                                         <TextBlock
                                             Grid.Row="1"
                                             x:Name="LectureAssistantContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding Assistant, TargetNullValue='', FallbackValue=''}" />
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                     </Grid>
 
                                 </Grid> <!-- Ende Grid für Vorlesungsdaten. -->
@@ -627,20 +886,37 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsSportCostField"
-                                            x:Name="SportsCost"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Kosten" />
+                                        <!-- Icon und Title für Kosten. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
 
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/CostInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsSportCostField"
+                                                x:Name="SportsCost"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Kosten" />
+                                        </Grid>
+                                        
                                         <TextBlock
                                             Grid.Row="1"
                                             x:Name="SportsCostContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding Cost, TargetNullValue='', FallbackValue=''}" />
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                     </Grid>
 
                                     <!-- Anzahl Teilnehmerplätze in Sportgruppe oder in Sportveranstaltung. -->
@@ -650,20 +926,37 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsSportNumberOfParticipantsField"
-                                            x:Name="SportsNumberOfParticipants"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Teilnehmerplätze" />
+                                        <!-- Icon und Title für Anzahl Teilnehmerplätze. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
 
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/AmountOfParticipantsInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsSportNumberOfParticipantsField"
+                                                x:Name="SportsNumberOfParticipants"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Teilnehmerplätze" />
+                                        </Grid>
+                                        
                                         <TextBlock
                                             Grid.Row="1"
                                             x:Name="SportsNumberOfParticipantsContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding NumberOfParticipants, TargetNullValue='', FallbackValue=''}" />
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                     </Grid>
 
                                 </Grid>  <!-- Ende Grid für Sportgruppendaten. -->
@@ -687,20 +980,37 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsEventCostField"
-                                            x:Name="EventCost"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Eintritt" />
+                                        <!-- Icon und Title für Kosten. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
 
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/CostInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsEventCostField"
+                                                x:Name="EventCost"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Eintritt" />
+                                        </Grid>
+                                        
                                         <TextBlock
                                             Grid.Row="1"
                                             x:Name="EventCostContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding Cost, TargetNullValue='', FallbackValue=''}" />
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                     </Grid>
 
                                     <!-- Organisator der Veranstaltung. -->
@@ -710,20 +1020,37 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            x:Uid="ChannelDetailsEventOrganizerField"
-                                            x:Name="EventOrganizer"
-                                            Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                                            Text="Organisator" />
+                                        <!-- Icon und Title für Organisator. -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetailsIcons/LecturerInfo.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsEventOrganizerField"
+                                                x:Name="EventOrganizer"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Organisator" />
+                                        </Grid>
 
                                         <TextBlock
                                             Grid.Row="1"
                                             x:Name="EventOrganizerContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding Organizer, TargetNullValue='', FallbackValue=''}" />
+
+                                        <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                     </Grid>
 
                                 </Grid>   <!-- Ende Grid für Eventdaten. -->

@@ -298,7 +298,7 @@
     <value>abonniere kanal</value>
   </data>
   <data name="ChannelDetailsUnsubscribeChannelButton.Label" xml:space="preserve">
-    <value>deabonniere kanal</value>
+    <value>deabonnie-re kanal</value>
   </data>
   <data name="ChannelDetailsNoMessagesInChannelInfo.Text" xml:space="preserve">
     <value>Dieser Kanal enthält noch keine Nachrichten.</value>
