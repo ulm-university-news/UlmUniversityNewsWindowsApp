@@ -91,6 +91,7 @@
     <Compile Include="Common\IIncrementalSource.cs" />
     <Compile Include="Common\IncrementalLoadingCollection.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
+    <Compile Include="Controller\ApplicationSettingsController.cs" />
     <Compile Include="Controller\ChannelController.cs" />
     <Compile Include="Controller\IncrementalAnnouncementLoaderController.cs" />
     <Compile Include="Controller\PushNotificationController.cs" />

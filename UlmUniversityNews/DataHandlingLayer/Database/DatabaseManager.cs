@@ -143,6 +143,19 @@ namespace DataHandlingLayer.Database
                     // im Notfall auf diesen Moderator abbilden zu können.
                     addDummyModerator(conn);
 
+                    // Erstelle Settings Tabellen.
+                    createChannelSettings(conn);
+                    createConversationSettings(conn);
+                    createGroupSettings(conn);
+                    createBallotSettings(conn);
+                    createLanguageSettings(conn);
+                    createNotificationSettings(conn);
+                    createTimelineSettings(conn);
+
+                    createSettingsTable(conn);
+
+                    // TODO - Fill with default settings if no values are stored there so far.
+
                     conn.Dispose();
                 }
                 catch (Exception e)
@@ -624,6 +637,157 @@ namespace DataHandlingLayer.Database
                                         PRIMARY KEY(Id),
                                         FOREIGN KEY(Channel_Id) REFERENCES Channel(Id),
                                         FOREIGN KEY(Author_Moderator_Id) REFERENCES Moderator(Id)                                        
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle Settings.
+        /// </summary>
+        /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
+        private static void createSettingsTable(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            Settings    (Id                         INTEGER NOT NULL,
+                                        ChannelSettings_Id          INTEGER,
+                                        ConversationSettings_Id     INTEGER,
+                                        GroupSettings_Id            INTEGER,
+                                        BallotSettings_Id           INTEGER,
+                                        NotificationSettings_Id     INTEGER,
+                                        LanguageSettings_Id         INTEGER,
+                                        TimelineSettings_Id         INTEGER,
+                                        PRIMARY KEY(Id),
+                                        FOREIGN KEY(ChannelSettings_Id) REFERENCES ChannelSettings(Id),
+                                        FOREIGN KEY(ConversationSettings_Id) REFERENCES ConversationSettings(Id),
+                                        FOREIGN KEY(GroupSettings_Id) REFERENCES GroupSettings(Id), 
+                                        FOREIGN KEY(BallotSettings_Id) REFERENCES BallotSettings(Id),
+                                        FOREIGN KEY(NotificationSettings_Id) REFERENCES NotificationSettings(Id),
+                                        FOREIGN KEY(LanguageSettings_Id) REFERENCES LanguageSettings(Id),
+                                        FOREIGN KEY(TimelineSettings_Id) REFERENCES TimelineSettings(Id)
+                            )";
+            using (var statment = conn.Prepare(sql))
+            {
+                statment.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle ChannelSettings.
+        /// </summary>
+        /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
+        private static void createChannelSettings(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            ChannelSettings (Id         INTEGER NOT NULL,
+                                            FirstOrder  INTEGER,
+                                            SecondOrder INTEGER,
+                                            PRIMARY KEY(Id)                                
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle ConversationSettings.
+        /// </summary>
+        /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
+        private static void createConversationSettings(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            ConversationSettings    (Id     INTEGER NOT NULL,
+                                                    Order   INTEGER,
+                                                    PRIMARY KEY(Id)
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle GroupSettings.
+        /// </summary>
+        /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
+        private static void createGroupSettings(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            GroupSettings   (Id         INTEGER NOT NULL,
+                                            FirstOrder  INTEGER,
+                                            SecondOrder INTEGER,
+                                            PRIMARY KEY(Id)
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle BallotSettings.
+        /// </summary>
+        /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
+        private static void createBallotSettings(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            BallotSettings  (Id     INTEGER NOT NULL,
+                                            Order   INTEGER,
+                                            PRIMARY KEY(Id)
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle LanguageSettings.
+        /// </summary>
+        /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
+        private static void createLanguageSettings(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            LanguageSettings    (Id         INTEGER NOT NULL,
+                                                Language    INTEGER,
+                                                PRIMARY KEY(Id)
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle NotificationSettings.
+        /// </summary>
+        /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
+        private static void createNotificationSettings(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            NotificationSettings    (Id                 INTEGER NOT NULL,
+                                                    NotificationSetting INTEGER,
+                                                    PRIMARY KEY(Id)
+                            );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erzeugt die Tabelle TimelineSettings.
+        /// </summary>
+        /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
+        private static void createTimelineSettings(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            TimelineSettings    (Id     INTEGER NOT NULL,
+                                                Order   INTEGER,
+                                                PRIMARY KEY(Id)
                             );";
             using (var statement = conn.Prepare(sql))
             {

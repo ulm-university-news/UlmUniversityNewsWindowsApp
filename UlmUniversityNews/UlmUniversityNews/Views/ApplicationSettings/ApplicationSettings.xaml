@@ -106,7 +106,7 @@
                                     <Run
                                         x:Uid="ApplicationSettingsCurrentUsername"
                                         Text="Ihr aktueller Nutzername ist: " />
-                                    <Run Text="Perter" />       <!-- TODO Binding -->
+                                    <Run Text="{Binding LocalUser.Name}" />       
                                     
                                     <LineBreak />
                                     
@@ -121,8 +121,8 @@
                                     x:Uid="ApplicationSettingsUsernameTextBox"
                                     Margin="0, 5, 19, 0"
                                     Header="Nutzername"
-                                    InputScope="AlphanumericFullWidth">
-                                    <!-- TODO Binding -->
+                                    InputScope="AlphanumericFullWidth"
+                                    Text="{Binding LocalUser.Name, Mode=TwoWay}">   <!-- Two way binding on name attribute. -->
                                 </TextBox>
                                 
                                 <TextBlock
@@ -165,12 +165,14 @@
                                         x:Name="ApplicationSettingsLanguageGerman"
                                         x:Uid="ApplicationSettingsLanguageGerman"
                                         Content="Deutsch"
+                                        IsChecked="{Binding IsGermanLanguageSelected, Mode=TwoWay}"
                                         GroupName="language"/>
                                     
                                     <RadioButton
                                         x:Name="ApplicationSettingsLanguageEnglish"
                                         x:Uid="ApplicationSettingsLanguageEnglish"
                                         Content="Englisch"
+                                        IsChecked="{Binding IsEnglishLanguageSelected, Mode=TwoWay}"
                                         GroupName="language"/>
                                 </StackPanel>
 
