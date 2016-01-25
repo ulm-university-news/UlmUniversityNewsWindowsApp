@@ -11,6 +11,7 @@ namespace UlmUniversityNews.NavigationService
 {
     public class NavigationService : DataHandlingLayer.NavigationService.INavigationService
     {
+        #region Fields
         /// <summary>
         /// Datenstruktur, die Seitentypen auf ihre Schlüssel abbildet.
         /// </summary>
@@ -22,12 +23,20 @@ namespace UlmUniversityNews.NavigationService
         private Frame rootFrame;
 
         /// <summary>
+        /// Hält den Zustand der besuchten Seiten zur Laufzeit der Anwendung, indem er die Schlüssel der Seiten speichert.
+        /// Mittels dieser Liste kann man herausfinden, auf welcher Seite in der Anwendung man sich aktuell befindet.
+        /// </summary>
+        //private List<string> pageKeyHistory;
+        #endregion Fields
+
+        /// <summary>
         /// Erzeugt eine Instanz der Klasse NavigationService.
         /// </summary>
         /// <param name="rootFrame">Der aktuelle Frame der Anwendung, mittels dem die Navigation realisiert werden soll.</param>
         public NavigationService(Frame rootFrame)
         {
             this.rootFrame = rootFrame;
+            //pageKeyHistory = new List<string>();
             pageMap = new Dictionary<string, Type>();
         }
 
@@ -49,8 +58,16 @@ namespace UlmUniversityNews.NavigationService
         {
             Debug.WriteLine("In Navigate(pageKey) method of the NavigationService and the current Thread ID is: {0}.", Environment.CurrentManagedThreadId);
 
+            //if(pageKeyHistory.Count > 0 && String.Compare(pageKeyHistory.Last(), pageKey) == 0)
+            //{
+            //    Debug.WriteLine("No need to perform navigation. We are already on this page.");
+            //    return;
+            //}
+
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => rootFrame.Navigate(pageMap[pageKey]));
+
+            //pageKeyHistory.Add(pageKey);
         }
 
         /// <summary>
@@ -62,8 +79,16 @@ namespace UlmUniversityNews.NavigationService
         {
             Debug.WriteLine("In Navigate(pageKey, object) method of the NavigationService and the current Thread ID is: {0}.", Environment.CurrentManagedThreadId);
 
+            //if (pageKeyHistory.Count > 0 && String.Compare(pageKeyHistory.Last(), pageKey) == 0)
+            //{
+            //    Debug.WriteLine("No need to perform navigation. We are already on this page.");
+            //    return;
+            //}
+
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher; 
             await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => rootFrame.Navigate(pageMap[pageKey], parameter));
+
+            //pageKeyHistory.Add(pageKey);
         }
 
         /// <summary>
@@ -81,9 +106,18 @@ namespace UlmUniversityNews.NavigationService
         public async void GoBack()
         {
             Debug.WriteLine("In GoBack() method of the NavigationService and the current Thread ID is: {0}.", Environment.CurrentManagedThreadId);
+            
+            if(CanGoBack())
+            {
+                //if(pageKeyHistory.Count > 0)
+                //{
+                //    Debug.WriteLine("Removing element {0} from page history.", pageKeyHistory.ElementAt(pageKeyHistory.Count - 1));
+                //    pageKeyHistory.RemoveAt(pageKeyHistory.Count - 1);
+                //}
 
-            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-            await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => rootFrame.GoBack());
+                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => rootFrame.GoBack());
+            }
         }
 
         /// <summary>
@@ -91,6 +125,12 @@ namespace UlmUniversityNews.NavigationService
         /// </summary>
         public async void RemoveEntryFromBackStack()
         {
+            //if (pageKeyHistory.Count > 0)
+            //{
+            //    Debug.WriteLine("Removing element {0} from page history.", pageKeyHistory.ElementAt(pageKeyHistory.Count - 1));
+            //    pageKeyHistory.RemoveAt(pageKeyHistory.Count - 1);
+            //}
+
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {

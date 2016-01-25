@@ -19,22 +19,19 @@ using DataHandlingLayer.ViewModel;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
-namespace UlmUniversityNews.Views.ChannelSearch
+namespace UlmUniversityNews.Views.ApplicationSettings
 {
     /// <summary>
     /// Eine leere Seite, die eigenständig verwendet werden kann oder auf die innerhalb eines Frames navigiert werden kann.
     /// </summary>
-    public sealed partial class ChannelSearch : Page
+    public sealed partial class ApplicationSettings : Page
     {
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
-        /// <summary>
-        /// Eine Referenz auf die zugehörige ViewModel Instanz.
-        /// </summary>
-        private SearchChannelsViewModel searchChannelsViewModel;
+        private ApplicationSettingsViewModel applicationSettingsViewModel;
 
-        public ChannelSearch()
+        public ApplicationSettings()
         {
             this.InitializeComponent();
 
@@ -42,16 +39,13 @@ namespace UlmUniversityNews.Views.ChannelSearch
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
 
-            // Diese Seite soll wenn möglich im Cache gehalten werden.
-            NavigationCacheMode = NavigationCacheMode.Enabled;
+            // Initialisiere ApplicationSettings ViewModel.
+            applicationSettingsViewModel = new ApplicationSettingsViewModel(App.NavigationService, App.ErrorMapper);
+            this.DataContext = applicationSettingsViewModel;
 
-            // Setze DataContext der Seite.
-            searchChannelsViewModel = new SearchChannelsViewModel(App.NavigationService, App.ErrorMapper);
-            this.DataContext = searchChannelsViewModel;
-
-            // Initialisiere das Drawer Layout.
+            // Initialisiere das Drawer Menü.
             DrawerLayout.InitializeDrawerLayout();
-            ListMenuItems.ItemsSource = searchChannelsViewModel.DrawerMenuEntriesStatusNoLogin;
+            ListMenuItems.ItemsSource = applicationSettingsViewModel.DrawerMenuEntriesStatusNoLogin;
         }
 
         /// <summary>
@@ -82,12 +76,8 @@ namespace UlmUniversityNews.Views.ChannelSearch
         /// <see cref="Frame.Navigate(Type, Object)"/> als diese Seite ursprünglich angefordert wurde und
         /// ein Wörterbuch des Zustands, der von dieser Seite während einer früheren
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
-        private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
+        private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            // Lade die Kanaldaten für die Anzeige.
-            await searchChannelsViewModel.LoadChannelsAsync();
-            // Starte Aktualisierungsprozess von Kanaldaten.
-            await searchChannelsViewModel.UpdateLocalChannelList();
         }
 
         /// <summary>
@@ -146,26 +136,5 @@ namespace UlmUniversityNews.Views.ChannelSearch
                 DrawerLayout.OpenDrawer();
             }
         }
-
-        /// <summary>
-        /// Event Handler, der Tastenevents der TextBox abfängt.
-        /// </summary>
-        /// <param name="sender">Der Sender der Tastenevents.</param>
-        /// <param name="e">Das gesendete Event.</param>
-        private async void ChannelSearchBox_KeyDown(object sender, KeyRoutedEventArgs e)
-        {
-            if (e.Key == Windows.System.VirtualKey.Enter)
-            {
-                if (searchChannelsViewModel.StartChannelSearchCommand != null
-                    && searchChannelsViewModel.StartChannelSearchCommand.CanExecute(null))
-                {
-                    await searchChannelsViewModel.StartChannelSearchCommand.Execute(null);
-                }
-                // Keyboard soll nicht mehr angezeigt wird.
-                InputPane.GetForCurrentView().TryHide();
-            }
-        }
-
-
     }
 }

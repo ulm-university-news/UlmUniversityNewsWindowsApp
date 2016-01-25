@@ -248,6 +248,11 @@ namespace DataHandlingLayer.ViewModel
                     // Navigiere auf die Homepage.
                     _navService.Navigate(menuEntry.ReferencedPageKey);
                 }
+                else if (menuEntry.MenuEntryName == "Anwendungseinstellungen")
+                {
+                    // Navigiere auf die Anwendungseinstellungen Seite.
+                    _navService.Navigate(menuEntry.ReferencedPageKey);
+                }
             }
         }
     }

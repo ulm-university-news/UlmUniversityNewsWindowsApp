@@ -321,4 +321,43 @@
   <data name="DrawerMenuEntryLogin" xml:space="preserve">
     <value>Login</value>
   </data>
+  <data name="ApplicationSettingsChangeUsernameDescription.Text" xml:space="preserve">
+    <value>You can change your username here.</value>
+  </data>
+  <data name="ApplicationSettingsCurrentUsername.Text" xml:space="preserve">
+    <value>Your current username is: </value>
+  </data>
+  <data name="ApplicationSettingsHeaderLanguage.Text" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="ApplicationSettingsHeaderUsername.Text" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="ApplicationSettingsLanguageDescription.Text" xml:space="preserve">
+    <value>You can change your favoured language here.</value>
+  </data>
+  <data name="ApplicationSettingsLanguageEnglish.Content" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="ApplicationSettingsLanguageGerman.Content" xml:space="preserve">
+    <value>German</value>
+  </data>
+  <data name="ApplicationSettingsListOrderSettingsPivotItem.Header" xml:space="preserve">
+    <value>Lists</value>
+  </data>
+  <data name="ApplicationSettingsNotificationSettingsPivotItem.Header" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="ApplicationSettingsSaveSettingsButton.Label" xml:space="preserve">
+    <value>save</value>
+  </data>
+  <data name="ApplicationSettingsTitle.Text" xml:space="preserve">
+    <value>Application Settings</value>
+  </data>
+  <data name="ApplicationSettingsUserAndLanguageSettings.Header" xml:space="preserve">
+    <value>User Settings</value>
+  </data>
+  <data name="ApplicationSettingsUsernameTextBox.Header" xml:space="preserve">
+    <value>username</value>
+  </data>
 </root>

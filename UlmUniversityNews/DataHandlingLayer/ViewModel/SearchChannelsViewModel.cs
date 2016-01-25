@@ -300,7 +300,7 @@ namespace DataHandlingLayer.ViewModel
                 // Ändere Anordnung, so dass Kanäle nach Typ sortiert werden.
                 channelList = new List<Channel>(
                     from item in channelList
-                    orderby item.Type
+                    orderby item.Type, item.Name
                     select item
                     );
             }
