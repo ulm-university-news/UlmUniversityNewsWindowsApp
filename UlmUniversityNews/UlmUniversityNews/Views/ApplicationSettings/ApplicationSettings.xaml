@@ -106,7 +106,7 @@
                                     <Run
                                         x:Uid="ApplicationSettingsCurrentUsername"
                                         Text="Ihr aktueller Nutzername ist: " />
-                                    <Run Text="{Binding LocalUser.Name}" />       
+                                    <Run Text="{Binding LocalUsername}" />       
                                     
                                     <LineBreak />
                                     
@@ -122,14 +122,15 @@
                                     Margin="0, 5, 19, 0"
                                     Header="Nutzername"
                                     InputScope="AlphanumericFullWidth"
-                                    Text="{Binding LocalUser.Name, Mode=TwoWay}">   <!-- Two way binding on name attribute. -->
+                                    Text="{Binding LocalUsername, Mode=TwoWay}">   <!-- Two way binding on name attribute. -->
                                 </TextBox>
                                 
                                 <TextBlock
                                     Grid.Row="3"
                                     Margin="0, 0, 19, 0"
                                     x:Name="ApplicationSettingsCurrentUserNameValidationError"
-                                    Style="{StaticResource UniversityNewsUlmStandardErrorText}" />
+                                    Style="{StaticResource UniversityNewsUlmStandardErrorText}"
+                                    Text="{Binding ValidationMessages[Name], FallbackValue='', TargetNullValue=''}"/>
                             </Grid>
                             
                             <!-- Einstellungen für Sprache  -->

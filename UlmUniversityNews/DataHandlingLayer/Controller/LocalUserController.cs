@@ -162,8 +162,8 @@ namespace DataHandlingLayer.Controller
         /// Aktualisiert den Datensatz des lokalen Nutzeraccounts falls Änderungen notwendig sind. 
         /// Es können die Attribute Name und Push Access Token aktualisiert werden. Ist eines 
         /// der Attribute geändert worden, so wird ein Request an den Server geschickt. Will man nur eines
-        /// der beiden Attribute ändern, so kann für das andere ein leerer String übergeben werden. Ein 
-        /// Attribut, das nur einen leeren String enthält wird bei der Aktualisierung ignoriert.
+        /// der beiden Attribute ändern, so kann für das andere ein leerer String übergeben werden oder null. Ein 
+        /// Attribut, das nur einen leeren String oder null enthält wird bei der Aktualisierung ignoriert.
         /// </summary>
         /// <param name="name">Der neue Name des Nutzers.</param>
         /// <param name="pushAccessToken">Das Push Access Token, d.h. die Kanal-URI des Benachrichtigungskanals.</param>
@@ -175,7 +175,8 @@ namespace DataHandlingLayer.Controller
             if (localUserDB != null && localUser != null)
             {
                 // Prüfe, ob der Name aktualisiert werden muss.
-                if (name != string.Empty && (String.Compare(localUser.Name, name) != 0))
+                if (name != null && name != string.Empty && 
+                    (String.Compare(localUser.Name, name) != 0))
                 {
                     Debug.WriteLine("Name differs from current username, need to update the user name.");
                     doUpdate = true;
@@ -183,7 +184,8 @@ namespace DataHandlingLayer.Controller
                 }
 
                 // Prüfe, ob das PushToken aktualisiert werden muss.
-                if (pushAccessToken != string.Empty && (String.Compare(localUser.PushAccessToken, pushAccessToken) != 0))
+                if (pushAccessToken != null && pushAccessToken != string.Empty && 
+                    (String.Compare(localUser.PushAccessToken, pushAccessToken) != 0))
                 {
                     Debug.WriteLine("Push token differs from current push token, need to update the push access token.");
                     doUpdate = true;

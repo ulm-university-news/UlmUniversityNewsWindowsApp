@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using DataHandlingLayer.DataModel;
 using DataHandlingLayer.Controller;
 using DataHandlingLayer.CommandRelays;
+using DataHandlingLayer.Exceptions;
+using System.Diagnostics;
+using DataHandlingLayer.DataModel.Enums;
 
 namespace DataHandlingLayer.ViewModel
 {
@@ -54,15 +57,15 @@ namespace DataHandlingLayer.ViewModel
             set { this.setProperty(ref this.isEnglishLanugageSelected, value); }
         }
 
-        private User localUser;
+        private string localUsername;
         /// <summary>
-        /// Der aktuelle lokale Nutzer der Anwendung.
+        /// Der Nutzername des lokalen Nutzers.
         /// </summary>
-        public User LocalUser
+        public string LocalUsername
         {
-            get { return localUser; }
-            set { this.setProperty(ref this.localUser, value); }
-        } 
+            get { return localUsername; }
+            set { this.setProperty(ref this.localUsername, value); }
+        }
         #endregion Properties
 
         #region Commands
@@ -97,9 +100,18 @@ namespace DataHandlingLayer.ViewModel
         /// <returns></returns>
         public async Task LoadCurrentSettings()
         {
-            LocalUser = applicationSettingsController.GetCurrentLocalUser();
+            User localUser = applicationSettingsController.GetCurrentLocalUser();
+            LocalUsername = localUser.Name;
 
-
+            Language favoredLanguage = await Task.Run(() => applicationSettingsController.GetFavoredLanguage());
+            if(favoredLanguage == Language.ENGLISH)
+            {
+                IsEnglishLanguageSelected = true;
+            }
+            else if(favoredLanguage == Language.GERMAN)
+            {
+                IsGermanLanguageSelected = true;
+            }
         }
 
         /// <summary>
@@ -107,7 +119,28 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private async Task executeSaveSettingsCommand()
         {
-            // TODO
+            switch (SelectedPivotItemIndex)
+            {
+                case 1:
+                    // Benutzereinstellungen:
+                    try
+                    {
+                        // Aktualisiere Nutzername, falls nötig, und speichere gewählte Sprache ab.
+                        await applicationSettingsController.UpdateLocalUsernameAsync(LocalUsername);
+                        // TODO Language
+                    }
+                    catch(ClientException ex)
+                    {
+                        Debug.WriteLine("Error occurred during the saving process of the user information." 
+                         + "Error code is {0}.", ex.ErrorCode);
+                        displayError(ex.ErrorCode);
+                    }
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+            }
         }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -155,6 +156,8 @@ namespace DataHandlingLayer.Database
                     createSettingsTable(conn);
 
                     // TODO - Fill with default settings if no values are stored there so far.
+                    fillLanguageSettings(conn);
+                    setDefaultSettings(conn);
 
                     conn.Dispose();
                 }
@@ -700,7 +703,7 @@ namespace DataHandlingLayer.Database
         {
             string sql = @"CREATE TABLE IF NOT EXISTS 
                             ConversationSettings    (Id     INTEGER NOT NULL,
-                                                    Order   INTEGER,
+                                                    ""Order""   INTEGER,
                                                     PRIMARY KEY(Id)
                             );";
             using (var statement = conn.Prepare(sql))
@@ -735,7 +738,7 @@ namespace DataHandlingLayer.Database
         {
             string sql = @"CREATE TABLE IF NOT EXISTS 
                             BallotSettings  (Id     INTEGER NOT NULL,
-                                            Order   INTEGER,
+                                            ""Order""   INTEGER,
                                             PRIMARY KEY(Id)
                             );";
             using (var statement = conn.Prepare(sql))
@@ -786,12 +789,101 @@ namespace DataHandlingLayer.Database
         {
             string sql = @"CREATE TABLE IF NOT EXISTS 
                             TimelineSettings    (Id     INTEGER NOT NULL,
-                                                Order   INTEGER,
+                                                ""Order""   INTEGER,
                                                 PRIMARY KEY(Id)
                             );";
             using (var statement = conn.Prepare(sql))
             {
                 statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Füllt die Tabelle LanguageSettings mit den von der App unterstützten Sprachen.
+        /// </summary>
+        /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
+        private static void fillLanguageSettings(SQLiteConnection conn){
+            try{
+                string checkQuery = @"SELECT * FROM LanguageSettings;";
+                using (var checkStmt = conn.Prepare(checkQuery))
+                {
+                    if(checkStmt.Step() != SQLiteResult.ROW)
+                    {
+                        // Füge die Werte ein.
+                        string sql = @"INSERT INTO LanguageSettings (Id, Language)
+                            VALUES (?, ?);";
+                        using(var statement = conn.Prepare(sql))
+                        {
+                            statement.Bind(1, 1);
+                            statement.Bind(2, 0);       // Englisch mit Index 0.
+
+                            statement.Step();
+                            statement.Reset();
+
+                            statement.Bind(1, 2);
+                            statement.Bind(2, 1);       // Deutsch mit Index 1.
+
+                            statement.Step();
+                            Debug.WriteLine("Inserted the language settings information.");
+                        }
+                    }
+                }
+            }
+            catch(SQLiteException sqlEx)
+            {
+                Debug.WriteLine("Error while filling the LanguageSettings table.");
+                Debug.WriteLine("The message is {0}.", sqlEx.Message);
+            }
+        }
+
+        /// <summary>
+        /// Setze die Default-Werte für die Einstellungen.
+        /// </summary>
+        /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
+        private static void setDefaultSettings(SQLiteConnection conn)
+        {
+            try
+            {
+                string checkQuery = @"SELECT * FROM Settings;";
+                using (var checkStmt = conn.Prepare(checkQuery))
+                {
+                    if (checkStmt.Step() != SQLiteResult.ROW)
+                    {
+                        // Füge Default Settings-Werte ein.
+                        string sql = @"INSERT INTO Settings (Id, ChannelSettings_Id, ConversationSettings_Id, 
+                            GroupSettings_Id, BallotSettings_Id, NotificationSettings_Id, LanguageSettings_Id, 
+                            TimelineSettings_Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+                        using(var statement = conn.Prepare(sql))
+                        {
+                            statement.Bind(1, 0);       // ID 0
+                            statement.Bind(2, null);    // ChannelSettings
+                            statement.Bind(3, null);    // ConversationSettings
+                            statement.Bind(4, null);    // GroupSettings
+                            statement.Bind(5, null);    // BallotSettings
+                            statement.Bind(6, null);    // NotificationSettings
+
+                            // Frage bevorzugte Sprache ab.
+                            CultureInfo ci = new CultureInfo(Windows.System.UserProfile.GlobalizationPreferences.Languages[0]);
+                            if(ci.TwoLetterISOLanguageName == "en")
+                            {
+                                statement.Bind(7, 1);   // Englisch als Default.
+                            }
+                            else
+                            {
+                                statement.Bind(7, 2);   // Deutsch als Default.
+                            }
+
+                            statement.Bind(8, null);    // TimeLineSettings
+
+                            statement.Step();
+                        }
+                    }
+                }
+            }
+            catch(SQLiteException sqlEx)
+            {
+                Debug.WriteLine("Error while setting the default settings.");
+                Debug.WriteLine("The message is {0}.", sqlEx.Message);
             }
         }
 
