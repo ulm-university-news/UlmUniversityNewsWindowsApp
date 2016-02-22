@@ -27,9 +27,9 @@ namespace DataHandlingLayer.ViewModel
         private int selectedPivotElementIndex;
         /// <summary>
         /// Gibt den Index des Pivot-Elements an, das gerade aktiv ist.
-        /// PivotIndex 1 ist: Nutzereinstellungen
-        /// PivotIndex 2 ist: Benachrichtigungseinstellungen
-        /// PivotIndex 3 ist: Listeneinstellungen 
+        /// PivotIndex 0 ist: Nutzereinstellungen
+        /// PivotIndex 1 ist: Benachrichtigungseinstellungen
+        /// PivotIndex 2 ist: Listeneinstellungen 
         /// </summary>
         public int SelectedPivotItemIndex
         {
@@ -121,13 +121,15 @@ namespace DataHandlingLayer.ViewModel
         {
             switch (SelectedPivotItemIndex)
             {
-                case 1:
+                case 0:
                     // Benutzereinstellungen:
                     try
                     {
                         // Aktualisiere Nutzername, falls nötig, und speichere gewählte Sprache ab.
                         await applicationSettingsController.UpdateLocalUsernameAsync(LocalUsername);
                         // TODO Language
+
+                        // Debug.WriteLine("Current PrimaryLangugae Override is: " + Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
                     }
                     catch(ClientException ex)
                     {
@@ -136,9 +138,9 @@ namespace DataHandlingLayer.ViewModel
                         displayError(ex.ErrorCode);
                     }
                     break;
-                case 2:
+                case 1:
                     break;
-                case 3:
+                case 2:
                     break;
             }
         }

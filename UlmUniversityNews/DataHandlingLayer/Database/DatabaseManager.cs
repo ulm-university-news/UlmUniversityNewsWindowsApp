@@ -145,17 +145,15 @@ namespace DataHandlingLayer.Database
                     addDummyModerator(conn);
 
                     // Erstelle Settings Tabellen.
-                    createChannelSettings(conn);
-                    createConversationSettings(conn);
-                    createGroupSettings(conn);
-                    createBallotSettings(conn);
+                    createOrderOptionsTable(conn);
                     createLanguageSettings(conn);
                     createNotificationSettings(conn);
-                    createTimelineSettings(conn);
-
+                    
                     createSettingsTable(conn);
 
-                    // TODO - Fill with default settings if no values are stored there so far.
+                    // Fülle Tabellen, falls noch keine Werte eingetragen wurden, und setze die Defaultwerte.
+                    fillOrderOptionsTable(conn);
+                    fillNotificationSettings(conn);
                     fillLanguageSettings(conn);
                     setDefaultSettings(conn);
 
@@ -196,7 +194,8 @@ namespace DataHandlingLayer.Database
                     }
 
                     string[] tableNames = { "User", "LocalUser", "Moderator", "Channel", "Lecture", "Event", "Sports", "SubscribedChannels", "ModeratorChannel",
-                                          "Group", "UserGroup", "Ballot", "Option", "UserOption", "Message", "Conversation", "ConversationMessage", "Announcement", "Reminder", "LastUpdateOnChannelsList"};
+                                          "Group", "UserGroup", "Ballot", "Option", "UserOption", "Message", "Conversation", "ConversationMessage", "Announcement", "Reminder", "LastUpdateOnChannelsList",
+                                          "Settings", "ChannelSettings", "ConversationSettings", "GroupSettings", "BallotSettings", "TimelineSettings", "AnnouncementSettings", "LanguageSettings"};
                     for (int i = 0; i < tableNames.Length; i++)
                     {
                         // Drop tables.
@@ -654,22 +653,24 @@ namespace DataHandlingLayer.Database
         private static void createSettingsTable(SQLiteConnection conn)
         {
             string sql = @"CREATE TABLE IF NOT EXISTS 
-                            Settings    (Id                         INTEGER NOT NULL,
-                                        ChannelSettings_Id          INTEGER,
-                                        ConversationSettings_Id     INTEGER,
-                                        GroupSettings_Id            INTEGER,
-                                        BallotSettings_Id           INTEGER,
-                                        NotificationSettings_Id     INTEGER,
-                                        LanguageSettings_Id         INTEGER,
-                                        TimelineSettings_Id         INTEGER,
+                            Settings    (Id                                           INTEGER NOT NULL,
+                                        ChannelSettings_OrderOptions_OrderId          INTEGER,
+                                        ConversationSettings_OrderOptions_OrderId     INTEGER,
+                                        GroupSettings_OrderOptions_OrderId            INTEGER,
+                                        BallotSettings_OrderOptions_OrderId           INTEGER,
+                                        AnnouncementSettings_OrderOptions_OrderId     INTEGER,
+                                        GeneralListOrder_OrderOptions_OrderId         INTEGER,
+                                        LanguageSettings_LanguageId                   INTEGER,
+                                        NotificationSettings_NotifierId               INTEGER,
                                         PRIMARY KEY(Id),
-                                        FOREIGN KEY(ChannelSettings_Id) REFERENCES ChannelSettings(Id),
-                                        FOREIGN KEY(ConversationSettings_Id) REFERENCES ConversationSettings(Id),
-                                        FOREIGN KEY(GroupSettings_Id) REFERENCES GroupSettings(Id), 
-                                        FOREIGN KEY(BallotSettings_Id) REFERENCES BallotSettings(Id),
-                                        FOREIGN KEY(NotificationSettings_Id) REFERENCES NotificationSettings(Id),
-                                        FOREIGN KEY(LanguageSettings_Id) REFERENCES LanguageSettings(Id),
-                                        FOREIGN KEY(TimelineSettings_Id) REFERENCES TimelineSettings(Id)
+                                        FOREIGN KEY(ChannelSettings_OrderOptions_OrderId ) REFERENCES OrderOptions(OrderId),
+                                        FOREIGN KEY(ConversationSettings_OrderOptions_OrderId) REFERENCES OrderOptions(OrderId),
+                                        FOREIGN KEY(GroupSettings_OrderOptions_OrderId) REFERENCES OrderOptions(OrderId), 
+                                        FOREIGN KEY(BallotSettings_OrderOptions_OrderId) REFERENCES OrderOptions(OrderId),
+                                        FOREIGN KEY(AnnouncementSettings_OrderOptions_OrderId) REFERENCES OrderOptions(OrderId),
+                                        FOREIGN KEY(GeneralListOrder_OrderOptions_OrderId) REFERENCES OrderOptions(OrderId),
+                                        FOREIGN KEY(NotificationSettings_NotifierId) REFERENCES NotificationSettings(NotifierId),
+                                        FOREIGN KEY(LanguageSettings_LanguageId) REFERENCES LanguageSettings(LanguageId)
                             )";
             using (var statment = conn.Prepare(sql))
             {
@@ -678,72 +679,19 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
-        /// Erstellt die Tabelle ChannelSettings.
+        /// Erstellt die Tabelle OrderOptions.
         /// </summary>
         /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
-        private static void createChannelSettings(SQLiteConnection conn)
+        private static void createOrderOptionsTable(SQLiteConnection conn)
         {
             string sql = @"CREATE TABLE IF NOT EXISTS 
-                            ChannelSettings (Id         INTEGER NOT NULL,
-                                            FirstOrder  INTEGER,
-                                            SecondOrder INTEGER,
-                                            PRIMARY KEY(Id)                                
+                            OrderOptions    (OrderId    INTEGER NOT NULL,
+                                            Description TEXT,
+                                            PRIMARY KEY(OrderId)
                             );";
             using (var statement = conn.Prepare(sql))
             {
-                statement.Step();
-            }
-        }
 
-        /// <summary>
-        /// Erstellt die Tabelle ConversationSettings.
-        /// </summary>
-        /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
-        private static void createConversationSettings(SQLiteConnection conn)
-        {
-            string sql = @"CREATE TABLE IF NOT EXISTS 
-                            ConversationSettings    (Id     INTEGER NOT NULL,
-                                                    ""Order""   INTEGER,
-                                                    PRIMARY KEY(Id)
-                            );";
-            using (var statement = conn.Prepare(sql))
-            {
-                statement.Step();
-            }
-        }
-
-        /// <summary>
-        /// Erstellt die Tabelle GroupSettings.
-        /// </summary>
-        /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
-        private static void createGroupSettings(SQLiteConnection conn)
-        {
-            string sql = @"CREATE TABLE IF NOT EXISTS 
-                            GroupSettings   (Id         INTEGER NOT NULL,
-                                            FirstOrder  INTEGER,
-                                            SecondOrder INTEGER,
-                                            PRIMARY KEY(Id)
-                            );";
-            using (var statement = conn.Prepare(sql))
-            {
-                statement.Step();
-            }
-        }
-
-        /// <summary>
-        /// Erstellt die Tabelle BallotSettings.
-        /// </summary>
-        /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
-        private static void createBallotSettings(SQLiteConnection conn)
-        {
-            string sql = @"CREATE TABLE IF NOT EXISTS 
-                            BallotSettings  (Id     INTEGER NOT NULL,
-                                            ""Order""   INTEGER,
-                                            PRIMARY KEY(Id)
-                            );";
-            using (var statement = conn.Prepare(sql))
-            {
-                statement.Step();
             }
         }
 
@@ -754,9 +702,9 @@ namespace DataHandlingLayer.Database
         private static void createLanguageSettings(SQLiteConnection conn)
         {
             string sql = @"CREATE TABLE IF NOT EXISTS 
-                            LanguageSettings    (Id         INTEGER NOT NULL,
-                                                Language    INTEGER,
-                                                PRIMARY KEY(Id)
+                            LanguageSettings    (LanguageId         INTEGER NOT NULL,
+                                                Description         TEXT,
+                                                PRIMARY KEY(LanguageId)
                             );";
             using (var statement = conn.Prepare(sql))
             {
@@ -771,57 +719,40 @@ namespace DataHandlingLayer.Database
         private static void createNotificationSettings(SQLiteConnection conn)
         {
             string sql = @"CREATE TABLE IF NOT EXISTS 
-                            NotificationSettings    (Id                 INTEGER NOT NULL,
-                                                    NotificationSetting INTEGER,
-                                                    PRIMARY KEY(Id)
+                            NotificationSettings    (NotifierId      INTEGER NOT NULL,
+                                                    Description      TEXT,
+                                                    PRIMARY KEY(NotifierId)
                             );";
             using (var statement = conn.Prepare(sql))
             {
                 statement.Step();
             }
         }
-
-        /// <summary>
-        /// Erzeugt die Tabelle TimelineSettings.
-        /// </summary>
-        /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
-        private static void createTimelineSettings(SQLiteConnection conn)
-        {
-            string sql = @"CREATE TABLE IF NOT EXISTS 
-                            TimelineSettings    (Id     INTEGER NOT NULL,
-                                                ""Order""   INTEGER,
-                                                PRIMARY KEY(Id)
-                            );";
-            using (var statement = conn.Prepare(sql))
-            {
-                statement.Step();
-            }
-        }
-
+        
         /// <summary>
         /// Füllt die Tabelle LanguageSettings mit den von der App unterstützten Sprachen.
         /// </summary>
         /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
         private static void fillLanguageSettings(SQLiteConnection conn){
             try{
-                string checkQuery = @"SELECT * FROM LanguageSettings;";
+                string checkQuery = @"SELECT LanguageId FROM LanguageSettings;";
                 using (var checkStmt = conn.Prepare(checkQuery))
                 {
                     if(checkStmt.Step() != SQLiteResult.ROW)
                     {
                         // Füge die Werte ein.
-                        string sql = @"INSERT INTO LanguageSettings (Id, Language)
+                        string sql = @"INSERT INTO LanguageSettings (LanguageId, Description)
                             VALUES (?, ?);";
                         using(var statement = conn.Prepare(sql))
                         {
-                            statement.Bind(1, 1);
-                            statement.Bind(2, 0);       // Englisch mit Index 0.
+                            statement.Bind(1, 0);
+                            statement.Bind(2, "English");       // Englisch mit Index 0.
 
                             statement.Step();
                             statement.Reset();
 
-                            statement.Bind(1, 2);
-                            statement.Bind(2, 1);       // Deutsch mit Index 1.
+                            statement.Bind(1, 1);
+                            statement.Bind(2, "German");       // Deutsch mit Index 1.
 
                             statement.Step();
                             Debug.WriteLine("Inserted the language settings information.");
@@ -832,6 +763,77 @@ namespace DataHandlingLayer.Database
             catch(SQLiteException sqlEx)
             {
                 Debug.WriteLine("Error while filling the LanguageSettings table.");
+                Debug.WriteLine("The message is {0}.", sqlEx.Message);
+            }
+        }
+
+        /// <summary>
+        /// Füllt die Tabelle OrderOptions mit den von der App unterstützten Sortier- und Anordnungsparameter.
+        /// </summary>
+        /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
+        private static void fillOrderOptionsTable(SQLiteConnection conn)
+        {
+            try
+            {
+                string checkQuery = @"SELECT OrderId FROM OrderOptions;";
+                using (var checkStmt = conn.Prepare(checkQuery))
+                {
+                    if(checkStmt.Step() != SQLiteResult.ROW)
+                    {
+                        // Füge die Werte ein.
+                        string sql = @"INSERT INTO OrderOptions (OrderId, Description) 
+                            VALUES  (0, 'Descending'),
+                                    (1, 'Ascending'),
+                                    (2, 'Sort alphabetical'),
+                                    (3, 'Sort by type'),
+                                    (4, 'Sort by amount of new messages'),
+                                    (5, 'Sort by latest date'),
+                                    (6, 'Sort by latest vote'),
+                                    (7, 'Sort by type first and then by amount of new messages');";
+                        using (var statement = conn.Prepare(sql))
+                        {
+                            statement.Step();
+                            Debug.WriteLine("Inserted OrderOptions entries.");
+                        }
+                    }
+                }
+            }
+            catch (SQLiteException sqlEx)
+            {
+                Debug.WriteLine("Error while filling the OrderOptions table.");
+                Debug.WriteLine("The message is {0}.", sqlEx.Message);
+            }
+        }
+
+        /// <summary>
+        /// Füllt die Tabelle NotificationSettings mit den von der App unterstützten Benachrichtigungsparametern.
+        /// </summary>
+        /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
+        private static void fillNotificationSettings(SQLiteConnection conn)
+        {
+            try
+            {
+                string checkQuery = @"SELECT NotifierId FROM NotificationSettings;";
+                using (var checkStmt = conn.Prepare(checkQuery))
+                {
+                    if(checkStmt.Step() != SQLiteResult.ROW)
+                    {
+                        // Füge die Werte ein.
+                        string sql = @"INSERT INTO NotificationSettings (NotifierId, Description) 
+                            VALUES  (0, 'Announce only messages with high priority'),
+                                    (1, 'Announce all incoming messages'),
+                                    (2, 'Announce no incoming message at all');";
+                        using (var statement = conn.Prepare(sql))
+                        {
+                            statement.Step();
+                            Debug.WriteLine("Inserted NotificationSettings entries.");
+                        }
+                    }
+                }
+            }
+            catch (SQLiteException sqlEx)
+            {
+                Debug.WriteLine("Error while filling the NotificationSettings table.");
                 Debug.WriteLine("The message is {0}.", sqlEx.Message);
             }
         }
@@ -850,32 +852,41 @@ namespace DataHandlingLayer.Database
                     if (checkStmt.Step() != SQLiteResult.ROW)
                     {
                         // Füge Default Settings-Werte ein.
-                        string sql = @"INSERT INTO Settings (Id, ChannelSettings_Id, ConversationSettings_Id, 
-                            GroupSettings_Id, BallotSettings_Id, NotificationSettings_Id, LanguageSettings_Id, 
-                            TimelineSettings_Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+                        string sql = @"INSERT INTO Settings (Id,
+                                                            ChannelSettings_OrderOptions_OrderId,
+                                                            ConversationSettings_OrderOptions_OrderId, 
+                                                            GroupSettings_OrderOptions_OrderId,
+                                                            BallotSettings_OrderOptions_OrderId,
+                                                            AnnouncementSettings_OrderOptions_OrderId,
+                                                            GeneralListOrder_OrderOptions_OrderId,
+                                                            LanguageSettings_LanguageId,
+                                                            NotificationSettings_NotifierId)
+                                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
                         using(var statement = conn.Prepare(sql))
                         {
                             statement.Bind(1, 0);       // ID 0
-                            statement.Bind(2, null);    // ChannelSettings
-                            statement.Bind(3, null);    // ConversationSettings
-                            statement.Bind(4, null);    // GroupSettings
-                            statement.Bind(5, null);    // BallotSettings
-                            statement.Bind(6, null);    // NotificationSettings
+                            statement.Bind(2, 2);    // ChannelSettings
+                            statement.Bind(3, 2);    // ConversationSettings
+                            statement.Bind(4, 2);    // GroupSettings
+                            statement.Bind(5, 2);    // BallotSettings
+                            statement.Bind(6, 1);    // AnnouncementSettings
+                            statement.Bind(7, 1);    // GeneralListOrder
 
                             // Frage bevorzugte Sprache ab.
                             CultureInfo ci = new CultureInfo(Windows.System.UserProfile.GlobalizationPreferences.Languages[0]);
                             if(ci.TwoLetterISOLanguageName == "en")
                             {
-                                statement.Bind(7, 1);   // Englisch als Default.
+                                statement.Bind(8, 1);   // Englisch als Default.
                             }
                             else
                             {
-                                statement.Bind(7, 2);   // Deutsch als Default.
+                                statement.Bind(8, 2);   // Deutsch als Default.
                             }
 
-                            statement.Bind(8, null);    // TimeLineSettings
+                            statement.Bind(9, 0);    // NotificationSettings
 
                             statement.Step();
+                            Debug.WriteLine("Inserted default values.");
                         }
                     }
                 }

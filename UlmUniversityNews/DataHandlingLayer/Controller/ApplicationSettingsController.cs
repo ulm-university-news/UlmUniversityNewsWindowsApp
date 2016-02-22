@@ -80,6 +80,11 @@ namespace DataHandlingLayer.Controller
                     base.reportValidationErrors(tmpLocalUser.GetValidationErrors());
                     return;
                 }
+                else
+                {
+                    tmpLocalUser.ClearValidationErrors();
+                    base.clearValidationErrorForProperty("Name");
+                }
 
                 // Verwende Funktionalität im LocalUserController, um die Aktualisierung des Namens durchzuführen.
                 await localUserController.UpdateLocalUserAsync(username, null);
