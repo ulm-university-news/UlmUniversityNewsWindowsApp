@@ -195,7 +195,7 @@ namespace DataHandlingLayer.Database
 
                     string[] tableNames = { "User", "LocalUser", "Moderator", "Channel", "Lecture", "Event", "Sports", "SubscribedChannels", "ModeratorChannel",
                                           "Group", "UserGroup", "Ballot", "Option", "UserOption", "Message", "Conversation", "ConversationMessage", "Announcement", "Reminder", "LastUpdateOnChannelsList",
-                                          "Settings", "ChannelSettings", "ConversationSettings", "GroupSettings", "BallotSettings", "TimelineSettings", "AnnouncementSettings", "LanguageSettings"};
+                                          "Settings", "NotificationSettings", "OrderOptions", "LanguageSettings"};
                     for (int i = 0; i < tableNames.Length; i++)
                     {
                         // Drop tables.
@@ -691,7 +691,7 @@ namespace DataHandlingLayer.Database
                             );";
             using (var statement = conn.Prepare(sql))
             {
-
+                statement.Step();
             }
         }
 
@@ -735,10 +735,14 @@ namespace DataHandlingLayer.Database
         /// <param name="conn">Eine aktive Verbindung zur Datenbank.</param>
         private static void fillLanguageSettings(SQLiteConnection conn){
             try{
-                string checkQuery = @"SELECT LanguageId FROM LanguageSettings;";
+                string checkQuery = @"SELECT COUNT(*) AS NrOfRecords FROM LanguageSettings;";
                 using (var checkStmt = conn.Prepare(checkQuery))
                 {
-                    if(checkStmt.Step() != SQLiteResult.ROW)
+                    checkStmt.Step();
+
+                    int amountOfRecords = Convert.ToInt32(checkStmt["NrOfRecords"]);
+
+                    if(amountOfRecords == 0)
                     {
                         // Füge die Werte ein.
                         string sql = @"INSERT INTO LanguageSettings (LanguageId, Description)
@@ -775,10 +779,14 @@ namespace DataHandlingLayer.Database
         {
             try
             {
-                string checkQuery = @"SELECT OrderId FROM OrderOptions;";
+                string checkQuery = @"SELECT COUNT(*) AS NrOfRecords FROM OrderOptions;";
                 using (var checkStmt = conn.Prepare(checkQuery))
                 {
-                    if(checkStmt.Step() != SQLiteResult.ROW)
+                    checkStmt.Step();
+
+                    int amountOfRecords = Convert.ToInt32(checkStmt["NrOfRecords"]);
+
+                    if(amountOfRecords == 0)
                     {
                         // Füge die Werte ein.
                         string sql = @"INSERT INTO OrderOptions (OrderId, Description) 
@@ -813,10 +821,14 @@ namespace DataHandlingLayer.Database
         {
             try
             {
-                string checkQuery = @"SELECT NotifierId FROM NotificationSettings;";
+                string checkQuery = @"SELECT COUNT(*) AS NrOfRecords FROM NotificationSettings;";
                 using (var checkStmt = conn.Prepare(checkQuery))
                 {
-                    if(checkStmt.Step() != SQLiteResult.ROW)
+                    checkStmt.Step();
+
+                    int amountOfRecords = Convert.ToInt32(checkStmt["NrOfRecords"]);
+
+                    if(amountOfRecords == 0)
                     {
                         // Füge die Werte ein.
                         string sql = @"INSERT INTO NotificationSettings (NotifierId, Description) 
@@ -846,10 +858,14 @@ namespace DataHandlingLayer.Database
         {
             try
             {
-                string checkQuery = @"SELECT * FROM Settings;";
+                string checkQuery = @"SELECT COUNT(*) AS NrOfRecords FROM Settings;";
                 using (var checkStmt = conn.Prepare(checkQuery))
                 {
-                    if (checkStmt.Step() != SQLiteResult.ROW)
+                    checkStmt.Step();
+
+                    int amountOfRecords = Convert.ToInt32(checkStmt["NrOfRecords"]);
+
+                    if (amountOfRecords == 0)
                     {
                         // Füge Default Settings-Werte ein.
                         string sql = @"INSERT INTO Settings (Id,
@@ -876,11 +892,11 @@ namespace DataHandlingLayer.Database
                             CultureInfo ci = new CultureInfo(Windows.System.UserProfile.GlobalizationPreferences.Languages[0]);
                             if(ci.TwoLetterISOLanguageName == "en")
                             {
-                                statement.Bind(8, 1);   // Englisch als Default.
+                                statement.Bind(8, 0);   // Englisch als Default.
                             }
                             else
                             {
-                                statement.Bind(8, 2);   // Deutsch als Default.
+                                statement.Bind(8, 1);   // Deutsch als Default.
                             }
 
                             statement.Bind(9, 0);    // NotificationSettings
