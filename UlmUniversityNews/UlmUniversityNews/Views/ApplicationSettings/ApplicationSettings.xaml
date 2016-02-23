@@ -189,7 +189,55 @@
                     <PivotItem x:Uid="ApplicationSettingsNotificationSettingsPivotItem"
                            Style="{StaticResource PivotItemStyle}"
                            Header="Notification Settings">
-                        
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                                    Grid.Row="0"
+                                    x:Name="ApplicationSettingsHeaderNotificationSettings"
+                                    x:Uid="ApplicationSettingsHeaderNotificationSettings"
+                                    Margin="0, 0, 19, 0"
+                                    Style="{StaticResource UniversityNewsUlmStandardHeader}"
+                                    Text="Benachrichtigungen"/>
+
+                            <TextBlock
+                                    Grid.Row="1"
+                                    x:Name="ApplicationSettingsNotificationSettingsDescription"
+                                    x:Uid="ApplicationSettingsNotificationSettingsDescription"
+                                    Style="{StaticResource UniversityNewsUlmStandardText}"
+                                    Text="Hier können Sie das Verhalten der Anwendung bei eingehenden Nachrichten verwalten. 
+                                            Die hier vorgenommenen Einstellungen gelten grundsätzlich für die gesamte Anwendung.
+                                            Für einzelne Kanäle und Gruppen können auch spezifische Einstellungen vorgenommen werden, welche dann die hier vorgenommenen Einstellungen für die konkrete Ressource überschreiben." />
+
+                            <StackPanel
+                                    Margin="0, 0, 19, 0"
+                                    Orientation="Vertical"
+                                    Grid.Row="2">
+                                <RadioButton 
+                                        x:Name="ApplicationSettingsNotificationSettingsOptionPrioHigh"
+                                        x:Uid="ApplicationSettingsNotificationSettingsOptionPrioHigh"
+                                        Content="Nur Priorität 'hoch' ankündigen"
+                                        IsChecked="{Binding IsNotificationOptionPrioHighSelected, Mode=TwoWay}"
+                                        GroupName="notificationSettings"/>
+
+                                <RadioButton
+                                        x:Name="ApplicationSettingsNotificationSettingsOptionAll"
+                                        x:Uid="ApplicationSettingsNotificationSettingsOptionAll"
+                                        Content="Alle Nachrichten ankündigen"
+                                        IsChecked="{Binding IsNotificationOptionAllSelected, Mode=TwoWay}"
+                                        GroupName="notificationSettings"/>
+
+                                <RadioButton
+                                        x:Name="ApplicationSettingsNotificationSettingsOptionNone"
+                                        x:Uid="ApplicationSettingsNotificationSettingsOptionNone"
+                                        Content="Keine Nachrichten ankündigen"
+                                        IsChecked="{Binding IsNotificationOptionNoneSelected, Mode=TwoWay}"
+                                        GroupName="notificationSettings"/>
+                            </StackPanel>
+                        </Grid>
                     </PivotItem>
                     
                     <!-- Pivotelement 3 -->
@@ -203,7 +251,7 @@
             </Grid>
 
             <!-- Inhalt des Drawer Menüs-->
-            <Grid x:Name="ListFragment" Background="{StaticResource DrawerMenuContentPanelBackgroundColor}">
+            <!--<Grid x:Name="ListFragment" Background="{StaticResource DrawerMenuContentPanelBackgroundColor}">
                 <ListView x:Name="ListMenuItems"
                           ItemTemplate="{StaticResource DrawerMenuEntryDataTemplate}"
                           IsItemClickEnabled="True">
@@ -213,7 +261,7 @@
                         </Style>
                     </ListView.ItemContainerStyle>
 
-                     <!--Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
+                     --><!--Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.--><!--
                     <i:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
                             <core:InvokeCommandAction Command="{Binding DrawerButtonCommand}"
@@ -221,7 +269,7 @@
                         </core:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                 </ListView>
-            </Grid>
+            </Grid>-->
 
         </drawerLayout:DrawerLayout>
     </Grid>

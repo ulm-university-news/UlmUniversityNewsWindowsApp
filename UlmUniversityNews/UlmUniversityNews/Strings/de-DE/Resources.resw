@@ -360,4 +360,19 @@
   <data name="ApplicationSettingsUsernameTextBox.Header" xml:space="preserve">
     <value>Nutzername</value>
   </data>
+  <data name="ApplicationSettingsHeaderNotificationSettings.Text" xml:space="preserve">
+    <value>Benachrichtigungen</value>
+  </data>
+  <data name="ApplicationSettingsNotificationSettingsDescription.Text" xml:space="preserve">
+    <value>Hier können Sie das Verhalten der Anwendung bei eingehenden Nachrichten verwalten. Die hier vorgenommenen Einstellungen gelten grundsätzlich für die gesamte Anwendung. Für einzelne Kanäle und Gruppen können auch spezifische Einstellungen vorgenommen werden, welche dann die hier vorgenommenen Einstellungen für die konkrete Ressource überschreiben.</value>
+  </data>
+  <data name="ApplicationSettingsNotificationSettingsOptionAll.Content" xml:space="preserve">
+    <value>Alle Nachrichten ankündigen</value>
+  </data>
+  <data name="ApplicationSettingsNotificationSettingsOptionNone.Content" xml:space="preserve">
+    <value>Keine Nachrichten ankündigen</value>
+  </data>
+  <data name="ApplicationSettingsNotificationSettingsOptionPrioHigh.Content" xml:space="preserve">
+    <value>Nur Priorität 'hoch' ankündigen</value>
+  </data>
 </root>

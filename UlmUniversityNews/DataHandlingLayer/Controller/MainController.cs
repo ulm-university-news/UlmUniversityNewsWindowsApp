@@ -121,6 +121,41 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Liefert die aktuellen Anwendungseinstellungen gekapselt in Form eines Objekts zurück.
+        /// Da diese Methode von sehr vielen ViewModel Klassen benötigt wird, ist sie in der abstrakten
+        /// Oberklasse definiert.
+        /// </summary>
+        /// <returns>Instanz der Klasse AppSettings.</returns>
+        public AppSettings GetApplicationSettings()
+        {
+            // Frage zunächst Objekt aus dem Cache ab.
+            AppSettings appSettings = AppSettingsCache.GetInstance().GetCachedApplicationSettings();
+            if (appSettings == null)
+            {
+                // Anwendungseinstellungen wurden noch nicht in Cache geladen. Lade sie aus der Datenbank.
+                try
+                {
+                    Debug.WriteLine("Retrieve application settings from DB.");
+                    ApplicationSettingsDatabaseManager appSettingsDB = new ApplicationSettingsDatabaseManager();
+                    appSettings = appSettingsDB.LoadApplicationSettings();
+
+                    // Speichere Objekt im Cache.
+                    AppSettingsCache.GetInstance().CacheApplicationSettings(appSettings);
+                }
+                catch (DatabaseException ex)
+                {
+                    Debug.WriteLine("Database exception occurred in getApplicationSettings(). Message of exception is: " + ex.Message);
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Retrieved application settings object from cache.");
+            }
+
+            return appSettings;
+        }
+
+        /// <summary>
         /// Erzeugt ein Moderator Objekt aus dem übergebenen JSON String. Ist eine
         /// Umwandlung des JSON Strings nicht möglich, so wird eine ClientException 
         /// geworfen.

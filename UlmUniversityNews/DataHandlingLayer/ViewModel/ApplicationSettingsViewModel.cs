@@ -66,6 +66,36 @@ namespace DataHandlingLayer.ViewModel
             get { return localUsername; }
             set { this.setProperty(ref this.localUsername, value); }
         }
+
+        private bool isNotificationOptionPrioHighSelected;
+        /// <summary>
+        /// Gibt an, ob aktuell die Option 'Nur Priorität hoch ankündigen' gewählt ist.
+        /// </summary>
+        public bool IsNotificationOptionPrioHighSelected
+        {
+            get { return isNotificationOptionPrioHighSelected; }
+            set { isNotificationOptionPrioHighSelected = value; }
+        }
+
+        private bool isNotificationOptionAllSelected;
+        /// <summary>
+        /// Gibt an, ob aktuell die Option 'Alle Nachrichten ankündigen' gewählt ist.
+        /// </summary>
+        public bool IsNotificationOptionAllSelected
+        {
+            get { return isNotificationOptionAllSelected; }
+            set { isNotificationOptionAllSelected = value; }
+        }
+
+        private bool isNotificationOptionNoneSelected;
+        /// <summary>
+        /// Gibt an, ob aktuell die Option 'Keine Nachricht ankündigen' gewählt ist.
+        /// </summary>
+        public bool IsNotificationOptionNoneSelected
+        {
+            get { return isNotificationOptionNoneSelected; }
+            set { isNotificationOptionNoneSelected = value; }
+        }
         #endregion Properties
 
         #region Commands
