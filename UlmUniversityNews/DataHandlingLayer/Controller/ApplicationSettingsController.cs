@@ -2,8 +2,10 @@
 using DataHandlingLayer.Database;
 using DataHandlingLayer.DataModel;
 using DataHandlingLayer.DataModel.Enums;
+using DataHandlingLayer.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -89,6 +91,79 @@ namespace DataHandlingLayer.Controller
                 // Verwende Funktionalität im LocalUserController, um die Aktualisierung des Namens durchzuführen.
                 await localUserController.UpdateLocalUserAsync(username, null);
             }
+        }
+
+        /// <summary>
+        /// Aktualisiert die Benachrichtigungseinstellungen für die Anwendung.
+        /// Diese Einstellungen bezüglich der Ankündigung von Nachrichten gelten grundsätzlich 
+        /// für die gesamte Anwendung. Es können jedoch für einzelne Kanäle und Gruppen spezifische 
+        /// Einstellungen vorgenommen werden, welche dann diese Einstellungen für die jeweilige Ressource überschreiben. 
+        /// </summary>
+        /// <param name="newSetting">Die neu gewählte Option bezüglich Nachrichtenankündigung.</param>
+        public void UpdateNotificationSettings(NotificationSetting newSetting)
+        {
+            // Hole die aktuellen Anwendungseinstellungen.
+            AppSettings appSettings = GetApplicationSettings();
+
+            // Führe Aktualisierung aus.
+            appSettings.MsgNotificationSetting = newSetting;
+
+            try
+            {
+                Debug.WriteLine("Update notification settings. Set to new value {0}.", newSetting.ToString());
+                applicationSettingsDatabaseManager.UpdateApplicationSettings(appSettings);
+            }
+            catch(DatabaseException ex)
+            {
+                Debug.WriteLine("An error occurred during the notification settings update. The error message is {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            // Lege neues AppSettings Objekt in den Cache.
+            AppSettingsCache.GetInstance().CacheApplicationSettings(appSettings);
+        }
+
+        /// <summary>
+        /// Aktualisiert die Anordnungseinstellungen bezüglich Auflistungen in der Anwendung.
+        /// </summary>
+        /// <param name="generalListSettings">Angabe, ob Listeninhalt grundsätzlich aufsteigend oder absteigend nach Ordnungskriterium sortiert werden soll.</param>
+        /// <param name="announcementOrderSetting">Angabe, ob Nachrichten von unten nach oben oder von oben nach unten augelistet werden sollen.</param>
+        /// <param name="channelOrderSettings">Ordnungskriterium für Auflistungen von Kanälen.</param>
+        /// <param name="groupOrderSettings">Ordnungskriterium für Auflistungen von Gruppen.</param>
+        /// <param name="conversationOrderSettings">Ordnungskriterium für Auflistungen von Konversationen.</param>
+        /// <param name="ballotOrderSettings">Ordnungskriteriumg für Auflistungen von Abstimmungen.</param>
+        public void UpdateListSettings(OrderOption generalListSettings, OrderOption announcementOrderSetting, OrderOption channelOrderSettings, 
+            OrderOption groupOrderSettings, OrderOption conversationOrderSettings, OrderOption ballotOrderSettings)
+        {
+            // Hole die aktuellen Anwendungseinstellungen.
+            AppSettings appSettings = GetApplicationSettings();
+
+            appSettings.GeneralListOrderSetting = generalListSettings;
+            appSettings.AnnouncementOrderSetting = announcementOrderSetting;
+            appSettings.ChannelOderSetting = channelOrderSettings;
+            appSettings.GroupOrderSetting = groupOrderSettings;
+            appSettings.ConversationOrderSetting = conversationOrderSettings;
+            appSettings.BallotOrderSetting = ballotOrderSettings;
+
+            try
+            {
+                Debug.WriteLine("Update list settings. New values are {0}, {1}, {2}, {3}, {4}, {5}.",
+                    generalListSettings,
+                    announcementOrderSetting,
+                    channelOrderSettings,
+                    groupOrderSettings,
+                    conversationOrderSettings,
+                    ballotOrderSettings);
+                applicationSettingsDatabaseManager.UpdateApplicationSettings(appSettings);
+            }
+            catch(DatabaseException ex)
+            {
+                Debug.WriteLine("An error occurred during the list settings update. The error message is {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            // Lege neues AppSettings Objekt in den Cache.
+            AppSettingsCache.GetInstance().CacheApplicationSettings(appSettings);
         }
 
         /// <summary>

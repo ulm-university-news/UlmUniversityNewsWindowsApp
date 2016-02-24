@@ -205,11 +205,11 @@
 
                             <TextBlock
                                     Grid.Row="1"
+                                    Margin="0, 0, 19, 0"
                                     x:Name="ApplicationSettingsNotificationSettingsDescription"
                                     x:Uid="ApplicationSettingsNotificationSettingsDescription"
                                     Style="{StaticResource UniversityNewsUlmStandardText}"
-                                    Text="Hier können Sie das Verhalten der Anwendung bei eingehenden Nachrichten verwalten. 
-                                            Die hier vorgenommenen Einstellungen gelten grundsätzlich für die gesamte Anwendung.
+                                    Text="Hier können Sie das Verhalten der Anwendung bei eingehenden Nachrichten verwalten. Die hier vorgenommenen Einstellungen gelten grundsätzlich für die gesamte Anwendung.
                                             Für einzelne Kanäle und Gruppen können auch spezifische Einstellungen vorgenommen werden, welche dann die hier vorgenommenen Einstellungen für die konkrete Ressource überschreiben." />
 
                             <StackPanel
@@ -244,14 +244,327 @@
                     <PivotItem x:Uid="ApplicationSettingsListOrderSettingsPivotItem"
                                Style="{StaticResource PivotItemStyle}"
                                Header="List Settings">
-                        
+                        <ScrollViewer>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Allgemeine Listeneinstellungen -->
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        x:Name="ApplicationSettingsHeaderGeneralListSettings"
+                                        x:Uid="ApplicationSettingsHeaderGeneralListSettings"
+                                        Margin="0, 0, 19, 0"
+                                        Style="{StaticResource UniversityNewsUlmStandardHeader}"
+                                        Text="Allgemeine Listeneinstellung"/>
+
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        Margin="0, 0, 19, 0"
+                                        x:Name="ApplicationSettingsGeneralListSettingsDescription"
+                                        x:Uid="ApplicationSettingsGeneralListSettingsDescription"
+                                        Style="{StaticResource UniversityNewsUlmStandardText}"
+                                        Text="Hier können Sie festlegen, ob die Elemente in Auflistungen wie z.B. 'Meine Kanäle' entsprechend ihrem Anordnungskriterium aufsteigend oder absteigend sortiert werden sollen." />
+
+                                    <StackPanel
+                                        Margin="0, 0, 19, 0"
+                                        Orientation="Vertical"
+                                        Grid.Row="2">
+                                        <RadioButton 
+                                            x:Name="ApplicationSettingsGeneralListSettingsOptionAsc"
+                                            x:Uid="ApplicationSettingsGeneralListSettingsOptionAsc"
+                                            Content="Aufsteigend"
+                                            IsChecked="{Binding IsAscendingSortingOptionSelected, Mode=TwoWay}"
+                                            GroupName="generalListSettings"/>
+
+                                        <RadioButton
+                                            x:Name="ApplicationSettingsGeneralListSettingsOptionDesc"
+                                            x:Uid="ApplicationSettingsGeneralListSettingsOptionDesc"
+                                            Content="Absteigend"
+                                            IsChecked="{Binding IsDescendingSortingOptionSelected, Mode=TwoWay}"
+                                            GroupName="generalListSettings"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Anordnung Nachrichten (Announcements). -->
+                                <Grid
+                                    Grid.Row="1"
+                                    Margin="0, 10, 0, 0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        x:Name="ApplicationSettingsHeaderAnnouncementOrderSettings"
+                                        x:Uid="ApplicationSettingsHeaderAnnouncementOrderSettings"
+                                        Margin="0, 0, 19, 0"
+                                        Style="{StaticResource UniversityNewsUlmStandardHeader}"
+                                        Text="Anordnung Nachrichten"/>
+
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        Margin="0, 0, 19, 0"
+                                        x:Name="ApplicationSettingsAnnouncementOrderSettingsDescription"
+                                        x:Uid="ApplicationSettingsAnnouncementOrderSettingsDescription"
+                                        Style="{StaticResource UniversityNewsUlmStandardText}"
+                                        Text="Die Anordnung der Nachrichten ist von den allgemeinen Listeneinstellungen ausgenommen und kann hier separat eingestellt werden. Die Nachrichten können von oben nach unten (neuste Nachricht ganz oben), oder von unten nach oben (neuste Nachricht ganz unten) angezeigt werden." />
+
+                                    <StackPanel
+                                        Margin="0, 0, 19, 0"
+                                        Orientation="Vertical"
+                                        Grid.Row="2">
+                                        <RadioButton 
+                                            x:Name="ApplicationSettingsAnnouncementSettingsOptionAsc"
+                                            x:Uid="ApplicationSettingsAnnouncementSettingsOptionAsc"
+                                            Content="Von oben nach unten"
+                                            IsChecked="{Binding IsAscendingMsgOrderSelected, Mode=TwoWay}"
+                                            GroupName="announcementOrderSettings"/>
+
+                                        <RadioButton
+                                            x:Name="ApplicationSettingsAnnouncementSettingsOptionDesc"
+                                            x:Uid="ApplicationSettingsAnnouncementSettingsOptionDesc"
+                                            Content="Von unten nach oben"
+                                            IsChecked="{Binding IsDescendingMsgOrderSelected, Mode=TwoWay}"
+                                            GroupName="announcementOrderSettings"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Anordnungseinstellung für Kanäle -->
+                                <Grid
+                                Margin="0, 10, 0, 0"
+                                Grid.Row="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        x:Name="ApplicationSettingsHeaderChannelListSettings"
+                                        x:Uid="ApplicationSettingsHeaderChannelListSettings"
+                                        Margin="0, 0, 19, 0"
+                                        Style="{StaticResource UniversityNewsUlmStandardHeader}"
+                                        Text="Kanäle"/>
+
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        Margin="0, 0, 19, 0"
+                                        x:Name="ApplicationSettingsChannelListSettingsDescription"
+                                        x:Uid="ApplicationSettingsChannelListSettingsDescription"
+                                        Style="{StaticResource UniversityNewsUlmStandardText}"
+                                        Text="Hier können Sie das Anordnungskriterium für die Auflistung von Kanälen festlegen." />
+
+                                    <StackPanel
+                                        Margin="0, 0, 19, 0"
+                                        Orientation="Vertical"
+                                        Grid.Row="2">
+                                        <RadioButton 
+                                            x:Name="ApplicationSettingsChannelListSettingsOptionAlphabetical"
+                                            x:Uid="ApplicationSettingsChannelListSettingsOptionAlphabetical"
+                                            Content="Alphabetisch"
+                                            IsChecked="{Binding IsChannelOrderOptionAlphabetical, Mode=TwoWay}"
+                                            GroupName="channelListSettings"/>
+
+                                        <RadioButton
+                                            x:Name="ApplicationSettingsChannelListSettingsOptionType"
+                                            x:Uid="ApplicationSettingsChannelListSettingsOptionType"
+                                            Content="Nach Kanaltyp"
+                                            IsChecked="{Binding IsChannelOrderOptionByType, Mode=TwoWay}"
+                                            GroupName="channelListSettings"/>
+
+                                        <RadioButton
+                                            x:Name="ApplicationSettingsChannelListSettingsOptionMsgAmount"
+                                            x:Uid="ApplicationSettingsChannelListSettingsOptionMsgAmount"
+                                            Content="Nach Anzahl ungelesener Nachrichten"
+                                            IsChecked="{Binding IsChannelOrderOptionByMsgAmount, Mode=TwoWay}"
+                                            GroupName="channelListSettings"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Anordnungseinstellung für Gruppen -->
+                                <Grid
+                                Margin="0, 10, 0, 0"
+                                Grid.Row="3">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        x:Name="ApplicationSettingsHeaderGroupListSettings"
+                                        x:Uid="ApplicationSettingsHeaderGroupListSettings"
+                                        Margin="0, 0, 19, 0"
+                                        Style="{StaticResource UniversityNewsUlmStandardHeader}"
+                                        Text="Gruppen"/>
+
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        Margin="0, 0, 19, 0"
+                                        x:Name="ApplicationSettingsGroupListSettingsDescription"
+                                        x:Uid="ApplicationSettingsGroupListSettingsDescription"
+                                        Style="{StaticResource UniversityNewsUlmStandardText}"
+                                        Text="Hier können Sie das Anordnungskriterium für die Auflistung von Gruppen festlegen." />
+
+                                    <StackPanel
+                                        Margin="0, 0, 19, 0"
+                                        Orientation="Vertical"
+                                        Grid.Row="2">
+                                        <RadioButton 
+                                            x:Name="ApplicationSettingsGroupListSettingsOptionAlphabetical"
+                                            x:Uid="ApplicationSettingsGroupListSettingsOptionAlphabetical"
+                                            Content="Alphabetisch"
+                                            IsChecked="{Binding IsGroupOrderOptionAlphabetical, Mode=TwoWay}"
+                                            GroupName="groupListSettings"/>
+
+                                        <RadioButton
+                                            x:Name="ApplicationSettingsGroupListSettingsOptionType"
+                                            x:Uid="ApplicationSettingsGroupListSettingsOptionType"
+                                            Content="Nach Gruppentyp"
+                                            IsChecked="{Binding IsGroupOrderOptionByType, Mode=TwoWay}"
+                                            GroupName="groupListSettings"/>
+
+                                        <RadioButton
+                                            x:Name="ApplicationSettingsGroupListSettingsOptionMsgAmount"
+                                            x:Uid="ApplicationSettingsGroupListSettingsOptionMsgAmount"
+                                            Content="Nach Anzahl ungelesener Nachrichten"
+                                            IsChecked="{Binding IsGroupOrderOptionByMsgAmount, Mode=TwoWay}"
+                                            GroupName="groupListSettings"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Anordnungseinstellung für Konversationen -->
+                                <Grid
+                                Margin="0, 10, 0, 0"
+                                Grid.Row="4">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        x:Name="ApplicationSettingsHeaderConversationListSettings"
+                                        x:Uid="ApplicationSettingsHeaderConversationListSettings"
+                                        Margin="0, 0, 19, 0"
+                                        Style="{StaticResource UniversityNewsUlmStandardHeader}"
+                                        Text="Konversationen"/>
+
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        Margin="0, 0, 19, 0"
+                                        x:Name="ApplicationSettingsConversationListSettingsDescription"
+                                        x:Uid="ApplicationSettingsConversationListSettingsDescription"
+                                        Style="{StaticResource UniversityNewsUlmStandardText}"
+                                        Text="Hier können Sie das Anordnungskriterium für die Auflistung von Konversationen festlegen." />
+
+                                    <StackPanel
+                                        Margin="0, 0, 19, 0"
+                                        Orientation="Vertical"
+                                        Grid.Row="2">
+                                        <RadioButton 
+                                            x:Name="ApplicationSettingsConversationListSettingsOptionAlphabetical"
+                                            x:Uid="ApplicationSettingsConversationListSettingsOptionAlphabetical"
+                                            Content="Alphabetisch"
+                                            IsChecked="{Binding IsConversationOrderOptionAlphabetical, Mode=TwoWay}"
+                                            GroupName="conversationListSettings"/>
+
+                                        <RadioButton
+                                            x:Name="ApplicationSettingsConversationListSettingsOptionLatest"
+                                            x:Uid="ApplicationSettingsConversationListSettingsOptionLatest"
+                                            Content="Nach Erstellungsdatum"
+                                            IsChecked="{Binding IsConversationOrderOptionLatest, Mode=TwoWay}"
+                                            GroupName="conversationListSettings"/>
+
+                                        <RadioButton
+                                            x:Name="ApplicationSettingsConversationListSettingsOptionMsgAmount"
+                                            x:Uid="ApplicationSettingsConversationListSettingsOptionMsgAmount"
+                                            Content="Nach Anzahl ungelesener Nachrichten"
+                                            IsChecked="{Binding IsConversationOrderOptionByMsgAmount, Mode=TwoWay}"
+                                            GroupName="conversationListSettings"/>
+                                    </StackPanel>
+                                </Grid>
+                                
+                                <!-- Anordnungseinstellung für Umfragen -->
+                                <Grid
+                                Margin="0, 10, 0, 0"
+                                Grid.Row="5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        x:Name="ApplicationSettingsHeaderBallotListSettings"
+                                        x:Uid="ApplicationSettingsHeaderBallotListSettings"
+                                        Margin="0, 0, 19, 0"
+                                        Style="{StaticResource UniversityNewsUlmStandardHeader}"
+                                        Text="Umfragen"/>
+
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        Margin="0, 0, 19, 0"
+                                        x:Name="ApplicationSettingsBallotListSettingsDescription"
+                                        x:Uid="ApplicationSettingsBallotListSettingsDescription"
+                                        Style="{StaticResource UniversityNewsUlmStandardText}"
+                                        Text="Hier können Sie das Anordnungskriterium für die Auflistung von Umfragen festlegen." />
+
+                                    <StackPanel
+                                        Margin="0, 0, 19, 0"
+                                        Orientation="Vertical"
+                                        Grid.Row="2">
+                                        <RadioButton 
+                                            x:Name="ApplicationSettingsBallotListSettingsOptionAlphabetical"
+                                            x:Uid="ApplicationSettingsBallotListSettingsOptionAlphabetical"
+                                            Content="Alphabetisch"
+                                            IsChecked="{Binding IsBallotOrderOptionAlphabetical, Mode=TwoWay}"
+                                            GroupName="ballotListSettings"/>
+
+                                        <RadioButton
+                                            x:Name="ApplicationSettingsBallotListSettingsOptionLatestVote"
+                                            x:Uid="ApplicationSettingsBallotListSettingsOptionLatestVote"
+                                            Content="Neuste Abstimmung"
+                                            IsChecked="{Binding IsBallotOrderOptionLatestVote, Mode=TwoWay}"
+                                            GroupName="ballotListSettings"/>
+
+                                        <RadioButton
+                                            x:Name="ApplicationSettingsBallotListSettingsOptionType"
+                                            x:Uid="ApplicationSettingsBallotListSettingsOptionType"
+                                            Content="Nach Typ"
+                                            IsChecked="{Binding IsBallotOrderOptionByBallotType, Mode=TwoWay}"
+                                            GroupName="ballotListSettings"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </ScrollViewer>
                     </PivotItem>
-                    
+
                 </Pivot>
             </Grid>
 
             <!-- Inhalt des Drawer Menüs-->
-            <!--<Grid x:Name="ListFragment" Background="{StaticResource DrawerMenuContentPanelBackgroundColor}">
+            <Grid x:Name="ListFragment" Background="{StaticResource DrawerMenuContentPanelBackgroundColor}">
                 <ListView x:Name="ListMenuItems"
                           ItemTemplate="{StaticResource DrawerMenuEntryDataTemplate}"
                           IsItemClickEnabled="True">
@@ -261,7 +574,7 @@
                         </Style>
                     </ListView.ItemContainerStyle>
 
-                     --><!--Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.--><!--
+                     <!--Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
                     <i:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
                             <core:InvokeCommandAction Command="{Binding DrawerButtonCommand}"
@@ -269,7 +582,7 @@
                         </core:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                 </ListView>
-            </Grid>-->
+            </Grid>
 
         </drawerLayout:DrawerLayout>
     </Grid>

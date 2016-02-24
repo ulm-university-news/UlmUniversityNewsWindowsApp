@@ -76,9 +76,9 @@ namespace UlmUniversityNews.Views.ApplicationSettings
         /// <see cref="Frame.Navigate(Type, Object)"/> als diese Seite ursprünglich angefordert wurde und
         /// ein Wörterbuch des Zustands, der von dieser Seite während einer früheren
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
-        private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
+        private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            await applicationSettingsViewModel.LoadCurrentSettings();
+            applicationSettingsViewModel.LoadCurrentSettings();
         }
 
         /// <summary>
