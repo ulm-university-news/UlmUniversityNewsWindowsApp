@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DataHandlingLayer.CommandRelays;
 using System.Diagnostics;
 using DataHandlingLayer.DataModel;
+using DataHandlingLayer.DataModel.Enums;
 using DataHandlingLayer.Controller;
 using DataHandlingLayer.Exceptions;
 
@@ -119,6 +120,9 @@ namespace DataHandlingLayer.ViewModel
             try
             {
                 channels = await Task.Run(() => channelController.GetMyChannels());
+
+                // Sortiere Liste.
+                channels = sortChannelsByApplicationSetting(channels);
                 
                 // Mache Kanäle über Property abrufbar.
                 MyChannels = new ObservableCollection<Channel>(channels);
@@ -128,7 +132,77 @@ namespace DataHandlingLayer.ViewModel
             }
 
             // Führe Aktualisierung von Anzahl ungelesener Nachrichten Properties der Kanäle aus.
-            await UpdateNumberOfUnreadAnnouncements();
+            // await UpdateNumberOfUnreadAnnouncements();
+        }
+
+        /// <summary>
+        /// Sortiert die Liste der Kanäle nach dem aktuell in den Anwendungseinstellungen festgelegten Kriterium.
+        /// </summary>
+        /// <param name="channels">Die Liste an zu sortierenden Kanälen.</param>
+        /// <returns>Eine sortierte Liste der Kanäle.</returns>
+        private List<Channel> sortChannelsByApplicationSetting(List<Channel> channels)
+        {
+            // Hole die Anwendungseinstellungen.
+            AppSettings appSettings = channelController.GetApplicationSettings();
+
+            switch (appSettings.ChannelOderSetting)
+            {
+                case OrderOption.ALPHABETICAL:
+                    if (appSettings.GeneralListOrderSetting == OrderOption.ASCENDING)
+                    {
+                        channels = new List<Channel>(
+                            from item in channels
+                            orderby item.Name ascending
+                            select item);
+                    }
+                    else
+                    {
+                        channels = new List<Channel>(
+                            from item in channels
+                            orderby item.Name descending
+                            select item);
+                    }
+                    break;
+                case OrderOption.BY_TYPE:
+                    if (appSettings.GeneralListOrderSetting == OrderOption.ASCENDING)
+                    {
+                        channels = new List<Channel>(
+                            from item in channels
+                            orderby item.Type ascending, item.Name ascending
+                            select item);
+                    }
+                    else
+                    {
+                        channels = new List<Channel>(
+                            from item in channels
+                            orderby item.Type descending, item.Name descending
+                            select item);
+                    }
+                    break;
+                case OrderOption.BY_NEW_MESSAGES_AMOUNT:
+                    if (appSettings.GeneralListOrderSetting == OrderOption.ASCENDING)
+                    {
+                        channels = new List<Channel>(
+                            from item in channels
+                            orderby item.NumberOfUnreadAnnouncements ascending, item.Name ascending
+                            select item);
+                    }
+                    else
+                    {
+                        channels = new List<Channel>(
+                            from item in channels
+                            orderby item.NumberOfUnreadAnnouncements descending, item.Name descending
+                            select item);
+                    }
+                    break;
+                default:
+                    channels = new List<Channel>(
+                        from item in channels
+                        orderby item.Name ascending
+                        select item);
+                    break;
+            }
+            return channels;
         }
 
         /// <summary>

@@ -75,7 +75,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsNotificationOptionPrioHighSelected
         {
             get { return isNotificationOptionPrioHighSelected; }
-            set { isNotificationOptionPrioHighSelected = value; }
+            set { this.setProperty(ref this.isNotificationOptionPrioHighSelected, value); }
         }
 
         private bool isNotificationOptionAllSelected;
@@ -85,7 +85,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsNotificationOptionAllSelected
         {
             get { return isNotificationOptionAllSelected; }
-            set { isNotificationOptionAllSelected = value; }
+            set { this.setProperty(ref this.isNotificationOptionAllSelected, value); }
         }
 
         private bool isNotificationOptionNoneSelected;
@@ -95,7 +95,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsNotificationOptionNoneSelected
         {
             get { return isNotificationOptionNoneSelected; }
-            set { isNotificationOptionNoneSelected = value; }
+            set { this.setProperty(ref this.isNotificationOptionNoneSelected, value); }
         }
         #endregion NotificationSettings
 
@@ -108,7 +108,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsAscendingSortingOptionSelected
         {
             get { return isAscendingSortingOptionSelected; }
-            set { isAscendingSortingOptionSelected = value; }
+            set { this.setProperty(ref this.isAscendingSortingOptionSelected, value); }
         }
 
         private bool isDescendingSortingOptionSelected;
@@ -119,7 +119,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsDescendingSortingOptionSelected
         {
             get { return isDescendingSortingOptionSelected; }
-            set { isDescendingSortingOptionSelected = value; }
+            set { this.setProperty(ref this.isDescendingSortingOptionSelected, value); }
         }
         #endregion GeneralListSettings
 
@@ -132,7 +132,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsAscendingMsgOrderSelected
         {
             get { return isAscendingMsgOrderSelected; }
-            set { isAscendingMsgOrderSelected = value; }
+            set { this.setProperty(ref this.isAscendingMsgOrderSelected, value); }
         }
 
         private bool isDescendingMsgOrderSelected;
@@ -143,7 +143,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsDescendingMsgOrderSelected
         {
             get { return isDescendingMsgOrderSelected; }
-            set { isDescendingMsgOrderSelected = value; }
+            set { this.setProperty(ref this.isDescendingMsgOrderSelected, value); }
         }      
         #endregion AnnouncementOrderSettings
 
@@ -155,7 +155,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsChannelOrderOptionAlphabetical
         {
             get { return isChannelOrderOptionAlphabetical; }
-            set { isChannelOrderOptionAlphabetical = value; }
+            set { this.setProperty(ref this.isChannelOrderOptionAlphabetical, value); }
         }
 
         private bool isChannelOrderOptionByType;
@@ -165,7 +165,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsChannelOrderOptionByType
         {
             get { return isChannelOrderOptionByType; }
-            set { isChannelOrderOptionByType = value; }
+            set { this.setProperty(ref this.isChannelOrderOptionByType, value); }
         }
 
         private bool isChannelOrderOptionByMsgAmount;
@@ -176,7 +176,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsChannelOrderOptionByMsgAmount
         {
             get { return isChannelOrderOptionByMsgAmount; }
-            set { isChannelOrderOptionByMsgAmount = value; }
+            set { this.setProperty(ref this.isChannelOrderOptionByMsgAmount, value); }
         }
         #endregion ChannelSettings
 
@@ -188,7 +188,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsGroupOrderOptionAlphabetical
         {
             get { return isGroupOrderOptionAlphabetical; }
-            set { isGroupOrderOptionAlphabetical = value; }
+            set { this.setProperty(ref this.isGroupOrderOptionAlphabetical, value); }
         }
 
         private bool isGroupOrderOptionByType;
@@ -198,7 +198,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsGroupOrderOptionByType
         {
             get { return isGroupOrderOptionByType; }
-            set { isGroupOrderOptionByType = value; }
+            set { this.setProperty(ref this.isGroupOrderOptionByType, value); }
         }
 
         private bool isGroupOrderOptionByMsgAmount;
@@ -209,7 +209,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsGroupOrderOptionByMsgAmount
         {
             get { return isGroupOrderOptionByMsgAmount; }
-            set { isGroupOrderOptionByMsgAmount = value; }
+            set { this.setProperty(ref this.isGroupOrderOptionByMsgAmount, value); }
         }
         #endregion GroupSettings
 
@@ -222,7 +222,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsConversationOrderOptionAlphabetical
         {
             get { return isConversationOrderOptionAlphabetical; }
-            set { isConversationOrderOptionAlphabetical = value; }
+            set { this.setProperty(ref this.isConversationOrderOptionAlphabetical, value); }
         }
 
         private bool isConversationOrderOptionLatest;
@@ -233,7 +233,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsConversationOrderOptionLatest
         {
             get { return isConversationOrderOptionLatest; }
-            set { isConversationOrderOptionLatest = value; }
+            set { this.setProperty(ref this.isConversationOrderOptionLatest, value); }
         }
 
         private bool isConversationOrderOptionByMsgAmount;
@@ -244,7 +244,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsConversationOrderOptionByMsgAmount
         {
             get { return isConversationOrderOptionByMsgAmount; }
-            set { isConversationOrderOptionByMsgAmount = value; }
+            set { this.setProperty(ref this.isConversationOrderOptionByMsgAmount, value); }
         }
         #endregion ConversationSettings
 
@@ -257,7 +257,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsBallotOrderOptionAlphabetical
         {
             get { return isBallotOrderOptionAlphabetical; }
-            set { isBallotOrderOptionAlphabetical = value; }
+            set { this.setProperty(ref this.isBallotOrderOptionAlphabetical, value); }
         }
 
         private bool isBallotOrderOptionLatestVote;
@@ -268,7 +268,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsBallotOrderOptionLatestVote
         {
             get { return isBallotOrderOptionLatestVote; }
-            set { isBallotOrderOptionLatestVote = value; }
+            set { this.setProperty(ref this.isBallotOrderOptionLatestVote, value); }
         }
 
         private bool isBallotOrderOptionByBallotType;
@@ -279,7 +279,7 @@ namespace DataHandlingLayer.ViewModel
         public bool IsBallotOrderOptionByBallotType
         {
             get { return isBallotOrderOptionByBallotType; }
-            set { isBallotOrderOptionByBallotType = value; }
+            set { this.setProperty(ref this.isBallotOrderOptionByBallotType, value); }
         }
         #endregion BallotSettings
 
@@ -328,6 +328,7 @@ namespace DataHandlingLayer.ViewModel
                 
                 // Benachrichtigungseinstellungen.
                 NotificationSetting notificationSetting = appSettings.MsgNotificationSetting;
+                Debug.WriteLine("Loaded notification setting: " + notificationSetting);
                 switch (notificationSetting)
                 {
                     case NotificationSetting.ANNOUNCE_PRIORITY_HIGH:
@@ -346,6 +347,7 @@ namespace DataHandlingLayer.ViewModel
 
                 // Bevorzugte Sprache.
                 Language favoredLanguage = appSettings.LanguageSetting;
+                Debug.WriteLine("Loaded favored language: " + favoredLanguage);
                 if (favoredLanguage == Language.ENGLISH)
                 {
                     IsEnglishLanguageSelected = true;
@@ -370,8 +372,18 @@ namespace DataHandlingLayer.ViewModel
         /// <param name="appSettings">Die aktuellen Anwendungseinstellungen.</param>
         private void initializeListSettingsViewParameter(AppSettings appSettings)
         {
+            Debug.WriteLine("Loaded settings for lists: {0}, {1}, {2}, {3}, {4}, {5}.",
+               appSettings.GeneralListOrderSetting,
+               appSettings.AnnouncementOrderSetting,
+               appSettings.ChannelOderSetting,
+               appSettings.GroupOrderSetting,
+               appSettings.ConversationOrderSetting,
+               appSettings.BallotOrderSetting);
+
             // Allgemeine Listeneinstellungen.
             OrderOption generalListOrder = appSettings.GeneralListOrderSetting;
+            IsDescendingSortingOptionSelected = false;
+            IsAscendingSortingOptionSelected = false;
 
             // Initialisierung der Boolean Parameter für allgemeine Listeneinstellungen.
             switch (generalListOrder)
@@ -390,6 +402,8 @@ namespace DataHandlingLayer.ViewModel
 
             // Anordnung von Nachrichten (Announcements) in Nachrichtenauflistungen.
             OrderOption announcementOrderSetting = appSettings.AnnouncementOrderSetting;
+            IsAscendingMsgOrderSelected = false;
+            IsDescendingMsgOrderSelected = false;
 
             switch (announcementOrderSetting)
             {
@@ -412,21 +426,33 @@ namespace DataHandlingLayer.ViewModel
             {
                 case OrderOption.ALPHABETICAL:
                     IsChannelOrderOptionAlphabetical = true;
+                    IsChannelOrderOptionByType = false;
+                    IsChannelOrderOptionByMsgAmount = false;
                     break;
                 case OrderOption.BY_TYPE:
+                    IsChannelOrderOptionAlphabetical = false;
                     IsChannelOrderOptionByType = true;
+                    IsChannelOrderOptionByMsgAmount = false;
                     break;
                 case OrderOption.BY_NEW_MESSAGES_AMOUNT:
-                    IsConversationOrderOptionByMsgAmount = true;
+                    
+                    IsChannelOrderOptionAlphabetical = false;
+                    IsChannelOrderOptionByType = false;
+                    IsChannelOrderOptionByMsgAmount = true;
                     break;
                 default:
                     Debug.WriteLine("No value matched for the channelListOrder settings. Take alphabetical as default.");
                     IsChannelOrderOptionAlphabetical = true;
+                    IsChannelOrderOptionByType = false;
+                    IsChannelOrderOptionByMsgAmount = false;
                     break;
             }
 
             // Gruppeneinstellungen.
             OrderOption groupSettings = appSettings.GroupOrderSetting;
+            IsGroupOrderOptionAlphabetical = false;
+            IsGroupOrderOptionByType = false;
+            IsGroupOrderOptionByMsgAmount = false;
 
             switch (groupSettings)
             {
@@ -447,6 +473,9 @@ namespace DataHandlingLayer.ViewModel
 
             // Konversationeneinstellungen.
             OrderOption conversationSettings = appSettings.ConversationOrderSetting;
+            IsConversationOrderOptionAlphabetical = false;
+            IsConversationOrderOptionByMsgAmount = false;
+            IsConversationOrderOptionLatest = false;
 
             switch (conversationSettings)
             {
@@ -467,6 +496,9 @@ namespace DataHandlingLayer.ViewModel
 
             // Abstimmungseinstellungen.
             OrderOption ballotSettings = appSettings.BallotOrderSetting;
+            IsBallotOrderOptionAlphabetical = false;
+            IsBallotOrderOptionByBallotType = false;
+            IsBallotOrderOptionLatestVote = false;
 
             switch (ballotSettings)
             {

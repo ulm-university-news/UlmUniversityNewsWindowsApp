@@ -621,6 +621,7 @@ namespace DataHandlingLayer.Database
 
         /// <summary>
         /// Hole alle Kanäle aus der Datenbank, die der lokale Nutzer abonniert hat.
+        /// Es werden die Kanaldaten inklusiver der Anzahl ungelesener Nachrichten des Kanals geladen.
         /// </summary>
         /// <returns>Eine Liste von Objekten vom Typ Kanal oder vom Typ einer der Subklassen von Kanal. Die Liste kann auch leer sein.</returns>
         /// <exception cref="DatabaseException">Wirft DatabaseException, wenn das Abrufen der abonnierten Kanäle fehlschlägt.</exception>
@@ -637,15 +638,40 @@ namespace DataHandlingLayer.Database
                 {
                     try
                     {
+                        string getChannels = @"SELECT * 
+                            FROM Channel 
+                            WHERE Id IN 
+                                (SELECT Channel_Id AS Id FROM SubscribedChannels);";
+
+                        string unreadAnnouncementsQuery = @"SELECT COUNT(*) AS UnreadAnnouncements 
+                            FROM Announcement AS a JOIN Message AS m ON a.Message_Id=m.Id 
+                            WHERE a.Channel_Id=? AND m.Read=?;";
+
                         // Frage alle Kanäle ab, die in SubscribedChannels eingetragen sind.
-                        using (var getSubscribedChannelsStmt = conn.Prepare("SELECT * FROM Channel WHERE Id IN (" +
-                            "SELECT Channel_Id AS Id FROM SubscribedChannels);"))
+                        using (var getSubscribedChannelsStmt = conn.Prepare(getChannels))
                         {
-                            // Iteriere über Ergebnisse.
-                            while (getSubscribedChannelsStmt.Step() == SQLiteResult.ROW)
+                            using (var getAmountOfUnreadMsgStmt = conn.Prepare(unreadAnnouncementsQuery))
                             {
-                                Channel channelTmp = retrieveChannelObjectFromStatement(conn, getSubscribedChannelsStmt);
-                                channels.Add(channelTmp);
+                                // Iteriere über Ergebnisse.
+                                while (getSubscribedChannelsStmt.Step() == SQLiteResult.ROW)
+                                {
+                                    // Extrahiere Kanal.
+                                    Channel channelTmp = retrieveChannelObjectFromStatement(conn, getSubscribedChannelsStmt);
+
+                                    // Ermittle noch die Anzahl an ungelesenen Announcements für diesen Kanal.
+                                    getAmountOfUnreadMsgStmt.Bind(1, channelTmp.Id);
+                                    getAmountOfUnreadMsgStmt.Bind(2, 0);    // Read soll false sein.
+
+                                    if(getAmountOfUnreadMsgStmt.Step() == SQLiteResult.ROW)
+                                    {
+                                        channelTmp.NumberOfUnreadAnnouncements = Convert.ToInt32(getAmountOfUnreadMsgStmt["UnreadAnnouncements"]);
+                                    }
+
+                                    // Setzte Statement zurück für nächste Iteration.
+                                    getAmountOfUnreadMsgStmt.Reset();
+
+                                    channels.Add(channelTmp);
+                                }
                             }
                         }
                     }

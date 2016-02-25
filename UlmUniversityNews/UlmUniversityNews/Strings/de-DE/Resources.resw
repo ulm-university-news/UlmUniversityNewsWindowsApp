@@ -375,4 +375,88 @@
   <data name="ApplicationSettingsNotificationSettingsOptionPrioHigh.Content" xml:space="preserve">
     <value>Nur Priorität 'hoch' ankündigen</value>
   </data>
+  <data name="ApplicationSettingsAnnouncementOrderSettingsDescription.Text" xml:space="preserve">
+    <value>Die Anordnung der Nachrichten ist von den allgemeinen Listeneinstellungen ausgenommen und kann hier separat eingestellt werden. Die Nachrichten können von oben nach unten (neuste Nachricht ganz oben), oder von unten nach oben (neuste Nachricht ganz unten) angezeigt werden.</value>
+  </data>
+  <data name="ApplicationSettingsAnnouncementSettingsOptionAsc.Content" xml:space="preserve">
+    <value>Von oben nach unten</value>
+  </data>
+  <data name="ApplicationSettingsAnnouncementSettingsOptionDesc.Content" xml:space="preserve">
+    <value>Von unten nach oben</value>
+  </data>
+  <data name="ApplicationSettingsBallotListSettingsDescription.Text" xml:space="preserve">
+    <value>Hier können Sie das Anordnungskriterium für die Auflistung von Abstimmungen festlegen.</value>
+  </data>
+  <data name="ApplicationSettingsBallotListSettingsOptionAlphabetical.Content" xml:space="preserve">
+    <value>Alphabetisch</value>
+  </data>
+  <data name="ApplicationSettingsBallotListSettingsOptionLatestVote.Content" xml:space="preserve">
+    <value>Neuste Abstimmung zuerst</value>
+  </data>
+  <data name="ApplicationSettingsBallotListSettingsOptionType.Content" xml:space="preserve">
+    <value>Nach Typ</value>
+  </data>
+  <data name="ApplicationSettingsChannelListSettingsDescription.Text" xml:space="preserve">
+    <value>Hier können Sie das Anordnungskriterium für die Auflistung von Kanälen festlegen.</value>
+  </data>
+  <data name="ApplicationSettingsChannelListSettingsOptionAlphabetical.Content" xml:space="preserve">
+    <value>Alphabetisch</value>
+  </data>
+  <data name="ApplicationSettingsChannelListSettingsOptionMsgAmount.Content" xml:space="preserve">
+    <value>Nach Anzahl ungelesener Nachrichten</value>
+  </data>
+  <data name="ApplicationSettingsChannelListSettingsOptionType.Content" xml:space="preserve">
+    <value>Nach Kanaltyp</value>
+  </data>
+  <data name="ApplicationSettingsConversationListSettingsDescription.Text" xml:space="preserve">
+    <value>Hier können Sie das Anordnungskriterium für die Auflistung von Konversationen festlegen.</value>
+  </data>
+  <data name="ApplicationSettingsConversationListSettingsOptionAlphabetical.Content" xml:space="preserve">
+    <value>Alphabetisch</value>
+  </data>
+  <data name="ApplicationSettingsConversationListSettingsOptionLatest.Content" xml:space="preserve">
+    <value>Nach Erstellungsdatum</value>
+  </data>
+  <data name="ApplicationSettingsConversationListSettingsOptionMsgAmount.Content" xml:space="preserve">
+    <value>Nach Anzahl ungelesener Nachrichten</value>
+  </data>
+  <data name="ApplicationSettingsGeneralListSettingsDescription.Text" xml:space="preserve">
+    <value>Hier können Sie festlegen, ob die Elemente in Auflistungen wie z.B. 'Meine Kanäle' entsprechend ihrem Anordnungskriterium aufsteigend oder absteigend sortiert werden sollen.</value>
+  </data>
+  <data name="ApplicationSettingsGeneralListSettingsOptionAsc.Content" xml:space="preserve">
+    <value>Aufsteigend</value>
+  </data>
+  <data name="ApplicationSettingsGeneralListSettingsOptionDesc.Content" xml:space="preserve">
+    <value>Absteigend</value>
+  </data>
+  <data name="ApplicationSettingsGroupListSettingsDescription.Text" xml:space="preserve">
+    <value>Hier können Sie das Anordnungskriterium für die Auflistung von Gruppen festlegen.</value>
+  </data>
+  <data name="ApplicationSettingsGroupListSettingsOptionAlphabetical.Content" xml:space="preserve">
+    <value>Alphabetisch</value>
+  </data>
+  <data name="ApplicationSettingsGroupListSettingsOptionMsgAmount.Content" xml:space="preserve">
+    <value>Nach Anzahl ungelesener Nachrichten</value>
+  </data>
+  <data name="ApplicationSettingsGroupListSettingsOptionType.Content" xml:space="preserve">
+    <value>Nach Gruppentyp</value>
+  </data>
+  <data name="ApplicationSettingsHeaderAnnouncementOrderSettings.Text" xml:space="preserve">
+    <value>Anordnung Nachrichten</value>
+  </data>
+  <data name="ApplicationSettingsHeaderBallotListSettings.Text" xml:space="preserve">
+    <value>Abstimmungen</value>
+  </data>
+  <data name="ApplicationSettingsHeaderChannelListSettings.Text" xml:space="preserve">
+    <value>Kanäle</value>
+  </data>
+  <data name="ApplicationSettingsHeaderConversationListSettings.Text" xml:space="preserve">
+    <value>Konversationen</value>
+  </data>
+  <data name="ApplicationSettingsHeaderGeneralListSettings.Text" xml:space="preserve">
+    <value>Allgemeine Listeneinstellungen</value>
+  </data>
+  <data name="ApplicationSettingsHeaderGroupListSettings.Text" xml:space="preserve">
+    <value>Gruppen</value>
+  </data>
 </root>

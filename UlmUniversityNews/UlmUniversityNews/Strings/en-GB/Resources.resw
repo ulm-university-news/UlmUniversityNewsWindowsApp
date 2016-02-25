@@ -375,4 +375,88 @@
   <data name="ApplicationSettingsNotificationSettingsOptionPrioHigh.Content" xml:space="preserve">
     <value>Only announce priority 'high' messages</value>
   </data>
+  <data name="ApplicationSettingsAnnouncementOrderSettingsDescription.Text" xml:space="preserve">
+    <value>The sorting order of messages is not handled by the general list settings. It is possible to specify the order here. Messages can be ordered from top to bottom (latest message on top) or from bottom to top (latest message on bottom).</value>
+  </data>
+  <data name="ApplicationSettingsAnnouncementSettingsOptionAsc.Content" xml:space="preserve">
+    <value>From top to bottom</value>
+  </data>
+  <data name="ApplicationSettingsAnnouncementSettingsOptionDesc.Content" xml:space="preserve">
+    <value>From bottom to top</value>
+  </data>
+  <data name="ApplicationSettingsBallotListSettingsDescription.Text" xml:space="preserve">
+    <value>This setting defines the order criterion for the enumeration of ballot resources.</value>
+  </data>
+  <data name="ApplicationSettingsBallotListSettingsOptionAlphabetical.Content" xml:space="preserve">
+    <value>Alphabetical</value>
+  </data>
+  <data name="ApplicationSettingsBallotListSettingsOptionLatestVote.Content" xml:space="preserve">
+    <value>Latest vote first</value>
+  </data>
+  <data name="ApplicationSettingsBallotListSettingsOptionType.Content" xml:space="preserve">
+    <value>By type</value>
+  </data>
+  <data name="ApplicationSettingsChannelListSettingsDescription.Text" xml:space="preserve">
+    <value>This setting defines the order criterion for the enumeration of channel resources.</value>
+  </data>
+  <data name="ApplicationSettingsChannelListSettingsOptionAlphabetical.Content" xml:space="preserve">
+    <value>Alphabetical</value>
+  </data>
+  <data name="ApplicationSettingsChannelListSettingsOptionMsgAmount.Content" xml:space="preserve">
+    <value>By amount of new messages</value>
+  </data>
+  <data name="ApplicationSettingsChannelListSettingsOptionType.Content" xml:space="preserve">
+    <value>By channel type</value>
+  </data>
+  <data name="ApplicationSettingsConversationListSettingsDescription.Text" xml:space="preserve">
+    <value>This setting defines the order criterion for the enumeration of conversation resources.</value>
+  </data>
+  <data name="ApplicationSettingsConversationListSettingsOptionAlphabetical.Content" xml:space="preserve">
+    <value>Alphabetical</value>
+  </data>
+  <data name="ApplicationSettingsConversationListSettingsOptionLatest.Content" xml:space="preserve">
+    <value>By creation date</value>
+  </data>
+  <data name="ApplicationSettingsConversationListSettingsOptionMsgAmount.Content" xml:space="preserve">
+    <value>By amount of new messages</value>
+  </data>
+  <data name="ApplicationSettingsGeneralListSettingsDescription.Text" xml:space="preserve">
+    <value>This setting defines whether entries in enumerations like 'My Channels' should be sorted according to their order criterion in ascending or in descending order.</value>
+  </data>
+  <data name="ApplicationSettingsGeneralListSettingsOptionAsc.Content" xml:space="preserve">
+    <value>Ascending</value>
+  </data>
+  <data name="ApplicationSettingsGeneralListSettingsOptionDesc.Content" xml:space="preserve">
+    <value>Descending</value>
+  </data>
+  <data name="ApplicationSettingsGroupListSettingsDescription.Text" xml:space="preserve">
+    <value>This setting defines the order criterion for the enumeration of group resources.</value>
+  </data>
+  <data name="ApplicationSettingsGroupListSettingsOptionAlphabetical.Content" xml:space="preserve">
+    <value>Alphabetical</value>
+  </data>
+  <data name="ApplicationSettingsGroupListSettingsOptionMsgAmount.Content" xml:space="preserve">
+    <value>By amount of new messages</value>
+  </data>
+  <data name="ApplicationSettingsGroupListSettingsOptionType.Content" xml:space="preserve">
+    <value>By group type</value>
+  </data>
+  <data name="ApplicationSettingsHeaderAnnouncementOrderSettings.Text" xml:space="preserve">
+    <value>Message Order Settings</value>
+  </data>
+  <data name="ApplicationSettingsHeaderBallotListSettings.Text" xml:space="preserve">
+    <value>Ballot Order Settings</value>
+  </data>
+  <data name="ApplicationSettingsHeaderChannelListSettings.Text" xml:space="preserve">
+    <value>Channel Order Settings</value>
+  </data>
+  <data name="ApplicationSettingsHeaderConversationListSettings.Text" xml:space="preserve">
+    <value>Conversation Order Settings</value>
+  </data>
+  <data name="ApplicationSettingsHeaderGeneralListSettings.Text" xml:space="preserve">
+    <value>General List Settings</value>
+  </data>
+  <data name="ApplicationSettingsHeaderGroupListSettings.Text" xml:space="preserve">
+    <value>Group Order Settings</value>
+  </data>
 </root>
