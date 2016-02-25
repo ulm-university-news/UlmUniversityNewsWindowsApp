@@ -156,9 +156,46 @@ namespace DataHandlingLayer.Controller
                     ballotOrderSettings);
                 applicationSettingsDatabaseManager.UpdateApplicationSettings(appSettings);
             }
-            catch(DatabaseException ex)
+            catch (DatabaseException ex)
             {
                 Debug.WriteLine("An error occurred during the list settings update. The error message is {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            // Lege neues AppSettings Objekt in den Cache.
+            AppSettingsCache.GetInstance().CacheApplicationSettings(appSettings);
+        }
+
+        /// <summary>
+        /// Aktualisiert die Einstellungen bezüglich der Sprache der Anwendung.
+        /// </summary>
+        /// <param name="favoredLanguage">Die vom Nutzer als bevorzugt gewählte Sprache.</param>
+        public void UpdateFavoredLanguageSettings(Language favoredLanguage)
+        {
+            // Hole die aktuellen Anwendungseinstellungen.
+            AppSettings appSettings = GetApplicationSettings();
+
+            appSettings.LanguageSetting = favoredLanguage;
+
+            try
+            {
+                applicationSettingsDatabaseManager.UpdateApplicationSettings(appSettings);
+
+                if (appSettings.LanguageSetting == Language.ENGLISH)
+                {
+                    Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "en";
+                }
+                else if (appSettings.LanguageSetting == Language.GERMAN)
+                {
+                    Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "de";
+                }
+
+                Debug.WriteLine("In UpdateFavoredLanguageSettings. The curren PrimaryLanguageOverride is {0}.",
+                    Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("An error occurred during the favored language settings update. The error message is {0}.", ex.Message);
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
 

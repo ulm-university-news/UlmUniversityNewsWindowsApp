@@ -532,7 +532,19 @@ namespace DataHandlingLayer.ViewModel
                         Debug.WriteLine("Store user information settings.");
                         // Aktualisiere Nutzername, falls nötig, und speichere gewählte Sprache ab.
                         await applicationSettingsController.UpdateLocalUsernameAsync(LocalUsername);
-                        // TODO Language
+                       
+                        AppSettings appSettings = applicationSettingsController.GetApplicationSettings();
+                        // Einstellung bezüglich Sprache.
+                        if(IsEnglishLanguageSelected && appSettings.LanguageSetting == Language.GERMAN)
+                        {
+                            // Ändere Sprache auf Englisch.
+                            applicationSettingsController.UpdateFavoredLanguageSettings(Language.ENGLISH);
+                        }
+                        else if(IsGermanLanguageSelected && appSettings.LanguageSetting == Language.ENGLISH)
+                        {
+                            // Ändere Sprache auf Deutsch.
+                            applicationSettingsController.UpdateFavoredLanguageSettings(Language.GERMAN);
+                        }
 
                         // Debug.WriteLine("Current PrimaryLangugae Override is: " + Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
                     }
