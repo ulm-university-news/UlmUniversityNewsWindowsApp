@@ -47,6 +47,9 @@ namespace UlmUniversityNews.Views.Homescreen
 
             HomescreenPivot.Loaded += HomescreenPivot_Loaded;
 
+            // Diese Seite soll wenn möglich im Cache gehalten werden.
+            NavigationCacheMode = NavigationCacheMode.Enabled;
+
             // Initialisiere Homescreen ViewModel.
             homescreenViewModel = new HomescreenViewModel(App.NavigationService, App.ErrorMapper);
             this.DataContext = homescreenViewModel;
@@ -103,6 +106,12 @@ namespace UlmUniversityNews.Views.Homescreen
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             Debug.WriteLine("LoadState Homescreen");
+            // Erforderlich wegen Caching. Falls Seite aus Cache geladen wird und Drawer war offen
+            // bleibt er sonst offen.
+            if (DrawerLayout.IsDrawerOpen)
+            {
+                DrawerLayout.CloseDrawer();
+            }
 
             // Registriere für Homescreen View relevante Events des PushNotificationManagers.
             subscribeToPushManagerEvents();

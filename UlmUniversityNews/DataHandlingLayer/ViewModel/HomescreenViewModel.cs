@@ -12,16 +12,24 @@ using DataHandlingLayer.DataModel;
 using DataHandlingLayer.DataModel.Enums;
 using DataHandlingLayer.Controller;
 using DataHandlingLayer.Exceptions;
+using DataHandlingLayer.Common;
 
 namespace DataHandlingLayer.ViewModel
 {
     public class HomescreenViewModel : ViewModel
     {
+        #region Fields
         /// <summary>
         /// Eine Referenz auf eine Instanz des ChannelController.
         /// </summary>
         private ChannelController channelController;
 
+        /// <summary>
+        /// Speichert die aktuell im ViewModel gehaltenen Kanäle in einem Lookup Verzeichnis.
+        /// </summary>
+        private Dictionary<int, Channel> currentChannels;
+        #endregion Fields
+        
         #region Properties
         private int selectedPivotItemIndex;
         /// <summary>
@@ -104,6 +112,8 @@ namespace DataHandlingLayer.ViewModel
             // Erzeuge Controller Objekt.
             channelController = new ChannelController(this);
 
+            currentChannels = new Dictionary<int, Channel>();
+
             // Initialisiere die Kommandos.
             searchChannelsCommand = new RelayCommand(param => executeSearchChannelsCommand(), param => canSearchChannels());
             addGroupCommand = new RelayCommand(param => executeAddGroupCommand(), param => canAddGroup());
@@ -119,20 +129,77 @@ namespace DataHandlingLayer.ViewModel
             List<Channel> channels;
             try
             {
-                channels = await Task.Run(() => channelController.GetMyChannels());
+                if (MyChannels == null || MyChannels.Count == 0)
+                {
+                    Debug.WriteLine("Loading subscribed channels from DB.");
 
-                // Sortiere Liste.
-                channels = sortChannelsByApplicationSetting(channels);
-                
-                // Mache Kanäle über Property abrufbar.
-                MyChannels = new ObservableCollection<Channel>(channels);
+                    channels = await Task.Run(() => channelController.GetMyChannels());
+
+                    // Sortiere Liste.
+                    channels = sortChannelsByApplicationSetting(channels);
+
+                    // Mache Kanäle über Property abrufbar.
+                    MyChannels = new ObservableCollection<Channel>(channels);
+
+                    // Speichere die Kanäle im Lookup-Verzeichnis.
+                    foreach (Channel channel in channels)
+                    {
+                        currentChannels.Add(channel.Id, channel);
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("It seems the homescreen view was taken from the cache. We check for local updates");
+
+                    // Prüfe, ob inzwischen ein neuer Kanal abonniert wurde.
+                    channels = await Task.Run(() => channelController.GetMyChannels());
+
+                    // Sortiere Liste.
+                    channels = sortChannelsByApplicationSetting(channels);
+
+                    // Füge fehlende Kanäle der Liste hinzu, an der Position, an der sie laut Sortierung stehen sollten.
+                    foreach (Channel channel in channels)
+                    {
+                        if(!currentChannels.ContainsKey(channel.Id))
+                        {
+                            Debug.WriteLine("Need to insert channel with id {0} into MyChannels.", channel.Id);
+                            MyChannels.Insert(channels.IndexOf(channel), channel);
+                            currentChannels.Add(channel.Id, channel);
+                        }
+                    }
+                    
+                    // Prüfe andererseits, ob ein Kanal aus MyChannels nicht mehr in der Liste der abonnierten Kanäle steht.
+                    for (int i = 0; i < MyChannels.Count; i++)
+                    {
+                        Channel channel = MyChannels[i];
+                        bool isContained = false;
+
+                        foreach (Channel loadedChannel in channels)
+                        {
+                            if (loadedChannel.Id == channel.Id)
+                            {
+                                isContained = true;
+                                break;
+                            }
+                        }
+
+                        if (!isContained)
+                        {
+                            Debug.WriteLine("Need to remove channel with id {0} from MyChannels list.", i);
+                            MyChannels.RemoveAt(i);
+                            currentChannels.Remove(channel.Id);
+                        }
+                    }
+
+                    // Führe Aktualisierung von Anzahl ungelesener Nachrichten Properties der Kanäle aus.
+                    await UpdateNumberOfUnreadAnnouncements();
+                }
             }catch(ClientException e)
             {
                 displayError(e.ErrorCode);
             }
 
-            // Führe Aktualisierung von Anzahl ungelesener Nachrichten Properties der Kanäle aus.
-            // await UpdateNumberOfUnreadAnnouncements();
+
         }
 
         /// <summary>
@@ -219,14 +286,21 @@ namespace DataHandlingLayer.ViewModel
             //Debug.WriteLine("NumberOfUnreadAnnouncements dictionary is {0}.", numberOfUnreadAnnouncements);
             if (numberOfUnreadAnnouncements != null)
             {
+                Debug.WriteLine("NumberOfUnreadAnnouncements contains {0} entries.", numberOfUnreadAnnouncements.Count);
+
                 foreach (Channel channel in MyChannels)
                 {
                     if (numberOfUnreadAnnouncements.ContainsKey(channel.Id))
                     {
                         // Speichere den Wert aus dem Verzeichnis als neue Anzahl an ungelesenen Announcements.
                         channel.NumberOfUnreadAnnouncements = numberOfUnreadAnnouncements[channel.Id];
-                        Debug.WriteLine("The new value for unreadMsg for channel with id {0} is {1}.",
-                            channel.Id, channel.NumberOfUnreadAnnouncements);
+                        // Debug.WriteLine("The new value for unreadMsg for channel with id {0} is {1}.",
+                        //    channel.Id, channel.NumberOfUnreadAnnouncements);
+                    }
+                    else
+                    {
+                        // Debug.WriteLine("Channel with id {0} did not appear in NumberOfUnreadAnnouncements, set nrOfUnreadMsg to 0.", channel.Id);
+                        channel.NumberOfUnreadAnnouncements = 0;
                     }
                 }
             }     

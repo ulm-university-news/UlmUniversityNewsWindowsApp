@@ -223,7 +223,7 @@ namespace UlmUniversityNews.PushNotifications
         private void alertUser()
         {
             VibrationDevice vibrationDevice = VibrationDevice.GetDefault();
-            vibrationDevice.Vibrate(TimeSpan.FromSeconds(1));
+            vibrationDevice.Vibrate(TimeSpan.FromSeconds(0.6f));
         }
 
         ///// <summary>
