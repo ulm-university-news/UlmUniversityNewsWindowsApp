@@ -365,75 +365,7 @@
                 </Grid>
             </Grid>
         </DataTemplate>
-        
-        <!-- Data Template eines Eintrags einer Announcement-Ressource in der Detailansicht eines Kanals. -->
-        <DataTemplate
-            x:Key="AnnouncementListItemStyle">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />    <!-- 1. Zeile: Announcement-->
-                    <RowDefinition Height="Auto" />    <!-- 2.Zeile:  Seperator-->
-                </Grid.RowDefinitions>
-
-                <Grid
-                    Background="{Binding Read, Converter={StaticResource MessageReadPropertyToBackgroundColorConverter}}"
-                    Height="Auto"       
-                    Margin="0,5,19,5">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />              <!-- 1.Zeile für Announcement Titel und Datum -->
-                        <RowDefinition Height="Auto" />              <!-- 2.Zeile für Inhalt der Nachricht -->
-                    </Grid.RowDefinitions>
-
-                    <!-- 1. Zeile -->
-                    <!-- Grid für Announcement Titel und Datum.-->
-                    <Grid
-                    Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="3*" />
-                            <!-- Spalte für Titel -->
-                            <ColumnDefinition Width="*" />
-                            <!-- Spalte für Datum -->
-                        </Grid.ColumnDefinitions>
-
-                        <!-- Titel -->
-                        <TextBlock
-                        Grid.Column="0"
-                        x:Name="AnnouncementTitle"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        TextAlignment="Left"
-                        Style="{StaticResource HeaderTextInAnnouncementList}"
-                        Text="{Binding Title}" />
-
-                        <!-- Datum -->
-                        <TextBlock
-                        Grid.Column="1"
-                        x:Name="AnnouncementCreationDate"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Right"
-                        TextAlignment="Right"
-                        Style="{StaticResource DateTimeFieldinList}"
-                        Text="{Binding CreationDate, Converter={StaticResource DateTimeToStringConverter}}"/>
-                        <!-- TODO Add converter-->
-                    </Grid>
-
-                    <!-- 2.Zeile -->
-                    <!-- Nachrichteninhalt -->
-                    <TextBlock
-                    Grid.Row="1"
-                    x:Name="AnnouncementContent"
-                    Style="{StaticResource TextInAnnouncementList}"
-                    Text="{Binding Text}" />
-                </Grid>
-
-                <!-- 3. Zeile Sepeartor-->
-                <Line 
-                    Grid.Row="1"
-                    Margin="-5, 5, 19, 5"
-                    Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
-            </Grid>          
-        </DataTemplate>
-            
+                 
         <!-- Command Bar:-->
         <!-- Definiere die Hintergrundfarbe für die CommandBar. -->
         <!--<Style 

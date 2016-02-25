@@ -108,6 +108,28 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
+        private int listRotationAngle;
+        /// <summary>
+        /// Der Winkel, um den die Liste mit den Announcements gedreht wird.
+        /// Der Winkel wird verwendet, um die Anordnung der Announcements (von oben nach untern, von unten nach oben)
+        /// zu realisieren.
+        /// </summary>
+        public int ListRotationAngle
+        {
+            get { return listRotationAngle; }
+            set { this.setProperty(ref this.listRotationAngle, value); }
+        }  
+
+        private bool showScrollBar;
+        /// <summary>
+        /// Gibt an, ob die ScrollBar Leiste eingeblendet werden soll, oder ob sie ausgeblendet werden soll.
+        /// </summary>
+        public bool ShowScrollBar
+        {
+            get { return showScrollBar; }
+            set { showScrollBar = value; }
+        }  
+
         private IncrementalLoadingCollection<IncrementalAnnouncementLoaderController, Announcement> announcements = null;
         /// <summary>
         /// Die zum Kanal gehörenden Announcements in einer Collection. Hierbei handelt es sich um eine Collection,
@@ -170,6 +192,19 @@ namespace DataHandlingLayer.ViewModel
 
             // Führe Online Aktualisierung am Anfang durch, d.h. wenn das ViewModel geladen wurde.
             performOnlineAnnouncementUpdate = true;
+
+            // Lade Anwendungseinstellungen und passe View Parameter entsprechend an.
+            AppSettings appSettings = channelController.GetApplicationSettings();
+            if (appSettings.AnnouncementOrderSetting == OrderOption.ASCENDING)
+            {
+                ListRotationAngle = 0;
+                ShowScrollBar = true;
+            }
+            else if(appSettings.AnnouncementOrderSetting == OrderOption.DESCENDING)
+            {
+                ListRotationAngle = 180;
+                ShowScrollBar = false;
+            }
         }
 
         /// <summary>

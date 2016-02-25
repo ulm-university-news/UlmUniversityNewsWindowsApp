@@ -20,7 +20,7 @@
         <!-- Konverter zur Umwandlung des Enum-Wertes ChannelType in einen String. --> 
         <converter:ChannelTypeToStringConverter x:Key="ChannelTypeToStringConverterLocal" />
         
-        <!-- Konverter zur Umwandlung von Werten auf eine Sichtbarkeit. -->
+        <!-- Konverter zur Umwandlung von Null Werten auf eine Sichtbarkeit. -->
         <converter:NullValuetoVisibilityConverter x:Key="NullValuetoVisibilityConverter" />
         
         <!-- Konverter zur Umwandlung von Boolean Werten auf eine Sichtbarkeit. -->
@@ -34,6 +34,82 @@
 
         <!-- Konvertierung eines ItemClickEventArgs auf das geklickte Objekt. -->
         <converter:ItemClickedConverter x:Key="ItemClickedConverter" />
+
+        <!-- Data Template eines Eintrags einer Announcement-Ressource in der Detailansicht eines Kanals. -->
+        <DataTemplate
+            x:Key="AnnouncementListItemStyle">
+            <Grid RenderTransformOrigin="0.5, 0.5">
+                <Grid.RenderTransform>
+                    <RotateTransform  Angle="{Binding ElementName=AnnouncementList, Path=DataContext.ListRotationAngle}"/> <!-- Problem: Binding auf Property, die nicht in ItemSource definiert ist. Workaround hier: Binde auf DataContext des Listenelements. In diesem Fall ist das das ViewModel selbst. -->
+                </Grid.RenderTransform>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <!-- 1. Zeile: Announcement-->
+                    <RowDefinition Height="Auto" />
+                    <!-- 2.Zeile:  Seperator-->
+                </Grid.RowDefinitions>
+
+                <Grid
+                    Background="{Binding Read, Converter={StaticResource MessageReadPropertyToBackgroundColorConverter}}"
+                    Height="Auto"       
+                    Margin="0,5,19,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <!-- 1.Zeile für Announcement Titel und Datum -->
+                        <RowDefinition Height="Auto" />
+                        <!-- 2.Zeile für Inhalt der Nachricht -->
+                    </Grid.RowDefinitions>
+
+                    <!-- 1. Zeile -->
+                    <!-- Grid für Announcement Titel und Datum.-->
+                    <Grid
+                    Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*" />
+                            <!-- Spalte für Titel -->
+                            <ColumnDefinition Width="*" />
+                            <!-- Spalte für Datum -->
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Titel -->
+                        <TextBlock
+                        Grid.Column="0"
+                        x:Name="AnnouncementTitle"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        TextAlignment="Left"
+                        Style="{StaticResource HeaderTextInAnnouncementList}"
+                        Text="{Binding Title}" />
+
+                        <!-- Datum -->
+                        <TextBlock
+                        Grid.Column="1"
+                        x:Name="AnnouncementCreationDate"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Right"
+                        TextAlignment="Right"
+                        Style="{StaticResource DateTimeFieldinList}"
+                        Text="{Binding CreationDate, Converter={StaticResource DateTimeToStringConverter}}"/>
+                        
+                    </Grid>
+
+                    <!-- 2.Zeile -->
+                    <!-- Nachrichteninhalt -->
+                    <TextBlock
+                    Grid.Row="1"
+                    x:Name="AnnouncementContent"
+                    Style="{StaticResource TextInAnnouncementList}"
+                    Text="{Binding Text}" />
+                </Grid>
+
+                <!-- 3. Zeile Sepeartor-->
+                <Line 
+                    Grid.Row="1"
+                    Margin="-5, 5, 19, 5"
+                    Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
+            </Grid>
+        </DataTemplate>
+        
     </Page.Resources>
 
     <!-- CommandBar -->
@@ -60,9 +136,7 @@
                 x:Uid="ChannelDetailsUnsubscribeChannelButton"
                 Icon="UnFavorite"
                 Label="unsubscribe channel"
-                Visibility="{Binding ChannelSubscribedStatus, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <!--Visibility="{Binding ElementName=UnsubscribeChannelButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
-                Command="{Binding UnsubscribeChannelCommand}"-->
+                Visibility="{Binding ChannelSubscribedStatus, Converter={StaticResource BooleanToVisibilityConverter}}"> <!--Visibility="{Binding ElementName=UnsubscribeChannelButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" Command="{Binding UnsubscribeChannelCommand}"-->
                 <AppBarButton.Flyout>
                     <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}">
                         <Grid
@@ -181,25 +255,26 @@
 
                             <!-- Liste mit Announcements -->
                             <ListView
+                                x:Name="AnnouncementList"
                                 Grid.Row="1"
                                 ItemTemplate="{StaticResource AnnouncementListItemStyle}"
                                 ItemsSource="{Binding Announcements}"
                                 HorizontalContentAlignment="Stretch"
                                 HorizontalAlignment="Stretch"
-                                RenderTransformOrigin="0.5,0.5"
-                                ScrollViewer.VerticalScrollBarVisibility="Hidden"> <!-- TODO Data Binding-->
+                                RenderTransformOrigin="0.5, 0.5"
+                                ScrollViewer.VerticalScrollBarVisibility="{Binding ShowScrollBar, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='ScrollBar'}"> <!-- TODO Data Binding-->
                                 <ListView.RenderTransform>
-                                    <RotateTransform Angle="180"/>    <!-- TODO Data Binding-->
+                                    <RotateTransform x:Name="AnnouncementListRotation" Angle="{Binding ListRotationAngle, UpdateSourceTrigger=PropertyChanged}"/>    <!-- TODO Data Binding-->
                                 </ListView.RenderTransform>
                                 <ListView.ItemContainerStyle>
                                     <Style TargetType="ListViewItem">
                                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                        <Setter Property="RenderTransformOrigin" Value="0.5, 0.5" />
+                                        <!--<Setter Property="RenderTransformOrigin" Value="0.5, 0.5" />
                                         <Setter Property="RenderTransform">
                                             <Setter.Value>
-                                                <RotateTransform Angle="180" />    <!--TODO Data Binding-->
+                                                <RotateTransform Angle="{Binding ListRotationAngle2, Mode=OneTime}" />    --><!--TODO Data Binding--><!--
                                             </Setter.Value>
-                                        </Setter>
+                                        </Setter>-->
                                     </Style>
                                 </ListView.ItemContainerStyle>
                             </ListView>
