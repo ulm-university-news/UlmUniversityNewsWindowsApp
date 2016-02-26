@@ -45,8 +45,8 @@ namespace DataHandlingLayer.Database
 
                         // Speichere Kanaldaten.
                         using (var insertStmt = conn.Prepare("INSERT INTO Channel (Id, Name, Description, " +
-                            "CreationDate, ModificationDate, Type, Term, Location, Dates, Contact, Website, Deleted) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"))
+                            "CreationDate, ModificationDate, Type, Term, Location, Dates, Contact, Website, Deleted, NotificationSettings_NotifierId) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"))
                         {
                             insertStmt.Bind(1, channel.Id);
                             insertStmt.Bind(2, channel.Name);
@@ -60,6 +60,10 @@ namespace DataHandlingLayer.Database
                             insertStmt.Bind(10, channel.Contacts);
                             insertStmt.Bind(11, channel.Website);
                             insertStmt.Bind(12, (channel.Deleted) ? 1 : 0);
+
+                            // Channel hat zu Begin immer Default Benachrichtigungseinstellungen.
+                            channel.AnnouncementNotificationSetting = NotificationSetting.APPLICATION_DEFAULT;
+                            insertStmt.Bind(13, (int)channel.AnnouncementNotificationSetting);
 
                             insertStmt.Step();
                         }
@@ -192,7 +196,8 @@ namespace DataHandlingLayer.Database
                     {
                         // Aktualisiere Daten in Kanal-Tabelle.
                         using (var updateChannelStmt = conn.Prepare("UPDATE Channel SET Name=?, Description=?, " +
-                            "CreationDate=?, ModificationDate=?, Type=?, Term=?, Location=?, Dates=?, Contact=?, Website=?, Deleted=? " +
+                            "CreationDate=?, ModificationDate=?, Type=?, Term=?, Location=?, Dates=?, Contact=?, " + 
+                            "Website=?, Deleted=?, NotificationSettings_NotifierId=? " +
                             "WHERE Id=?;"))
                         {
                             updateChannelStmt.Bind(1, channel.Name);
@@ -206,9 +211,13 @@ namespace DataHandlingLayer.Database
                             updateChannelStmt.Bind(9, channel.Contacts);
                             updateChannelStmt.Bind(10, channel.Website);
                             updateChannelStmt.Bind(11, (channel.Deleted) ? 1 : 0);
-                            updateChannelStmt.Bind(12, channel.Id);
+                            updateChannelStmt.Bind(12, (int)channel.AnnouncementNotificationSetting);
+
+                            updateChannelStmt.Bind(13, channel.Id);
 
                             updateChannelStmt.Step();
+
+                            Debug.WriteLine("Update channel with id {0}.", channel.Id);
                         }
                     }
                     catch (SQLiteException sqlEx)
@@ -268,7 +277,8 @@ namespace DataHandlingLayer.Database
                         // Setze Aktualisierungsquery für Kanal-Tabelle ab.
                         using (var updateChannelStmt = conn.Prepare("UPDATE Channel " +
                             "SET Name=?, Description=?, CreationDate=?, ModificationDate=?, " +
-                            "Type=?, Term=?, Location=?, Dates=?, Contact=?, Website=?, Deleted=? WHERE Id=?;"))
+                            "Type=?, Term=?, Location=?, Dates=?, Contact=?, Website=?, Deleted=?, NotificationSettings_NotifierId=? " + 
+                            "WHERE Id=?;"))
                         {
                             updateChannelStmt.Bind(1, channel.Name);
                             updateChannelStmt.Bind(2, channel.Description);
@@ -281,9 +291,12 @@ namespace DataHandlingLayer.Database
                             updateChannelStmt.Bind(9, channel.Contacts);
                             updateChannelStmt.Bind(10, channel.Website);
                             updateChannelStmt.Bind(11, (channel.Deleted) ? 1 : 0);
-                            updateChannelStmt.Bind(12, channel.Id);
+                            updateChannelStmt.Bind(12, (int)channel.AnnouncementNotificationSetting);
+
+                            updateChannelStmt.Bind(13, channel.Id);
 
                             updateChannelStmt.Step();
+                            Debug.WriteLine("Update channel with id {0}.", channel.Id);
                         }
 
                         // Aktualisiere auch Subklassen-Tabelle abhängig vom Typ des Kanals.
@@ -1413,9 +1426,10 @@ namespace DataHandlingLayer.Database
         /// <summary>
         /// Ruft zu den vom lokalen Nutzer abonnierten Kanälen die Anzahl an ungelesenen Nachrichten ab
         /// und speichert diese in einem Verzeichnis. Das Verzeichnis bildet ab von der Kanal-Id auf 
-        /// die Anzahl an ungelesenen Announcements für diesen Kanal.
+        /// die Anzahl an ungelesenen Announcements für diesen Kanal. Das Verzeichnis enthält nur Einträge 
+        /// bei denen die Anzahl ungelesener Nachrichten größer 0 ist.
         /// </summary>
-        /// <returns>Ein Verzeichnis, indem für jeden abonnierten Kanal die Anzahl der ungelesenen Announcements
+        /// <returns>Ein Verzeichnis, indem für jeden abonnierten Kanal mit mehr als einer ungelesenen Nachricht die Anzahl der ungelesenen Announcements
         ///     gespeichert werden. Die Anzahl kann über die Kanal-Id als Schlüssel extrahiert werden.</returns>
         public Dictionary<int, int> DetermineAmountOfUnreadAnnouncementForMyChannels()
         {
@@ -1771,6 +1785,7 @@ namespace DataHandlingLayer.Database
                 bool deleted;
                 ChannelType type;
                 Faculty faculty;
+                NotificationSetting announcementNotificationSetting;
                 DateTime creationDate, modificationDate;
 
                 // Frage Kanal-Werte ab.
@@ -1786,6 +1801,7 @@ namespace DataHandlingLayer.Database
                 contact = (string)stmt["Contact"];
                 website = (string)stmt["Website"];
                 deleted = ((long)stmt["Deleted"] == 1) ? true : false;
+                announcementNotificationSetting = (NotificationSetting)Enum.ToObject(typeof(NotificationSetting), stmt["NotificationSettings_NotifierId"]);
 
                 // Falls notwendig, hole Daten aus Tabelle der Subklasse.
                 switch (type)
@@ -1853,6 +1869,9 @@ namespace DataHandlingLayer.Database
                             dates, contact, website, deleted);
                         break;
                 }
+
+                // Füge announcementNotificationSetting Einstellung noch dem Objekt hinzu.
+                channel.AnnouncementNotificationSetting = announcementNotificationSetting;
             }
             catch(SQLiteException sqlEx){
                 Debug.WriteLine("SQLiteException has occurred in retrieveChannelObjectFromStatement. The message is: {0}." + sqlEx.Message);

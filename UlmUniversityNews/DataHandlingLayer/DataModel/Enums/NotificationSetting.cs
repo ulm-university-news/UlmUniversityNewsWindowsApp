@@ -8,6 +8,6 @@ namespace DataHandlingLayer.DataModel.Enums
 {
     public enum NotificationSetting
     {
-        ANNOUNCE_PRIORITY_HIGH, ANNOUNCE_ALL, ANNOUNCE_NONE
+        ANNOUNCE_PRIORITY_HIGH, ANNOUNCE_ALL, ANNOUNCE_NONE, APPLICATION_DEFAULT
     }
 }

@@ -98,6 +98,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ChannelDetails\ChannelSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ChannelSearch\ChannelSearch.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -157,6 +161,9 @@
     </Compile>
     <Compile Include="Views\ChannelDetails\ChannelDetails.xaml.cs">
       <DependentUpon>ChannelDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ChannelDetails\ChannelSettings.xaml.cs">
+      <DependentUpon>ChannelSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ChannelSearch\ChannelSearch.xaml.cs">
       <DependentUpon>ChannelSearch.xaml</DependentUpon>

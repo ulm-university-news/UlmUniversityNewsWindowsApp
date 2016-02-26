@@ -76,7 +76,7 @@ namespace UlmUniversityNews.Views.ChannelDetails
 
         /// <summary>
         /// Event-Handler, der aufgerufen wird, wenn das PropertyChanged Event vom ViewModel gefeuert wird.
-        /// Wird hier für Workaround bezüglich HideablePivotItemBehavior.
+        /// Wird hier für Workaround bezüglich HideablePivotItemBehavior verwendet.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

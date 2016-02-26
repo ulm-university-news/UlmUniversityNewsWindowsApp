@@ -78,7 +78,7 @@ namespace DataHandlingLayer.Common
         /// <param name="count"></param>
         public Windows.Foundation.IAsyncOperation<LoadMoreItemsResult> LoadMoreItemsAsync(uint count)
         {
-            Debug.WriteLine("LoadMoreItemsAsync is called with current count parameter {0}.", count);
+            //Debug.WriteLine("LoadMoreItemsAsync is called with current count parameter {0}.", count);
 
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
 
@@ -88,8 +88,8 @@ namespace DataHandlingLayer.Common
                     uint resultCount = 0;
                     var result = await source.GetPagedItems(resourceId, currentPage++, itemsPerPage);
 
-                    if(result != null)
-                        Debug.WriteLine("GetPagedItems returned an enumerable with {0} entries.", result.Count());
+                    //if(result != null)
+                    //    Debug.WriteLine("GetPagedItems returned an enumerable with {0} entries.", result.Count());
 
                     // Wenn das Resultat der GetPagedItems Methode null ist, oder keinen Eintrag hat, dann 
                     // können keine weiteren Einträge geladen werden.

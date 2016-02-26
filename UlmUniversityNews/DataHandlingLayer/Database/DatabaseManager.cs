@@ -300,8 +300,9 @@ namespace DataHandlingLayer.Database
                                         Contact             TEXT,
                                         Website             TEXT,
                                         Deleted             BOOLEAN,
-                                        PRIMARY KEY(Id)
-
+                                        NotificationSettings_NotifierId INTEGER, 
+                                        PRIMARY KEY(Id),
+                                        FOREIGN KEY(NotificationSettings_NotifierId) REFERENCES NotificationSettings(NotifierId)
                             );";
             using (var statement = conn.Prepare(sql))
             {
@@ -438,8 +439,10 @@ namespace DataHandlingLayer.Database
                                         Term                TEXT,
                                         Deleted             INTEGER NOT NULL,
                                         GroupAdmin_User_Id  INTEGER NOT NULL,
+                                        NotificationSettings_NotifierId INTEGER,
                                         PRIMARY KEY(Id),
-                                        FOREIGN KEY(GroupAdmin_User_Id) REFERENCES User(Id)
+                                        FOREIGN KEY(GroupAdmin_User_Id) REFERENCES User(Id),
+                                        FOREIGN KEY(NotificationSettings_NotifierId) REFERENCES NotificationSettings(NotifierId)
                             );";
             using (var statement = conn.Prepare(sql))
             {
@@ -834,7 +837,8 @@ namespace DataHandlingLayer.Database
                         string sql = @"INSERT INTO NotificationSettings (NotifierId, Description) 
                             VALUES  (0, 'Announce only messages with high priority'),
                                     (1, 'Announce all incoming messages'),
-                                    (2, 'Announce no incoming message at all');";
+                                    (2, 'Announce no incoming message at all'),
+                                    (3, 'Application default');";
                         using (var statement = conn.Prepare(sql))
                         {
                             statement.Step();

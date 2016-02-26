@@ -462,4 +462,31 @@
   <data name="ErrorServerDatabaseFailure" xml:space="preserve">
     <value>Der Server konnte den Request nicht bearbeiten. Es gab Probleme mit der Server-Datenbank. Bitte versuchen Sie es nochmals.</value>
   </data>
+  <data name="ChannelDetailsChannelSettingsButton.Label" xml:space="preserve">
+    <value>einstel-lungen</value>
+  </data>
+  <data name="ChannelSettingsHeadline.Text" xml:space="preserve">
+    <value>Kanaleinstellungen</value>
+  </data>
+  <data name="ChannelSettingsNotificationSettingsDescription.Text" xml:space="preserve">
+    <value>Hier können Sie für diesen Kanal spezifische Benachrichtigungseinstellungen festlegen, welche die globalen Einstellungen überschreiben. Wenn Sie Default wählen, werden für den Kanal die globalen Benachrichtigungseinstellungen verwendet.</value>
+  </data>
+  <data name="ChannelSettingsNotificationSettingsHeader.Text" xml:space="preserve">
+    <value>Benachrichtigungen</value>
+  </data>
+  <data name="ChannelSettingsNotificationSettingsOptionAll.Content" xml:space="preserve">
+    <value>Alle Nachrichten ankündigen</value>
+  </data>
+  <data name="ChannelSettingsNotificationSettingsOptionAppDefault.Content" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="ChannelSettingsNotificationSettingsOptionNone.Content" xml:space="preserve">
+    <value>Keine Nachrichten ankündigen</value>
+  </data>
+  <data name="ChannelSettingsNotificationSettingsOptionPrioHigh.Content" xml:space="preserve">
+    <value>Nur Priorität 'hoch' ankündigen</value>
+  </data>
+  <data name="ChannelSettingsSaveButton.Label" xml:space="preserve">
+    <value>speichern</value>
+  </data>
 </root>

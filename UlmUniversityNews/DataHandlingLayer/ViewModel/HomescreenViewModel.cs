@@ -48,7 +48,7 @@ namespace DataHandlingLayer.ViewModel
             get { return selectedPivotItemIndex; }
             set 
             {
-                Debug.WriteLine("In setter method of selected pivot item index. The new index is: " + value);
+                //Debug.WriteLine("In setter method of selected pivot item index. The new index is: " + value);
                 selectedPivotItemIndex = value;
                 checkCommandExecution();
             }
@@ -151,7 +151,7 @@ namespace DataHandlingLayer.ViewModel
                     AppSettings currentSettings = channelController.GetApplicationSettings();
                     cachedGeneralListSettings = currentSettings.GeneralListOrderSetting;
                     cachedChannelOrderSettings = currentSettings.ChannelOderSetting;
-                    Debug.WriteLine("HVM caches appSettings. The settings are: {0} and {1}.", cachedGeneralListSettings, cachedChannelOrderSettings);
+                    //Debug.WriteLine("HVM caches appSettings. The settings are: {0} and {1}.", cachedGeneralListSettings, cachedChannelOrderSettings);
 
                     // Speichere die Kanäle im Lookup-Verzeichnis.
                     foreach (Channel channel in channels)
@@ -173,9 +173,9 @@ namespace DataHandlingLayer.ViewModel
                     if (currentAppSettings.GeneralListOrderSetting != cachedGeneralListSettings ||
                         currentAppSettings.ChannelOderSetting != cachedChannelOrderSettings)
                     {
-                        Debug.WriteLine("Settings did change. New Settings are {0} AND {1}",
-                            currentAppSettings.GeneralListOrderSetting,
-                            currentAppSettings.ChannelOderSetting);
+                        //Debug.WriteLine("Settings did change. New Settings are {0} AND {1}",
+                        //    currentAppSettings.GeneralListOrderSetting,
+                        //    currentAppSettings.ChannelOderSetting);
 
                         // Wenn Einstellungen geändert wurden, lade Liste einfach komplett neu.
                         // Mache Kanäle über Property abrufbar.
@@ -194,9 +194,9 @@ namespace DataHandlingLayer.ViewModel
                     }
                     else
                     {
-                        Debug.WriteLine("Settings did not change. Settings are {0}, {1}.", 
-                            currentAppSettings.GeneralListOrderSetting,
-                            currentAppSettings.ChannelOderSetting);
+                        //Debug.WriteLine("Settings did not change. Settings are {0}, {1}.", 
+                        //    currentAppSettings.GeneralListOrderSetting,
+                        //    currentAppSettings.ChannelOderSetting);
 
                         // Prüfe, ob inzwischen ein neuer Kanal abonniert wurde.
                         // Füge fehlende Kanäle der Liste hinzu, an der Position, an der sie laut Sortierung stehen sollten.

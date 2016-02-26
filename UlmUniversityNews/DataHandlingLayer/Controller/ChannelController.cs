@@ -184,12 +184,42 @@ namespace DataHandlingLayer.Controller
                         channelDatabaseManager.StoreChannel(currentChannel);
                     }
                 }
-                catch(DatabaseException ex)
+                catch (DatabaseException ex)
                 {
                     Debug.WriteLine("DatabaseException with message {0} occurred.", ex.Message);
                     // Abbilden auf ClientException.
                     throw new ClientException(ErrorCodes.LocalDatabaseException, "Local database failure.");
                 }
+            }
+        }
+
+        /// <summary>
+        /// Aktualisiert für den Kanal mit der übergebenen Id die Benachrichtigungseinstellungen.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, der aktualisiert werden soll.</param>
+        /// <param name="newNotificationSetting">Die neue Benachrichtigungseinstellung für diesen Kanal.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn die Aktualisierung fehlschlägt.</exception>
+        public void UpdateNotificationSettingsForChannel(int channelId, NotificationSetting newNotificationSetting)
+        {
+            try
+            {
+                Channel channel = channelDatabaseManager.GetChannel(channelId);
+
+                if (channel == null)
+                {
+                    Debug.WriteLine("No valid channel object could be retrieved from the given id.");
+                    return;
+                }
+
+                // Führe Aktualisierung aus.
+                channel.AnnouncementNotificationSetting = newNotificationSetting;
+                channelDatabaseManager.UpdateChannel(channel);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("DatabaseException with message {0} occurred.", ex.Message);
+                // Abbilden auf ClientException.
+                throw new ClientException(ErrorCodes.LocalDatabaseException, "Local database failure.");
             }
         }
 

@@ -161,6 +161,13 @@
             <Setter Property="TextWrapping" Value="WrapWholeWords" />
             <Setter Property="Foreground" Value="Red" />
         </Style>
+        
+        <Style x:Key="UniversityNewsUlmPivotHeaderLikeText"
+               TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Arial" />
+            <Setter Property="TextWrapping" Value="WrapWholeWords" />
+            <Setter Property="FontSize" Value="30" />
+        </Style>
 
         <!-- ************************************************************************************************************************************* -->
         <!-- ContentDialog:-->

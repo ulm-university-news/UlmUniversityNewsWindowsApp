@@ -462,4 +462,31 @@
   <data name="ErrorServerDatabaseFailure" xml:space="preserve">
     <value>The server could not handle the request successfully. There was a problem with the internal database of the server. Please try again.</value>
   </data>
+  <data name="ChannelDetailsChannelSettingsButton.Label" xml:space="preserve">
+    <value>settings</value>
+  </data>
+  <data name="ChannelSettingsHeadline.Text" xml:space="preserve">
+    <value>Channel Settings</value>
+  </data>
+  <data name="ChannelSettingsNotificationSettingsDescription.Text" xml:space="preserve">
+    <value>The settings defined here override the global notification settings for this specific channel. If the default option is chosen, the globally defined notification settings will be applied for this channel.</value>
+  </data>
+  <data name="ChannelSettingsNotificationSettingsHeader.Text" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="ChannelSettingsNotificationSettingsOptionAll.Content" xml:space="preserve">
+    <value>Announce all messages</value>
+  </data>
+  <data name="ChannelSettingsNotificationSettingsOptionAppDefault.Content" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="ChannelSettingsNotificationSettingsOptionNone.Content" xml:space="preserve">
+    <value>Announce no message</value>
+  </data>
+  <data name="ChannelSettingsNotificationSettingsOptionPrioHigh.Content" xml:space="preserve">
+    <value>Only announce priority 'high' messages</value>
+  </data>
+  <data name="ChannelSettingsSaveButton.Label" xml:space="preserve">
+    <value>save</value>
+  </data>
 </root>

@@ -157,7 +157,18 @@ namespace DataHandlingLayer.DataModel
         {
             get { return numberOfUnreadAnnouncements; }
             set { base.setProperty(ref this.numberOfUnreadAnnouncements, value); }
-        }   
+        }
+
+        private NotificationSetting announcementNotificationSetting;
+         /// <summary>
+         /// Gibt die spezifische Benachrichtigungseinstellung für den konkreten Kanal an.
+         /// </summary>
+        [JsonIgnore]
+        public NotificationSetting AnnouncementNotificationSetting
+        {
+            get { return announcementNotificationSetting; }
+            set { announcementNotificationSetting = value; }
+        }
         #endregion Properties
 
         /// <summary>

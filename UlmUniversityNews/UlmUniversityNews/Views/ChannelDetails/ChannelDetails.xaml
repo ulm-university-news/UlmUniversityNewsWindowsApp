@@ -136,6 +136,15 @@
                 Visibility="{Binding ElementName=UpdateAnnouncementsButton,Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding UpdateAnnouncementsCommand}"
                 />
+            
+            <AppBarButton
+                x:Name="NotificationSettingsButton"
+                x:Uid="ChannelDetailsChannelSettingsButton"
+                Icon="Setting"
+                Label="settings"
+                Command="{Binding SwitchToChannelSettingsCommand}"
+                />
+            
             <AppBarButton
                 x:Name="SubscribeChannelButton"
                 x:Uid="ChannelDetailsSubscribeChannelButton"
@@ -143,6 +152,7 @@
                 Label="subscribe channel"
                 Visibility="{Binding ElementName=SubscribeChannelButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding SubscribeChannelCommand}" />
+            
             <AppBarButton
                 x:Name="UnsubscribeChannelButton"
                 x:Uid="ChannelDetailsUnsubscribeChannelButton"

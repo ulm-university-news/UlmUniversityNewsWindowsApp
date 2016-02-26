@@ -172,7 +172,16 @@ namespace DataHandlingLayer.ViewModel
             get { return updateAnnouncementsCommand; }
             set { updateAnnouncementsCommand = value; }
         }
-        
+
+        private RelayCommand switchToChannelSettingsCommand;
+        /// <summary>
+        /// Befehl zum Wechseln auf die ChannelSettings View.
+        /// </summary>
+        public RelayCommand SwitchToChannelSettingsCommand
+        {
+            get { return switchToChannelSettingsCommand; }
+            set { switchToChannelSettingsCommand = value; }
+        }
         #endregion Commands
 
         /// <summary>
@@ -185,10 +194,11 @@ namespace DataHandlingLayer.ViewModel
         {
             channelController = new ChannelController();
 
-            // Initialisiere Kommandos.
+            // Initialisiere Befehle.
             SubscribeChannelCommand = new AsyncRelayCommand(param => executeSubscribeChannel(), param => canSubscribeChannel());
             UnsubscribeChannelCommand = new AsyncRelayCommand(param => executeUnsubscribeChannel(), param => canUnsubscribeChannel());
             UpdateAnnouncementsCommand = new AsyncRelayCommand(param => executeUpdateAnnouncementsCommand(), param => canUpdateAnnouncements());
+            SwitchToChannelSettingsCommand = new RelayCommand(param => executeSwitchToChannelDetailsCommand(), param => canSwitchToChannelDetails());
 
             // Führe Online Aktualisierung am Anfang durch, d.h. wenn das ViewModel geladen wurde.
             performOnlineAnnouncementUpdate = true;
@@ -532,6 +542,30 @@ namespace DataHandlingLayer.ViewModel
                         Announcements.Insert(0, announcement);
                     }
                 });
+            }
+        }
+
+        /// <summary>
+        /// Gibt an, ob aktuell auf die ChannelDetails View gewechselt werden kann.
+        /// </summary>
+        /// <returns>Liefert true, falls die Navigation erlaubt ist, ansonsten false.</returns>
+        private bool canSwitchToChannelDetails()
+        {
+            if(Channel != null && ChannelSubscribedStatus)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Wechselt auf die View ChannelSettings.
+        /// </summary>
+        private void executeSwitchToChannelDetailsCommand()
+        {
+            if(Channel != null)
+            {
+                _navService.Navigate("ChannelSettings", Channel.Id);
             }
         }
     }
