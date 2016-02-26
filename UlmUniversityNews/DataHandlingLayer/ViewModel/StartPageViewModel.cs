@@ -68,7 +68,7 @@ namespace DataHandlingLayer.ViewModel
             try
             {
                 Debug.WriteLine("In create local user method. The current userName is: " + userName);
-                displayProgressBar();
+                displayIndeterminateProgressIndicator();
 
                 bool successful = await localUserController.CreateLocalUserAsync(userName);
                 if(successful){
@@ -89,7 +89,7 @@ namespace DataHandlingLayer.ViewModel
             }
             finally
             {
-                hideProgressBar();
+                hideIndeterminateProgressIndicator();
             }
         }
     }

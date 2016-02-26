@@ -314,7 +314,7 @@ namespace DataHandlingLayer.ViewModel
             {
                 try
                 {
-                    displayProgressBar();
+                    displayIndeterminateProgressIndicator();
                     // Führe Online Aktualisierung durch. Caching hier erlaubt, d.h. wurde die Abfrage innerhalb eines Zeitraums bereits ausgeführt,
                     // so kann das System entscheiden den Request an den Server nicht abzusetzen.
                     await updateAnnouncements(true);
@@ -326,7 +326,7 @@ namespace DataHandlingLayer.ViewModel
                 }
                 finally
                 {
-                    hideProgressBar();
+                    hideIndeterminateProgressIndicator();
                 }
                
                 performOnlineAnnouncementUpdate = false;
@@ -398,7 +398,7 @@ namespace DataHandlingLayer.ViewModel
         {
             try
             {
-                displayProgressBar();
+                displayIndeterminateProgressIndicator();
                 await channelController.SubscribeChannelAsync(Channel.Id);
 
                 //Setze Kanal als abonniert.
@@ -422,7 +422,7 @@ namespace DataHandlingLayer.ViewModel
             }
             finally
             {
-                hideProgressBar();
+                hideIndeterminateProgressIndicator();
             }
         }
 
@@ -448,7 +448,7 @@ namespace DataHandlingLayer.ViewModel
         {
             try
             {
-                displayProgressBar();
+                displayIndeterminateProgressIndicator();
                 await channelController.UnsubscribeChannelAsync(Channel.Id);
                 ChannelSubscribedStatus = false;
                 // Gehe zurück auf den Homescreen.
@@ -460,7 +460,7 @@ namespace DataHandlingLayer.ViewModel
             }
             finally
             {
-                hideProgressBar();
+                hideIndeterminateProgressIndicator();
             }
         }
 
@@ -487,7 +487,7 @@ namespace DataHandlingLayer.ViewModel
         {
             try
             {
-                displayProgressBar();
+                displayIndeterminateProgressIndicator();
                 await updateAnnouncements(false);   // Kein caching hier. Der Request soll jedes mal auch tatsächlich abgesetzt werden, wenn der Benutzer es will.
             }
             catch (ClientException ex)
@@ -497,7 +497,7 @@ namespace DataHandlingLayer.ViewModel
             }
             finally
             {
-                hideProgressBar();
+                hideIndeterminateProgressIndicator();
             }
         }
 

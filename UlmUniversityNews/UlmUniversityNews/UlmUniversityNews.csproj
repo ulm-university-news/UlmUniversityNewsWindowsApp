@@ -120,7 +120,9 @@
     <Compile Include="Common\HyperLinkedTextBlock.cs" />
     <Compile Include="Common\NavigationHelper.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
+    <Compile Include="Common\ProgressIndicatorBehavior.cs" />
     <Compile Include="Common\RelayCommand.cs" />
+    <Compile Include="Common\StatusBarBehavior.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Constants\Constants.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />

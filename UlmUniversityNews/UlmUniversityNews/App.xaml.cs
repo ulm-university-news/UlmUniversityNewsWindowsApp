@@ -201,12 +201,12 @@ namespace UlmUniversityNews
 
             // TODO Test
             // Aktiviere die Statusleiste.
-            Windows.UI.ViewManagement.StatusBar statusBar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView();
-            //statusBar.BackgroundColor = (App.Current.Resources["UniUlmMainBackgroundColor"] as SolidColorBrush).Color;
-            statusBar.BackgroundColor = Windows.UI.Color.FromArgb(255, 0, 0, 0);
-            statusBar.BackgroundOpacity = 1;
-            statusBar.ForegroundColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
-            await statusBar.ShowAsync();
+            //Windows.UI.ViewManagement.StatusBar statusBar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView();
+            ////statusBar.BackgroundColor = (App.Current.Resources["UniUlmMainBackgroundColor"] as SolidColorBrush).Color;
+            //statusBar.BackgroundColor = Windows.UI.Color.FromArgb(255, 0, 0, 0);
+            //statusBar.BackgroundOpacity = 1;
+            //statusBar.ForegroundColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
+            //await statusBar.ShowAsync();
 
             // Sicherstellen, dass das aktuelle Fenster aktiv ist.
             Window.Current.Activate();

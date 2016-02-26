@@ -41,6 +41,50 @@ namespace DataHandlingLayer.ViewModel
         #endregion Fields
 
         # region properties
+
+        #region ProgressIndicator
+        private bool isIndeterminateProgressIndicator;
+        /// <summary>
+        /// Gibt an, ob es sich bei der aktuellen Fortschrittsanzeige um eine mit unbekannter
+        /// Dauer handelt.
+        /// </summary>
+        public bool IsIndeterminateProgressIndicator
+        {
+            get { return isIndeterminateProgressIndicator; }
+            set { this.setProperty(ref this.isIndeterminateProgressIndicator, value); }
+        }
+
+        private bool isProgressIndicatorVisible;
+        /// <summary>
+        /// Gibt an, ob die Fortschrittsanzeige aktuell angezeigt werden soll.
+        /// </summary>
+        public bool IsProgressIndicatorVisible
+        {
+            get { return isProgressIndicatorVisible; }
+            set { this.setProperty(ref this.isProgressIndicatorVisible, value); }
+        }
+
+        private string progressIndicatorText;
+        /// <summary>
+        /// Der Text, der in der Fortschrittsanzeige angezeigt werden soll. 
+        /// </summary>
+        public string ProgressIndicatorText
+        {
+            get { return progressIndicatorText; }
+            set { this.setProperty(ref this.progressIndicatorText, value); }
+        }
+
+        private double progressIndicatorProgressValue;
+        /// <summary>
+        /// Der aktuelle Fortschrittswert bei einer Fortschrittsanzeige mit bekannter Dauer.
+        /// </summary>
+        public double ProgressIndicatorProgressValue
+        {
+            get { return progressIndicatorProgressValue; }
+            set { this.setProperty(ref this.progressIndicatorProgressValue, value); }
+        }
+        #endregion ProgressIndicator
+
         private DataHandlingLayer.Common.ObservableDictionary validationMessages;
         /// <summary>
         /// Ein Verzeichnis, welches aufgetretene Valdierungsfehler auf die entsprechenden Properties abbildet.
@@ -141,21 +185,19 @@ namespace DataHandlingLayer.ViewModel
         /// <summary>
         /// Blende eine Fortschrittsanzeige ein, die für eine nicht vorher definierte Zeit sichtbar bleibt.
         /// </summary>
-        protected async void displayProgressBar()
+        protected void displayIndeterminateProgressIndicator()
         {
-            Windows.UI.ViewManagement.StatusBarProgressIndicator progressbar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView().ProgressIndicator;
-
-            await progressbar.ShowAsync();
+            IsProgressIndicatorVisible = true;
+            IsIndeterminateProgressIndicator = true;
         }
 
         /// <summary>
-        /// Blende eine angezeigte Fortschrittsanzeige wieder aus.
+        /// Blende eine angezeigte Fortschrittsanzeige mit unbekannter Dauer wieder aus.
         /// </summary>
-        protected async void hideProgressBar()
+        protected void hideIndeterminateProgressIndicator()
         {
-            Windows.UI.ViewManagement.StatusBarProgressIndicator progressbar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView().ProgressIndicator;
-
-            await progressbar.HideAsync();
+            IsIndeterminateProgressIndicator = false;
+            IsProgressIndicatorVisible = false;
         }
 
         /// <summary>

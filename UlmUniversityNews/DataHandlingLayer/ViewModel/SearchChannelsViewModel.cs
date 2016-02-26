@@ -134,7 +134,7 @@ namespace DataHandlingLayer.ViewModel
                 DateTime currentDate = DateTime.Now;
                 try
                 {
-                    displayProgressBar();
+                    displayIndeterminateProgressIndicator();
                     // Frage Liste von geänderten Kanal-Ressourcen ab.
                     updatedChannels = await channelController.RetrieveUpdatedChannelsFromServerAsync();
 
@@ -154,7 +154,7 @@ namespace DataHandlingLayer.ViewModel
                 }
                 finally
                 {
-                    hideProgressBar();
+                    hideIndeterminateProgressIndicator();
                 }
 
                 // Deaktiviere Online Update für den nächsten Aktualisierungsvorgang.
