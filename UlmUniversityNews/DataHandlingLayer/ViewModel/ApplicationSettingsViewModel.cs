@@ -530,6 +530,8 @@ namespace DataHandlingLayer.ViewModel
                     try
                     {
                         Debug.WriteLine("Store user information settings.");
+                        displayIndeterminateProgressIndicator("Saving");
+
                         // Aktualisiere Nutzername, falls nötig, und speichere gewählte Sprache ab.
                         await applicationSettingsController.UpdateLocalUsernameAsync(LocalUsername);
                        
@@ -546,6 +548,9 @@ namespace DataHandlingLayer.ViewModel
                             applicationSettingsController.UpdateFavoredLanguageSettings(Language.GERMAN);
                         }
 
+                        hideIndeterminateProgressIndicator();
+                        displayStatusBarText("Data Saved", 2.5f);
+
                         // Debug.WriteLine("Current PrimaryLangugae Override is: " + Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
                     }
                     catch(ClientException ex)
@@ -553,13 +558,22 @@ namespace DataHandlingLayer.ViewModel
                         Debug.WriteLine("Error occurred during the saving process of the user information." 
                          + "Error code is {0}.", ex.ErrorCode);
                         displayError(ex.ErrorCode);
+
+                        // Setze Wert zurück auf aktuellen Nutzername.
+                        User localUser = applicationSettingsController.GetCurrentLocalUser();
+                        LocalUsername = localUser.Name;
+
+                        hideIndeterminateProgressIndicator();
                     }
+
                     break;
                 case 1:
                     // Benachrichtigungseinstellungen.
                     try
                     {
                         Debug.WriteLine("Store notification settings.");
+                        displayIndeterminateProgressIndicator("Saving");
+
                         if(IsNotificationOptionPrioHighSelected){
                             applicationSettingsController.UpdateNotificationSettings(NotificationSetting.ANNOUNCE_PRIORITY_HIGH);
                         }
@@ -571,12 +585,16 @@ namespace DataHandlingLayer.ViewModel
                         {
                             applicationSettingsController.UpdateNotificationSettings(NotificationSetting.ANNOUNCE_NONE);
                         }
+
+                        hideIndeterminateProgressIndicator();
+                        displayStatusBarText("Data Saved", 2.5f);
                     }
                     catch(ClientException ex)
                     {
                         Debug.WriteLine("Error occurred during the saving process of the notification information."
                             + "Error code is {0}.", ex.ErrorCode);
                         displayError(ex.ErrorCode);
+                        hideIndeterminateProgressIndicator();
                     }
                     break;
                 case 2:
@@ -584,6 +602,7 @@ namespace DataHandlingLayer.ViewModel
                     try
                     {
                         Debug.WriteLine("Store list settings.");
+                        displayIndeterminateProgressIndicator("Saving");
 
                         OrderOption newGeneralListOrderSetting = OrderOption.ASCENDING;
                         if (IsDescendingSortingOptionSelected)
@@ -640,12 +659,16 @@ namespace DataHandlingLayer.ViewModel
                         // Aktualisiere Settings.
                         applicationSettingsController.UpdateListSettings(newGeneralListOrderSetting, newAnnouncementOrderSetting,  newChannelOrderSetting, 
                             newGroupOrderSetting, newConversationOrderSetting, newBallotOrderSetting);
+
+                        hideIndeterminateProgressIndicator();
+                        displayStatusBarText("Data Saved", 2.5f);
                     }
                     catch(ClientException ex)
                     {
                         Debug.WriteLine("Error occurred during the saving process of the list order information."
                             + "Error code is {0}.", ex.ErrorCode);
                         displayError(ex.ErrorCode);
+                        hideIndeterminateProgressIndicator();
                     }
                     break;
             }

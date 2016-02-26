@@ -459,4 +459,7 @@
   <data name="ApplicationSettingsHeaderGroupListSettings.Text" xml:space="preserve">
     <value>Gruppen</value>
   </data>
+  <data name="ErrorServerDatabaseFailure" xml:space="preserve">
+    <value>Der Server konnte den Request nicht bearbeiten. Es gab Probleme mit der Server-Datenbank. Bitte versuchen Sie es nochmals.</value>
+  </data>
 </root>

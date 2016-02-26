@@ -109,5 +109,21 @@ namespace DataHandlingLayer.DataModel
         {
 
         }
+
+        public override string ToString()
+        {
+            string appSettings = string.Format("GeneralListOrder: {0}, AnnouncementOrder: {1}, ChannelOrder: {2}, GroupOrder: {3}, " +
+                "ConverstationOrder: {4}, BallotOrder: {5}, NotifcationSettings: {6}, Language: {7}.",
+                GeneralListOrderSetting,
+                AnnouncementOrderSetting,
+                ChannelOderSetting,
+                GroupOrderSetting,
+                ConversationOrderSetting,
+                BallotOrderSetting,
+                MsgNotificationSetting,
+                LanguageSetting);
+
+            return appSettings;
+        }
     }
 }

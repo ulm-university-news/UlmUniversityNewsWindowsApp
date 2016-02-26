@@ -77,6 +77,9 @@ namespace UlmUniversityNews.ErrorHandling
                 case ErrorCodes.ServerUnreachable:
                     errorDescription = loader.GetString("ServerUnreachableError");
                     break;
+                case ErrorCodes.ServerDatabaseFailure:
+                    errorDescription = loader.GetString("ErrorServerDatabaseFailure");
+                    break;
                 default:
                     errorDescription = "Something went wrong. We are sorry!";
                     break;

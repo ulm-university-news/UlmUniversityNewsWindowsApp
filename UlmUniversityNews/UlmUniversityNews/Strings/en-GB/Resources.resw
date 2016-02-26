@@ -459,4 +459,7 @@
   <data name="ApplicationSettingsHeaderGroupListSettings.Text" xml:space="preserve">
     <value>Group Order Settings</value>
   </data>
+  <data name="ErrorServerDatabaseFailure" xml:space="preserve">
+    <value>The server could not handle the request successfully. There was a problem with the internal database of the server. Please try again.</value>
+  </data>
 </root>

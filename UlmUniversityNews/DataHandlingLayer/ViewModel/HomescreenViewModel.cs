@@ -28,6 +28,13 @@ namespace DataHandlingLayer.ViewModel
         /// Speichert die aktuell im ViewModel gehaltenen Kanäle in einem Lookup Verzeichnis.
         /// </summary>
         private Dictionary<int, Channel> currentChannels;
+
+
+        // Speichert die AppSettings, die zum Zeitpunkt des Ladens der Kanäle aktuell gültig sind.
+        // Wird benötigt, um zu prüfen, ob bei geänderten Einstellungen die Liste der Kanäle neu 
+        // sortiert werden muss.
+        private OrderOption cachedGeneralListSettings;
+        private OrderOption cachedChannelOrderSettings;
         #endregion Fields
         
         #region Properties
@@ -134,12 +141,17 @@ namespace DataHandlingLayer.ViewModel
                     Debug.WriteLine("Loading subscribed channels from DB.");
 
                     channels = await Task.Run(() => channelController.GetMyChannels());
-
                     // Sortiere Liste.
                     channels = sortChannelsByApplicationSetting(channels);
 
                     // Mache Kanäle über Property abrufbar.
                     MyChannels = new ObservableCollection<Channel>(channels);
+
+                    // Speichere die aktuell gültigen Anwendungseinstellungen zwischen.
+                    AppSettings currentSettings = channelController.GetApplicationSettings();
+                    cachedGeneralListSettings = currentSettings.GeneralListOrderSetting;
+                    cachedChannelOrderSettings = currentSettings.ChannelOderSetting;
+                    Debug.WriteLine("HVM caches appSettings. The settings are: {0} and {1}.", cachedGeneralListSettings, cachedChannelOrderSettings);
 
                     // Speichere die Kanäle im Lookup-Verzeichnis.
                     foreach (Channel channel in channels)
@@ -151,45 +163,76 @@ namespace DataHandlingLayer.ViewModel
                 {
                     Debug.WriteLine("It seems the homescreen view was taken from the cache. We check for local updates");
 
-                    // Prüfe, ob inzwischen ein neuer Kanal abonniert wurde.
+                    // Hole die aktuelleste Liste der abonnierten Kanäle aus der Datenbank.
                     channels = await Task.Run(() => channelController.GetMyChannels());
-
                     // Sortiere Liste.
                     channels = sortChannelsByApplicationSetting(channels);
 
-                    // Füge fehlende Kanäle der Liste hinzu, an der Position, an der sie laut Sortierung stehen sollten.
-                    foreach (Channel channel in channels)
+                    // Prüfe zunächst, ob die Einstellungen aktualisiert wurden.
+                    AppSettings currentAppSettings = channelController.GetApplicationSettings();
+                    if (currentAppSettings.GeneralListOrderSetting != cachedGeneralListSettings ||
+                        currentAppSettings.ChannelOderSetting != cachedChannelOrderSettings)
                     {
-                        if(!currentChannels.ContainsKey(channel.Id))
+                        Debug.WriteLine("Settings did change. New Settings are {0} AND {1}",
+                            currentAppSettings.GeneralListOrderSetting,
+                            currentAppSettings.ChannelOderSetting);
+
+                        // Wenn Einstellungen geändert wurden, lade Liste einfach komplett neu.
+                        // Mache Kanäle über Property abrufbar.
+                        MyChannels = new ObservableCollection<Channel>(channels);
+
+                        // Speichere die aktuell gültigen Anwendungseinstellungen zwischen.
+                        cachedGeneralListSettings = currentAppSettings.GeneralListOrderSetting;
+                        cachedChannelOrderSettings = currentAppSettings.ChannelOderSetting;
+
+                        // Speichere die Kanäle im Lookup-Verzeichnis.
+                        currentChannels.Clear();
+                        foreach (Channel channel in channels)
                         {
-                            Debug.WriteLine("Need to insert channel with id {0} into MyChannels.", channel.Id);
-                            MyChannels.Insert(channels.IndexOf(channel), channel);
                             currentChannels.Add(channel.Id, channel);
                         }
                     }
-                    
-                    // Prüfe andererseits, ob ein Kanal aus MyChannels nicht mehr in der Liste der abonnierten Kanäle steht.
-                    for (int i = 0; i < MyChannels.Count; i++)
+                    else
                     {
-                        Channel channel = MyChannels[i];
-                        bool isContained = false;
+                        Debug.WriteLine("Settings did not change. Settings are {0}, {1}.", 
+                            currentAppSettings.GeneralListOrderSetting,
+                            currentAppSettings.ChannelOderSetting);
 
-                        foreach (Channel loadedChannel in channels)
+                        // Prüfe, ob inzwischen ein neuer Kanal abonniert wurde.
+                        // Füge fehlende Kanäle der Liste hinzu, an der Position, an der sie laut Sortierung stehen sollten.
+                        foreach (Channel channel in channels)
                         {
-                            if (loadedChannel.Id == channel.Id)
+                            if (!currentChannels.ContainsKey(channel.Id))
                             {
-                                isContained = true;
-                                break;
+                                Debug.WriteLine("Need to insert channel with id {0} into MyChannels.", channel.Id);
+                                MyChannels.Insert(channels.IndexOf(channel), channel);
+                                currentChannels.Add(channel.Id, channel);
                             }
                         }
 
-                        if (!isContained)
+                        // Prüfe andererseits, ob ein Kanal aus MyChannels nicht mehr in der Liste der abonnierten Kanäle steht.
+                        for (int i = 0; i < MyChannels.Count; i++)
                         {
-                            Debug.WriteLine("Need to remove channel with id {0} from MyChannels list.", i);
-                            MyChannels.RemoveAt(i);
-                            currentChannels.Remove(channel.Id);
+                            Channel channel = MyChannels[i];
+                            bool isContained = false;
+
+                            foreach (Channel loadedChannel in channels)
+                            {
+                                if (loadedChannel.Id == channel.Id)
+                                {
+                                    isContained = true;
+                                    break;
+                                }
+                            }
+
+                            if (!isContained)
+                            {
+                                Debug.WriteLine("Need to remove channel with id {0} from MyChannels list.", i);
+                                MyChannels.RemoveAt(i);
+                                currentChannels.Remove(channel.Id);
+                            }
                         }
-                    }
+                    }             
 
                     // Führe Aktualisierung von Anzahl ungelesener Nachrichten Properties der Kanäle aus.
                     await UpdateNumberOfUnreadAnnouncements();
@@ -198,8 +241,6 @@ namespace DataHandlingLayer.ViewModel
             {
                 displayError(e.ErrorCode);
             }
-
-
         }
 
         /// <summary>

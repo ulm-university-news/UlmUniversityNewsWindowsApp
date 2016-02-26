@@ -34,6 +34,8 @@ namespace DataHandlingLayer.Exceptions
         public const int ChannelInvalidEndDate = 3017;
         public const int ChannelNameAlreadyExists = 3018;
 
+        public const int ServerDatabaseFailure = 5000;
+
         // Allgemeingültige Fehlercodes.
         public const int BadRequest = 400;
         public const int NotFound = 404;

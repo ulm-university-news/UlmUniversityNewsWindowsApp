@@ -40,7 +40,7 @@ namespace DataHandlingLayer.ViewModel
         public event PropertyChangedEventHandler PropertyChanged;
         #endregion Fields
 
-        # region properties
+        # region Properties
 
         #region ProgressIndicator
         private bool isIndeterminateProgressIndicator;
@@ -120,7 +120,7 @@ namespace DataHandlingLayer.ViewModel
             get { return drawerMenuEntriesStatusLoggedIn; }
             set { drawerMenuEntriesStatusLoggedIn = value; }
         }  
-        #endregion properties
+        #endregion Properties
 
         #region Commands
         private RelayCommand drawerButtonCommand;
@@ -192,12 +192,60 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Blende eine Fortschrittsanzeige ein, die für eine nicht vorher definierte Zeit sichtbar bleibt.
+        /// </summary>
+        /// <param name="text">Der Text, der in der StatusBar während der Dauer der Fortschrittsanzeige angezeigt werden soll.</param>
+        protected void displayIndeterminateProgressIndicator(string text)
+        {
+            IsProgressIndicatorVisible = true;
+            IsIndeterminateProgressIndicator = true;
+            ProgressIndicatorText = text;
+        }
+
+        /// <summary>
         /// Blende eine angezeigte Fortschrittsanzeige mit unbekannter Dauer wieder aus.
         /// </summary>
         protected void hideIndeterminateProgressIndicator()
         {
             IsIndeterminateProgressIndicator = false;
+            ProgressIndicatorText = string.Empty;
             IsProgressIndicatorVisible = false;
+        }
+
+        /// <summary>
+        /// Zeigt einen Text in der StatusBar für eine angegebene Zeitspanne an.
+        /// </summary>
+        /// <param name="text">Der Text, der in der StatusBar angezeigt werden soll.</param>
+        /// <param name="displayDuration">Die Dauer, die der Text angezeigt werden soll in Sekunden.</param>
+        protected void displayStatusBarText(string text, double displayDuration)
+        {
+            Debug.WriteLine("Hey, I just started the displayStatusBarText method.");
+
+            IsProgressIndicatorVisible = true;
+            IsIndeterminateProgressIndicator = false;
+            ProgressIndicatorText = text;
+            ProgressIndicatorProgressValue = 0.0f;
+
+            var task = Task.Run(async () =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(displayDuration));
+                hideStatusBarText();
+            });
+            Debug.WriteLine("Hey, I have finished with the displayStatusBarText method.");
+        }
+
+        /// <summary>
+        /// Hilfsmethode, die einen in der StatusBar angezeigten Text wieder ausblendet.
+        /// </summary>
+        private async void hideStatusBarText()
+        {
+            Debug.WriteLine("Hey, the hideStatusBarText method is called.");
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
+                () =>
+                {
+                    IsProgressIndicatorVisible = false;
+                    ProgressIndicatorText = string.Empty;
+                });           
         }
 
         /// <summary>
