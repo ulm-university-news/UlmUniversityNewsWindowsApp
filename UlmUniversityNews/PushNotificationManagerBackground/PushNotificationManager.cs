@@ -32,15 +32,13 @@ namespace PushNotificationManagerBackground
             // Hole die RawNotification über die TriggerDetails.
             RawNotification notification = (RawNotification)taskInstance.TriggerDetails;
             
-            // Stoße die Behandlung der Nachricht an.
             PushNotificationController pushController = new PushNotificationController();
-            bool handledSuccessfully = await pushController.HandlePushNotificationAsync(notification);
-
-            // Frage PushMessage Objekt zur Notification ab.
+            // Frage PushMessage Objekt zur Notification ab und stoße Behandlung an.
             PushMessage pm = pushController.GetPushMessageFromNotification(notification);
-
+            bool handledSuccessfully = await pushController.HandlePushNotificationAsync(pm);
+            
             // Soll der Nutzer benachrichtigt werden?
-            if(pushController.IsUserNotificationRequired(pm))
+            if(handledSuccessfully && pushController.IsUserNotificationRequired(pm))
             {
                 // Frage bevorzugte Sprache ab.
                 CultureInfo ci = new CultureInfo(Windows.System.UserProfile.GlobalizationPreferences.Languages[0]);

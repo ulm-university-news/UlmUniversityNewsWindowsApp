@@ -92,165 +92,169 @@
                     <PivotItem x:Uid="ApplicationSettingsUserAndLanguageSettings"
                                Style="{StaticResource PivotItemStyle}"
                                Header="User Settings">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            
-                            <!-- Einstellungen für Nutzername -->
+                        <ScrollViewer>
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                
-                                <TextBlock
-                                    Grid.Row="0"
-                                    x:Name="ApplicationSettingsHeaderUsername"
-                                    x:Uid="ApplicationSettingsHeaderUsername"
-                                    Margin="0, 0, 19, 0"
-                                    Style="{StaticResource UniversityNewsUlmStandardHeader}"
-                                    Text="Nutzername"/>
-
-                                <TextBlock
-                                    Grid.Row="1"
-                                    x:Name="ApplicationSettingsCurrentUsernameSettings"
-                                    Style="{StaticResource UniversityNewsUlmStandardText}"
-                                    Margin="0, 0, 19, 0">
-                                    <Run
-                                        x:Uid="ApplicationSettingsCurrentUsername"
-                                        Text="Ihr aktueller Nutzername ist: " />
-                                    <Run Text="{Binding LocalUsername}" />       
-                                    
-                                    <LineBreak />
-                                    
-                                    <Run
-                                        x:Uid="ApplicationSettingsChangeUsernameDescription"
-                                        Text="Sie können Ihren Nutzernamen hier ändern." />
-                                </TextBlock>
-                                
-                                <TextBox
-                                    Grid.Row="2"
-                                    x:Name="ApplicationSettingsUsernameTextBox"
-                                    x:Uid="ApplicationSettingsUsernameTextBox"
-                                    Margin="0, 5, 19, 0"
-                                    Header="Nutzername"
-                                    InputScope="AlphanumericFullWidth"
-                                    Text="{Binding LocalUsername, Mode=TwoWay}">   <!-- Two way binding on name attribute. -->
-                                </TextBox>
-                                
-                                <TextBlock
-                                    Grid.Row="3"
-                                    Margin="0, 0, 19, 0"
-                                    x:Name="ApplicationSettingsCurrentUserNameValidationError"
-                                    Style="{StaticResource UniversityNewsUlmStandardErrorText}"
-                                    Text="{Binding ValidationMessages[Name], Converter={StaticResource ValidationMessageOnLocalizedStringConverter}, FallbackValue='', TargetNullValue=''}"/>
-                            </Grid>
                             
-                            <!-- Einstellungen für Sprache  -->
-                            <Grid
-                                Margin="0, 10, 0, 0"
-                                Grid.Row="1">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
+                                <!-- Einstellungen für Nutzername -->
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
                                 
-                                <TextBlock
-                                    Grid.Row="0"
-                                    x:Name="ApplicationSettingsHeaderLanguage"
-                                    x:Uid="ApplicationSettingsHeaderLanguage"
-                                    Style="{StaticResource UniversityNewsUlmStandardHeader}"
-                                    Margin="0, 0, 19, 0"
-                                    Text="Sprache"/>
-                                
-                                <TextBlock
-                                    Grid.Row="1"
-                                    x:Name="ApplicationSettingsLanguageDescription"
-                                    x:Uid="ApplicationSettingsLanguageDescription"
-                                    Style="{StaticResource UniversityNewsUlmStandardText}"
-                                    Text="Hier können Sie Ihre bevorzugte Sprache wählen." />
-                                
-                                <StackPanel
-                                    Margin="0, 0, 19, 0"
-                                    Orientation="Vertical"
-                                    Grid.Row="2">
-                                    <RadioButton 
-                                        x:Name="ApplicationSettingsLanguageGerman"
-                                        x:Uid="ApplicationSettingsLanguageGerman"
-                                        Content="Deutsch"
-                                        IsChecked="{Binding IsGermanLanguageSelected, Mode=TwoWay}"
-                                        GroupName="language"/>
-                                    
-                                    <RadioButton
-                                        x:Name="ApplicationSettingsLanguageEnglish"
-                                        x:Uid="ApplicationSettingsLanguageEnglish"
-                                        Content="Englisch"
-                                        IsChecked="{Binding IsEnglishLanguageSelected, Mode=TwoWay}"
-                                        GroupName="language"/>
-                                </StackPanel>
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        x:Name="ApplicationSettingsHeaderUsername"
+                                        x:Uid="ApplicationSettingsHeaderUsername"
+                                        Margin="0, 0, 19, 0"
+                                        Style="{StaticResource UniversityNewsUlmStandardHeader}"
+                                        Text="Nutzername"/>
 
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        x:Name="ApplicationSettingsCurrentUsernameSettings"
+                                        Style="{StaticResource UniversityNewsUlmStandardText}"
+                                        Margin="0, 0, 19, 0">
+                                        <Run
+                                            x:Uid="ApplicationSettingsCurrentUsername"
+                                            Text="Ihr aktueller Nutzername ist: " />
+                                        <Run Text="{Binding LocalUsername}" />       
+                                    
+                                        <LineBreak />
+                                    
+                                        <Run
+                                            x:Uid="ApplicationSettingsChangeUsernameDescription"
+                                            Text="Sie können Ihren Nutzernamen hier ändern." />
+                                    </TextBlock>
+                                
+                                    <TextBox
+                                        Grid.Row="2"
+                                        x:Name="ApplicationSettingsUsernameTextBox"
+                                        x:Uid="ApplicationSettingsUsernameTextBox"
+                                        Margin="0, 5, 19, 0"
+                                        Header="Nutzername"
+                                        InputScope="AlphanumericFullWidth"
+                                        Text="{Binding LocalUsername, Mode=TwoWay}">   <!-- Two way binding on name attribute. -->
+                                    </TextBox>
+                                
+                                    <TextBlock
+                                        Grid.Row="3"
+                                        Margin="0, 0, 19, 0"
+                                        x:Name="ApplicationSettingsCurrentUserNameValidationError"
+                                        Style="{StaticResource UniversityNewsUlmStandardErrorText}"
+                                        Text="{Binding ValidationMessages[Name], Converter={StaticResource ValidationMessageOnLocalizedStringConverter}, FallbackValue='', TargetNullValue=''}"/>
+                                </Grid>
+                            
+                                <!-- Einstellungen für Sprache  -->
+                                <Grid
+                                    Margin="0, 10, 0, 0"
+                                    Grid.Row="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        x:Name="ApplicationSettingsHeaderLanguage"
+                                        x:Uid="ApplicationSettingsHeaderLanguage"
+                                        Style="{StaticResource UniversityNewsUlmStandardHeader}"
+                                        Margin="0, 0, 19, 0"
+                                        Text="Sprache"/>
+                                
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        x:Name="ApplicationSettingsLanguageDescription"
+                                        x:Uid="ApplicationSettingsLanguageDescription"
+                                        Style="{StaticResource UniversityNewsUlmStandardText}"
+                                        Text="Hier können Sie Ihre bevorzugte Sprache wählen." />
+                                
+                                    <StackPanel
+                                        Margin="0, 0, 19, 0"
+                                        Orientation="Vertical"
+                                        Grid.Row="2">
+                                        <RadioButton 
+                                            x:Name="ApplicationSettingsLanguageGerman"
+                                            x:Uid="ApplicationSettingsLanguageGerman"
+                                            Content="Deutsch"
+                                            IsChecked="{Binding IsGermanLanguageSelected, Mode=TwoWay}"
+                                            GroupName="language"/>
+                                    
+                                        <RadioButton
+                                            x:Name="ApplicationSettingsLanguageEnglish"
+                                            x:Uid="ApplicationSettingsLanguageEnglish"
+                                            Content="Englisch"
+                                            IsChecked="{Binding IsEnglishLanguageSelected, Mode=TwoWay}"
+                                            GroupName="language"/>
+                                    </StackPanel>
+
+                                </Grid>
                             </Grid>
-                        </Grid>
+                        </ScrollViewer>
                     </PivotItem>
                     
                     <!-- Pivotelement 2 -->
                     <PivotItem x:Uid="ApplicationSettingsNotificationSettingsPivotItem"
                            Style="{StaticResource PivotItemStyle}"
                            Header="Notification Settings">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <TextBlock
-                                    Grid.Row="0"
-                                    x:Name="ApplicationSettingsHeaderNotificationSettings"
-                                    x:Uid="ApplicationSettingsHeaderNotificationSettings"
-                                    Margin="0, 0, 19, 0"
-                                    Style="{StaticResource UniversityNewsUlmStandardHeader}"
-                                    Text="Benachrichtigungen"/>
+                        <ScrollViewer>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock
+                                        Grid.Row="0"
+                                        x:Name="ApplicationSettingsHeaderNotificationSettings"
+                                        x:Uid="ApplicationSettingsHeaderNotificationSettings"
+                                        Margin="0, 0, 19, 0"
+                                        Style="{StaticResource UniversityNewsUlmStandardHeader}"
+                                        Text="Benachrichtigungen"/>
 
-                            <TextBlock
-                                    Grid.Row="1"
-                                    Margin="0, 0, 19, 0"
-                                    x:Name="ApplicationSettingsNotificationSettingsDescription"
-                                    x:Uid="ApplicationSettingsNotificationSettingsDescription"
-                                    Style="{StaticResource UniversityNewsUlmStandardText}"
-                                    Text="Hier können Sie das Verhalten der Anwendung bei eingehenden Nachrichten verwalten. Die hier vorgenommenen Einstellungen gelten grundsätzlich für die gesamte Anwendung.
-                                            Für einzelne Kanäle und Gruppen können auch spezifische Einstellungen vorgenommen werden, welche dann die hier vorgenommenen Einstellungen für die konkrete Ressource überschreiben." />
+                                <TextBlock
+                                        Grid.Row="1"
+                                        Margin="0, 0, 19, 0"
+                                        x:Name="ApplicationSettingsNotificationSettingsDescription"
+                                        x:Uid="ApplicationSettingsNotificationSettingsDescription"
+                                        Style="{StaticResource UniversityNewsUlmStandardText}"
+                                        Text="Hier können Sie das Verhalten der Anwendung bei eingehenden Nachrichten verwalten. Die hier vorgenommenen Einstellungen gelten grundsätzlich für die gesamte Anwendung.
+                                                Für einzelne Kanäle und Gruppen können auch spezifische Einstellungen vorgenommen werden, welche dann die hier vorgenommenen Einstellungen für die konkrete Ressource überschreiben." />
 
-                            <StackPanel
-                                    Margin="0, 0, 19, 0"
-                                    Orientation="Vertical"
-                                    Grid.Row="2">
-                                <RadioButton 
-                                        x:Name="ApplicationSettingsNotificationSettingsOptionPrioHigh"
-                                        x:Uid="ApplicationSettingsNotificationSettingsOptionPrioHigh"
-                                        Content="Nur Priorität 'hoch' ankündigen"
-                                        IsChecked="{Binding IsNotificationOptionPrioHighSelected, Mode=TwoWay}"
-                                        GroupName="notificationSettings"/>
+                                <StackPanel
+                                        Margin="0, 0, 19, 0"
+                                        Orientation="Vertical"
+                                        Grid.Row="2">
+                                    <RadioButton 
+                                            x:Name="ApplicationSettingsNotificationSettingsOptionPrioHigh"
+                                            x:Uid="ApplicationSettingsNotificationSettingsOptionPrioHigh"
+                                            Content="Nur Priorität 'hoch' ankündigen"
+                                            IsChecked="{Binding IsNotificationOptionPrioHighSelected, Mode=TwoWay}"
+                                            GroupName="notificationSettings"/>
 
-                                <RadioButton
-                                        x:Name="ApplicationSettingsNotificationSettingsOptionAll"
-                                        x:Uid="ApplicationSettingsNotificationSettingsOptionAll"
-                                        Content="Alle Nachrichten ankündigen"
-                                        IsChecked="{Binding IsNotificationOptionAllSelected, Mode=TwoWay}"
-                                        GroupName="notificationSettings"/>
+                                    <RadioButton
+                                            x:Name="ApplicationSettingsNotificationSettingsOptionAll"
+                                            x:Uid="ApplicationSettingsNotificationSettingsOptionAll"
+                                            Content="Alle Nachrichten ankündigen"
+                                            IsChecked="{Binding IsNotificationOptionAllSelected, Mode=TwoWay}"
+                                            GroupName="notificationSettings"/>
 
-                                <RadioButton
-                                        x:Name="ApplicationSettingsNotificationSettingsOptionNone"
-                                        x:Uid="ApplicationSettingsNotificationSettingsOptionNone"
-                                        Content="Keine Nachrichten ankündigen"
-                                        IsChecked="{Binding IsNotificationOptionNoneSelected, Mode=TwoWay}"
-                                        GroupName="notificationSettings"/>
-                            </StackPanel>
-                        </Grid>
+                                    <RadioButton
+                                            x:Name="ApplicationSettingsNotificationSettingsOptionNone"
+                                            x:Uid="ApplicationSettingsNotificationSettingsOptionNone"
+                                            Content="Keine Nachrichten ankündigen"
+                                            IsChecked="{Binding IsNotificationOptionNoneSelected, Mode=TwoWay}"
+                                            GroupName="notificationSettings"/>
+                                </StackPanel>
+                            </Grid>
+                        </ScrollViewer>
                     </PivotItem>
                     
                     <!-- Pivotelement 3 -->

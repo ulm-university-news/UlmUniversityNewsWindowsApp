@@ -380,6 +380,7 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private void checkCommandExecution()
         {
+            SwitchToChannelSettingsCommand.RaiseCanExecuteChanged();
             SubscribeChannelCommand.OnCanExecuteChanged();
             UnsubscribeChannelCommand.OnCanExecuteChanged();
             UpdateAnnouncementsCommand.OnCanExecuteChanged();

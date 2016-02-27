@@ -142,6 +142,7 @@
                 x:Uid="ChannelDetailsChannelSettingsButton"
                 Icon="Setting"
                 Label="settings"
+                Visibility="{Binding ElementName=NotificationSettingsButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding SwitchToChannelSettingsCommand}"
                 />
             

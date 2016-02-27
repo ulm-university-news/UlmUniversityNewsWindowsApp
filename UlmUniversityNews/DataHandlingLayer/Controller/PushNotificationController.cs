@@ -13,7 +13,7 @@ using Windows.UI.Notifications;
 
 namespace DataHandlingLayer.Controller
 {
-    public class PushNotificationController
+    public class PushNotificationController : MainController
     {
         #region Fields
         /// <summary>
@@ -26,6 +26,7 @@ namespace DataHandlingLayer.Controller
         /// Erzeugt eine Instanz der Klasse PushNotificationController.
         /// </summary>
         public PushNotificationController()
+            : base()
         {
             channelController = new ChannelController();
         }
@@ -34,25 +35,23 @@ namespace DataHandlingLayer.Controller
         /// Behandelt eine vom WNS empfangene RawNotification. Die Push Nachricht wird geparset und abhängig
         /// von ihrem Typ behandelt.
         /// </summary>
-        /// <param name="receivedNotification">Die empfangene RawNotification.</param>
+        /// <param name="receivedNotificationMessage">Die empfangene Notification in Form einer PushMessage Instanz.</param>
         /// <returns>Liefert true, wenn die PushNachricht erfolgreich behandelt wurde, ansonsten false.</returns>
-        public async Task<bool> HandlePushNotificationAsync(RawNotification receivedNotification)
+        public async Task<bool> HandlePushNotificationAsync(PushMessage receivedNotificationMessage)
         {
             bool handledSuccessfully = false;
 
-            PushMessage pushMessage = GetPushMessageFromNotification(receivedNotification);
-
-            if(pushMessage == null)
+            if(receivedNotificationMessage == null)
             {
                 return handledSuccessfully;
             }
 
             // Lese als erstes den Typ der empfangenen Push Nachricht aus. Behandle die PushNachricht nach Typ.
-            PushType pushType = pushMessage.PushType;
+            PushType pushType = receivedNotificationMessage.PushType;
             switch (pushType)
             {
                 case PushType.ANNOUNCEMENT_NEW:
-                    handledSuccessfully = await handleAnnouncementNewPushMsg(pushMessage);
+                    handledSuccessfully = await handleAnnouncementNewPushMsg(receivedNotificationMessage);
                     break;
                 case PushType.ANNOUNCEMENT_DELETED:
                     break;
@@ -155,16 +154,81 @@ namespace DataHandlingLayer.Controller
             if (pm == null)
                 return false;
 
+            AppSettings appSettings = GetApplicationSettings();
             bool notificationRequired = false;
 
             switch(pm.PushType)
             {
                 case PushType.ANNOUNCEMENT_NEW:
-                    // TODO - Prüfe Anwendungseinstellungen ab. Soll der Nutzer über die eingetroffene Announcement informiert werden?
-                    notificationRequired = true;
+                    // Prüfe Anwendungseinstellungen ab. Soll der Nutzer über die eingetroffene Announcement informiert werden?
+                    int channelId = pm.Id1;
+                    Debug.WriteLine("It will be checked whether the user needs to be notified about the received announcement" + 
+                        " for the channel with id {0}.", channelId);
+
+                    notificationRequired = checkNotificationRequiredForNewAnnouncement(appSettings, channelId);
+                    break;
+                case PushType.CONVERSATION_MESSAGE_NEW:
                     break;
             }
 
+            return notificationRequired;
+        }
+
+        /// <summary>
+        /// Prüft im Falle einer eingegangenen Announcement, ob der Nutzer benachrichtigt werden soll.
+        /// Die Entscheidung wird abhängig von den Anwendungseinstellungen, oder falls definiert, abhängig
+        /// von den kanalspezifischen Einstellungen getroffen.
+        /// </summary>
+        /// <param name="appSettings">Die aktuell gültigen Anwendungseinstellungen.</param>
+        /// <param name="channelId">Die Id des betroffenen Kanals.</param>
+        /// <returns>Liefert true, wenn der Nutzer benachrichtigt werden soll, ansonsten false.</returns>
+        private bool checkNotificationRequiredForNewAnnouncement(AppSettings appSettings, int channelId)
+        {
+            bool notificationRequired = false;
+
+            // Hole den Kanal und entscheide abhängig von den Einstellungen.
+            DataHandlingLayer.DataModel.Enums.NotificationSetting settings;
+            
+            Channel affectedChannel = channelController.GetChannel(channelId);
+            if (affectedChannel.AnnouncementNotificationSetting
+                != DataHandlingLayer.DataModel.Enums.NotificationSetting.APPLICATION_DEFAULT)
+            {
+                Debug.WriteLine("Take channel specific settings.");
+
+                settings = affectedChannel.AnnouncementNotificationSetting;
+            }
+            else
+            {
+                Debug.WriteLine("Take application specific settings.");
+
+                settings = appSettings.MsgNotificationSetting;
+            }
+
+            switch (settings)
+            {
+                case DataHandlingLayer.DataModel.Enums.NotificationSetting.ANNOUNCE_PRIORITY_HIGH:
+                    // Prüfe, ob die empfangene Announcement Priorität hoch hatte.
+                    Announcement lastRecvAnnouncement = channelController.GetLastReceivedAnnouncement(channelId);
+                    if (lastRecvAnnouncement != null)
+                    {
+                        if (lastRecvAnnouncement.MessagePriority == Priority.HIGH)
+                        {
+                            notificationRequired = true;
+                        }
+                    }
+                    break;
+                case DataHandlingLayer.DataModel.Enums.NotificationSetting.ANNOUNCE_ALL:
+                    notificationRequired = true;
+                    break;
+                case DataHandlingLayer.DataModel.Enums.NotificationSetting.ANNOUNCE_NONE:
+                    notificationRequired = false;
+                    break;
+                default:
+                    Debug.WriteLine("No case matched. Will return false.");
+                    break;
+            }
+
+            Debug.WriteLine("The result of whether the user will be notified is {0}.", notificationRequired);
             return notificationRequired;
         }
 

@@ -19,7 +19,7 @@ namespace PushNotificationManagerBackground
     public sealed class PushNotificationMaintenanceTask : IBackgroundTask
     {
         private const string BG_TASK_NAME = "PushNotificationMaintenanceBG";
-        private const int MAINTENANCE_INTERVAL = 15 * 24 * 60;      // Führe die Wartung alle 15 Tage aus.
+        private const int MAINTENANCE_INTERVAL = 10 * 24 * 60;      // Führe die Wartung alle 10 Tage aus.
 
         public async void Run(IBackgroundTaskInstance taskInstance)
         {
@@ -56,6 +56,10 @@ namespace PushNotificationManagerBackground
                         await localUserController.UpdateLocalUserAsync(string.Empty, pushChannel.Uri);
                     }
                 }
+
+                // Testweise: Speichere Datum der letzten Ausführung in LocalSettings, um zu prüfen, ob die Task ausgeführt wird.
+                Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                localSettings.Values["lastMaintenanceDate"] = DateTime.Now.ToString();
             }
             catch(Exception ex)
             {
@@ -96,9 +100,9 @@ namespace PushNotificationManagerBackground
                 // Lege Bedingung für die Ausführung der BackgroundTask fest. Hier, InternetAvailable und UserNotPresent muss zutreffen.
                 // UserNotPresent wird hier gesetzt, um mögliche Konflikte durch die parallele Ausführung von Anwendung und BackgroundTask zu vermeiden.
                 SystemCondition internetCondition = new SystemCondition(SystemConditionType.InternetAvailable);
-                SystemCondition userNotPresentCondition = new SystemCondition(SystemConditionType.UserNotPresent);
+                // SystemCondition userNotPresentCondition = new SystemCondition(SystemConditionType.UserNotPresent);
                 builder.AddCondition(internetCondition);
-                builder.AddCondition(userNotPresentCondition);
+                // builder.AddCondition(userNotPresentCondition);
                 
 
                 // Registriere die Task.

@@ -178,12 +178,13 @@ namespace UlmUniversityNews.PushNotifications
                 // Spezifiziere das Event als behandelt, so dass es nicht an die Background Task geht.
                 args.Cancel = true;
 
-                // Stoße Behandlung der Push Notification an.
-                bool handledSuccessfully = await pushController.HandlePushNotificationAsync(receivedNotification);
+                PushMessage pushMsg = pushController.GetPushMessageFromNotification(receivedNotification);
 
-                if(handledSuccessfully)
+                // Stoße Behandlung der Push Notification an.
+                bool handledSuccessfully = await pushController.HandlePushNotificationAsync(pushMsg);
+
+                if (handledSuccessfully)
                 {
-                    PushMessage pushMsg = pushController.GetPushMessageFromNotification(receivedNotification);
                     // TODO - Benachrichtige View, so dass diese sich aktualisieren können.
                     if (pushMsg != null)
                     {
@@ -202,7 +203,7 @@ namespace UlmUniversityNews.PushNotifications
                         }
                     }
 
-                    // TODO - Benachrichtigung des Nutzers?
+                    // Benachrichtigung des Nutzers
                     if(pushController.IsUserNotificationRequired(pushMsg))
                     {
                         // Benachrichtige abhängig vom Typ der Push-Nachricht.
@@ -223,7 +224,7 @@ namespace UlmUniversityNews.PushNotifications
         private void alertUser()
         {
             VibrationDevice vibrationDevice = VibrationDevice.GetDefault();
-            vibrationDevice.Vibrate(TimeSpan.FromSeconds(0.6f));
+            vibrationDevice.Vibrate(TimeSpan.FromSeconds(0.5f));
         }
 
         ///// <summary>
