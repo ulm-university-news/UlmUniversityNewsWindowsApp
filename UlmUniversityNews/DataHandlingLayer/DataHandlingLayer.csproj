@@ -140,6 +140,7 @@
     <Compile Include="ViewModel\ChannelDetailsViewModel.cs" />
     <Compile Include="ViewModel\ChannelSettingsViewModel.cs" />
     <Compile Include="ViewModel\HomescreenViewModel.cs" />
+    <Compile Include="ViewModel\LoginViewModel.cs" />
     <Compile Include="ViewModel\SearchChannelsViewModel.cs" />
     <Compile Include="ViewModel\StartPageViewModel.cs" />
     <Compile Include="ViewModel\ViewModel.cs" />
