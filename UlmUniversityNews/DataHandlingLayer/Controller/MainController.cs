@@ -121,6 +121,17 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Gibt den lokalen (also den gerade eingeloggten) Moderator zurück. Liefert null zurück wenn kein lokaler
+        /// Moderator definiert ist. Da diese Methode in vielen ViewModel Klassen benötigt wird
+        /// ist sie in der abstrakten Basisklasse implementiert.
+        /// </summary>
+        /// <returns>Eine Instanz der Klasse Moderator. Null, wenn keine Instanz von Moderator gespeichert ist.</returns>
+        public Moderator GetLocalModerator()
+        {
+            return LocalModerator.GetInstance().GetCachedModerator();
+        }
+
+        /// <summary>
         /// Liefert die aktuellen Anwendungseinstellungen gekapselt in Form eines Objekts zurück.
         /// Da diese Methode von sehr vielen ViewModel Klassen benötigt wird, ist sie in der abstrakten
         /// Oberklasse definiert.

@@ -1,8 +1,8 @@
 ﻿<Page
-    x:Class="UlmUniversityNews.Views.Login.LoginPage"
+    x:Class="UlmUniversityNews.Views.ModeratorViews.Homescreen.HomescreenModerator"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:UlmUniversityNews.Views.Login"
+    xmlns:local="using:UlmUniversityNews.Views.ModeratorViews.Homescreen"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"	
@@ -16,9 +16,6 @@
     <Page.Resources>
         <!-- Konvertierung eines ItemClickEventArgs auf das geklickte Objekt. -->
         <valueconverter:ItemClickedConverter x:Key="ItemClickedConverter" />
-
-        <!-- Konvertierung eines Validations-Msg Schlüssel auf einen von der bevorzugten Sprache abhängigen Schlüssel. -->
-        <valueconverter:ValidationMessageOnLocalizedStringConverter x:Key="ValidationMessageOnLocalizedStringConverter" />
     </Page.Resources>
 
     <!-- StatusBar -->
@@ -37,12 +34,7 @@
     <Page.BottomAppBar>
         <CommandBar x:Name="ChannelSettingsCommandBar"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
-            <AppBarButton
-                x:Name="LoginPageLoginButton"
-                x:Uid="LoginPageLoginButton" 
-                Icon="Accept"
-                Label="log in"
-                Command="{Binding LoginCommand}"/>   <!-- TODO Command binding-->
+
         </CommandBar>
     </Page.BottomAppBar>
 
@@ -74,9 +66,9 @@
 
             <!-- Drawer Text -->
             <TextBlock Grid.Column="1"
-						   x:Uid="LoginPageTitle"
+						   x:Uid="ModeratorHomescreenPageTitle"
 						   Style="{StaticResource DrawerTextStyle}"
-						   Text="Login" />
+						   Text="Homescreen" />
         </Grid>
 
         <!--Inhalt der Seite und Inhalt des Drawer Menü-->
@@ -85,52 +77,6 @@
             <!-- Inhalt der Seite -->
             <Grid x:Name="MainFragment" Background="{StaticResource MainFragmentBackgroundColor}">
                 <!-- Der Inhalt der eigentlichen Seite kommt hier rein. -->
-                <ScrollViewer>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <TextBlock
-                            Grid.Row="0"
-                            x:Name="LoginPageDescription"
-                            x:Uid="LoginPageDescription"
-                            Margin="19, 14.5, 19, 0"
-                            Style="{StaticResource UniversityNewsUlmStandardText}"
-                            Text="Um zur Moderatorenansicht der Anwendung zu gelangen, geben Sie hier bitte Ihre Login Daten an."/>
-
-                        <TextBox
-                            Grid.Row="1"
-                            x:Name="LoginPageUsernameTextBox"
-                            x:Uid="LoginPageUsernameTextBox"
-                            Margin="19, 5, 19, 0"
-                            Header="Username"
-                            InputScope="AlphanumericFullWidth"
-                            Text="{Binding Username, Mode=TwoWay}"
-                            />
-
-                        <PasswordBox
-                            Grid.Row="2"
-                            x:Name="LoginPagePasswordTextBox"
-                            x:Uid="LoginPagePasswordTextBox"
-                            Margin="19, 5, 19, 0"
-                            Header="Password"
-                            Password="{Binding Password, Mode=TwoWay}"
-                            />
-
-                        <TextBlock
-                            Grid.Row="3"
-                            x:Name="LoginPageErrorText"
-                            x:Uid="LoginPageErrorText"
-                            Margin="19, 5, 19, 0"
-                            Style="{StaticResource UniversityNewsUlmStandardErrorText}"
-                            Text="{Binding ValidationMessages[LoginFailedMsg], TargetNullValue='', FallbackValue='', Converter={StaticResource ValidationMessageOnLocalizedStringConverter}}" 
-                            />
-                    </Grid>
-                </ScrollViewer>
             </Grid>
 
 
@@ -145,8 +91,7 @@
                         </Style>
                     </ListView.ItemContainerStyle>
 
-                    
-            <!-- Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet. -->     
+                    <!--Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
                     <i:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
                             <core:InvokeCommandAction Command="{Binding DrawerButtonCommand}"
@@ -157,6 +102,5 @@
             </Grid>
 
         </drawerLayout:DrawerLayout>
-
     </Grid>
 </Page>

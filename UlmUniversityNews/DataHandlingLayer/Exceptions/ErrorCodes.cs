@@ -15,6 +15,22 @@ namespace DataHandlingLayer.Exceptions
         public const int UserNameInvalid = 1003;
         public const int UserPushTokenInvalid = 1004;
 
+        // Moderator:
+        public const int ModeratorNotFound = 2000;
+        public const int ModeratorForbidden = 2001;
+        public const int ModeratorDataIncomplete = 2002;
+        public const int ModeratorInvalidName = 2003;
+        public const int ModeratorInvalidFirstName = 2004;
+        public const int ModeratorInvalidLastName = 2005;
+        public const int ModeratorInvalidEmail = 2006;
+        public const int ModeratorInvalidPassword = 2007;
+        public const int ModeratorInvalidMotivation = 2008;
+        public const int ModeratorNameAlreadyExists = 2009;
+        public const int ModeratorDeleted = 2010;
+        public const int ModeratorLocked = 2011;
+        public const int ModeratorUnauthorized = 2012;
+
+        // Kanal
         public const int ChannelNotFound = 3000;
         public const int ChannelDataIncomplete = 3002;
         public const int ChannelInvalidName = 3003;
@@ -36,11 +52,15 @@ namespace DataHandlingLayer.Exceptions
 
         public const int ServerDatabaseFailure = 5000;
 
-        // Allgemeingültige Fehlercodes.
+        // Allgemeingültige Fehlercodes (von HTTP).
         public const int BadRequest = 400;
+        public const int Unauthorized = 401;
         public const int NotFound = 404;
         public const int MethodNotAllowed = 405;
+        public const int Gone = 410;
         public const int UnsupportedMediaType = 415;
+        public const int Locked = 423;
+
 
         // Windows Phone App spezifische Fehlercodes.
         public const int ServerUnreachable = 6000;

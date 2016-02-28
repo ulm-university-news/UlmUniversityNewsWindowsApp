@@ -127,6 +127,8 @@ namespace UlmUniversityNews
                 NavigationService.RegisterPage("ChannelDetails", typeof(Views.ChannelDetails.ChannelDetails));
                 NavigationService.RegisterPage("ApplicationSettings", typeof(Views.ApplicationSettings.ApplicationSettings));
                 NavigationService.RegisterPage("ChannelSettings", typeof(Views.ChannelDetails.ChannelSettings));
+                NavigationService.RegisterPage("LoginPage", typeof(Views.Login.LoginPage));
+                NavigationService.RegisterPage("HomescreenModerator", typeof(Views.ModeratorViews.Homescreen.HomescreenModerator));
 
                 // Verknüpfen Sie den Frame mit einem SuspensionManager-Schlüssel.
                 SuspensionManager.RegisterFrame(rootFrame, "AppFrame");
@@ -162,6 +164,8 @@ namespace UlmUniversityNews
                 NavigationService.RegisterPage("ChannelDetails", typeof(Views.ChannelDetails.ChannelDetails));
                 NavigationService.RegisterPage("ApplicationSettings", typeof(Views.ApplicationSettings.ApplicationSettings));
                 NavigationService.RegisterPage("ChannelSettings", typeof(Views.ChannelDetails.ChannelSettings));
+                NavigationService.RegisterPage("LoginPage", typeof(Views.Login.LoginPage));
+                NavigationService.RegisterPage("HomescreenModerator", typeof(Views.ModeratorViews.Homescreen.HomescreenModerator));
             }
             
             // Wenn der Inhalt des RootFrames null ist, d.h. kein Content durch eine Wiederherstellung vorhanden ist.

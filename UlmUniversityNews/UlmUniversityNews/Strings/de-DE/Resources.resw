@@ -489,4 +489,43 @@
   <data name="ChannelSettingsSaveButton.Label" xml:space="preserve">
     <value>speichern</value>
   </data>
+  <data name="LoginPageDescription.Text" xml:space="preserve">
+    <value>Um zur Moderatorenansicht der Anwendung zu gelangen, geben Sie hier bitte Ihre Login Daten an.</value>
+  </data>
+  <data name="LoginPageLoginButton.Label" xml:space="preserve">
+    <value>anmelden</value>
+  </data>
+  <data name="LoginPageLoginFailureCaseGone" xml:space="preserve">
+    <value>Der Account zu den angegebenen Daten existiert nicht mehr.</value>
+  </data>
+  <data name="LoginPageLoginFailureCaseLocked" xml:space="preserve">
+    <value>Ihr Account ist gesperrt und wurde noch nicht freigegeben. Der Account muss zunächst von einem Administrator freigeschalten werden.</value>
+  </data>
+  <data name="LoginPageLoginFailureCaseNotFound" xml:space="preserve">
+    <value>Es wurde kein Account mit diesem Nutzernamen gefunden.</value>
+  </data>
+  <data name="LoginPageLoginFailureCasePasswordNull" xml:space="preserve">
+    <value>Es wurde kein Passwort angegeben.</value>
+  </data>
+  <data name="LoginPageLoginFailureCaseUnauthorized" xml:space="preserve">
+    <value>Die von Ihnen eingegebenen Login Daten sind nicht korrekt. Bitte prüfen Sie ob Nutzername und Passwort richtig eingegeben wurden.</value>
+  </data>
+  <data name="LoginPageLoginFailureCaseUsernameNull" xml:space="preserve">
+    <value>Es wurde kein Nutzername angegeben.</value>
+  </data>
+  <data name="LoginPagePasswordTextBox.Header" xml:space="preserve">
+    <value>Passwort</value>
+  </data>
+  <data name="LoginPageTitle.Text" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="LoginPageUsernameTextBox.Header" xml:space="preserve">
+    <value>Nutzername</value>
+  </data>
+  <data name="ModeratorHomescreenPageTitle.Text" xml:space="preserve">
+    <value>Homescreen</value>
+  </data>
+  <data name="DrawerMenuEntryLogout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
 </root>

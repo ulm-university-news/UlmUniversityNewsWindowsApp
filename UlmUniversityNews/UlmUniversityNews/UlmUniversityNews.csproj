@@ -114,6 +114,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ModeratorViews\Homescreen\HomescreenModerator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\StartPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -178,6 +182,9 @@
     <Compile Include="Views\Login\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ModeratorViews\Homescreen\HomescreenModerator.xaml.cs">
+      <DependentUpon>HomescreenModerator.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\StartPage.xaml.cs">
       <DependentUpon>StartPage.xaml</DependentUpon>
     </Compile>
@@ -208,6 +215,7 @@
     <Content Include="Assets\ButtonIcons\feature.search.png" />
     <Content Include="Assets\Drawer\feature.settings.png" />
     <Content Include="Assets\extIcons\appbar.door.enter.png" />
+    <Content Include="Assets\extIcons\appbar.door.leave.png" />
     <Content Include="Assets\extIcons\appbar.home.empty.png" />
     <Content Include="Assets\extIcons\license.txt" />
     <Content Include="Assets\ResourceDetailsIcons\ContactsInfo.png" />

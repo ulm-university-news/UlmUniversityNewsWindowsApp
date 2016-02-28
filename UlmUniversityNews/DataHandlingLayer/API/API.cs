@@ -73,7 +73,7 @@ namespace DataHandlingLayer.API
             }
             string responseContent = Encoding.UTF8.GetString(rawBytes, 0, rawBytes.Length); 
 
-            if (statusCode == HttpStatusCode.Created)
+            if (statusCode == HttpStatusCode.Created || statusCode == HttpStatusCode.Ok)
             {
                 Debug.WriteLine("POST request to URI {0} completed successfully.", request.RequestUri);
                 Debug.WriteLine("Response from server is: " + responseContent);
@@ -414,6 +414,9 @@ namespace DataHandlingLayer.API
                     errorCode = parseErrorCodeFromJson(responseContent);
                     break;
                 case HttpStatusCode.Gone:
+                    errorCode = parseErrorCodeFromJson(responseContent);
+                    break;
+                case HttpStatusCode.Locked:
                     errorCode = parseErrorCodeFromJson(responseContent);
                     break;
                 case HttpStatusCode.UnsupportedMediaType:

@@ -37,6 +37,17 @@ namespace DataHandlingLayer.DataModel
             set { name = value; }
         }
 
+        private string password;
+        /// <summary>
+        /// Das Passwort des Moderators. 
+        /// </summary>
+        [JsonProperty("password", NullValueHandling=NullValueHandling.Ignore)]
+        public string Password
+        {
+            get { return password; }
+            set { password = value; }
+        }
+        
         private string firstName;
         /// <summary>
         /// Der Vorname des Moderators.

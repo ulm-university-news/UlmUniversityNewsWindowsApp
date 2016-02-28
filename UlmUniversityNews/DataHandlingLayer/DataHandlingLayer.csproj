@@ -95,6 +95,7 @@
     <Compile Include="Controller\ApplicationSettingsController.cs" />
     <Compile Include="Controller\ChannelController.cs" />
     <Compile Include="Controller\IncrementalAnnouncementLoaderController.cs" />
+    <Compile Include="Controller\LoginController.cs" />
     <Compile Include="Controller\PushNotificationController.cs" />
     <Compile Include="Controller\ValidationErrorReportInterface\IValidationErrorReport.cs" />
     <Compile Include="Controller\LocalUserController.cs" />
@@ -121,6 +122,7 @@
     <Compile Include="DataModel\Event.cs" />
     <Compile Include="DataModel\Lecture.cs" />
     <Compile Include="DataModel\LocalUser.cs" />
+    <Compile Include="DataModel\LocalModerator.cs" />
     <Compile Include="DataModel\Message.cs" />
     <Compile Include="DataModel\Moderator.cs" />
     <Compile Include="DataModel\PropertyChangedNotifier.cs" />
@@ -141,6 +143,7 @@
     <Compile Include="ViewModel\ChannelSettingsViewModel.cs" />
     <Compile Include="ViewModel\HomescreenViewModel.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />
+    <Compile Include="ViewModel\ModeratorHomescreenViewModel.cs" />
     <Compile Include="ViewModel\SearchChannelsViewModel.cs" />
     <Compile Include="ViewModel\StartPageViewModel.cs" />
     <Compile Include="ViewModel\ViewModel.cs" />

@@ -299,13 +299,30 @@ namespace DataHandlingLayer.ViewModel
                 IconPath = "/Assets/extIcons/appbar.home.empty.png"
             };
 
+            DrawerMenuEntry moderatorHomescreenEntry = new DrawerMenuEntry()
+            {
+                MenuEntryName = "Homescreen",
+                DisplayableNameResourceKey = "DrawerMenuEntryHomescreen",
+                ReferencedPageKey = "HomescreenModerator",
+                IconPath = "/Assets/extIcons/appbar.home.empty.png"
+            };
+
             // Login Seite
             DrawerMenuEntry loginEntry = new DrawerMenuEntry()
             {
                 MenuEntryName = "Login",
                 DisplayableNameResourceKey = "DrawerMenuEntryLogin",
-                ReferencedPageKey = "Login",
+                ReferencedPageKey = "LoginPage",
                 IconPath = "/Assets/extIcons/appbar.door.enter.png"
+            };
+
+            // Logout Seite:
+            DrawerMenuEntry logoutEntry = new DrawerMenuEntry()
+            {
+                MenuEntryName = "Logout",
+                DisplayableNameResourceKey = "DrawerMenuEntryLogout",
+                ReferencedPageKey = "Homescreen",
+                IconPath = "/Assets/extIcons/appbar.door.leave.png"
             };
 
             // Anwendungseinstellung
@@ -321,6 +338,11 @@ namespace DataHandlingLayer.ViewModel
             drawerMenuEntriesStatusNoLogin.Add(homescreenEntry);
             drawerMenuEntriesStatusNoLogin.Add(applicationSettingsEntry);
             drawerMenuEntriesStatusNoLogin.Add(loginEntry);
+
+            // Füge Einträge der Liste hinzu, die den eingeloggten Zustand repräsentiert.            
+            drawerMenuEntriesStatusLoggedIn.Add(moderatorHomescreenEntry);
+            drawerMenuEntriesStatusLoggedIn.Add(applicationSettingsEntry);
+            drawerMenuEntriesStatusLoggedIn.Add(logoutEntry);
         }
 
         /// <summary>
@@ -341,6 +363,18 @@ namespace DataHandlingLayer.ViewModel
                 else if (menuEntry.MenuEntryName == "Anwendungseinstellungen")
                 {
                     // Navigiere auf die Anwendungseinstellungen Seite.
+                    _navService.Navigate(menuEntry.ReferencedPageKey);
+                }
+                else if (menuEntry.MenuEntryName == "Login")
+                {
+                    // Navigiere auf die Login Seite.
+                    _navService.Navigate(menuEntry.ReferencedPageKey);
+                }
+                else if (menuEntry.MenuEntryName == "Logout")
+                {
+                    // Lösche lokal gehaltenen Moderator.
+                    LocalModerator.GetInstance().CacheModeratorObject(null);
+                    // Navigiere zurück auf den Homescreen des Nutzers.
                     _navService.Navigate(menuEntry.ReferencedPageKey);
                 }
             }
