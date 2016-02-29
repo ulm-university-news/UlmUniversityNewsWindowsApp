@@ -115,7 +115,8 @@
 
                             <TextBlock 
                                 Grid.Row="0"
-                                Style="{StaticResource BaseTextBlockStyle}"
+                                x:Uid="HomescreenNoChannelSubscribedInfoText"
+                                Style="{StaticResource UniversityNewsUlmStandardText}"
                                 Visibility="{Binding MyChannels.Count, Converter={StaticResource ListCountToVisibilityConverter}}">
                                     Es wurde noch kein Kanal abonniert.
                                     <LineBreak/>

@@ -528,4 +528,7 @@
   <data name="DrawerMenuEntryLogout" xml:space="preserve">
     <value>Logout</value>
   </data>
+  <data name="HomescreenNoChannelSubscribedInfoText.Text" xml:space="preserve">
+    <value>There is no subscribed channel. The button at the bottom of the page takes you to the channel search where channels can be subscribed.</value>
+  </data>
 </root>

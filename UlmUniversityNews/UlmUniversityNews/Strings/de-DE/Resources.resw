@@ -528,4 +528,8 @@
   <data name="DrawerMenuEntryLogout" xml:space="preserve">
     <value>Logout</value>
   </data>
+  <data name="HomescreenNoChannelSubscribedInfoText.Text" xml:space="preserve">
+    <value>Es wurde noch kein Kanal abonniert.
+Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
+  </data>
 </root>

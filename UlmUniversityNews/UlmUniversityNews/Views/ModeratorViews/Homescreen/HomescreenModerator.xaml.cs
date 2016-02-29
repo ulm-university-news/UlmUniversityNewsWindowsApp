@@ -37,6 +37,9 @@ namespace UlmUniversityNews.Views.ModeratorViews.Homescreen
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
 
+            // Aktiviere Caching für diese Seite.
+            NavigationCacheMode = NavigationCacheMode.Enabled;
+
             moderatorHomescreenViewModel = new ModeratorHomescreenViewModel(App.NavigationService, App.ErrorMapper);
             this.DataContext = moderatorHomescreenViewModel;
 
@@ -64,8 +67,16 @@ namespace UlmUniversityNews.Views.ModeratorViews.Homescreen
         /// <see cref="Frame.Navigate(Type, Object)"/> als diese Seite ursprünglich angefordert wurde und
         /// ein Wörterbuch des Zustands, der von dieser Seite während einer früheren
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
-        private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
+        private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            // Erforderlich wegen Caching. Falls Seite aus Cache geladen wird und Drawer war offen
+            // bleibt er sonst offen.
+            if (DrawerLayout.IsDrawerOpen)
+            {
+                DrawerLayout.CloseDrawer();
+            }
+
+            await moderatorHomescreenViewModel.LoadManagedChannels();
         }
 
         /// <summary>

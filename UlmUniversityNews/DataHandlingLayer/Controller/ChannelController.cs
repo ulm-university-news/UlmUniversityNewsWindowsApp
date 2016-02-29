@@ -758,6 +758,143 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Ruft die Liste an Kanalressourcen vom Server ab, für die der Moderator mit der angegebenen Id verantwortlich ist.
+        /// </summary>
+        /// <param name="moderatorId">Die Id des Moderators, für den die Liste an Kanälen abgefragt werden soll.</param>
+        /// <returns>Eine Liste von Channel Objekte.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abfrage vom Server fehlschlägt.</exception>
+        public async Task<List<Channel>> RetrieveManagedChannelsFromServerAsync(int moderatorId)
+        {
+            List<Channel> managedChannels = null;
+            Moderator activeModerator = GetLocalModerator();
+
+            try
+            {
+                if (activeModerator != null)
+                {
+                    Dictionary<string, string> parameters = new Dictionary<string,string>();
+                    parameters.Add("moderatorId", activeModerator.Id.ToString());
+
+                    string serverResponse = await api.SendHttpGetRequestAsync(
+                        activeModerator.ServerAccessToken,
+                        "/channel",
+                        parameters,
+                        false
+                        );
+
+                    managedChannels = parseChannelListFromJson(serverResponse);
+                    Debug.WriteLine("Retrieved a list of managed channels with {0} items.", managedChannels.Count);
+                }
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("Error occurred. Retrieving the managed channels has failed. " + 
+                    "Message is: {0}.", ex.Message);
+                throw new ClientException(ex.ErrorCode, "Retrieving of managed channels failed.");
+            }
+
+            return managedChannels;
+        }
+
+        /// <summary>
+        /// Prüft, ob alle Beziehungen zwischen Kanalressourcen und dem aktuell eingeloggten
+        /// Moderator aktuell sind und aktualisiert diese falls notwendig. 
+        /// </summary>
+        /// <param name="managedChannels">Liste von aktuell verwalteten Kanälen des Moderators.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Aktualisierung fehlschlägt.</exception>
+        public void UpdateManagedChannelsRelationships(List<Channel> managedChannels)
+        {
+            Moderator activeModerator = GetLocalModerator();
+            if (activeModerator == null)
+                return;
+
+            try
+            {
+                // Prüfe, ob der Moderator schon in der Datenbank enthalten ist.
+                if (!moderatorDatabaseManager.IsModeratorStored(activeModerator.Id))
+                {
+                    Debug.WriteLine("Need to store the moderator with id {0} in local DB.", activeModerator.Id);
+                    moderatorDatabaseManager.StoreModerator(activeModerator);
+                }
+
+                // Prüfe, ob alle Kanäle lokal gespeichert sind.
+                foreach (Channel channel in managedChannels)
+                {
+                    if (!channelDatabaseManager.IsChannelContained(channel.Id))
+                    {
+                        Debug.WriteLine("Need to store the channel with id {0} in local DB.", channel.Id);
+                        channelDatabaseManager.StoreChannel(channel);
+                    }
+
+
+                    // Prüfe, ob der Moderator für den Kanal als Verantwortlicher eingetragen ist.
+                    if (!channelDatabaseManager.IsResponsibleForChannel(channel.Id, activeModerator.Id))
+                    {
+                        Debug.WriteLine("Need to add the moderator with id {0} as a responsible moderator " + 
+                            "for the channel with id {1}.", activeModerator.Id, channel.Id);
+                        channelDatabaseManager.AddModeratorToChannel(channel.Id, activeModerator.Id, true);
+                    }
+                }
+
+                // Frage verwaltete Kanäle aus der DB ab.
+                List<Channel> managedChannelsFromDB = channelDatabaseManager.GetManagedChannels(activeModerator.Id);
+                // Prüfe, ob es darin noch einen Kanal gibt, der nicht mehr in der aktuellen Liste von Kanälen steht.
+                for (int i = 0; i < managedChannelsFromDB.Count; i++ )
+                {
+                    bool isContained = false;
+
+                    foreach (Channel channel in managedChannels)
+                    {
+                        if (channel.Id == managedChannelsFromDB[i].Id)
+                        {
+                            isContained = true;
+                        }    
+                    }
+
+                    if (!isContained)
+                    {
+                        // Setzte Verantwortlichkeit auf inaktiv für diesen Kanal.
+                        Debug.WriteLine("Need to set inactivity to false for channel with id {0}.", managedChannelsFromDB[i].Id);
+                        channelDatabaseManager.AddModeratorToChannel(
+                            managedChannelsFromDB[i].Id,
+                            activeModerator.Id,
+                            false);
+                    }
+                }
+
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("Database exception occurred in UpdateManagedChannelsRelationships. Msg is {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, "Failed to update managed channels relationships.");
+            }
+        }
+
+        /// <summary>
+        /// Hole die vom Moderator mit der angegebenen Id verwalteten Kanäle, die lokal in der Anwendung vorhanden sind.
+        /// </summary>
+        /// <param name="moderatorId">Die Id des Moderators.</param>
+        /// <returns>Eine Liste von Channel Objekten.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abruf der verwalteten Kanäle fehlschlägt.</exception>
+        public List<Channel> GetManagedChannels(int moderatorId)
+        {
+            List<Channel> managedChannels = null;
+            Moderator activeModerator = GetLocalModerator();
+
+            try
+            {
+                managedChannels = channelDatabaseManager.GetManagedChannels(activeModerator.Id);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("Error occurred during retrieval of managed channels. Msg is: {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, "GetManagedChannels failed.");
+            }
+
+            return managedChannels;
+        }
+
+        /// <summary>
         /// Extrahiere eine Liste von Announcement Objekten aus einem gegebenen JSON-Dokument.
         /// </summary>
         /// <param name="jsonString">Das JSON-Dokument.</param>

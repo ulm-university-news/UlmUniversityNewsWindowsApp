@@ -76,7 +76,56 @@
 
             <!-- Inhalt der Seite -->
             <Grid x:Name="MainFragment" Background="{StaticResource MainFragmentBackgroundColor}">
-                <!-- Der Inhalt der eigentlichen Seite kommt hier rein. -->
+                <Pivot x:Name="HomescreenModeratorPivot"
+                       x:Uid="HomescreenModeratorPivot"
+                       HeaderTemplate="{StaticResource PivotItemHeaderStyle}">
+                    <!-- Pivotelement 1 -->
+                    <PivotItem
+                        x:Uid="HomescreenModeratorMyChannelsPivotItem"
+                        Style="{StaticResource PivotItemStyle}"
+                        Header="Meine Kanäle">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock
+                                Grid.Row="0"
+                                x:Name="HomescreenModeratorNoManagedChannelsInfo"
+                                x:Uid="HomescreenModeratorNoManagedChannelsInfo"
+                                Style="{StaticResource UniversityNewsUlmStandardText}"
+                                Text=""
+                                Visibility="Collapsed"
+                                />  <!-- TODO - Bind visiblity, so that the text will be visible if the list is empty. Use ListCountToVisibilityConverter.-->
+
+                            <!-- Definiere Liste für verwaltete Kanäle. -->
+                            <!-- Beachte, IsItemClickEnabled muss explizit aktiviert werden, sonst funktioniert das Binding auf das Command über das Behaviour nicht.-->
+                            <ListView
+                                Grid.Row="1"
+                                ItemTemplate="{StaticResource ChannelListItemStyle}"
+                                ItemsSource="{Binding ManagedChannels}"
+                                IsItemClickEnabled="True"
+                                HorizontalContentAlignment="Stretch"
+                                HorizontalAlignment="Stretch">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+
+                                <!-- Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
+                                <i:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="ItemClick">
+                                        <core:InvokeCommandAction Command="{Binding ChannelSelected}"
+                                                              InputConverter="{StaticResource ItemClickedConverter}" />
+                                    </core:EventTriggerBehavior>
+                                </i:Interaction.Behaviors>
+                            </ListView>
+                        </Grid>
+
+                    </PivotItem>
+                </Pivot>
             </Grid>
 
 

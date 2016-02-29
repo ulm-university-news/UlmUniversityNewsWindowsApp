@@ -506,6 +506,69 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Prüft, ob der Kanal mit der angegebenen Id in der lokalen Datenbank vorhanden ist.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, der geprüft werden soll.</param>
+        /// <returns>Liefert true, wenn der Kanal in der lokalen DB gespeichert ist, sonst false.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn der Zugriff auf die Datenbank fehlschlägt.</exception>
+        public bool IsChannelContained(int channelId)
+        {
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string sql = @"SELECT COUNT(*) AS channelCount
+                            FROM Channel
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(sql))
+                        {
+                            stmt.Bind(1, channelId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                int resultCount = Convert.ToInt32(stmt["channelCount"]);
+
+                                if (resultCount == 1)
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in IsChannelContained. The message is: {0}." + sqlEx.Message);
+                        return false;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in IsChannelContained. The message is: {0}, " +
+                            "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                        return false;
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Markiert den Kanal, der durch die angegbene Id identifiziert ist, als gelöscht.
         /// Der Kanal bleibt jedoch in den Datensätzen vorhanden.
         /// </summary>
@@ -1165,6 +1228,134 @@ namespace DataHandlingLayer.Database
             }
             
             return responsibleModerators;
+        }
+
+        /// <summary>
+        /// Prüft ob der Moderator mit der angegebenen Id in der Datenbank als ein aktiver Verantwortlicher 
+        /// des Kanals mit der gegebenen Id eingetragen ist. 
+        /// </summary>
+        /// <param name="channelId">Die Kanal-Id des zu prüfenden Kanals.</param>
+        /// <param name="moderatorId">Die Moderator-Id des zu prüfenden Moderators.</param>
+        /// <returns>Liefert true, wenn der Moderator als aktiver Verantworlichter des Kanals eingetragen ist, anonsten false.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Zugriff auf Datenbank nicht möglich war.</exception>
+        public bool IsResponsibleForChannel(int channelId, int moderatorId)
+        {
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string sql = @"SELECT COUNT(*) AS countResults 
+                            FROM Moderator AS m JOIN ModeratorChannel AS mc ON m.Id=mc.Moderator_Id 
+                            WHERE m.Id=? AND mc.Channel_Id=? AND mc.Active=?;";
+
+                        using (var stmt = conn.Prepare(sql))
+                        {
+                            stmt.Bind(1, moderatorId);
+                            stmt.Bind(2, channelId);
+                            stmt.Bind(3, 1);    // true
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                int resultCount = Convert.ToInt32(stmt["countResults"]);
+
+                                if (resultCount == 1)
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in IsResponsibleForChannel. The message is: {0}.", sqlEx.Message);
+                    }
+                    catch (DatabaseException ex)
+                    {
+                        Debug.WriteLine("Exception has occurred in IsResponsibleForChannel. The message is: {0}, " +
+                            "and the stack trace: {1}.", ex.Message, ex.StackTrace);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Holt die vom Moderator mit der angegebenen Id verwalteten Kanäle aus der lokalen Datenbank.
+        /// </summary>
+        /// <param name="moderatorId">Die Id des Moderators.</param>
+        /// <returns>Liste von Channel Objekten.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn der Abruf der Daten fehlschlägt.</exception>
+        public List<Channel> GetManagedChannels(int moderatorId)
+        {
+            List<Channel> managedChannels = new List<Channel>();
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string sql = @"SELECT * 
+                            FROM Channel AS c JOIN ModeratorChannel AS mc ON c.Id=mc.Channel_Id 
+                            WHERE mc.Moderator_Id=? AND mc.Active=?;";
+
+                        using (var stmt = conn.Prepare(sql))
+                        {
+                            stmt.Bind(1, moderatorId);
+                            stmt.Bind(2, 1);        // true
+
+                            while (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                Channel channelTmp = retrieveChannelObjectFromStatement(conn, stmt);
+
+                                managedChannels.Add(channelTmp);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in GetManagedChannels. The message is: {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Exception has occurred in GetManagedChannels. The message is: {0}, " +
+                            "and the stack trace: {1}.", ex.Message, ex.StackTrace);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+
+            return managedChannels;
         }
 
         /// <summary>
