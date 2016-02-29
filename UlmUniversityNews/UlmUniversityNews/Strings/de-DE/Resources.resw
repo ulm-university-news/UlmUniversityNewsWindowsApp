@@ -532,4 +532,16 @@
     <value>Es wurde noch kein Kanal abonniert.
 Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
   </data>
+  <data name="HomescreenModeratorMyChannelsPivotItem.Header" xml:space="preserve">
+    <value>Meine Kanäle</value>
+  </data>
+  <data name="ModeratorChannelDetailsAnnouncementPivotItem.Header" xml:space="preserve">
+    <value>Nachrichten</value>
+  </data>
+  <data name="ModeratorChannelDetailsChannelInfoPivotItem.Header" xml:space="preserve">
+    <value>Kanalinformationen</value>
+  </data>
+  <data name="ModeratorChannelDetailsReminderPivotItem.Header" xml:space="preserve">
+    <value>Reminder</value>
+  </data>
 </root>

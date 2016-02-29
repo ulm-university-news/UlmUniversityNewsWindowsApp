@@ -531,4 +531,16 @@
   <data name="HomescreenNoChannelSubscribedInfoText.Text" xml:space="preserve">
     <value>There is no subscribed channel. The button at the bottom of the page takes you to the channel search where channels can be subscribed.</value>
   </data>
+  <data name="HomescreenModeratorMyChannelsPivotItem.Header" xml:space="preserve">
+    <value>My channels</value>
+  </data>
+  <data name="ModeratorChannelDetailsAnnouncementPivotItem.Header" xml:space="preserve">
+    <value>Messages</value>
+  </data>
+  <data name="ModeratorChannelDetailsChannelInfoPivotItem.Header" xml:space="preserve">
+    <value>Channel information</value>
+  </data>
+  <data name="ModeratorChannelDetailsReminderPivotItem.Header" xml:space="preserve">
+    <value>Reminder</value>
+  </data>
 </root>

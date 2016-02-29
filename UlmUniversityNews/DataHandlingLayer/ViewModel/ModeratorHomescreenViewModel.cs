@@ -63,6 +63,9 @@ namespace DataHandlingLayer.ViewModel
         {
             channelController = new ChannelController();
             currentChannels = new Dictionary<int, Channel>();
+
+            // Erzeuge Befehle.
+            ChannelSelected = new RelayCommand(param => executeChannelSelected(param));
         }
 
         /// <summary>
@@ -274,5 +277,17 @@ namespace DataHandlingLayer.ViewModel
             return channels;
         }
 
+        /// <summary>
+        /// Führt den Befehl ChannelSelected aus. Es wird auf die Detailseite des gewählten Kanals navigiert.
+        /// </summary>
+        /// <param name="selectedChannel">Der gewählte Listeneintrag</param>
+        private void executeChannelSelected(object selectedChannel)
+        {
+            Channel channel = selectedChannel as Channel;
+            if (channel != null)
+            {
+                _navService.Navigate("ModeratorChannelDetails", channel.Id);
+            }
+        }
     }
 }

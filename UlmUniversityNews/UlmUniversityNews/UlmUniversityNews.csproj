@@ -114,6 +114,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ModeratorViews\ChannelDetails\ModeratorChannelDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ModeratorViews\Homescreen\HomescreenModerator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -181,6 +185,9 @@
     </Compile>
     <Compile Include="Views\Login\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ModeratorViews\ChannelDetails\ModeratorChannelDetails.xaml.cs">
+      <DependentUpon>ModeratorChannelDetails.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ModeratorViews\Homescreen\HomescreenModerator.xaml.cs">
       <DependentUpon>HomescreenModerator.xaml</DependentUpon>
