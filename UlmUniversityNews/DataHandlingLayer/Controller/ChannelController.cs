@@ -363,6 +363,10 @@ namespace DataHandlingLayer.Controller
                     // Lösche die Announcements des Kanals.
                     channelDatabaseManager.DeleteAllAnnouncementsOfChannel(channelId);
                     // TODO - Entferne Reminder
+
+                    // Channel Objekt selbst bleibt in Datenbank. Setze jedoch Notification-Wert zurück.
+                    resetNotificationSettingForChannel(channelId);
+
                     return;
                 }
 
@@ -377,6 +381,36 @@ namespace DataHandlingLayer.Controller
             // Lösche die Announcements des Kanals.
             channelDatabaseManager.DeleteAllAnnouncementsOfChannel(channelId);
             // TODO - Entferne Reminder.
+
+            // Channel Objekt selbst bleibt in Datenbank. Setze jedoch Notification-Wert zurück.
+            resetNotificationSettingForChannel(channelId);
+        }
+
+        /// <summary>
+        /// Beim Deabonnieren eines Kanals bleibt der Datensatz des Kanals in der lokalen Datenbank vorhanden.
+        /// Man kann mittels dieser Methode jedoch die kanalspezifischen Einstellungen für diesen Kanal zurücksetzen,
+        /// so dass beim nächsten Abonnieren des Kanals nicht dieselben Einstellungen wieder übernommen werden.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, für den die Benachrichtigungseinstellungen wieder auf den 
+        ///     Default Wert gesetzt werden sollen.</param>
+        private void resetNotificationSettingForChannel(int channelId)
+        {
+            try
+            {
+                // Lade das betroffene Kanalobjekt.
+                Channel channel = channelDatabaseManager.GetChannel(channelId);
+                channel.AnnouncementNotificationSetting = NotificationSetting.APPLICATION_DEFAULT;
+
+                // Aktualisiere Datensatz.
+                channelDatabaseManager.UpdateChannel(channel);
+                Debug.WriteLine("Reseted the notification settings for channel with id {0}.", channelId);
+            }
+            catch (DatabaseException ex)
+            {
+                // Führe keine weitere Aktion durch.
+                Debug.WriteLine("Failed to reset the notification settings for the unsubscribed channel.");
+                Debug.WriteLine("Message is: {0}.", ex.Message);
+            }
         }
 
         /// <summary>

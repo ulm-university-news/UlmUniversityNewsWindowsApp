@@ -51,6 +51,16 @@ namespace DataHandlingLayer.ViewModel
             get { return channelSelected; }
             set { channelSelected = value; }
         }
+
+        private RelayCommand switchToAddChannelDialogCommand;
+        /// <summary>
+        /// Befehl, um zum Dialog zur Erzeugung eines neuen Kanals zu wechseln.
+        /// </summary>
+        public RelayCommand SwitchToAddChannelDialogCommand
+        {
+            get { return switchToAddChannelDialogCommand; }
+            set { switchToAddChannelDialogCommand = value; }
+        }     
         #endregion Commands
 
         /// <summary>
@@ -66,6 +76,7 @@ namespace DataHandlingLayer.ViewModel
 
             // Erzeuge Befehle.
             ChannelSelected = new RelayCommand(param => executeChannelSelected(param));
+            SwitchToAddChannelDialogCommand = new RelayCommand(param => executeSwitchToChannelAddDialogCommand());
         }
 
         /// <summary>
@@ -288,6 +299,14 @@ namespace DataHandlingLayer.ViewModel
             {
                 _navService.Navigate("ModeratorChannelDetails", channel.Id);
             }
+        }
+
+        /// <summary>
+        /// Führt den Befehl SwitchToChannelAddDialogCommand aus. Navigation zum "Kanal erstellen" Dialog.
+        /// </summary>
+        private void executeSwitchToChannelAddDialogCommand()
+        {
+            // TODO
         }
     }
 }

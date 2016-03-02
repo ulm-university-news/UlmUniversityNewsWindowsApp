@@ -32,9 +32,13 @@
 
     <!-- CommandBar -->
     <Page.BottomAppBar>
-        <CommandBar x:Name="ChannelSettingsCommandBar"
+        <CommandBar x:Name="HomescreenModeratorCommandBar"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
-
+            <AppBarButton x:Name="HomescreenModeratorAddChannelButton"
+                          x:Uid="HomescreenModeratorAddChannelButton"
+                          Label="add channel"
+                          Icon="Add"
+                          Command="{Binding SwitchToAddChannelDialogCommand}"/> 
         </CommandBar>
     </Page.BottomAppBar>
 

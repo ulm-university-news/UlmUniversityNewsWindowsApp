@@ -122,9 +122,13 @@
 
     <!-- CommandBar -->
     <Page.BottomAppBar>
-        <CommandBar x:Name="ChannelSettingsCommandBar"
+        <CommandBar x:Name="ModeratorChannelDetailsCommandBar"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
-
+            <AppBarButton 
+                x:Name="ModeratorChannelDetailsAddAnnounementButton"
+                x:Uid="ModeratorChannelDetailsAddAnnounementButton"
+                Label="add message"
+                Icon="add" />
         </CommandBar>
     </Page.BottomAppBar>
 

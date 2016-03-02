@@ -11,6 +11,7 @@ using DataHandlingLayer.Controller;
 using DataHandlingLayer.DataModel.Enums;
 using DataHandlingLayer.Exceptions;
 using System.Diagnostics;
+using DataHandlingLayer.CommandRelays;
 
 namespace DataHandlingLayer.ViewModel
 {
@@ -121,6 +122,15 @@ namespace DataHandlingLayer.ViewModel
         #endregion Properties
 
         #region Commands
+        private RelayCommand switchToAddAnnouncementDialogCommand;
+        /// <summary>
+        /// Befehl zum Wechseln auf den Dialog zur Erstellung einer Announcement Nachricht.
+        /// </summary>
+        public RelayCommand SwitchToAddAnnouncementDialogCommand
+        {
+            get { return switchToAddAnnouncementDialogCommand; }
+            set { switchToAddAnnouncementDialogCommand = value; }
+        }   
         #endregion Commands
 
         /// <summary>
@@ -132,6 +142,11 @@ namespace DataHandlingLayer.ViewModel
             : base(navService, errorMapper)
         {
             channelController = new ChannelController();
+
+            // Erzeuge Befehle.
+            SwitchToAddAnnouncementDialogCommand = new RelayCommand(
+                param => executeSwitchToAddAnnouncementDialogCommand(),
+                param => canSwitchToAddAnnouncementDialog());
 
             // Lade Anwendungseinstellungen und passe View Parameter entsprechend an.
             AppSettings appSettings = channelController.GetApplicationSettings();
@@ -239,8 +254,38 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
+        /// <summary>
+        /// Hilfsmethode, welche die Überprüfung der Ausführbarkeit der Befehle 
+        /// anstößt. Kann verwendet werden, um die Ausführbarkeit nach einer Änderung des
+        /// View Zustand zu überprüfen.
+        /// </summary>
         private void checkCommandExecution()
         {
+            SwitchToAddAnnouncementDialogCommand.RaiseCanExecuteChanged();
+        }
+
+        /// <summary>
+        /// Gibt an, ob nach dem aktuellen Zustand der View ein Wechsel auf den Dialog
+        /// zur Erstellung einer Announcement Nachricht möglich ist.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Wechsel möglich ist, ansonsten false.</returns>
+        private bool canSwitchToAddAnnouncementDialog()
+        {
+            // Pivot Index 0 ist der Announcement-Tab 
+            if (SelectedPivotItemIndex == 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl SwitchToAddAnnouncementDialogCommand aus. Wechselt auf den
+        /// Dialog zur Erstellung einer Announcement-Nachricht.
+        /// </summary>
+        private void executeSwitchToAddAnnouncementDialogCommand()
+        {
+            // TODO
         }
     }
 }
