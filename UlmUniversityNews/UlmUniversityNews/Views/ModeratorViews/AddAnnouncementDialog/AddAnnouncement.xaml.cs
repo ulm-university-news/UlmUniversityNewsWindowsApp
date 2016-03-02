@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using DataHandlingLayer.ViewModel;
+using DataHandlingLayer.DataModel;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -33,10 +34,12 @@ namespace UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog
         {
             this.InitializeComponent();
 
+            Windows.Phone.UI.Input.HardwareButtons.BackPressed += HardwareButtons_BackPressed;
+
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
-
+              
             addAnnouncementViewModel = new AddAnnouncementViewModel(App.NavigationService, App.ErrorMapper);
             this.DataContext = addAnnouncementViewModel;
 
@@ -111,6 +114,28 @@ namespace UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog
         }
 
         #endregion
+
+        /// <summary>
+        /// Event-Handler, der das Verhalten des Back-Button für diese Seite festlegt.
+        /// </summary>
+        /// <param name="sender">Die Event-Quelle.</param>
+        /// <param name="e">Eventparameter.</param>
+        void HardwareButtons_BackPressed(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
+        {
+            e.Handled = true;   // Ereignis behandelt.
+
+            // Zeige das Flyout mit der Warnung an.
+            // Gebe ein spezielles DrawerMenuEntry Objekt mit, welches die Aktion "Go Back repräsentiert".
+            DrawerMenuEntry drawerMenuEntry = new DrawerMenuEntry()
+            {
+                MenuEntryName = "GoBack",
+                DisplayableNameResourceKey = null,
+                IconPath = null,
+                ReferencedPageKey = null
+            };
+
+            addAnnouncementViewModel.ShowWarningFlyout.Execute(drawerMenuEntry);
+        }
 
         /// <summary>
         /// Behandelt Klick Events für das Drawer-Layout. Das Menü wird mittels eines Klicks

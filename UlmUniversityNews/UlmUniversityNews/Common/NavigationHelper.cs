@@ -208,6 +208,9 @@ namespace UlmUniversityNews.Common
         /// <param name="e">Ereignisdaten, die die Bedingungen beschreiben, die zu dem Ereignis geführt haben.</param>
         private void HardwareButtons_BackPressed(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
         {
+            if (e.Handled)
+                return;
+
             if (this.GoBackCommand.CanExecute(null))
             {
                 e.Handled = true;

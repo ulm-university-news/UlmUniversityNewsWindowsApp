@@ -136,6 +136,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\Behavior.cs" />
+    <Compile Include="Common\FlyoutHelper.cs" />
     <Compile Include="Common\HideablePivotItemBehavior.cs" />
     <Compile Include="Common\HyperLinkedTextBlock.cs" />
     <Compile Include="Common\NavigationHelper.cs" />

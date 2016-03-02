@@ -197,20 +197,47 @@
 
             <!--Inhalt des Drawer Menüs-->
             <Grid x:Name="ListFragment" Background="{StaticResource DrawerMenuContentPanelBackgroundColor}">
-                <ListView x:Name="ListMenuItems"
-							  ItemTemplate="{StaticResource DrawerMenuEntryDataTemplate}"
-							  IsItemClickEnabled="True">
+                <!-- Flyout für Warnung "Dialog verlassen." -->
+                <FlyoutBase.AttachedFlyout>
+                    <Flyout FlyoutPresenterStyle="{StaticResource ResourceKey=FlyoutStyle}"
+                            common:FlyoutHelper.IsOpen="{Binding IsFlyoutOpen, Mode=TwoWay}"
+                            common:FlyoutHelper.Parent="{Binding ElementName=ListFragment}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                                Grid.Row="0"
+                                x:Uid="AddAnnouncementFlyoutWarningDialogClose"
+                                Text="Achtung! Wenn Sie den Dialog verlassen werden die von Ihnen eingetragenen Daten gelöscht."
+                                Style="{StaticResource TextInFlyoutsStyle}"/>
+                            <Button
+                                Grid.Row="1"
+                                x:Uid="AddAnnouncementFyloutWariningDialogCloseButton"
+                                Content="Dialog verlassen"
+                                Command="{Binding PerformOriginalDrawerMenuActionCommand}"
+                                Margin="0,0,15,15"
+                                HorizontalAlignment="Right" />
+                        </Grid>
+                    </Flyout>
+                </FlyoutBase.AttachedFlyout>
+
+                <ListView     
+                    x:Name="ListMenuItems"
+					ItemTemplate="{StaticResource DrawerMenuEntryDataTemplate}"
+					IsItemClickEnabled="True">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         </Style>
                     </ListView.ItemContainerStyle>
 
-                    <!--Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
+                    <!--Bind auf Command mittels Behaviour. Öffne das Flyout beim Klick auf das Command. Übergibt den geklickten DrawerMenuEntry. -->
                     <i:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
-                            <core:InvokeCommandAction Command="{Binding DrawerButtonCommand}"
-																  InputConverter="{StaticResource ItemClickedConverter}" />
+                            <core:InvokeCommandAction Command="{Binding ShowWarningFlyout}"
+                                                      InputConverter="{StaticResource ItemClickedConverter}" />
                         </core:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                 </ListView>

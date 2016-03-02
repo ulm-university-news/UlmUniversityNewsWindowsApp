@@ -14,7 +14,8 @@ using DataHandlingLayer.DataModel.Enums;
 
 namespace DataHandlingLayer.ViewModel
 {
-    public class AddAnnouncementViewModel : ViewModel
+ 
+    public class AddAnnouncementViewModel : DialogBaseViewModel
     {
         #region Fields
         /// <summary>

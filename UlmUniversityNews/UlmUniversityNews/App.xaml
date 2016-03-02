@@ -270,7 +270,8 @@
             x:Key="FlyoutStyle"
             TargetType="FlyoutPresenter">
             <Setter Property="BorderBrush" Value="Black" />
-            <Setter Property="BorderThickness" Value="5" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="MinHeight" Value="140px" />
         </Style>
 
         <!-- ************************************************************************************************************************************ -->

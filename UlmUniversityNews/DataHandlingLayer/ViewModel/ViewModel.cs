@@ -348,12 +348,23 @@ namespace DataHandlingLayer.ViewModel
         /// <summary>
         /// Behandle Klick auf einen Button im Drawer Menü.
         /// </summary>
-        private void executeDrawerButtonCommand(object clickedButton)
+        protected void executeDrawerButtonCommand(object clickedButton)
         {
             DrawerMenuEntry menuEntry = clickedButton as DrawerMenuEntry;
             if(menuEntry != null)
             {
                 Debug.WriteLine("Drawer Button is clicked. Button with name {0}.", menuEntry.MenuEntryName);
+                
+                // Spezialfall. Ein manuell erzeugter DrawerMenuEntry, der beim
+                // manuellen Behandeln des Back-Hardware Buttons gefeuert wird.
+                if (menuEntry.MenuEntryName == "GoBack")
+                {
+                    if (_navService.CanGoBack())
+                    {
+                        _navService.GoBack();
+                    }
+                    return;
+                }
 
                 if(menuEntry.MenuEntryName == "Homescreen")
                 {
