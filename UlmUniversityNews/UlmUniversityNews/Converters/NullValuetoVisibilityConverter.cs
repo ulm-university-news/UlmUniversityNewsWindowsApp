@@ -15,6 +15,7 @@ namespace UlmUniversityNews.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
+
             Windows.UI.Xaml.Visibility visibility;
             if (value == null)
             {
@@ -25,7 +26,6 @@ namespace UlmUniversityNews.Converters
                 visibility = Windows.UI.Xaml.Visibility.Visible;
             }
 
-            //System.Diagnostics.Debug.WriteLine("NullValuetoVisibilityConverter returns: " + visibility);
             return visibility;
         }
 

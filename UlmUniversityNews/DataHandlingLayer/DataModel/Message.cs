@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DataHandlingLayer.DataModel.Enums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using DataHandlingLayer.DataModel.Validator;
 
 namespace DataHandlingLayer.DataModel
 {
@@ -14,7 +15,7 @@ namespace DataHandlingLayer.DataModel
     /// hat eine eindeutige Id sowie eine Nummer bezüglich der Ressource zu der sie gehört. 
     /// Der Inhalt einer Nachricht ist eine normale Zeichenfolge.
     /// </summary>
-    public class Message
+    public class Message : ModelValidatorBase
     {
         #region Properties
         private int id;
@@ -111,6 +112,11 @@ namespace DataHandlingLayer.DataModel
             this.creationDate = creationDate;
             this.messagePriority = messagePriority;
             this.isRead = isRead;
+        }
+
+        public override void ValidateAll()
+        {
+            // Let subsclasses override the implementation.
         }
     }
 }

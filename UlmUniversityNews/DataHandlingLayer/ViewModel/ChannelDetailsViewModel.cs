@@ -198,7 +198,7 @@ namespace DataHandlingLayer.ViewModel
             SubscribeChannelCommand = new AsyncRelayCommand(param => executeSubscribeChannel(), param => canSubscribeChannel());
             UnsubscribeChannelCommand = new AsyncRelayCommand(param => executeUnsubscribeChannel(), param => canUnsubscribeChannel());
             UpdateAnnouncementsCommand = new AsyncRelayCommand(param => executeUpdateAnnouncementsCommand(), param => canUpdateAnnouncements());
-            SwitchToChannelSettingsCommand = new RelayCommand(param => executeSwitchToChannelDetailsCommand(), param => canSwitchToChannelDetails());
+            SwitchToChannelSettingsCommand = new RelayCommand(param => executeSwitchToChannelSettingsCommand(), param => canSwitchToChannelSettings());
 
             // Führe Online Aktualisierung am Anfang durch, d.h. wenn das ViewModel geladen wurde.
             performOnlineAnnouncementUpdate = true;
@@ -547,10 +547,10 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
-        /// Gibt an, ob aktuell auf die ChannelDetails View gewechselt werden kann.
+        /// Gibt an, ob aktuell auf die ChannelSettings View gewechselt werden kann.
         /// </summary>
         /// <returns>Liefert true, falls die Navigation erlaubt ist, ansonsten false.</returns>
-        private bool canSwitchToChannelDetails()
+        private bool canSwitchToChannelSettings()
         {
             if(Channel != null && ChannelSubscribedStatus)
             {
@@ -562,7 +562,7 @@ namespace DataHandlingLayer.ViewModel
         /// <summary>
         /// Wechselt auf die View ChannelSettings.
         /// </summary>
-        private void executeSwitchToChannelDetailsCommand()
+        private void executeSwitchToChannelSettingsCommand()
         {
             if(Channel != null)
             {

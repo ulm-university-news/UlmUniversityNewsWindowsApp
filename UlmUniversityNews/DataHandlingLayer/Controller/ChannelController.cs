@@ -929,6 +929,114 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Erzeugt eine neue Nachricht für den Kanal mit der angegebenen Id. 
+        /// Die Announcement wird auf dem Server angelegt und dieser verteilt sie an 
+        /// alle Abonnenten.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, für den die Announcement angelegt werden soll.</param>
+        /// <param name="newAnnouncement">Ein neues Announcement Objekt.</param>
+        /// <returns>Liefert true, wenn die Announcement erfolgreich angelegt werden konnte, sonst false.</returns>
+        /// <exception cref="ClientException">Wirft eine ClientException, wenn das Anlegen auf dem Server fehlgeschlagen ist.</exception>
+        public async Task<bool> CreateAnnouncementAsync(int channelId, Announcement newAnnouncement)
+        {
+            if (newAnnouncement == null)
+                return false;
+
+            Moderator activeModerator = GetLocalModerator();
+            if (activeModerator == null)
+            {
+                Debug.WriteLine("Moderator not logged in.");
+                return false;
+            }
+
+
+            // Führe Validierung der übergebenen Daten durch.
+            clearValidationErrors();
+            newAnnouncement.ClearValidationErrors();
+            newAnnouncement.ValidateAll();
+            if (newAnnouncement.HasValidationErrors())
+            {
+                // Melde Validierungsfehler und breche ab.
+                reportValidationErrors(newAnnouncement.GetValidationErrors());
+                return false;
+            }
+            
+            string jsonContent = parseAnnouncementToJsonString(newAnnouncement);
+            if (jsonContent == null)
+            {
+                Debug.WriteLine("CreateAnnouncementAsync failed, the announcement could " + 
+                    " not be translated into a json document.");
+                return false;
+            }
+
+            try
+            {
+                string serverResponse = await api.SendHttpPostRequestWithJsonBodyAsync(
+                    activeModerator.ServerAccessToken,
+                    jsonContent,
+                    "/channel/" + channelId + "/announcement",
+                    null);
+
+                // Extrahiere Announcement aus ServerResponse.
+                Announcement createdAnnouncement = parseAnnouncementFromJsonString(serverResponse);
+
+                if (createdAnnouncement != null)
+                {
+                    // Speichere Announcement.
+                    await StoreReceivedAnnouncementAsync(createdAnnouncement);
+                }
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("CreateAnnouncement failed. The message is: {0}.", ex.Message);
+                // Bilde ab auf ClientException.
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Erstellt ein JSON Dokument aus einem Announcement Objekt.
+        /// </summary>
+        /// <param name="announcement">Das Objekt, das umgewandelt werden soll.</param>
+        /// <returns>JSON-Dokument des Objekts, oder null, falls Serialisierung fehlgeschlagen ist.</returns>
+        private string parseAnnouncementToJsonString(Announcement announcement)
+        {
+            string jsonContent = null;
+            try
+            {
+                jsonContent = JsonConvert.SerializeObject(announcement);
+            }
+            catch (JsonException jsonEx)
+            {
+                Debug.WriteLine("Exception during serialization of an announcement object.");
+                Debug.WriteLine("Message is: {0}.", jsonEx.Message);
+            }
+            return jsonContent;
+        }
+
+        /// <summary>
+        /// Extrahiert ein Announcement Objekt aus einem JSON-Dokument.
+        /// </summary>
+        /// <param name="jsonString">Das JSON-Dokument.</param>
+        /// <returns>Eine Instanz von Announcement, oder null, falls die Deserialisierung fehlschlägt.</returns>
+        private Announcement parseAnnouncementFromJsonString(string jsonString)
+        {
+            Announcement announcement = null;
+            try
+            {
+                announcement = JsonConvert.DeserializeObject<Announcement>(jsonString);
+            }
+            catch (JsonException jsonEx)
+            {
+                Debug.WriteLine("Could not extract Announcement object from json string.");
+                Debug.WriteLine("Message is: {0}.", jsonEx.Message);
+            }
+            return announcement;
+        }
+
+        /// <summary>
         /// Extrahiere eine Liste von Announcement Objekten aus einem gegebenen JSON-Dokument.
         /// </summary>
         /// <param name="jsonString">Das JSON-Dokument.</param>

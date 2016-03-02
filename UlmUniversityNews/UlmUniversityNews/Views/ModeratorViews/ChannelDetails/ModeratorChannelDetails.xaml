@@ -128,7 +128,9 @@
                 x:Name="ModeratorChannelDetailsAddAnnounementButton"
                 x:Uid="ModeratorChannelDetailsAddAnnounementButton"
                 Label="add message"
-                Icon="add" />
+                Icon="add"
+                Visibility="{Binding ElementName=ModeratorChannelDetailsAddAnnounementButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding SwitchToAddAnnouncementDialogCommand}"/>
         </CommandBar>
     </Page.BottomAppBar>
 

@@ -90,24 +90,25 @@
             <!-- Inhalt der Seite -->
             <Grid x:Name="MainFragment" Background="{StaticResource MainFragmentBackgroundColor}">
                 <ScrollViewer>
-                    <Grid Margin="19,0,0,0">
-                        <!-- Margin nach links gleich zu Pivot -->
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                    <Grid Margin="19,12,19,0">
+                    <!-- Margin nach links gleich zu Pivot -->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-                        <!-- Überschrift -->
-                        <TextBlock Grid.Row="0"
+                    <!-- Überschrift -->
+                    <TextBlock Grid.Row="0"
                                    x:Name="ChannelSettingsHeadline"
                                    x:Uid="ChannelSettingsHeadline"
-                                   Margin="0, 12, 0, 0"
+                                   Margin="0, 0, 0, 0"
                                    Style="{StaticResource UniversityNewsUlmPivotHeaderLikeText}"
                                    Text="Kanaleinstellungen"/>
 
                         <!-- Benachrichtigungseinstellungen -->
-                        <Grid Grid.Row="1"
-                              Margin="0, 14.5, 0, 0">
+                        <Grid
+                            Grid.Row="1"
+                            Margin="0, 14.5, 0, 0">
                             <!--Margin nach oben gleich zu Pivot Item-->
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -119,7 +120,7 @@
                             <TextBlock Grid.Row="0"
                                        x:Name="ChannelSettingsNotificationSettingsHeader"
                                        x:Uid="ChannelSettingsNotificationSettingsHeader"
-                                       Margin="0,0,19,0"
+                                       Margin="0,0,0,0"
                                        Style="{StaticResource UniversityNewsUlmStandardHeader}"
                                        Text="Benachrichtigungen"/>
 
@@ -127,13 +128,13 @@
                             <TextBlock Grid.Row="1" 
                                        x:Name="ChannelSettingsNotificationSettingsDescription"
                                        x:Uid="ChannelSettingsNotificationSettingsDescription"
-                                       Margin="0, 0, 19, 0"
+                                       Margin="0, 0, 0, 0"
                                        Style="{StaticResource UniversityNewsUlmStandardText}"
                                        Text="Hier können Sie für diesen Kanal spezifische Benachrichtigungseinstellungen festlegen, welche die globalen Einstellungen überschreiben. Wenn Sie Default wählen, werden für den Kanal die globalen Benachrichtigungseinstellungen verwendet."/>
 
                             <!-- Auswahlelemente -->
                             <StackPanel
-                                        Margin="0, 0, 19, 0"
+                                        Margin="0, 0, 0, 0"
                                         Orientation="Vertical"
                                         Grid.Row="2">
                                 <RadioButton 

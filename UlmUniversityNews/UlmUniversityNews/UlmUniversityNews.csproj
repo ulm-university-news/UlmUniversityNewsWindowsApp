@@ -114,6 +114,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ModeratorViews\AddAnnouncementDialog\AddAnnouncement.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ModeratorViews\ChannelDetails\ModeratorChannelDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -152,6 +156,7 @@
     <Compile Include="Converters\ListCountToVisibilityConverter.cs" />
     <Compile Include="Converters\MessageReadPropertyToBackgroundColorConverter.cs" />
     <Compile Include="Converters\NullValuetoVisibilityConverter.cs" />
+    <Compile Include="Converters\StringToVisibilityConverter.cs" />
     <Compile Include="Converters\ValidationMessageOnLocalizedStringConverter.cs" />
     <Compile Include="Converters\ZeroIntegerToVisibilityConverter.cs" />
     <Compile Include="DataModel\FakeDataForDesign\FakeChannel.cs" />
@@ -185,6 +190,9 @@
     </Compile>
     <Compile Include="Views\Login\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ModeratorViews\AddAnnouncementDialog\AddAnnouncement.xaml.cs">
+      <DependentUpon>AddAnnouncement.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ModeratorViews\ChannelDetails\ModeratorChannelDetails.xaml.cs">
       <DependentUpon>ModeratorChannelDetails.xaml</DependentUpon>

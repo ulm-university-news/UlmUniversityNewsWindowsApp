@@ -285,7 +285,10 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private void executeSwitchToAddAnnouncementDialogCommand()
         {
-            // TODO
+            if (Channel != null)
+            {
+                _navService.Navigate("AddAnnouncement", Channel.Id);
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using DataHandlingLayer.DataModel.Enums;
+using DataHandlingLayer.DataModel.Validator;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -78,6 +79,47 @@ namespace DataHandlingLayer.DataModel
             this.channelId = channelId;
             this.authorModerator = authorId;
             this.title = title;
+        }
+
+        /// <summary>
+        /// Validiert das Property Title.
+        /// </summary>
+        public void ValidateTitleProperty()
+        {
+            if (Title == null)
+            {
+                SetValidationError("Title", "AddAnnouncementValidationErrorTitleIsNull");
+                return;
+            }
+            if (!checkStringRange(0, 45, Title))
+            {
+                SetValidationError("Title", "AddAnnouncementValidationErrorTitleTooLong");
+            }
+        }
+
+        /// <summary>
+        /// Validiert das Property Text.
+        /// </summary>
+        public void ValidateTextProperty()
+        {
+            if (Text == null)
+            {
+                SetValidationError("Text", "AddAnnouncementValidationErrorTextIsNull");
+                return;
+            }
+            if (!checkStringRange(0, 500, Text))
+            {
+                SetValidationError("Text", "AddAnnouncementValidationErrorTextTooLong");
+            }
+        }
+
+        /// <summary>
+        /// Validiere alle Properties, für die Validierungsregeln definiert sind.
+        /// </summary>
+        public override void ValidateAll()
+        {
+            ValidateTextProperty();
+            ValidateTitleProperty();
         }
     }
 }

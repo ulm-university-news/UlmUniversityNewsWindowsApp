@@ -544,4 +544,40 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
   <data name="ModeratorChannelDetailsReminderPivotItem.Header" xml:space="preserve">
     <value>Reminder</value>
   </data>
+  <data name="AddAnnouncementDialogContentTextBox.Header" xml:space="preserve">
+    <value>Nachrichteninhalt *</value>
+  </data>
+  <data name="AddAnnouncementDialogDescription.Text" xml:space="preserve">
+    <value>Füllen Sie die unten aufgeführten Felder aus und klicken Sie anschließend auf senden, um die Nachricht an die Abonnenten des Kanals zu senden. Die mit * gekennzeichneten Felder sind Pflichtfelder.</value>
+  </data>
+  <data name="AddAnnouncementDialogPriorityComboBox.Header" xml:space="preserve">
+    <value>Priorität *</value>
+  </data>
+  <data name="AddAnnouncementDialogPriorityComboBoxItemPrioHigh.Content" xml:space="preserve">
+    <value>Hoch</value>
+  </data>
+  <data name="AddAnnouncementDialogPriorityComboBoxItemPrioNormal.Content" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="AddAnnouncementDialogSendMessageButton.Label" xml:space="preserve">
+    <value>senden</value>
+  </data>
+  <data name="AddAnnouncementDialogTitle.Text" xml:space="preserve">
+    <value>Nachricht hinzufügen</value>
+  </data>
+  <data name="AddAnnouncementDialogTitleTextBox.Header" xml:space="preserve">
+    <value>Titel *</value>
+  </data>
+  <data name="AddAnnouncementValidationErrorTextIsNull" xml:space="preserve">
+    <value>Bitte setzen Sie einen Text.</value>
+  </data>
+  <data name="AddAnnouncementValidationErrorTextTooLong" xml:space="preserve">
+    <value>Der Text der Nachricht ist zu lang. Die maximale Länge beträgt 500 Zeichen.</value>
+  </data>
+  <data name="AddAnnouncementValidationErrorTitleIsNull" xml:space="preserve">
+    <value>Bitte setzen Sie einen Titel.</value>
+  </data>
+  <data name="AddAnnouncementValidationErrorTitleTooLong" xml:space="preserve">
+    <value>Der Titel der Nachricht ist zu lang. Die maximale Länge beträgt 45 Zeichen.</value>
+  </data>
 </root>

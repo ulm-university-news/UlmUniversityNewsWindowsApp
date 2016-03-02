@@ -543,4 +543,40 @@
   <data name="ModeratorChannelDetailsReminderPivotItem.Header" xml:space="preserve">
     <value>Reminder</value>
   </data>
+  <data name="AddAnnouncementDialogContentTextBox.Header" xml:space="preserve">
+    <value>Content *</value>
+  </data>
+  <data name="AddAnnouncementDialogDescription.Text" xml:space="preserve">
+    <value>Please fill in the information into the displayed fields. Click the 'send' button in order to distribute the message to the subscribers. The fields with a * mark are mandatory fields.</value>
+  </data>
+  <data name="AddAnnouncementDialogPriorityComboBox.Header" xml:space="preserve">
+    <value>Priority *</value>
+  </data>
+  <data name="AddAnnouncementDialogPriorityComboBoxItemPrioHigh.Content" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="AddAnnouncementDialogPriorityComboBoxItemPrioNormal.Content" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="AddAnnouncementDialogSendMessageButton.Label" xml:space="preserve">
+    <value>send</value>
+  </data>
+  <data name="AddAnnouncementDialogTitle.Text" xml:space="preserve">
+    <value>Add Message</value>
+  </data>
+  <data name="AddAnnouncementDialogTitleTextBox.Header" xml:space="preserve">
+    <value>Title *</value>
+  </data>
+  <data name="AddAnnouncementValidationErrorTextIsNull" xml:space="preserve">
+    <value>Please add a text as the message content.</value>
+  </data>
+  <data name="AddAnnouncementValidationErrorTextTooLong" xml:space="preserve">
+    <value>The text of the message is too long. The content of the message should not exceed a length of 500 characters.</value>
+  </data>
+  <data name="AddAnnouncementValidationErrorTitleIsNull" xml:space="preserve">
+    <value>Please add a title.</value>
+  </data>
+  <data name="AddAnnouncementValidationErrorTitleTooLong" xml:space="preserve">
+    <value>The title of the message is too long. The title should not exceed a length of 45 characters.</value>
+  </data>
 </root>
