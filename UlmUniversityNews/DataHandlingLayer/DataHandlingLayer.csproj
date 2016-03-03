@@ -92,6 +92,7 @@
     <Compile Include="Common\IncrementalLoadingCollection.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
     <Compile Include="Common\PropertyChangedListeningObservableCollection.cs" />
+    <Compile Include="Constants\Constants.cs" />
     <Compile Include="Controller\ApplicationSettingsController.cs" />
     <Compile Include="Controller\ChannelController.cs" />
     <Compile Include="Controller\IncrementalAnnouncementLoaderController.cs" />

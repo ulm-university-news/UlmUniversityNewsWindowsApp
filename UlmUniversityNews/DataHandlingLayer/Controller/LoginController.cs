@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
+using DataHandlingLayer.Constants;
 
 namespace DataHandlingLayer.Controller
 {
@@ -128,8 +129,23 @@ namespace DataHandlingLayer.Controller
                 }
             }
 
+            // Setze Zustand in Local Settings.
+            setLoggedInStatusInLocalSettings(Constants.Constants.ModeratorLoggedIn);
+
             Debug.WriteLine("Login successful.");
             return true;
+        }
+
+        /// <summary>
+        /// Führt den Logout Vorgang aus.
+        /// </summary>
+        public void PerformLogout()
+        {
+            // Lösche lokal gespeichertes Moderator Objekt.
+            LocalModerator.GetInstance().CacheModeratorObject(null);
+
+            // Setze Zustand in LocalSettings.
+            setLoggedInStatusInLocalSettings(Constants.Constants.ModeratorNotLoggedIn);
         }
 
         /// <summary>
@@ -169,6 +185,20 @@ namespace DataHandlingLayer.Controller
                 Debug.WriteLine("Exception occurred during json parsing. Msg is {0}.", ex.Message);
             }
             return jsonContent;
+        }
+
+        /// <summary>
+        /// Speichert den aktuellen Login-Status in den LocalSettings.
+        /// Dieser wird benötigt, um die Wiederherstellung bei einer vom System verursachten Terminierung
+        /// der Anwendung zu steuern. Bei einer vom System ausgelösten Terminierung soll die Sitzung eines
+        /// Moderators nicht bestehen bleiben, es soll also nicht der alte Zustand wiederhergestellt werden.
+        /// Um das zu entscheiden braucht man für diesen Fall den Login Status.
+        /// </summary>
+        /// <param name="loggedInStatus">Der Login Status, der gespeichert wird.</param>
+        private void setLoggedInStatusInLocalSettings(int loggedInStatus)
+        {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            localSettings.Values[Constants.Constants.ModeratorLoggedInStatusKey] = loggedInStatus;
         }
     }
 }

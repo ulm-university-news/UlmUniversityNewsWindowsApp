@@ -13,6 +13,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using DataHandlingLayer.CommandRelays;
+using DataHandlingLayer.Controller;
 
 namespace DataHandlingLayer.ViewModel
 {
@@ -386,28 +387,19 @@ namespace DataHandlingLayer.ViewModel
                     return;
                 }
 
-                if(menuEntry.MenuEntryName == "Homescreen")
+                // Spezialfall. Führe Logout durch.
+                if (menuEntry.MenuEntryName == "Logout")
                 {
-                    // Navigiere auf die Homepage.
-                    _navService.Navigate(menuEntry.ReferencedPageKey);
-                }
-                else if (menuEntry.MenuEntryName == "Anwendungseinstellungen")
-                {
-                    // Navigiere auf die Anwendungseinstellungen Seite.
-                    _navService.Navigate(menuEntry.ReferencedPageKey);
-                }
-                else if (menuEntry.MenuEntryName == "Login")
-                {
-                    // Navigiere auf die Login Seite.
-                    _navService.Navigate(menuEntry.ReferencedPageKey);
-                }
-                else if (menuEntry.MenuEntryName == "Logout")
-                {
-                    // Lösche lokal gehaltenen Moderator.
-                    LocalModerator.GetInstance().CacheModeratorObject(null);
+                    // Führe Logout durch.
+                    LoginController loginController = new LoginController();
+                    loginController.PerformLogout();
                     // Navigiere zurück auf den Homescreen des Nutzers.
                     _navService.Navigate(menuEntry.ReferencedPageKey);
+                    return;
                 }
+
+                // Normaler Fall, navgiere auf die verlinkte Seite.
+                _navService.Navigate(menuEntry.ReferencedPageKey);
             }
         }
     }

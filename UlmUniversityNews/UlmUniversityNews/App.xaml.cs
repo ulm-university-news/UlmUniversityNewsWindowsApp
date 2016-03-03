@@ -26,6 +26,7 @@ using DataHandlingLayer.Exceptions;
 using UlmUniversityNews.Views;
 using UlmUniversityNews.ErrorHandling;
 using DataHandlingLayer.Controller;
+using DataHandlingLayer.Constants;
 
 // Die Vorlage "Pivotanwendung" ist unter http://go.microsoft.com/fwlink/?LinkID=391641 dokumentiert.
 
@@ -142,12 +143,40 @@ namespace UlmUniversityNews
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     // Den gespeicherten Sitzungszustand nur bei Bedarf wiederherstellen.
+                    Debug.WriteLine("Previous State was terminated.");
                     try
                     {
-                        await SuspensionManager.RestoreAsync();
+                        // Prüfe, ob der Nutzer im Zustand LoggedIn, also in der Moderatorenansicht, war zum
+                        // Zeitpunkt der Terminierung der App.
+                        var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                        if (localSettings.Values[Constants.ModeratorLoggedInStatusKey] != null)
+                        {
+                            int loginStatus = Convert.ToInt32(localSettings.Values[Constants.ModeratorLoggedInStatusKey]);
+
+                            if (loginStatus == Constants.ModeratorNotLoggedIn)
+                            {
+                                Debug.WriteLine("Trying to restore state of the application.");
+                                await SuspensionManager.RestoreAsync();
+                            }
+                            else
+                            {
+                                Debug.WriteLine("Moderator was logged in at time of app termination. Session was terminated. Don't " + 
+                                    "try to restore state.");
+
+                                // Setze Status auf NotLoggedIn.
+                                localSettings.Values[Constants.ModeratorLoggedInStatusKey] = Constants.ModeratorNotLoggedIn;
+                            }
+                        }
+                        else
+                        {
+                            // Zustand war noch nicht gesetzt. Setze ihn auf NotLoggedIn.
+                            localSettings.Values[Constants.ModeratorLoggedInStatusKey] = Constants.ModeratorNotLoggedIn;
+                            await SuspensionManager.RestoreAsync();
+                        }
                     }
                     catch (SuspensionManagerException)
                     {
+                        Debug.WriteLine("Error while trying to restore the app state after a termination.");
                         // Fehler beim Wiederherstellen des Zustands.
                         // Annehmen, dass kein Zustand vorhanden ist und Vorgang fortsetzen.
                     }
@@ -246,10 +275,10 @@ namespace UlmUniversityNews
                 // Das Windows Phone Gerät hat der Anwendung nicht gestattet Hintergrundaufgaben zu definieren,
                 // oder der Nutzer hat das für diese Anwendung explizit deaktiviert.
                 // Speichere in den LocalSettings, dass der Zugriff verweigert wurde.
-                localSettings.Values[Constants.Constants.AccessToLockScreenKey] = Constants.Constants.AccessToLockScreenDenied;
-                if (localSettings.Values[Constants.Constants.ShowLockScreenMessageKey] == null){
+                localSettings.Values[Constants.AccessToLockScreenKey] = Constants.AccessToLockScreenDenied;
+                if (localSettings.Values[Constants.ShowLockScreenMessageKey] == null){
                     // Zeige Benachrichtigung, falls diese noch nicht gezeigt wurde. 
-                    localSettings.Values[Constants.Constants.ShowLockScreenMessageKey] = Constants.Constants.ShowLockScreenMessageYes;
+                    localSettings.Values[Constants.ShowLockScreenMessageKey] = Constants.ShowLockScreenMessageYes;
                 }
             }
             else
@@ -260,7 +289,7 @@ namespace UlmUniversityNews
                 PushNotificationManagerBackground.PushNotificationManager.Register();
                 // Registriere den BackgroundTask, der in einem bestimmten Wartungsintervall das Push Access Token (Kanal-URI) aktualisiert.
                 PushNotificationManagerBackground.PushNotificationMaintenanceTask.Register();
-                localSettings.Values[Constants.Constants.AccessToLockScreenKey] = Constants.Constants.AccessToLockScreenGranted;
+                localSettings.Values[Constants.AccessToLockScreenKey] = Constants.AccessToLockScreenGranted;
             }
             Debug.WriteLine("Finished registerBackgroundTasks.");
         }

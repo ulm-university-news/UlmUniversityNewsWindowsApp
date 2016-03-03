@@ -145,7 +145,6 @@
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\StatusBarBehavior.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
-    <Compile Include="Constants\Constants.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\ChannelToIconPathConverter.cs" />
     <Compile Include="Converters\ChannelToDrawerMenuBackgroundConverter.cs" />

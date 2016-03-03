@@ -21,6 +21,7 @@ using Windows.ApplicationModel.Core;
 using DataHandlingLayer.ViewModel;
 using UlmUniversityNews.PushNotifications;
 using DataHandlingLayer.DataModel;
+using DataHandlingLayer.Constants;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -232,13 +233,13 @@ namespace UlmUniversityNews.Views.Homescreen
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
 
             // Prüfe, ob der Zugriff abgelehnt wurde.
-            string accessToLockScreenValue = localSettings.Values[Constants.Constants.AccessToLockScreenKey] as string;
-            string accessDenied = Constants.Constants.AccessToLockScreenDenied;
+            string accessToLockScreenValue = localSettings.Values[Constants.AccessToLockScreenKey] as string;
+            string accessDenied = Constants.AccessToLockScreenDenied;
             if (String.Compare(accessToLockScreenValue, accessDenied) == 0)
             {
                 // Prüfe, ob der Nachrichtendialog noch angezeigt werden soll.
-                string showLockScreenValue = localSettings.Values[Constants.Constants.ShowLockScreenMessageKey] as string;
-                string showMessage = Constants.Constants.ShowLockScreenMessageYes;
+                string showLockScreenValue = localSettings.Values[Constants.ShowLockScreenMessageKey] as string;
+                string showMessage = Constants.ShowLockScreenMessageYes;
                 if (String.Compare(showLockScreenValue, showMessage) == 0){
                     // Zeige die Warnung an.
                     await showLockScreenAccessDeniedWarningAsync();
@@ -301,7 +302,7 @@ namespace UlmUniversityNews.Views.Homescreen
         private void disableLockScreenAccessDeniedWarning()
         {
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-            localSettings.Values[Constants.Constants.ShowLockScreenMessageKey] = Constants.Constants.ShowLockScreenMessageNo;
+            localSettings.Values[Constants.ShowLockScreenMessageKey] = Constants.ShowLockScreenMessageNo;
         }
         # endregion checkLockScreenAccessContentDialog
 

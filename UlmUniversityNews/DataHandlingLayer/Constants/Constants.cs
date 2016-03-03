@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UlmUniversityNews.Constants
+namespace DataHandlingLayer.Constants
 {
     public static class Constants
     {
@@ -16,5 +16,12 @@ namespace UlmUniversityNews.Constants
         public const string ShowLockScreenMessageYes = "yes";
         public const string ShowLockScreenMessageNo = "no";
 
+
+        // Local Settings Keys und Values bezüglich Login Status. Das ist relevant für die Wiederherstellung
+        // des App Zustand bei einer durch das System verursachten Terminierung der Anwendung.
+        // Die App soll nicht wieder in den Zustand wechseln, wenn ein Moderator zum Zeitpunkt der Terminierung eingeloggt war.
+        public const string ModeratorLoggedInStatusKey = "loginStatus";
+        public const int ModeratorLoggedIn = 1;
+        public const int ModeratorNotLoggedIn = 0;
     }
 }
