@@ -145,5 +145,17 @@ namespace UlmUniversityNews.NavigationService
             });
 
         }
+
+        /// <summary>
+        /// Löscht alle Einträge des Back-Stack.
+        /// </summary>
+        public async void ClearBackStack()
+        {
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+            await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    rootFrame.BackStack.Clear();
+                });
+        }
     }
 }

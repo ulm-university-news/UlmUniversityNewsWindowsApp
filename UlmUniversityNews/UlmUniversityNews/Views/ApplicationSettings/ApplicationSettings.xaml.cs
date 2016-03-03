@@ -45,7 +45,7 @@ namespace UlmUniversityNews.Views.ApplicationSettings
 
             // Initialisiere das Drawer Menü.
             DrawerLayout.InitializeDrawerLayout();
-            ListMenuItems.ItemsSource = applicationSettingsViewModel.DrawerMenuEntriesStatusNoLogin;
+            ListMenuItems.ItemsSource = applicationSettingsViewModel.LoadDrawerMenuEntries();
         }
 
         /// <summary>

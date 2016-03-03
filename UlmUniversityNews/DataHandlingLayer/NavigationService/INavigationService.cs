@@ -13,5 +13,6 @@ namespace DataHandlingLayer.NavigationService
         bool CanGoBack();
         void GoBack();
         void RemoveEntryFromBackStack();
+        void ClearBackStack();
     }
 }

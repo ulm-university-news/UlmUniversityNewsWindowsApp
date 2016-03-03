@@ -103,7 +103,8 @@ namespace DataHandlingLayer.ViewModel
             Debug.WriteLine("Close flyout.");
             IsFlyoutOpen = false;
 
-            executeDrawerButtonCommand(originalClickedElement);
+            // Exceute the DrawerButtonCommand with the orginal clicked element.
+            DrawerButtonCommand.Execute(originalClickedElement);
             this.originalClickedElement = null;
         }
     }

@@ -346,9 +346,29 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Lädt die Menüeinträge des DrawerMenü, abhängig davon, ob ein Moderator
+        /// gerade eingeloggt ist, man sich also in der Moderatorenansicht befindet,
+        /// oder ob man sich in der Nutzeransicht befindet.
+        /// </summary>
+        /// <returns>Eine Liste an Menüeinträgen des Typs DrawerMenuEntry.</returns>
+        public List<DrawerMenuEntry> LoadDrawerMenuEntries()
+        {
+            Moderator activeModerator = LocalModerator.GetInstance().GetCachedModerator();
+
+            if (activeModerator != null)
+            {
+                return DrawerMenuEntriesStatusLoggedIn;
+            }
+            else
+            {
+                return DrawerMenuEntriesStatusNoLogin;
+            }
+        }
+
+        /// <summary>
         /// Behandle Klick auf einen Button im Drawer Menü.
         /// </summary>
-        protected void executeDrawerButtonCommand(object clickedButton)
+        private void executeDrawerButtonCommand(object clickedButton)
         {
             DrawerMenuEntry menuEntry = clickedButton as DrawerMenuEntry;
             if(menuEntry != null)

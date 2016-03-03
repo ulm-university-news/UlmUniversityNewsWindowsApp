@@ -83,6 +83,9 @@ namespace DataHandlingLayer.ViewModel
                 {
                     // Navigation zur Moderator View
                     _navService.Navigate("HomescreenModerator");
+
+                    // Clear Back Stack. Nutzer soll nicht durch Back-Taste auf die Login Seite zurück kommen.
+                    _navService.ClearBackStack();
                 }
             }
             catch (ClientException ex)

@@ -580,4 +580,10 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
   <data name="AddAnnouncementValidationErrorTitleTooLong" xml:space="preserve">
     <value>Der Titel der Nachricht ist zu lang. Die maximale Länge beträgt 45 Zeichen.</value>
   </data>
+  <data name="FlyoutWariningDialogCloseButton.Content" xml:space="preserve">
+    <value>Dialog verlassen</value>
+  </data>
+  <data name="FlyoutWarningDialogCloseDescription.Text" xml:space="preserve">
+    <value>Achtung! Wenn Sie den Dialog verlassen werden die von Ihnen eingetragenen Daten gelöscht.</value>
+  </data>
 </root>

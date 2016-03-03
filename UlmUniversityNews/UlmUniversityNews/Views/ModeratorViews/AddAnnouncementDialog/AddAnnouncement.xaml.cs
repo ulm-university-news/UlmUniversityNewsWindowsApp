@@ -35,6 +35,7 @@ namespace UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog
             this.InitializeComponent();
 
             Windows.Phone.UI.Input.HardwareButtons.BackPressed += HardwareButtons_BackPressed;
+            this.Unloaded += AddAnnouncement_Unloaded;
 
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
@@ -135,6 +136,17 @@ namespace UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog
             };
 
             addAnnouncementViewModel.ShowWarningFlyout.Execute(drawerMenuEntry);
+        }
+
+        /// <summary>
+        /// Wird aufgerufen, wenn die Seite verlassen wird. Deregistriere den Handler für die Back-Taste,
+        /// so dass die Behandlung der Back-Taste wieder vom NavigationHelper übernommen wird.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void AddAnnouncement_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Windows.Phone.UI.Input.HardwareButtons.BackPressed -= HardwareButtons_BackPressed;
         }
 
         /// <summary>

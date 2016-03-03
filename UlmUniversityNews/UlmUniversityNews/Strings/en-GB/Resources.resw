@@ -579,4 +579,10 @@
   <data name="AddAnnouncementValidationErrorTitleTooLong" xml:space="preserve">
     <value>The title of the message is too long. The title should not exceed a length of 45 characters.</value>
   </data>
+  <data name="FlyoutWariningDialogCloseButton.Content" xml:space="preserve">
+    <value>Leave dialog</value>
+  </data>
+  <data name="FlyoutWarningDialogCloseDescription.Text" xml:space="preserve">
+    <value>Warning! If you leave this dialog the entered data will be lost.</value>
+  </data>
 </root>

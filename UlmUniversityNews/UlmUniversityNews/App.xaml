@@ -271,7 +271,7 @@
             TargetType="FlyoutPresenter">
             <Setter Property="BorderBrush" Value="Black" />
             <Setter Property="BorderThickness" Value="2" />
-            <Setter Property="MinHeight" Value="140px" />
+            <Setter Property="MinHeight" Value="180px" />
         </Style>
 
         <!-- ************************************************************************************************************************************ -->

@@ -199,7 +199,8 @@
             <Grid x:Name="ListFragment" Background="{StaticResource DrawerMenuContentPanelBackgroundColor}">
                 <!-- Flyout für Warnung "Dialog verlassen." -->
                 <FlyoutBase.AttachedFlyout>
-                    <Flyout FlyoutPresenterStyle="{StaticResource ResourceKey=FlyoutStyle}"
+                    <Flyout                    
+                        FlyoutPresenterStyle="{StaticResource ResourceKey=FlyoutStyle}"
                             common:FlyoutHelper.IsOpen="{Binding IsFlyoutOpen, Mode=TwoWay}"
                             common:FlyoutHelper.Parent="{Binding ElementName=ListFragment}">
                         <Grid>
@@ -209,12 +210,12 @@
                             </Grid.RowDefinitions>
                             <TextBlock
                                 Grid.Row="0"
-                                x:Uid="AddAnnouncementFlyoutWarningDialogClose"
+                                x:Uid="FlyoutWarningDialogCloseDescription"
                                 Text="Achtung! Wenn Sie den Dialog verlassen werden die von Ihnen eingetragenen Daten gelöscht."
                                 Style="{StaticResource TextInFlyoutsStyle}"/>
                             <Button
                                 Grid.Row="1"
-                                x:Uid="AddAnnouncementFyloutWariningDialogCloseButton"
+                                x:Uid="FlyoutWariningDialogCloseButton"
                                 Content="Dialog verlassen"
                                 Command="{Binding PerformOriginalDrawerMenuActionCommand}"
                                 Margin="0,0,15,15"
