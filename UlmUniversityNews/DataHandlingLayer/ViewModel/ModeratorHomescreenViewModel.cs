@@ -306,7 +306,7 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private void executeSwitchToChannelAddDialogCommand()
         {
-            // TODO
+            _navService.Navigate("AddAndEditChannel");
         }
     }
 }

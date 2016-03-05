@@ -585,4 +585,112 @@
   <data name="FlyoutWarningDialogCloseDescription.Text" xml:space="preserve">
     <value>Warning! If you leave this dialog the entered data will be lost.</value>
   </data>
+  <data name="AddAndEditChannelAddChannelButton.Label" xml:space="preserve">
+    <value>create channel</value>
+  </data>
+  <data name="AddAndEditChannelAddChannelTitle.Text" xml:space="preserve">
+    <value>Add channel</value>
+  </data>
+  <data name="AddAndEditChannelAssistantTextBox.Header" xml:space="preserve">
+    <value>Assistant</value>
+  </data>
+  <data name="AddAndEditChannelContactsTextBox.Header" xml:space="preserve">
+    <value>Contacts *</value>
+  </data>
+  <data name="AddAndEditChannelDatesTextBox.Header" xml:space="preserve">
+    <value>Dates</value>
+  </data>
+  <data name="AddAndEditChannelDescriptionAddChannel.Text" xml:space="preserve">
+    <value>Enter the data for the new channel. There is the posibility to switch between different channel types. Depending on the selected type, the template will be adjusted and provides relevant data fields for this kind of channel. Mandatory fields are marked with a *.</value>
+  </data>
+  <data name="AddAndEditChannelDescriptionEditChannel.Text" xml:space="preserve">
+    <value>The information of the selected channel can be altered here. Mandatory fields are marked with a *.</value>
+  </data>
+  <data name="AddAndEditChannelDescriptionTextBlock.Header" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="AddAndEditChannelEditChannelTitle.Text" xml:space="preserve">
+    <value>Edit channel</value>
+  </data>
+  <data name="AddAndEditChannelEndDateTextBox.Header" xml:space="preserve">
+    <value>End date of lecture</value>
+  </data>
+  <data name="AddAndEditChannelEventCostTextBox.Header" xml:space="preserve">
+    <value>Cost</value>
+  </data>
+  <data name="AddAndEditChannelEventOrganizerTextBox.Header" xml:space="preserve">
+    <value>Organizer</value>
+  </data>
+  <data name="AddAndEditChannelLectureFacultyComboBox.Header" xml:space="preserve">
+    <value>Faculty *</value>
+  </data>
+  <data name="AddAndEditChannelLectureFacultyEngineering.Content" xml:space="preserve">
+    <value>Faculty of Engineering, Computer Science and Pschology</value>
+  </data>
+  <data name="AddAndEditChannelLectureFacultyMathematics.Content" xml:space="preserve">
+    <value>Faculty of Mathematics and Economics</value>
+  </data>
+  <data name="AddAndEditChannelLectureFacultyMedicines.Content" xml:space="preserve">
+    <value>Faculty of Medicine</value>
+  </data>
+  <data name="AddAndEditChannelLectureFacultyNaturalScienceItem.Content" xml:space="preserve">
+    <value>Faculty of Natural Sciences</value>
+  </data>
+  <data name="AddAndEditChannelLecturerTextBox.Header" xml:space="preserve">
+    <value>Lecturer *</value>
+  </data>
+  <data name="AddAndEditChannelLocationsTextBox.Header" xml:space="preserve">
+    <value>Locations</value>
+  </data>
+  <data name="AddAndEditChannelNameTextBox.Header" xml:space="preserve">
+    <value>Name *</value>
+  </data>
+  <data name="AddAndEditChannelSportsAmountOfParticipantsTextBox.Header" xml:space="preserve">
+    <value>Amount of participants</value>
+  </data>
+  <data name="AddAndEditChannelSportsCostTextBox.Header" xml:space="preserve">
+    <value>Cost</value>
+  </data>
+  <data name="AddAndEditChannelStartDateTextBox.Header" xml:space="preserve">
+    <value>Start date of lecture</value>
+  </data>
+  <data name="AddAndEditChannelTermComboBox.Header" xml:space="preserve">
+    <value>Term *</value>
+  </data>
+  <data name="AddAndEditChannelTermSummerItem.Content" xml:space="preserve">
+    <value>Summer</value>
+  </data>
+  <data name="AddAndEditChannelTermWinterItem.Content" xml:space="preserve">
+    <value>Winter</value>
+  </data>
+  <data name="AddAndEditChannelTermYear.Header" xml:space="preserve">
+    <value>Year *</value>
+  </data>
+  <data name="AddAndEditChannelTypeComboBox.Header" xml:space="preserve">
+    <value>Type *</value>
+  </data>
+  <data name="AddAndEditChannelTypeEventItem.Content" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="AddAndEditChannelTypeLectureItem.Content" xml:space="preserve">
+    <value>Lecture</value>
+  </data>
+  <data name="AddAndEditChannelTypeOtherItem.Content" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="AddAndEditChannelTypeSportsItem.Content" xml:space="preserve">
+    <value>Sport</value>
+  </data>
+  <data name="AddAndEditChannelTypeStudentGroupItem.Content" xml:space="preserve">
+    <value>Student union</value>
+  </data>
+  <data name="AddAndEditChannelWebsiteTextBox.Header" xml:space="preserve">
+    <value>Website</value>
+  </data>
+  <data name="HomescreenModeratorAddChannelButton.Label" xml:space="preserve">
+    <value>add channel</value>
+  </data>
+  <data name="ModeratorChannelDetailsAddAnnounementButton.Label" xml:space="preserve">
+    <value>add message</value>
+  </data>
 </root>

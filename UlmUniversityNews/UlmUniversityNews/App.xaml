@@ -264,6 +264,13 @@
             </ContentPresenter>
         </DataTemplate>
         
+        <!-- Grid mit Margin, um Pivot ähnliches Layout durch Grid zu erhalten. -->
+        <Style
+            x:Key="PivotLikeGridStyle"
+            TargetType="Grid">
+            <Setter Property="Margin" Value="19, 12, 19, 0" />
+        </Style>
+        
         <!-- ************************************************************************************************************************************ -->
         <!-- Definiere den Style für Fylout Elemente -->
         <Style
@@ -271,9 +278,13 @@
             TargetType="FlyoutPresenter">
             <Setter Property="BorderBrush" Value="Black" />
             <Setter Property="BorderThickness" Value="2" />
-            <Setter Property="MinHeight" Value="180px" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Height" Value="Auto" />
         </Style>
-
+        <!-- <Setter Property="MinHeight" Value="180px" /> -->
+        
+        
         <!-- ************************************************************************************************************************************ -->
         <!-- Layout eines Eintrages einer Kanal-Ressource in der Übersichtliste von Kanälen.-->
         <DataTemplate x:Key="ChannelListItemStyle">

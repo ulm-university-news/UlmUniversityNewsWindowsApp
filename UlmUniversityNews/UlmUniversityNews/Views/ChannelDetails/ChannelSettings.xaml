@@ -90,7 +90,7 @@
             <!-- Inhalt der Seite -->
             <Grid x:Name="MainFragment" Background="{StaticResource MainFragmentBackgroundColor}">
                 <ScrollViewer>
-                    <Grid Margin="19,12,19,0">
+                    <Grid Style="{StaticResource PivotLikeGridStyle}">
                     <!-- Margin nach links gleich zu Pivot -->
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />

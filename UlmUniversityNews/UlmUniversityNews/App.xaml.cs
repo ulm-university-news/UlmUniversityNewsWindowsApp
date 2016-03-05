@@ -132,6 +132,7 @@ namespace UlmUniversityNews
                 NavigationService.RegisterPage("HomescreenModerator", typeof(Views.ModeratorViews.Homescreen.HomescreenModerator));
                 NavigationService.RegisterPage("ModeratorChannelDetails", typeof(Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails));
                 NavigationService.RegisterPage("AddAnnouncement", typeof(Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement));
+                NavigationService.RegisterPage("AddAndEditChannel", typeof(Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel));
 
                 // Verknüpfen Sie den Frame mit einem SuspensionManager-Schlüssel.
                 SuspensionManager.RegisterFrame(rootFrame, "AppFrame");
@@ -199,6 +200,7 @@ namespace UlmUniversityNews
                 NavigationService.RegisterPage("HomescreenModerator", typeof(Views.ModeratorViews.Homescreen.HomescreenModerator));
                 NavigationService.RegisterPage("ModeratorChannelDetails", typeof(Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails));
                 NavigationService.RegisterPage("AddAnnouncement", typeof(Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement));
+                NavigationService.RegisterPage("AddAndEditChannel", typeof(Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel));
 
             }
             

@@ -114,6 +114,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ModeratorViews\AddAndEditChannelDialog\AddAndEditChannel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ModeratorViews\AddAnnouncementDialog\AddAnnouncement.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -148,9 +152,11 @@
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\ChannelToIconPathConverter.cs" />
     <Compile Include="Converters\ChannelToDrawerMenuBackgroundConverter.cs" />
+    <Compile Include="Converters\ChannelTypeEnumToComboBoxItemIndexConverter.cs" />
     <Compile Include="Converters\ChannelTypeToStringConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
     <Compile Include="Converters\DrawerMenuEntryNameToLocalizedStringConverter.cs" />
+    <Compile Include="Converters\FacultyEnumToComboBoxItemIndexConverter.cs" />
     <Compile Include="Converters\FacultyToLocalizedStringConverter.cs" />
     <Compile Include="Converters\ItemClickedConverter.cs" />
     <Compile Include="Converters\ListCountToVisibilityConverter.cs" />
@@ -190,6 +196,9 @@
     </Compile>
     <Compile Include="Views\Login\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ModeratorViews\AddAndEditChannelDialog\AddAndEditChannel.xaml.cs">
+      <DependentUpon>AddAndEditChannel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ModeratorViews\AddAnnouncementDialog\AddAnnouncement.xaml.cs">
       <DependentUpon>AddAnnouncement.xaml</DependentUpon>
