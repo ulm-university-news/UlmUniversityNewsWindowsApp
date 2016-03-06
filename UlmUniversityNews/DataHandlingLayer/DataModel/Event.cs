@@ -70,5 +70,48 @@ namespace DataHandlingLayer.DataModel
             this.cost = cost;
             this.organizer = organizer;
         }
+
+        #region ValidationRules
+        /// <summary>
+        /// Validiert das Property "Organizer".
+        /// </summary>
+        public void ValidateOrganizerProperty()
+        {
+            if (Organizer == null)
+                return;
+
+            if (!checkStringRange(0, Constants.Constants.MaxChannelEventOrganizerInfoLength, Organizer))
+            {
+                SetValidationError("Organizer", "AddAndEditChannelEventOrganizerInfoTooLongValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Validiert das Property "Cost".
+        /// </summary>
+        public void ValidateCostProperty()
+        {
+            if (Cost == null)
+                return;
+
+            if (!checkStringRange(0, Constants.Constants.MaxChannelEventCostInfoLength, Cost))
+            {
+                SetValidationError("Cost", "AddAndEditChannelEventCostInfoTooLongValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Evaluiert alle Validierungsregeln für die Properties, denen eine solche Regel zugwiesen wurde.
+        /// </summary>
+        public override void ValidateAll()
+        {
+            System.Diagnostics.Debug.WriteLine("In ValidateAll of Event class.");
+
+            ValidateCostProperty();
+            ValidateOrganizerProperty();
+
+            base.ValidateAll();
+        }
+        #endregion ValidationRules
     }
 }

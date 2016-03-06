@@ -63,7 +63,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Das Erstellungsdatum des Kanals.
         /// </summary>
-        [JsonProperty("creationDate", NullValueHandling = NullValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
+        [JsonProperty("creationDate", NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTime CreationDate
         {
             get { return creationDate; }
@@ -74,7 +74,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Das Datum der letzten Änderung des Kanals.
         /// </summary>
-        [JsonProperty("modificationDate", NullValueHandling = NullValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
+        [JsonProperty("modificationDate", NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTime ModificationDate
         {
             get { return modificationDate; }
@@ -210,5 +210,126 @@ namespace DataHandlingLayer.DataModel
             this.website = website;
             this.deleted = deleted;
         }
+
+        #region ValidationRules
+        /// <summary>
+        /// Führt die Validierung für das Property "Website" aus.
+        /// </summary>
+        public void ValidateWebsiteProperty()
+        {
+            if (Website == null)
+                return;
+
+            if (!checkStringRange(0, Constants.Constants.MaxChannelWebsiteInfoLength, Website))
+            {
+                SetValidationError("Website", "AddAndEditChannelWebsiteInfoTooLongValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Führt die Validierung für das Property "Contacts" aus.
+        /// </summary>
+        public void ValidateContactsProperty()
+        {
+            if (Contacts == null || Contacts.Trim().Length == 0)
+            {
+                SetValidationError("Contacts", "AddAndEditChannelContactsIsNullValidationError");
+                return;
+            }
+                
+            if (!checkStringRange(0, Constants.Constants.MaxChannelContactsInfoLength, Contacts))
+            {
+                SetValidationError("Contacts", "AddAndEditChannelContactsInfoTooLongValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Führt die Validierung für das Property "Dates" durch.
+        /// </summary>
+        public void ValidateDatesProperty()
+        {
+            if (Dates == null)
+                return;
+
+            if (!checkStringRange(0, Constants.Constants.MaxChannelDatesInfoLength, Dates))
+            {
+                SetValidationError("Dates", "AddAndEditChannelDatesInfoTooLongValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Führt die Validierung für das Property "Locations" durch.
+        /// </summary>
+        public void ValidateLocationsProperty()
+        {
+            if (Locations == null)
+                return;
+
+            if (!checkStringRange(0, Constants.Constants.MaxChannelLocationsInfoLength, Locations))
+            {
+                SetValidationError("Locations", "AddAndEditChannelLocationsInfoTooLongValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Führt die Validierung für das Property "Term" durch.
+        /// </summary>
+        public void ValidateTermProperty()
+        {
+            if (Term == null)
+            {
+                SetValidationError("Term", "AddAndEditChannelTermIsNullValidationError");
+                return;
+            }
+            if (!checkStringFormat(Constants.Constants.TermPattern, Term))
+            {
+                SetValidationError("Term", "AddAndEditChannelTermPatternMismatchValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Führt die Validierung für das Property "Description" durch.
+        /// </summary>
+        public void ValidateDescriptionProperty()
+        {
+            if (Description == null)
+                return;
+
+            if (!checkStringRange(0, Constants.Constants.MaxChannelDescriptionLength, Description))
+            {
+                SetValidationError("Description", "AddAndEditChannelDescriptionTooLongValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Führt die Validierung für das Property "Name" durch.
+        /// </summary>
+        public void ValidatoreNameProperty()
+        {
+            if (Name == null || Name.Trim().Length == 0)
+            {
+                SetValidationError("Name", "AddAndEditChannelNameIsNullValidationError");
+                return;
+            }
+            if (!checkStringRange(0, Constants.Constants.MaxChannelNameLength, Name))
+            {
+                SetValidationError("Name", "AddAndEditChannelNameTooLongValidationError");
+            }
+        }
+        
+        /// <summary>
+        /// Validiert alle Properties, für die eine Validierungsregel definiert ist.
+        /// </summary>
+        public override void ValidateAll()
+        {
+            ValidatoreNameProperty();
+            ValidateDescriptionProperty();
+            ValidateTermProperty();
+            ValidateLocationsProperty();
+            ValidateDatesProperty();
+            ValidateContactsProperty();
+            ValidateWebsiteProperty();
+        }
+        #endregion ValidationRules
     }
 }

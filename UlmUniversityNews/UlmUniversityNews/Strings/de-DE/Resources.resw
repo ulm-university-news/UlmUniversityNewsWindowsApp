@@ -592,11 +592,23 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
   <data name="AddAndEditChannelAddChannelTitle.Text" xml:space="preserve">
     <value>Kanal anlegen</value>
   </data>
+  <data name="AddAndEditChannelAssistantInfoTooLongValidationError" xml:space="preserve">
+    <value>Die Informationen zum Übungsleiter dürfen nicht mehr als 120 Zeichen umfassen.</value>
+  </data>
   <data name="AddAndEditChannelAssistantTextBox.Header" xml:space="preserve">
     <value>Übungsleiter</value>
   </data>
+  <data name="AddAndEditChannelContactsInfoTooLongValidationError" xml:space="preserve">
+    <value>Die Kontaktinformationen dürfen nicht mehr als 120 Zeichen umfassen.</value>
+  </data>
+  <data name="AddAndEditChannelContactsIsNullValidationError" xml:space="preserve">
+    <value>Bitte geben Sie Kontaktinformationen an. </value>
+  </data>
   <data name="AddAndEditChannelContactsTextBox.Header" xml:space="preserve">
     <value>Kontakt *</value>
+  </data>
+  <data name="AddAndEditChannelDatesInfoTooLongValidationError" xml:space="preserve">
+    <value>Die Angaben zu den Terminen dürfen nicht mehr als 150 Zeichen umfassen.</value>
   </data>
   <data name="AddAndEditChannelDatesTextBox.Header" xml:space="preserve">
     <value>Termine</value>
@@ -610,14 +622,26 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
   <data name="AddAndEditChannelDescriptionTextBlock.Header" xml:space="preserve">
     <value>Beschreibung</value>
   </data>
+  <data name="AddAndEditChannelDescriptionTooLongValidationError" xml:space="preserve">
+    <value>Die Kanalbeschreibung darf die Länge von 500 Zeichen nicht überschreiten.</value>
+  </data>
   <data name="AddAndEditChannelEditChannelTitle.Text" xml:space="preserve">
     <value>Kanal bearbeiten</value>
+  </data>
+  <data name="AddAndEditChannelEndDateInfoTooLongValidationError" xml:space="preserve">
+    <value>Die Informationen zum Vorlesungsende dürfen nicht mehr als 45 Zeichen umfassen.</value>
   </data>
   <data name="AddAndEditChannelEndDateTextBox.Header" xml:space="preserve">
     <value>Datum Vorlesungsende</value>
   </data>
+  <data name="AddAndEditChannelEventCostInfoTooLongValidationError" xml:space="preserve">
+    <value>Die Informationen zu den Eintrittskosten dürfen nicht mehr als 150 Zeichen umfassen.</value>
+  </data>
   <data name="AddAndEditChannelEventCostTextBox.Header" xml:space="preserve">
     <value>Eintrittskosten</value>
+  </data>
+  <data name="AddAndEditChannelEventOrganizerInfoTooLongValidationError" xml:space="preserve">
+    <value>Die Informationen über den Organisator der Veranstaltung dürfen nicht mehr als 120 Zeichen umfassen.</value>
   </data>
   <data name="AddAndEditChannelEventOrganizerTextBox.Header" xml:space="preserve">
     <value>Organisator</value>
@@ -637,26 +661,56 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
   <data name="AddAndEditChannelLectureFacultyNaturalScienceItem.Content" xml:space="preserve">
     <value>Fakultät für Naturwissenschaften</value>
   </data>
+  <data name="AddAndEditChannelLecturerIsNullValidationError" xml:space="preserve">
+    <value>Bitte geben Sie einen Dozent an.</value>
+  </data>
   <data name="AddAndEditChannelLecturerTextBox.Header" xml:space="preserve">
     <value>Dozent *</value>
+  </data>
+  <data name="AddAndEditChannelLecturerTooLongValidatonError" xml:space="preserve">
+    <value>Die Informationen zum Dozenten dürfen nicht mehr als 120 Zeichen umfassen.</value>
+  </data>
+  <data name="AddAndEditChannelLocationsInfoTooLongValidationError" xml:space="preserve">
+    <value>Die Angaben zum Ort dürfen nicht mehr als 120 Zeichen umfassen.</value>
   </data>
   <data name="AddAndEditChannelLocationsTextBox.Header" xml:space="preserve">
     <value>Ort</value>
   </data>
+  <data name="AddAndEditChannelNameIsNullValidationError" xml:space="preserve">
+    <value>Bitte geben Sie einen Kanalnamen ein.</value>
+  </data>
   <data name="AddAndEditChannelNameTextBox.Header" xml:space="preserve">
     <value>Name *</value>
+  </data>
+  <data name="AddAndEditChannelNameTooLongValidationError" xml:space="preserve">
+    <value>Der Kanalname darf die Länge von 45 Zeichen nicht überschreiten.</value>
   </data>
   <data name="AddAndEditChannelSportsAmountOfParticipantsTextBox.Header" xml:space="preserve">
     <value>Anzahl Teilnehmer</value>
   </data>
+  <data name="AddAndEditChannelSportsCostInfoTooLongValidationError" xml:space="preserve">
+    <value>Die Informationen über die Kosten der Mitgliedschaft dürfen nicht mehr als 150 Zeichen umfassen.</value>
+  </data>
   <data name="AddAndEditChannelSportsCostTextBox.Header" xml:space="preserve">
     <value>Kosten</value>
+  </data>
+  <data name="AddAndEditChannelSportsNumberOfParticipantsInfoTooLongValidationError" xml:space="preserve">
+    <value>Die Informationen über die maximale Anzahl an Teilnehmern für die Sportgruppe dürfen nicht mehr als 150 Zeichen umfassen.</value>
+  </data>
+  <data name="AddAndEditChannelStartDateInfoTooLongValidationError" xml:space="preserve">
+    <value>Die Informationen zum Vorlesungsbeginn dürfen nicht mehr als 45 Zeichen umfassen.</value>
   </data>
   <data name="AddAndEditChannelStartDateTextBox.Header" xml:space="preserve">
     <value>Datum Vorlesungsbeginn</value>
   </data>
   <data name="AddAndEditChannelTermComboBox.Header" xml:space="preserve">
     <value>Semester *</value>
+  </data>
+  <data name="AddAndEditChannelTermIsNullValidationError" xml:space="preserve">
+    <value>Bitte geben Sie das Semester komplett an.</value>
+  </data>
+  <data name="AddAndEditChannelTermPatternMismatchValidationError" xml:space="preserve">
+    <value>Angabe zu Semester ungültig. Bitte prüfen Sie die Angaben.</value>
   </data>
   <data name="AddAndEditChannelTermSummerItem.Content" xml:space="preserve">
     <value>Sommersemester</value>
@@ -684,6 +738,9 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
   </data>
   <data name="AddAndEditChannelTypeStudentGroupItem.Content" xml:space="preserve">
     <value>Studentengruppe</value>
+  </data>
+  <data name="AddAndEditChannelWebsiteInfoTooLongValidationError" xml:space="preserve">
+    <value>Die Links auf Webseiten dürfen nicht mehr als 500 Zeichen umfassen.</value>
   </data>
   <data name="AddAndEditChannelWebsiteTextBox.Header" xml:space="preserve">
     <value>Webseite</value>

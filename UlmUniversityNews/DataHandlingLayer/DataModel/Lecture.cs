@@ -90,5 +90,80 @@ namespace DataHandlingLayer.DataModel
             this.lecturer = lecturer;
             this.assistant = assistant;
         }
+
+        #region ValidationRules
+        /// <summary>
+        /// Validiert das Property "EndDate".
+        /// </summary>
+        public void ValidateEndDateProperty()
+        {
+            if (EndDate == null)
+                return;
+
+            if (!checkStringRange(0, Constants.Constants.MaxChannelEndDateInfoLength, EndDate))
+            {
+                SetValidationError("EndDate", "AddAndEditChannelEndDateInfoTooLongValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Validiert das Property "StartDate".
+        /// </summary>
+        public void ValidateStartDateProperty()
+        {
+            if (StartDate == null)
+                return;
+
+            if (!checkStringRange(0, Constants.Constants.MaxChannelStartDateInfoLength, StartDate))
+            {
+                SetValidationError("StartDate", "AddAndEditChannelStartDateInfoTooLongValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Validiert das Property "Assistant".
+        /// </summary>
+        public void ValidateAssistantProperty()
+        {
+            if (Assistant == null)
+                return;
+
+            if (!checkStringRange(0, Constants.Constants.MaxChannelAssistantInfoLength, Assistant))
+            {
+                SetValidationError("Assistant", "AddAndEditChannelAssistantInfoTooLongValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Validiert das Property "Lecturer".
+        /// </summary>
+        public void ValidateLecturerProperty()
+        {
+            if (Lecturer == null || Lecturer.Trim().Length == 0)
+            {
+                SetValidationError("Lecturer", "AddAndEditChannelLecturerIsNullValidationError");
+                return;
+            }
+            if (!checkStringRange(0, Constants.Constants.MaxChannelLecturerInfoLength, Lecturer))
+            {
+                SetValidationError("Lecturer", "AddAndEditChannelLecturerTooLongValidatonError");
+            }
+        }
+
+        /// <summary>
+        /// Evaluiert alle Validierungsregeln für die Properties, denen eine solche Regel zugwiesen wurde.
+        /// </summary>
+        public override void ValidateAll()
+        {
+            System.Diagnostics.Debug.WriteLine("In ValidateAll of Lecture class.");
+
+            ValidateAssistantProperty();
+            ValidateLecturerProperty();
+            ValidateStartDateProperty();
+            ValidateEndDateProperty();
+
+            base.ValidateAll();
+        }
+        #endregion ValidationRules
     }
 }

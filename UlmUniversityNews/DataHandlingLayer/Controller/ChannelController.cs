@@ -362,7 +362,7 @@ namespace DataHandlingLayer.Controller
                     channelDatabaseManager.RemoveAllModeratorsFromChannel(channelId);
                     // Lösche die Announcements des Kanals.
                     channelDatabaseManager.DeleteAllAnnouncementsOfChannel(channelId);
-                    // TODO - Entferne Reminder
+                    // TODO - Prüfe, ob Remove Moderators sinnvoll
 
                     // Channel Objekt selbst bleibt in Datenbank. Setze jedoch Notification-Wert zurück.
                     resetNotificationSettingForChannel(channelId);
@@ -380,7 +380,7 @@ namespace DataHandlingLayer.Controller
             channelDatabaseManager.RemoveAllModeratorsFromChannel(channelId);
             // Lösche die Announcements des Kanals.
             channelDatabaseManager.DeleteAllAnnouncementsOfChannel(channelId);
-            // TODO - Entferne Reminder.
+            // TODO - Prüfe, ob Remove Moderators sinnvoll
 
             // Channel Objekt selbst bleibt in Datenbank. Setze jedoch Notification-Wert zurück.
             resetNotificationSettingForChannel(channelId);
@@ -411,6 +411,129 @@ namespace DataHandlingLayer.Controller
                 Debug.WriteLine("Failed to reset the notification settings for the unsubscribed channel.");
                 Debug.WriteLine("Message is: {0}.", ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Legt einen neuen Kanal an. Die Daten des Kanals werden in Form eines
+        /// Channel Objekts übergeben. Es wird ein Request an den Server übermittelt, um
+        /// auf dem Server eine neue Kanalressource anzulegen.
+        /// </summary>
+        /// <param name="newChannel">Die Daten des neu anzulegenden Kanals in Form eines Objekts der Channel Klasse.</param>
+        /// <returns>Liefert true, wenn der Kanal erfolgreich angelegt wurde, ansonsten false.</returns>
+        /// <exception cref="ClientException">Wirft eine ClientException, wenn ein Fehler während des Erstellungsvorgangs auftritt.</exception>
+        public async Task<bool> CreateChannelAsync(Channel newChannel)
+        {
+            if (newChannel == null)
+                return false;
+
+            Moderator activeModerator = GetLocalModerator();
+            if (activeModerator == null)
+                return false;
+
+            // Führe Validierung der Kanaldaten durch. Abbruch bei aufgetretenen Validierungsfehlern.
+            clearValidationErrors();
+            switch (newChannel.Type)
+            {
+                case ChannelType.LECTURE:
+                    Lecture lecture = newChannel as Lecture;
+                    if (lecture != null)
+                    {
+                        lecture.ClearValidationErrors();
+                        lecture.ValidateAll();
+                    }
+                    if (lecture.HasValidationErrors())
+                    {
+                        reportValidationErrors(lecture.GetValidationErrors());
+                        return false;
+                    }
+                    break;
+                case ChannelType.EVENT:
+                    Event eventObj = newChannel as Event;
+                    if (eventObj != null)
+	                {
+                        eventObj.ClearValidationErrors();
+                        eventObj.ValidateAll();
+	                }
+                    if (eventObj.HasValidationErrors())
+                    {
+                        reportValidationErrors(eventObj.GetValidationErrors());
+                        return false;
+                    }
+                    break;
+                case ChannelType.SPORTS:
+                    Sports sportObj = newChannel as Sports;
+                    if (sportObj != null)
+                    {
+                        sportObj.ClearValidationErrors();
+                        sportObj.ValidateAll();
+                    }
+                    if (sportObj.HasValidationErrors())
+                    {
+                        reportValidationErrors(sportObj.GetValidationErrors());
+                        return false;
+                    }
+                    break;
+                default:
+                    newChannel.ClearValidationErrors();
+                    newChannel.ValidateAll();
+                    if (newChannel.HasValidationErrors())
+                    {
+                        reportValidationErrors(newChannel.GetValidationErrors());
+                        return false;
+                    }
+                    break;
+            }
+
+            // Generiere JSON-Dokument aus Objekt.
+            string jsonContent = parceChannelToJsonString(newChannel);
+            if (jsonContent == null)
+            {
+                Debug.WriteLine("Error during serialization from channel object to json string. Could " + 
+                    "not create a channel. Execution is aborted.");
+                return false;
+            }
+
+            try
+            {
+                // Setzte Request zum Anlegen eines Kanals ab.
+                string serverResponse = await api.SendHttpPostRequestWithJsonBodyAsync(
+                    activeModerator.ServerAccessToken,
+                    jsonContent,
+                    "/channel",
+                    null
+                    );
+
+                // Extrahiere erhaltene Channel Resource aus JSON-Dokument.
+                Channel createdChannel = parseChannelFromJson(serverResponse);
+                if (createdChannel != null)
+                {
+                    try
+                    {
+                        // Speichere Kanal lokal ab.
+                        channelDatabaseManager.StoreChannel(createdChannel);
+
+                        // Füge den Moderator als verwantwortlichen Moderator hinzu.
+                        channelDatabaseManager.AddModeratorToChannel(
+                            createdChannel.Id,
+                            activeModerator.Id,
+                            true);
+                    }
+                    catch (DatabaseException ex)
+                    {
+                        Debug.WriteLine("Database Exception, message is: {0}.", ex.Message);
+                        // Bilde ab auf ClientException.
+                        throw new ClientException(ErrorCodes.LocalDatabaseException, "Storing process of " + 
+                        "created channel object in local DB has failed");
+                    }
+                }
+            }
+            catch (APIException ex)
+            {
+                // Bilde ab auf ClientException.
+                throw new ClientException(ex.ErrorCode, "Server rejected create channel request.");
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -997,6 +1120,47 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Erstellt ein JSON Dokument aus einem Channel Objekt.
+        /// </summary>
+        /// <param name="channel">Das Objekt, das umgewandelt werden soll.</param>
+        /// <returns>JSON-Dokument des Objekts, oder null, falls Serialisierung fehlgeschlagen ist.</returns>
+        private string parceChannelToJsonString(Channel channel)
+        {
+            if (channel == null)
+                return null;
+
+            string jsonContent = null;
+            try
+            {
+                switch (channel.Type)
+                {
+                    case ChannelType.LECTURE:
+                        Lecture lecture = channel as Lecture;
+                        jsonContent = JsonConvert.SerializeObject(lecture);
+                        break;
+                    case ChannelType.EVENT:
+                        Event eventObj = channel as Event;
+                        jsonContent = JsonConvert.SerializeObject(eventObj);
+                        break;
+                    case ChannelType.SPORTS:
+                        Sports sportObj = channel as Sports;
+                        jsonContent = JsonConvert.SerializeObject(sportObj);
+                        break;
+                    default:
+                        jsonContent = JsonConvert.SerializeObject(channel);
+                        break;
+                }
+            }
+            catch (JsonException jsonEx)
+            {
+                Debug.WriteLine("Exception during serialization of an channel object.");
+                Debug.WriteLine("Message is: {0}.", jsonEx.Message);
+            }
+
+            return jsonContent;
+        }
+
+        /// <summary>
         /// Erstellt ein JSON Dokument aus einem Announcement Objekt.
         /// </summary>
         /// <param name="announcement">Das Objekt, das umgewandelt werden soll.</param>
@@ -1057,6 +1221,57 @@ namespace DataHandlingLayer.Controller
                 throw new ClientException(ErrorCodes.JsonParserError, "Parsing of JSON object has failed.");
             }
             return announcements;
+        }
+
+        /// <summary>
+        /// Extrahiert ein Objekt vom Typ Channel aus dem übergebenen JSON-Dokument.
+        /// </summary>
+        /// <param name="jsonString">Das JSON-Dokument.</param>
+        /// <returns>Eine Instanz der Klasse Channel, oder null, falls die Deserialisierung fehlschlägt.</returns>
+        private Channel parseChannelFromJson(string jsonString)
+        {
+            Channel extractedChannel = null;
+            try
+            {
+                var token = Newtonsoft.Json.Linq.JToken.Parse(jsonString);
+                if (token.Type == Newtonsoft.Json.Linq.JTokenType.Object)
+                {
+                    // Frage den Wert des Attributs "type" ab.
+                    string typeValue = token.Value<string>("type");
+
+                    ChannelType type;
+                    if (Enum.TryParse(typeValue.ToString(), false, out type))
+                    {
+                        // Parse Objekt abhängig vom Typ des Kanals.
+                        switch (type)
+                        {
+                            case ChannelType.LECTURE:
+                                Lecture lecture = JsonConvert.DeserializeObject<Lecture>(jsonString);
+                                extractedChannel = lecture;
+                                break;
+                            case ChannelType.EVENT:
+                                Event eventObj = JsonConvert.DeserializeObject<Event>(jsonString);
+                                extractedChannel = eventObj;
+                                break;
+                            case ChannelType.SPORTS:
+                                Sports sportsObj = JsonConvert.DeserializeObject<Sports>(jsonString);
+                                extractedChannel = sportsObj;
+                                break;
+                            default:
+                                // Für Student-Group und Other gibt es keine eigene Klasse.
+                                extractedChannel = JsonConvert.DeserializeObject<Channel>(jsonString);
+                                break;
+                        }
+                    }
+                }
+            }
+            catch (JsonException jsonEx)
+            {
+                Debug.WriteLine("Could not extract Announcement object from json string.");
+                Debug.WriteLine("Message is: {0}.", jsonEx.Message);
+            }
+            
+            return extractedChannel;
         }
 
         /// <summary>

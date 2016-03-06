@@ -8,12 +8,19 @@ using System.Threading.Tasks;
 using DataHandlingLayer.CommandRelays;
 using DataHandlingLayer.DataModel.Enums;
 using System.Diagnostics;
+using DataHandlingLayer.Controller;
+using DataHandlingLayer.DataModel;
+using DataHandlingLayer.Exceptions;
 
 namespace DataHandlingLayer.ViewModel
 {
     public class AddAndEditChannelViewModel : DialogBaseViewModel
     {
         #region Fields
+        /// <summary>
+        /// Referenz auf eine Instanz der ChannelController Klasse.
+        /// </summary>
+        private ChannelController channelController;
         #endregion Fields
 
         #region Properties
@@ -293,6 +300,8 @@ namespace DataHandlingLayer.ViewModel
         public AddAndEditChannelViewModel(INavigationService navService, IErrorMapper errorMapper)
             : base(navService, errorMapper)
         {
+            channelController = new ChannelController(this);
+
             // Lege Commands an.
             AddChannelCommand = new AsyncRelayCommand(param => executeAddChannelCommand());
         }
@@ -312,8 +321,6 @@ namespace DataHandlingLayer.ViewModel
             LectureSpecificFieldsVisible = true;
 
             SelectedFaculty = Faculty.ENGINEERING_COMPUTER_SCIENCE_PSYCHOLOGY;
-
-
         }
 
         /// <summary>
@@ -369,6 +376,111 @@ namespace DataHandlingLayer.ViewModel
                 Locations,
                 Website,
                 Contacts);
+
+            // Setze den String für das Semester zusammen.
+            string termString = string.Empty;
+            if (TermYear != null)
+            {
+                if (IsSummerTermSelected)
+                {
+                    termString += "S" + TermYear;
+                }
+                else if (IsWinterTermSelected)
+                {
+                    termString += "W" + TermYear;
+                }
+            }
+            
+            // Erzeuge Instanz aus den eingegebenen Daten.
+            Channel newChannel = null;
+            switch (SelectedChannelType)
+            {
+                case ChannelType.LECTURE:
+                    Lecture lecture = new Lecture()
+                    {
+                        Name = ChannelName,
+                        Description = ChannelDescription,
+                        Type = SelectedChannelType,
+                        Term = termString,
+                        Locations = this.Locations,
+                        Dates = this.Dates,
+                        Contacts = this.Contacts,
+                        Website = this.Website,
+                        Faculty = SelectedFaculty,
+                        StartDate = LectureStartDate,
+                        EndDate = LectureEndDate,
+                        Lecturer = this.Lecturer,
+                        Assistant = this.Assistant
+                    };
+                    newChannel = lecture;
+                    break;
+                case ChannelType.EVENT:
+                    Event eventObj = new Event()
+                    {
+                        Name = ChannelName,
+                        Description = ChannelDescription,
+                        Type = SelectedChannelType,
+                        Term = termString,
+                        Locations = this.Locations,
+                        Dates = this.Dates,
+                        Contacts = this.Contacts,
+                        Website = this.Website,
+                        Cost = EventCost,
+                        Organizer = EventOrganizer
+                    };
+                    newChannel = eventObj;
+                    break;
+                case ChannelType.SPORTS:
+                    Sports sportsObj = new Sports()
+                    {
+                        Name = ChannelName,
+                        Description = ChannelDescription,
+                        Type = SelectedChannelType,
+                        Term = termString,
+                        Locations = this.Locations,
+                        Dates = this.Dates,
+                        Contacts = this.Contacts,
+                        Website = this.Website,
+                        Cost = SportsCost,
+                        NumberOfParticipants = AmountOfParticipants
+                    };
+                    newChannel = sportsObj;
+                    break;
+                default:
+                    newChannel = new Channel()
+                    {
+                        Name = ChannelName,
+                        Description = ChannelDescription,
+                        Type = SelectedChannelType,
+                        Term = termString,
+                        Locations = this.Locations,
+                        Dates = this.Dates,
+                        Contacts = this.Contacts,
+                        Website = this.Website
+                    };
+                    break;
+            }
+
+            try
+            {
+                displayIndeterminateProgressIndicator();
+                bool successful = await channelController.CreateChannelAsync(newChannel);
+
+                if (successful)
+                {
+                    // Navigiere zurück auf den Homescreen der Moderatorenansicht.
+                    _navService.Navigate("HomescreenModerator");
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("Error occurred during creation process of channel. Message is: {0}.", ex.Message);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
         }
     }
 }

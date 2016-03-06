@@ -23,5 +23,24 @@ namespace DataHandlingLayer.Constants
         public const string ModeratorLoggedInStatusKey = "loginStatus";
         public const int ModeratorLoggedIn = 1;
         public const int ModeratorNotLoggedIn = 0;
+
+        // Längenbeschränkungen:
+        public const int MaxChannelNameLength = 45;
+        public const int MaxChannelDescriptionLength = 500;
+        public const int MaxChannelLocationsInfoLength = 120;
+        public const int MaxChannelDatesInfoLength = 150;
+        public const int MaxChannelContactsInfoLength = 120;
+        public const int MaxChannelWebsiteInfoLength = 500;
+        public const int MaxChannelLecturerInfoLength = 120;
+        public const int MaxChannelAssistantInfoLength = 120;
+        public const int MaxChannelStartDateInfoLength = 45;
+        public const int MaxChannelEndDateInfoLength = 45;
+        public const int MaxChannelEventCostInfoLength = 150;
+        public const int MaxChannelEventOrganizerInfoLength = 120;
+        public const int MaxChannelSportsCostInfoLength = 150;
+        public const int MaxChannelSportsNrOfParticipantsInfoLength = 150;
+
+        // Patterns
+        public const string TermPattern = "^[W,S][0-9]{4}$";
     }
 }

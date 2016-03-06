@@ -533,7 +533,7 @@ namespace DataHandlingLayer.ViewModel
                         displayIndeterminateProgressIndicator("Saving");
 
                         // Aktualisiere Nutzername, falls nötig, und speichere gewählte Sprache ab.
-                        await applicationSettingsController.UpdateLocalUsernameAsync(LocalUsername);
+                        bool successful = await applicationSettingsController.UpdateLocalUsernameAsync(LocalUsername);
                        
                         AppSettings appSettings = applicationSettingsController.GetApplicationSettings();
                         // Einstellung bezüglich Sprache.
@@ -549,9 +549,8 @@ namespace DataHandlingLayer.ViewModel
                         }
 
                         hideIndeterminateProgressIndicator();
-                        displayStatusBarText("Data Saved", 2.5f);
-
-                        // Debug.WriteLine("Current PrimaryLangugae Override is: " + Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+                        if (successful)
+                            displayStatusBarText("Data Saved", 2.5f);
                     }
                     catch(ClientException ex)
                     {

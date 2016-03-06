@@ -53,5 +53,48 @@ namespace DataHandlingLayer.DataModel
             this.cost = cost;
             this.numberOfParticipants = numberOfParticipants;
         }
+
+        #region ValidationRules
+        /// <summary>
+        /// Validiert das Property "NumberOfParticipants".
+        /// </summary>
+        public void ValidateNumberOfParticipantsProperty()
+        {
+            if (NumberOfParticipants == null)
+                return;
+
+            if (!checkStringRange(0, Constants.Constants.MaxChannelSportsNrOfParticipantsInfoLength, NumberOfParticipants))
+            {
+                SetValidationError("NumberOfParticipants", "AddAndEditChannelSportsNumberOfParticipantsInfoTooLongValidationError");
+            }
+        }
+        
+        /// <summary>
+        /// Validiert das Property "Cost".
+        /// </summary>
+        public void ValidateCostProperty()
+        {
+            if (Cost == null)
+                return;
+
+            if (!checkStringRange(0, Constants.Constants.MaxChannelSportsCostInfoLength, Cost))
+            {
+                SetValidationError("Cost", "AddAndEditChannelSportsCostInfoTooLongValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Evaluiert alle Validierungsregeln für die Properties, denen eine solche Regel zugwiesen wurde.
+        /// </summary>
+        public override void ValidateAll()
+        {
+            System.Diagnostics.Debug.WriteLine("In ValidateAll of Sports.");
+
+            ValidateCostProperty();
+            ValidateNumberOfParticipantsProperty();
+
+            base.ValidateAll();
+        }
+        #endregion ValidationRules
     }
 }

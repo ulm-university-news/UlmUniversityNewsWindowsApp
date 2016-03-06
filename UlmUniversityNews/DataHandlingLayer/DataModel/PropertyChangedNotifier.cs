@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DataHandlingLayer.DataModel.Validator;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace DataHandlingLayer.DataModel
     /// implementiert. Es werden zudem Methoden bereitgestellt, um Änderungen an Properties über das 
     /// PropertyChanged Event bekanntzumachen.
     /// </summary>
-    public class PropertyChangedNotifier : INotifyPropertyChanged
+    public class PropertyChangedNotifier : ModelValidatorBase, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -49,6 +50,11 @@ namespace DataHandlingLayer.DataModel
             {
                 eventHandler(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        public override void ValidateAll()
+        {
+            // Implementierung von Subklassen realisieren lassen.
         }
     }
 }

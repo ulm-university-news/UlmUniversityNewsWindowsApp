@@ -591,11 +591,23 @@
   <data name="AddAndEditChannelAddChannelTitle.Text" xml:space="preserve">
     <value>Add channel</value>
   </data>
+  <data name="AddAndEditChannelAssistantInfoTooLongValidationError" xml:space="preserve">
+    <value>The assistant information must not exceed 120 characters.</value>
+  </data>
   <data name="AddAndEditChannelAssistantTextBox.Header" xml:space="preserve">
     <value>Assistant</value>
   </data>
+  <data name="AddAndEditChannelContactsInfoTooLongValidationError" xml:space="preserve">
+    <value>The contacts information must not exceed 120 characters.</value>
+  </data>
+  <data name="AddAndEditChannelContactsIsNullValidationError" xml:space="preserve">
+    <value>Please enter contact information.</value>
+  </data>
   <data name="AddAndEditChannelContactsTextBox.Header" xml:space="preserve">
     <value>Contacts *</value>
+  </data>
+  <data name="AddAndEditChannelDatesInfoTooLongValidationError" xml:space="preserve">
+    <value>The dates info must not exceed the size of 150 characters.</value>
   </data>
   <data name="AddAndEditChannelDatesTextBox.Header" xml:space="preserve">
     <value>Dates</value>
@@ -609,14 +621,26 @@
   <data name="AddAndEditChannelDescriptionTextBlock.Header" xml:space="preserve">
     <value>Description</value>
   </data>
+  <data name="AddAndEditChannelDescriptionTooLongValidationError" xml:space="preserve">
+    <value>The channel description must not exceed 500 characters.</value>
+  </data>
   <data name="AddAndEditChannelEditChannelTitle.Text" xml:space="preserve">
     <value>Edit channel</value>
+  </data>
+  <data name="AddAndEditChannelEndDateInfoTooLongValidationError" xml:space="preserve">
+    <value>The information about the end date must not exceed 45 characters.</value>
   </data>
   <data name="AddAndEditChannelEndDateTextBox.Header" xml:space="preserve">
     <value>End date of lecture</value>
   </data>
+  <data name="AddAndEditChannelEventCostInfoTooLongValidationError" xml:space="preserve">
+    <value>The information about the cost must not exceed 150 characters.</value>
+  </data>
   <data name="AddAndEditChannelEventCostTextBox.Header" xml:space="preserve">
     <value>Cost</value>
+  </data>
+  <data name="AddAndEditChannelEventOrganizerInfoTooLongValidationError" xml:space="preserve">
+    <value>The information about the organizer must not exceed 120 characters.</value>
   </data>
   <data name="AddAndEditChannelEventOrganizerTextBox.Header" xml:space="preserve">
     <value>Organizer</value>
@@ -636,26 +660,56 @@
   <data name="AddAndEditChannelLectureFacultyNaturalScienceItem.Content" xml:space="preserve">
     <value>Faculty of Natural Sciences</value>
   </data>
+  <data name="AddAndEditChannelLecturerIsNullValidationError" xml:space="preserve">
+    <value>Please enter a lecturer.</value>
+  </data>
   <data name="AddAndEditChannelLecturerTextBox.Header" xml:space="preserve">
     <value>Lecturer *</value>
+  </data>
+  <data name="AddAndEditChannelLecturerTooLongValidatonError" xml:space="preserve">
+    <value>The lecturer information must not exceed 120 characters.</value>
+  </data>
+  <data name="AddAndEditChannelLocationsInfoTooLongValidationError" xml:space="preserve">
+    <value>The locations info must not exceed the size of 120 characters.</value>
   </data>
   <data name="AddAndEditChannelLocationsTextBox.Header" xml:space="preserve">
     <value>Locations</value>
   </data>
+  <data name="AddAndEditChannelNameIsNullValidationError" xml:space="preserve">
+    <value>Please enter a channel name.</value>
+  </data>
   <data name="AddAndEditChannelNameTextBox.Header" xml:space="preserve">
     <value>Name *</value>
+  </data>
+  <data name="AddAndEditChannelNameTooLongValidationError" xml:space="preserve">
+    <value>The channel name must not exceed 45 characters.</value>
   </data>
   <data name="AddAndEditChannelSportsAmountOfParticipantsTextBox.Header" xml:space="preserve">
     <value>Amount of participants</value>
   </data>
+  <data name="AddAndEditChannelSportsCostInfoTooLongValidationError" xml:space="preserve">
+    <value>The information about the cost must not exceed 150 characters.</value>
+  </data>
   <data name="AddAndEditChannelSportsCostTextBox.Header" xml:space="preserve">
     <value>Cost</value>
+  </data>
+  <data name="AddAndEditChannelSportsNumberOfParticipantsInfoTooLongValidationError" xml:space="preserve">
+    <value>The information about the number of participants for the sports group must not exceed 150 characters.</value>
+  </data>
+  <data name="AddAndEditChannelStartDateInfoTooLongValidationError" xml:space="preserve">
+    <value>The information about the start date must not exceed 45 characters.</value>
   </data>
   <data name="AddAndEditChannelStartDateTextBox.Header" xml:space="preserve">
     <value>Start date of lecture</value>
   </data>
   <data name="AddAndEditChannelTermComboBox.Header" xml:space="preserve">
     <value>Term *</value>
+  </data>
+  <data name="AddAndEditChannelTermIsNullValidationError" xml:space="preserve">
+    <value>Please provide a valid term.</value>
+  </data>
+  <data name="AddAndEditChannelTermPatternMismatchValidationError" xml:space="preserve">
+    <value>Invalid term. Please verify the entered data.</value>
   </data>
   <data name="AddAndEditChannelTermSummerItem.Content" xml:space="preserve">
     <value>Summer</value>
@@ -683,6 +737,9 @@
   </data>
   <data name="AddAndEditChannelTypeStudentGroupItem.Content" xml:space="preserve">
     <value>Student union</value>
+  </data>
+  <data name="AddAndEditChannelWebsiteInfoTooLongValidationError" xml:space="preserve">
+    <value>The links to websites must not exceed 500 characters.</value>
   </data>
   <data name="AddAndEditChannelWebsiteTextBox.Header" xml:space="preserve">
     <value>Website</value>

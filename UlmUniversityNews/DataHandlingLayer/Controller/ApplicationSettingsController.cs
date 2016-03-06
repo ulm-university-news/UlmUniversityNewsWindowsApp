@@ -64,7 +64,7 @@ namespace DataHandlingLayer.Controller
         /// </summary>
         /// <param name="username">Der neue Nutzername des lokalen Nutzers.</param>
         /// <exception cref="ClientException">Wirft ClientException, wenn Aktualisierung nicht durchgeführt werden konnte.</exception>
-        public async Task UpdateLocalUsernameAsync(string username)
+        public async Task<bool> UpdateLocalUsernameAsync(string username)
         {
             User currentLocalUser = base.getLocalUser();
 
@@ -80,7 +80,7 @@ namespace DataHandlingLayer.Controller
                 {
                     // Melde Validationsfehler und breche ab.
                     base.reportValidationErrors(tmpLocalUser.GetValidationErrors());
-                    return;
+                    return false;
                 }
                 else
                 {
@@ -91,6 +91,7 @@ namespace DataHandlingLayer.Controller
                 // Verwende Funktionalität im LocalUserController, um die Aktualisierung des Namens durchzuführen.
                 await localUserController.UpdateLocalUserAsync(username, null);
             }
+            return true;
         }
 
         /// <summary>
