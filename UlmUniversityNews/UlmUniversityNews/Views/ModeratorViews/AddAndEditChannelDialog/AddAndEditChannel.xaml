@@ -174,8 +174,9 @@
                         <ComboBox Grid.Row="2"
                                   x:Name="AddAndEditChannelTypeComboBox"
                                   x:Uid="AddAndEditChannelTypeComboBox"
+                                  IsEnabled="{Binding IsAddChannelDialog}"
                                   SelectedIndex="{Binding SelectedChannelType, Mode=TwoWay, Converter={StaticResource ChannelTypeEnumToComboBoxItemIndexConverter}}"
-                                  Header="Kanaltyp *">
+                                  Header="Kanaltyp *"> <!-- Ist nur aktiv, wenn es sich um einen AddChannel Dialog handelt. -->
                             <ComboBoxItem
                                 x:Name="AddAndEditChannelTypeOtherItem"
                                 x:Uid="AddAndEditChannelTypeOtherItem"
@@ -298,8 +299,9 @@
                             <ComboBox Grid.Row="0"
                                       x:Name="AddAndEditChannelLectureFacultyComboBox"
                                       x:Uid="AddAndEditChannelLectureFacultyComboBox"
+                                      IsEnabled="{Binding IsAddChannelDialog}"
                                       SelectedIndex="{Binding SelectedFaculty, Converter={StaticResource FacultyEnumToComboBoxItemIndexConverter}}"
-                                      Header="Fakultät *"> 
+                                      Header="Fakultät *">    <!-- Ist nur aktiv, wenn es sich um einen AddChannel Dialog handelt. -->
                                 <ComboBoxItem 
                                     x:Name="AddAndEditChannelLectureFacultyNaturalScienceItem"
                                     x:Uid="AddAndEditChannelLectureFacultyNaturalScienceItem"

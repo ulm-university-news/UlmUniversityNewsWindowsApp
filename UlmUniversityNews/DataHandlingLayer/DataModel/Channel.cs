@@ -19,7 +19,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Die eindeutige Id des Kanals.
         /// </summary>
-        [JsonProperty("id")]
+        [JsonProperty("id", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int Id
         {
             get { return id; }
@@ -30,7 +30,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Der Name des Kanals.
         /// </summary>
-        [JsonProperty("name")]
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name
         {
             get { return name; }
@@ -41,7 +41,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Die Beschreibung des Kanals.
         /// </summary>
-        [JsonProperty("description")]
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
         public string Description
         {
             get { return description; }

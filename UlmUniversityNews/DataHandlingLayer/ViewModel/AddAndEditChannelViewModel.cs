@@ -485,7 +485,70 @@ namespace DataHandlingLayer.ViewModel
                 Locations,
                 Website,
                 Contacts);
+            
+            // Erzeuge Instanz aus den eingegebenen Daten.
+            Channel newChannel = createChannelObjectFromEnteredData();
 
+            try
+            {
+                displayIndeterminateProgressIndicator();
+                bool successful = await channelController.CreateChannelAsync(newChannel);
+
+                if (successful)
+                {
+                    // Navigiere zurück auf den Homescreen der Moderatorenansicht.
+                    _navService.Navigate("HomescreenModerator");
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("Error occurred during creation process of channel. Message is: {0}.", ex.Message);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
+        }
+
+        /// <summary>
+        /// Führt den Befehl zum Bearbeiten eines Kanals aus.
+        /// </summary>
+        private async Task executeEditChannelCommand()
+        {
+            Channel oldChannel = EditableChannel;
+            Channel newChannel = createChannelObjectFromEnteredData();
+            try
+            {
+                displayIndeterminateProgressIndicator();
+                bool successful = await channelController.UpdateChannelAsync(oldChannel, newChannel);
+
+                if (successful)
+                {
+                    // Navigiere zurück auf die Detailsicht des Kanals..
+                    if (_navService.CanGoBack())
+                        _navService.GoBack();
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("Error occurred during update process of channel. Message is: {0}.", ex.Message);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
+        }
+
+        /// <summary>
+        /// Hilfsmethode, welche aus den eingegebenen Daten ein Objekt
+        /// vom Typ Channel erstellt. Eventuelle Subklassen-Attribute
+        /// werden ebenfalls gesetzt.
+        /// </summary>
+        /// <returns>Ein Objekt der Klasse Channel, welches die vom Nutzer eingegebenen Daten enthält.</returns>
+        private Channel createChannelObjectFromEnteredData()
+        {
             // Setze den String für das Semester zusammen.
             string termString = string.Empty;
             if (TermYear != null)
@@ -499,7 +562,7 @@ namespace DataHandlingLayer.ViewModel
                     termString += "W" + TermYear;
                 }
             }
-            
+
             // Erzeuge Instanz aus den eingegebenen Daten.
             Channel newChannel = null;
             switch (SelectedChannelType)
@@ -570,35 +633,7 @@ namespace DataHandlingLayer.ViewModel
                     break;
             }
 
-            try
-            {
-                displayIndeterminateProgressIndicator();
-                bool successful = await channelController.CreateChannelAsync(newChannel);
-
-                if (successful)
-                {
-                    // Navigiere zurück auf den Homescreen der Moderatorenansicht.
-                    _navService.Navigate("HomescreenModerator");
-                }
-            }
-            catch (ClientException ex)
-            {
-                Debug.WriteLine("Error occurred during creation process of channel. Message is: {0}.", ex.Message);
-                displayError(ex.ErrorCode);
-            }
-            finally
-            {
-                hideIndeterminateProgressIndicator();
-            }
-        }
-
-        /// <summary>
-        /// Führt den Befehl zum Bearbeiten eines Kanals aus.
-        /// </summary>
-        /// <returns></returns>
-        private async Task executeEditChannelCommand()
-        {
-            // TODO
+            return newChannel;
         }
     }
 }

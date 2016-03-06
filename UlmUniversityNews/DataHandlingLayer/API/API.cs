@@ -114,7 +114,7 @@ namespace DataHandlingLayer.API
                 restResourcePath = createRestURIWithParameters(restResourcePath, urlParameters);
             }
 
-            HttpRequestMessage request = createHttpRequestMessageWithJsonBody(HttpMethod.Post, content, restResourcePath);
+            HttpRequestMessage request = createHttpRequestMessageWithJsonBody(HttpMethod.Patch, content, restResourcePath);
 
             // Sende den Request und warte auf die Antwort.
             HttpResponseMessage response = await sendHttpRequest(httpClient, request);

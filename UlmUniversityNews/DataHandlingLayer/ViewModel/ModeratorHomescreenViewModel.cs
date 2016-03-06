@@ -206,6 +206,7 @@ namespace DataHandlingLayer.ViewModel
                     {
                         // Entferne Kanal aus der Liste.
                         ManagedChannels.RemoveAt(i);
+                        --i;    // Evaluiere diesen Index im nächsten Schleifendurchlauf nochmals.
                     }
                 }
 

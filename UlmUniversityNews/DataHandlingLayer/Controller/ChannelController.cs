@@ -433,57 +433,11 @@ namespace DataHandlingLayer.Controller
 
             // Führe Validierung der Kanaldaten durch. Abbruch bei aufgetretenen Validierungsfehlern.
             clearValidationErrors();
-            switch (newChannel.Type)
-            {
-                case ChannelType.LECTURE:
-                    Lecture lecture = newChannel as Lecture;
-                    if (lecture != null)
-                    {
-                        lecture.ClearValidationErrors();
-                        lecture.ValidateAll();
-                    }
-                    if (lecture.HasValidationErrors())
-                    {
-                        reportValidationErrors(lecture.GetValidationErrors());
-                        return false;
-                    }
-                    break;
-                case ChannelType.EVENT:
-                    Event eventObj = newChannel as Event;
-                    if (eventObj != null)
-	                {
-                        eventObj.ClearValidationErrors();
-                        eventObj.ValidateAll();
-	                }
-                    if (eventObj.HasValidationErrors())
-                    {
-                        reportValidationErrors(eventObj.GetValidationErrors());
-                        return false;
-                    }
-                    break;
-                case ChannelType.SPORTS:
-                    Sports sportObj = newChannel as Sports;
-                    if (sportObj != null)
-                    {
-                        sportObj.ClearValidationErrors();
-                        sportObj.ValidateAll();
-                    }
-                    if (sportObj.HasValidationErrors())
-                    {
-                        reportValidationErrors(sportObj.GetValidationErrors());
-                        return false;
-                    }
-                    break;
-                default:
-                    newChannel.ClearValidationErrors();
-                    newChannel.ValidateAll();
-                    if (newChannel.HasValidationErrors())
-                    {
-                        reportValidationErrors(newChannel.GetValidationErrors());
-                        return false;
-                    }
-                    break;
-            }
+            bool validationSuccessful = validateChannelProperties(newChannel);
+
+            // Breche ab, wenn Validierungsfehler aufgetreten sind.
+            if (!validationSuccessful)
+                return false;
 
             // Generiere JSON-Dokument aus Objekt.
             string jsonContent = parceChannelToJsonString(newChannel);
@@ -535,6 +489,344 @@ namespace DataHandlingLayer.Controller
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Führt Aktualisierung des Kanals aus. Es wird ermittelt welche Properties eine Aktualisierung 
+        /// erhalten haben. Die Aktualisierungen werden an den Server übermittelt, der die Aktualisierung auf
+        /// dem Serverdatensatz ausführt und die Abonnenten über die Änderung informiert.
+        /// </summary>
+        /// <param name="oldChannel">Der Datensatz des Kanals vor der Aktualisierung.</param>
+        /// <param name="newChannel">Der Datensatz mit neu eingegebenen Daten.</param>
+        /// <returns>Liefert true, wenn die Aktualisierung erfolgreich war, ansonsten false.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Fehler während des Aktualisierungsvorgangs auftritt.</exception>
+        public async Task<bool> UpdateChannelAsync(Channel oldChannel, Channel newChannel)
+        {
+            if (oldChannel == null || newChannel == null)
+                return false;
+
+            Moderator activeModerator = GetLocalModerator();
+            if (activeModerator == null)
+                return false;
+
+            // Validiere zunächst die neu eingegebenen Daten, bei Validierungsfehlern kann hier gleich abgebrochen werden.
+            clearValidationErrors();
+            bool validationSuccessful = validateChannelProperties(newChannel);
+
+            if (!validationSuccessful)
+                return false;
+
+            // Erstelle ein Objekt für die Aktualisierung, welches die Daten enthält, die aktualisiert werden müssen.
+            Channel updatableChannelObj = prepareUpdatableChannelInstance(oldChannel, newChannel);
+
+            if (updatableChannelObj == null)
+                return true;    // Keine Aktualisierung nötig.
+
+            // Erstelle JSON-Dokument für die Aktualisierung.
+            string jsonContent = parceChannelToJsonString(updatableChannelObj);
+            if (jsonContent == null)
+            {
+                Debug.WriteLine("Channel object could not be translated to a json document.");
+                return false;
+            }
+
+            string serverResponse = null;
+            try
+            {
+                // Führe Request zur Aktualisierung des Inhalts aus.
+                serverResponse = await api.SendHttpPatchRequestWithJsonBody(
+                    activeModerator.ServerAccessToken,
+                    jsonContent,
+                    "/channel/" + oldChannel.Id,
+                    null);
+            }
+            catch (APIException ex)
+            {
+                if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
+                {
+                    Debug.WriteLine("Channel not found on server. Channel probably deleted.");
+                    // TODO - Behandlung Not Found. Kanal wahrscheinlich gelöscht.
+                }
+
+                // Bilde ab auf ClientException.
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            try
+            {
+                Channel updatedChannel = parseChannelFromJson(serverResponse);
+                // Notification Settings bleiben unverändert.
+                updatedChannel.AnnouncementNotificationSetting = oldChannel.AnnouncementNotificationSetting;
+                if (updatedChannel != null)
+                {
+                    channelDatabaseManager.UpdateChannelWithSubclass(updatedChannel);
+                }
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("DatabaseException. Couldn't perform local channel update.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Hilfsmethode, welche die Validierung der Properties eines Kanalobjekts ausführt.
+        /// Die Properties werden unter Berücksichtigung des Typs des Kanals und möglicher 
+        /// Properties entsprechender Subklassen ausgeführt. Falls Validierungsfehler auftreten,
+        /// werden die über die Report-Schnittstelle an das ViewModel gemeldet.
+        /// </summary>
+        /// <param name="channel">Das Kanalobjekt, das validiert werden soll.</param>
+        /// <returns>Liefert true, wenn keine Validierungsfehler aufgetreten sind, liefert false bei Validierungsfehlern.</returns>
+        private bool validateChannelProperties(Channel channel)
+        {
+            switch (channel.Type)
+            {
+                case ChannelType.LECTURE:
+                    Lecture lecture = channel as Lecture;
+                    if (lecture != null)
+                    {
+                        lecture.ClearValidationErrors();
+                        lecture.ValidateAll();
+                    }
+                    if (lecture.HasValidationErrors())
+                    {
+                        reportValidationErrors(lecture.GetValidationErrors());
+                        return false;
+                    }
+                    break;
+                case ChannelType.EVENT:
+                    Event eventObj = channel as Event;
+                    if (eventObj != null)
+                    {
+                        eventObj.ClearValidationErrors();
+                        eventObj.ValidateAll();
+                    }
+                    if (eventObj.HasValidationErrors())
+                    {
+                        reportValidationErrors(eventObj.GetValidationErrors());
+                        return false;
+                    }
+                    break;
+                case ChannelType.SPORTS:
+                    Sports sportObj = channel as Sports;
+                    if (sportObj != null)
+                    {
+                        sportObj.ClearValidationErrors();
+                        sportObj.ValidateAll();
+                    }
+                    if (sportObj.HasValidationErrors())
+                    {
+                        reportValidationErrors(sportObj.GetValidationErrors());
+                        return false;
+                    }
+                    break;
+                default:
+                    channel.ClearValidationErrors();
+                    channel.ValidateAll();
+                    if (channel.HasValidationErrors())
+                    {
+                        reportValidationErrors(channel.GetValidationErrors());
+                        return false;
+                    }
+                    break;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Bereitet ein Objekt vom Typ Channel vor, welches alle Properties enthält, die sich geändert haben.
+        /// Die Methode bekommt eine alte Version eines Channel Objekts und eine neue Version und ermittelt 
+        /// dann die Properties, die eine Aktualisierung erhalten haben und schreibt diese in eine neue Channel
+        /// Instanz. Die von der Methode zurückgelieferte Channel Instanz kann dann direkt für die Aktualisierung 
+        /// verwendet werden. Achtung: Hat sich überhaupt keine Property geändert, so gibt die Methode null zurück.
+        /// </summary>
+        /// <param name="oldChannel">Das Channel Objekt vor der Aktualisierung.</param>
+        /// <param name="newChannel">Das Channel Objekt mit den aktuellen Werten.</param>
+        /// <returns>Ein Objekt der Klasse Channel, bei dem die Properties, die sich geändert haben, mit den
+        ///     aktualisierten Werten gefüllt sind.</returns>
+        private Channel prepareUpdatableChannelInstance(Channel oldChannel, Channel newChannel)
+        {
+            bool hasChanged = false;
+            Channel updatedChannel = new Channel();
+
+            // Vergleiche zunächst Properties der allgemeinen Channel Klasse.
+            if (oldChannel.Name != newChannel.Name)
+            {
+                hasChanged = true;
+                updatedChannel.Name = newChannel.Name;
+            }
+
+            if (oldChannel.Description != newChannel.Description)
+            {
+                hasChanged = true;
+                updatedChannel.Description = newChannel.Description;
+            }
+
+            if (oldChannel.Term != newChannel.Term)
+            {
+                hasChanged = true;
+                updatedChannel.Term = newChannel.Term;
+            }
+
+            if (oldChannel.Locations != newChannel.Locations)
+            {
+                hasChanged = true;
+                updatedChannel.Locations = newChannel.Locations;
+            }
+
+            if (oldChannel.Dates != newChannel.Dates)
+            {
+                hasChanged = true;
+                updatedChannel.Dates = newChannel.Dates;
+            }
+
+            if (oldChannel.Contacts != newChannel.Contacts)
+            {
+                hasChanged = true;
+                updatedChannel.Contacts = newChannel.Contacts;
+            }
+
+            if (oldChannel.Website != newChannel.Website)
+            {
+                hasChanged = true;
+                updatedChannel.Website = newChannel.Website;
+            }
+
+            // Vergleiche, ob kanalspezifische Felder sich geändert haben bei den Kanälen eines Typs mit solchen Feldern.
+            if (oldChannel.Type == newChannel.Type)
+            {
+                switch (oldChannel.Type)
+                {
+                    case ChannelType.LECTURE:
+                        Lecture updatedLecture = new Lecture()
+                        {
+                            Name = updatedChannel.Name,
+                            Description = updatedChannel.Description,
+                            Type = ChannelType.LECTURE,
+                            Term = updatedChannel.Term,
+                            Locations = updatedChannel.Locations,
+                            Dates = updatedChannel.Dates,
+                            Contacts = updatedChannel.Contacts,
+                            Website = updatedChannel.Website
+                        };
+
+                        Lecture oldLecture = oldChannel as Lecture;
+                        Lecture newLecture = newChannel as Lecture;
+
+                        if (oldLecture.Lecturer != newLecture.Lecturer)
+                        {
+                            hasChanged = true;
+                            updatedLecture.Lecturer = newLecture.Lecturer;
+                        }
+
+                        if (oldLecture.Assistant != newLecture.Assistant)
+                        {
+                            hasChanged = true;
+                            updatedLecture.Assistant = newLecture.Assistant;
+                        }
+
+                        if (oldLecture.Faculty != newLecture.Faculty)
+                        {
+                            hasChanged = true;
+                            updatedLecture.Faculty = newLecture.Faculty;
+                        }
+
+                        if (oldLecture.StartDate != newLecture.StartDate)
+                        {
+                            hasChanged = true;
+                            updatedLecture.StartDate = newLecture.StartDate;
+                        }
+
+                        if (oldLecture.EndDate != newLecture.EndDate)
+                        {
+                            hasChanged = true;
+                            updatedLecture.EndDate = newLecture.EndDate;
+                        }
+
+                        // Setze updatedChannel neu.
+                        updatedChannel = updatedLecture;
+                        break;
+                    case ChannelType.EVENT:
+                        Event updatedEvent = new Event()
+                        {
+                            Name = updatedChannel.Name,
+                            Description = updatedChannel.Description,
+                            Type = ChannelType.EVENT,
+                            Term = updatedChannel.Term,
+                            Locations = updatedChannel.Locations,
+                            Dates = updatedChannel.Dates,
+                            Contacts = updatedChannel.Contacts,
+                            Website = updatedChannel.Website
+                        };
+
+                        Event oldEvent = oldChannel as Event;
+                        Event newEvent = newChannel as Event;
+
+                        if (oldEvent.Cost != newEvent.Cost)
+                        {
+                            hasChanged = true;
+                            updatedEvent.Cost = newEvent.Cost;
+                        }
+
+                        if (oldEvent.Organizer != newEvent.Organizer)
+                        {
+                            hasChanged = true;
+                            updatedEvent.Organizer = newEvent.Organizer;
+                        }
+
+                        // Setze updatedChannel neu.
+                        updatedChannel = updatedEvent;
+                        break;
+                    case ChannelType.SPORTS:
+                        Sports updatedSport = new Sports()
+                        {
+                            Name = updatedChannel.Name,
+                            Description = updatedChannel.Description,
+                            Type = ChannelType.SPORTS,
+                            Term = updatedChannel.Term,
+                            Locations = updatedChannel.Locations,
+                            Dates = updatedChannel.Dates,
+                            Contacts = updatedChannel.Contacts,
+                            Website = updatedChannel.Website
+                        };
+
+                        Sports oldSport = oldChannel as Sports;
+                        Sports newSport = newChannel as Sports;
+
+                        if (oldSport.Cost != newSport.Cost)
+                        {
+                            hasChanged = true;
+                            updatedSport.Cost = newSport.Cost;
+                        }
+
+                        if (oldSport.NumberOfParticipants != newSport.NumberOfParticipants)
+                        {
+                            hasChanged = true;
+                            updatedSport.NumberOfParticipants = newSport.NumberOfParticipants;
+                        }
+
+                        // Setze updatedChannel neu.
+                        updatedChannel = updatedSport;
+                        break;
+                    case ChannelType.OTHER:
+                        updatedChannel.Type = ChannelType.OTHER;
+                        break;
+                    case ChannelType.STUDENT_GROUP:
+                        updatedChannel.Type = ChannelType.STUDENT_GROUP;
+                        break;
+                }
+            }
+
+            // Prüfe, ob sich überhaupt eine Property geändert hat.
+            if (!hasChanged)
+            {
+                Debug.WriteLine("No Property of channel has been updated. Method will return null.");
+                updatedChannel = null;
+            }
+
+            return updatedChannel;
         }
 
         /// <summary>
@@ -983,8 +1275,7 @@ namespace DataHandlingLayer.Controller
                         Debug.WriteLine("Need to store the channel with id {0} in local DB.", channel.Id);
                         channelDatabaseManager.StoreChannel(channel);
                     }
-
-
+                    
                     // Prüfe, ob der Moderator für den Kanal als Verantwortlicher eingetragen ist.
                     if (!channelDatabaseManager.IsResponsibleForChannel(channel.Id, activeModerator.Id))
                     {
@@ -1012,7 +1303,7 @@ namespace DataHandlingLayer.Controller
                     if (!isContained)
                     {
                         // Setzte Verantwortlichkeit auf inaktiv für diesen Kanal.
-                        Debug.WriteLine("Need to set inactivity to false for channel with id {0}.", managedChannelsFromDB[i].Id);
+                        Debug.WriteLine("Need to set moderator isActive to false for channel with id {0}.", managedChannelsFromDB[i].Id);
                         channelDatabaseManager.AddModeratorToChannel(
                             managedChannelsFromDB[i].Id,
                             activeModerator.Id,
