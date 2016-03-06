@@ -120,11 +120,16 @@ namespace DataHandlingLayer.DataModel
         /// </summary>
         public void ValidateNameProperty()
         {
-            if(!checkStringRange(3,35, Name))
+            if (Name == null || Name.Trim().Length == 0)
+            {
+                SetValidationError("Name", "ValidationErrorStartPageUserNameIsNull");
+                return;
+            }
+            if(!checkStringRange(Constants.Constants.MinUsernameLength, Constants.Constants.MaxUsernameLength, Name))
             {
                 SetValidationError("Name", "ValidationErrorStartPageUserNameLengthInvalid");
             }
-            else if (!checkStringFormat(@"^[-_a-zA-Z0-9]+$", Name))
+            else if (!checkStringFormat(Constants.Constants.UserNamePattern, Name))
             {
                 SetValidationError("Name", "ValidationErrorStartPageUserNameTextInvalid");
             }

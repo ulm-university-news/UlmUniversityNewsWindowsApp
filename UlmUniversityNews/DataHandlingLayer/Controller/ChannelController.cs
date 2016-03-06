@@ -100,6 +100,7 @@ namespace DataHandlingLayer.Controller
         /// </summary>
         /// <param name="channelId">Die Id des abzurufenden Kanals.</param>
         /// <returns>Das Kanalobjekt bzw. ein Objekt vom Typ einer Unterklasse von Kanal.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn das Abrufen fehlschlägt.</exception>
         public Channel GetChannel(int channelId)
         {
             try

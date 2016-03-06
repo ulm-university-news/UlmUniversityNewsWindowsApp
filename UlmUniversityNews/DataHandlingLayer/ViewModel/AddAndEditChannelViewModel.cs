@@ -278,6 +278,15 @@ namespace DataHandlingLayer.ViewModel
         }   
         #endregion VisibilityProperties
 
+        private Channel editableChannel;
+        /// <summary>
+        /// Der Kanal, der zur Änderung ausgewählt wurde.
+        /// </summary>
+        public Channel EditableChannel
+        {
+            get { return editableChannel; }
+            set { this.setProperty(ref this.editableChannel, value); }
+        }
         #endregion Properties
 
         #region Commands
@@ -290,6 +299,16 @@ namespace DataHandlingLayer.ViewModel
             get { return addChannelCommand; }
             set { addChannelCommand = value; }
         }
+
+        private AsyncRelayCommand editChannelCommand;
+        /// <summary>
+        /// Befehl zum Bearbeiten eines Kanals.
+        /// </summary>
+        public AsyncRelayCommand EditChannelCommand
+        {
+            get { return editChannelCommand; }
+            set { editChannelCommand = value; }
+        }    
         #endregion Commands
 
         /// <summary>
@@ -304,6 +323,7 @@ namespace DataHandlingLayer.ViewModel
 
             // Lege Commands an.
             AddChannelCommand = new AsyncRelayCommand(param => executeAddChannelCommand());
+            EditChannelCommand = new AsyncRelayCommand(param => executeEditChannelCommand());
         }
 
         /// <summary>
@@ -321,6 +341,95 @@ namespace DataHandlingLayer.ViewModel
             LectureSpecificFieldsVisible = true;
 
             SelectedFaculty = Faculty.ENGINEERING_COMPUTER_SCIENCE_PSYCHOLOGY;
+        }
+
+        /// <summary>
+        /// Lädt den Dialog zum Bearbeiten des Kanals mit der angegebenen Id.
+        /// </summary>
+        /// <param name="channelId">Die Id des zu bearbeitenden Kanals.</param>
+        public async Task LoadEditChannelDialog(int channelId)
+        {
+            // Initialisiere View-Properties.
+            IsAddChannelDialog = false;
+            IsEditChannelDialog = true;
+
+            try
+            {
+                // Lade gewählten Kanal.
+                Channel selectedChannel = await Task.Run(() => channelController.GetChannel(channelId));
+                EditableChannel = selectedChannel;
+            }
+            catch (ClientException ex)
+            {
+                displayError(ex.ErrorCode);
+            }
+     
+            // Lade View-Properties mit Daten des gewählten Kanals.
+            if (EditableChannel != null)
+            {
+                ChannelName = EditableChannel.Name;
+                SelectedChannelType = EditableChannel.Type;
+
+                if (EditableChannel.Term.StartsWith("S"))
+                {
+                    IsSummerTermSelected = true;
+                }
+                else if (EditableChannel.Term.StartsWith("W"))
+                {
+                    IsWinterTermSelected = true;
+                }
+
+                // Extrahiere die Jahreszahl aus dem String.
+                TermYear = EditableChannel.Term.Substring(EditableChannel.Term.Length - 4, 4);
+
+                ChannelDescription = EditableChannel.Description;
+                Dates = EditableChannel.Dates;
+                Locations = EditableChannel.Locations;
+                Website = EditableChannel.Website;
+                Contacts = EditableChannel.Contacts;
+
+                EventSpecificFieldsVisible = false;
+                SportsSpecificFieldsVisible = false;
+                LectureSpecificFieldsVisible = false;
+
+                // Lade kanalspezifische Properties.
+                switch (SelectedChannelType)
+                {
+                    case ChannelType.LECTURE:
+                        Lecture lecture = EditableChannel as Lecture;
+                        if (lecture != null)
+                        {
+                            SelectedFaculty = lecture.Faculty;
+                            Lecturer = lecture.Lecturer;
+                            Assistant = lecture.Assistant;
+                            LectureStartDate = lecture.StartDate;
+                            LectureEndDate = lecture.EndDate;
+
+                            LectureSpecificFieldsVisible = true;
+                        }
+                        break;
+                    case ChannelType.EVENT:
+                        Event eventObj = EditableChannel as Event;
+                        if (eventObj != null)
+                        {
+                            EventCost = eventObj.Cost;
+                            EventOrganizer = eventObj.Organizer;
+
+                            EventSpecificFieldsVisible = true;
+                        }
+                        break;
+                    case ChannelType.SPORTS:
+                        Sports sportsObj = EditableChannel as Sports;
+                        if (sportsObj != null)
+                        {
+                            SportsCost = sportsObj.Cost;
+                            AmountOfParticipants = sportsObj.NumberOfParticipants;
+
+                            SportsSpecificFieldsVisible = true;
+                        }
+                        break;
+                }
+            }
         }
 
         /// <summary>
@@ -481,6 +590,15 @@ namespace DataHandlingLayer.ViewModel
             {
                 hideIndeterminateProgressIndicator();
             }
+        }
+
+        /// <summary>
+        /// Führt den Befehl zum Bearbeiten eines Kanals aus.
+        /// </summary>
+        /// <returns></returns>
+        private async Task executeEditChannelCommand()
+        {
+            // TODO
         }
     }
 }

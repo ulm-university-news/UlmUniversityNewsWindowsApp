@@ -130,7 +130,17 @@ namespace DataHandlingLayer.ViewModel
         {
             get { return switchToAddAnnouncementDialogCommand; }
             set { switchToAddAnnouncementDialogCommand = value; }
-        }   
+        }
+
+        private RelayCommand switchToEditChannelDialogCommand;
+        /// <summary>
+        /// Befehl zum Wechseln auf den Dialog zur Bearbeitung eines Kanals.
+        /// </summary>
+        public RelayCommand SwitchToEditChannelDialogCommand
+        {
+            get { return switchToEditChannelDialogCommand; }
+            set { switchToEditChannelDialogCommand = value; }
+        }
         #endregion Commands
 
         /// <summary>
@@ -147,6 +157,9 @@ namespace DataHandlingLayer.ViewModel
             SwitchToAddAnnouncementDialogCommand = new RelayCommand(
                 param => executeSwitchToAddAnnouncementDialogCommand(),
                 param => canSwitchToAddAnnouncementDialog());
+            SwitchToEditChannelDialogCommand = new RelayCommand(
+                param => executeSwitchToEditChannelDialogCommand(),
+                param => canSwitchToEditChannelDialog());
 
             // Lade Anwendungseinstellungen und passe View Parameter entsprechend an.
             AppSettings appSettings = channelController.GetApplicationSettings();
@@ -262,6 +275,7 @@ namespace DataHandlingLayer.ViewModel
         private void checkCommandExecution()
         {
             SwitchToAddAnnouncementDialogCommand.RaiseCanExecuteChanged();
+            SwitchToEditChannelDialogCommand.RaiseCanExecuteChanged();
         }
 
         /// <summary>
@@ -288,6 +302,33 @@ namespace DataHandlingLayer.ViewModel
             if (Channel != null)
             {
                 _navService.Navigate("AddAnnouncement", Channel.Id);
+            }
+        }
+
+        /// <summary>
+        /// Gibt an, ob nach dem aktuellen Zustand der View ein Wechsel auf den Dialog
+        /// zur Bearbeitung des gewählten Kanals möglich ist.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Wechsel möglich ist, ansonsten false.</returns>
+        private bool canSwitchToEditChannelDialog()
+        {
+            // Pivot Index 2 ist der Kanalinformationen-Tab.
+            if (SelectedPivotItemIndex == 2)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl SwitchToEditChannelDialogCommand aus. Wechselt auf den
+        /// Dialog zur Bearbeitung des gewählten Kanals.
+        /// </summary>
+        private void executeSwitchToEditChannelDialogCommand()
+        {
+            if (Channel != null)
+            {
+                _navService.Navigate("AddAndEditChannel", Channel.Id);
             }
         }
     }

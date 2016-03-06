@@ -68,11 +68,13 @@ namespace UlmUniversityNews.Views.ModeratorViews.AddAndEditChannelDialog
         /// <see cref="Frame.Navigate(Type, Object)"/> als diese Seite ursprünglich angefordert wurde und
         /// ein Wörterbuch des Zustands, der von dieser Seite während einer früheren
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
-        private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
+        private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             if (e.NavigationParameter != null)
             {
-                // TODO - Load Edit Channel Dialog
+                // Lade Dialog zum Bearbeiten des Kanals.
+                int channelId = Convert.ToInt32(e.NavigationParameter);
+                await addAndEditChannelViewModel.LoadEditChannelDialog(channelId);
             }
             else
             {

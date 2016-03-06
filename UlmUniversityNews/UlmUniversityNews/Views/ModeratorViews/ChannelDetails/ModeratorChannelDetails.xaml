@@ -131,6 +131,13 @@
                 Icon="add"
                 Visibility="{Binding ElementName=ModeratorChannelDetailsAddAnnounementButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding SwitchToAddAnnouncementDialogCommand}"/>
+            <AppBarButton
+                x:Name="ModeratorChannelDetailsEditChannelButton"
+                x:Uid="ModeratorChannelDetailsEditChannelButton"
+                Label="edit channel"
+                Icon="Edit"
+                Visibility="{Binding ElementName=ModeratorChannelDetailsEditChannelButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding SwitchToEditChannelDialogCommand}"/>
         </CommandBar>
     </Page.BottomAppBar>
 

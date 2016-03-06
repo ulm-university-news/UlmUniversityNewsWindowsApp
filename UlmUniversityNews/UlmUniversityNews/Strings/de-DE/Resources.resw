@@ -625,6 +625,9 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
   <data name="AddAndEditChannelDescriptionTooLongValidationError" xml:space="preserve">
     <value>Die Kanalbeschreibung darf die Länge von 500 Zeichen nicht überschreiten.</value>
   </data>
+  <data name="AddAndEditChannelEditChannelButton.Label" xml:space="preserve">
+    <value>speichern</value>
+  </data>
   <data name="AddAndEditChannelEditChannelTitle.Text" xml:space="preserve">
     <value>Kanal bearbeiten</value>
   </data>
@@ -750,5 +753,11 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
   </data>
   <data name="ModeratorChannelDetailsAddAnnounementButton.Label" xml:space="preserve">
     <value>nachricht hinzufügen</value>
+  </data>
+  <data name="ModeratorChannelDetailsEditChannelButton.Label" xml:space="preserve">
+    <value>kanal bearbeiten</value>
+  </data>
+  <data name="ValidationErrorStartPageUserNameIsNull" xml:space="preserve">
+    <value>Bitte geben Sie einen Nutzernamen an.</value>
   </data>
 </root>
