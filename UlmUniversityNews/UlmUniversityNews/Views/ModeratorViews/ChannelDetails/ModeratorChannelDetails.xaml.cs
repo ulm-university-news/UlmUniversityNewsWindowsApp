@@ -140,5 +140,19 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
         {
             await moderatorChannelDetailsViewModel.PerformAnnouncementUpdate();
         }
+
+        /// <summary>
+        /// Wenn Pivot Item "Reminder" geladen wird, dann wird das Laden der Reminder angestoßen.
+        /// </summary>
+        /// <param name="sender">Die Quelle des Ereignisses.</param>
+        /// <param name="e">Eventparameter.</param>
+        private async void ModeratorChannelDetailsReminderPivotItem_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (moderatorChannelDetailsViewModel != null)
+            {
+                await moderatorChannelDetailsViewModel.LoadRemindersOfChannel();
+                await moderatorChannelDetailsViewModel.SynchroniseRemindersWithServer();
+            }
+        }
     }
 }

@@ -2074,6 +2074,9 @@ namespace DataHandlingLayer.Database
                                 insertStmt.Reset();
                             }
                         }
+
+                        Debug.WriteLine("Successfully stored {0} reminders per bulk insertion.", reminderList.Count);
+
                     }
                     catch (SQLiteException sqlEx)
                     {

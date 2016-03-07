@@ -160,6 +160,7 @@ namespace DataHandlingLayer.Controller
         /// Datensätze mit geänderten Datenwerten beinhalten, dann werden die lokalen Datensätze aktualisiert.
         /// </summary>
         /// <param name="channels">Die Liste mit neuen oder geänderten Kanaldaten.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Update fehlschlägt.</exception>
         public void UpdateChannels(List<Channel> channels)
         {
             Channel currentChannel;
@@ -842,7 +843,10 @@ namespace DataHandlingLayer.Controller
             {
                 // Frage die verantwortlichen Moderatoren für den Kanal ab. 
                 string serverResponse =
-                    await api.SendHttpGetRequestAsync(getLocalUser().ServerAccessToken, "/channel/" + channelId + "/moderator", null, true);
+                    await api.SendHttpGetRequestAsync(getLocalUser().ServerAccessToken,
+                    "/channel/" + channelId + "/moderator",
+                    null,
+                    true);
 
                 // Extrahiere Moderatoren-Objekte aus der Antwort.
                 // Parse JSON List in eine JArray Repräsentation. JArray repräsentiert ein JSON Array. 
@@ -889,7 +893,10 @@ namespace DataHandlingLayer.Controller
                 Dictionary<string, string> parameters = new Dictionary<string, string>();
                 parameters.Add("messageNr", messageNr.ToString());
                 string serverResponse =
-                    await api.SendHttpGetRequestAsync(getLocalUser().ServerAccessToken, "/channel/" + channelId + "/announcement", parameters, withCaching);
+                    await api.SendHttpGetRequestAsync(getLocalUser().ServerAccessToken,
+                    "/channel/" + channelId + "/announcement",
+                    parameters,
+                    withCaching);
 
                 // Extrahiere Announcements aus JSON-Dokument.
                 announcements = parseAnnouncementListFromJson(serverResponse);
@@ -1207,117 +1214,9 @@ namespace DataHandlingLayer.Controller
             }
         }
 
-        /// <summary>
-        /// Ruft die Liste an Kanalressourcen vom Server ab, für die der Moderator mit der angegebenen Id verantwortlich ist.
-        /// </summary>
-        /// <param name="moderatorId">Die Id des Moderators, für den die Liste an Kanälen abgefragt werden soll.</param>
-        /// <returns>Eine Liste von Channel Objekte.</returns>
-        /// <exception cref="ClientException">Wirft ClientException, wenn Abfrage vom Server fehlschlägt.</exception>
-        public async Task<List<Channel>> RetrieveManagedChannelsFromServerAsync(int moderatorId)
-        {
-            List<Channel> managedChannels = null;
-            Moderator activeModerator = GetLocalModerator();
+       
 
-            try
-            {
-                if (activeModerator != null)
-                {
-                    Dictionary<string, string> parameters = new Dictionary<string,string>();
-                    parameters.Add("moderatorId", activeModerator.Id.ToString());
-
-                    string serverResponse = await api.SendHttpGetRequestAsync(
-                        activeModerator.ServerAccessToken,
-                        "/channel",
-                        parameters,
-                        false
-                        );
-
-                    managedChannels = parseChannelListFromJson(serverResponse);
-                    Debug.WriteLine("Retrieved a list of managed channels with {0} items.", managedChannels.Count);
-                }
-            }
-            catch (APIException ex)
-            {
-                Debug.WriteLine("Error occurred. Retrieving the managed channels has failed. " + 
-                    "Message is: {0}.", ex.Message);
-                throw new ClientException(ex.ErrorCode, "Retrieving of managed channels failed.");
-            }
-
-            return managedChannels;
-        }
-
-        /// <summary>
-        /// Prüft, ob alle Beziehungen zwischen Kanalressourcen und dem aktuell eingeloggten
-        /// Moderator aktuell sind und aktualisiert diese falls notwendig. 
-        /// </summary>
-        /// <param name="managedChannels">Liste von aktuell verwalteten Kanälen des Moderators.</param>
-        /// <exception cref="ClientException">Wirft ClientException, wenn Aktualisierung fehlschlägt.</exception>
-        public void UpdateManagedChannelsRelationships(List<Channel> managedChannels)
-        {
-            Moderator activeModerator = GetLocalModerator();
-            if (activeModerator == null)
-                return;
-
-            try
-            {
-                // Prüfe, ob der Moderator schon in der Datenbank enthalten ist.
-                if (!moderatorDatabaseManager.IsModeratorStored(activeModerator.Id))
-                {
-                    Debug.WriteLine("Need to store the moderator with id {0} in local DB.", activeModerator.Id);
-                    moderatorDatabaseManager.StoreModerator(activeModerator);
-                }
-
-                // Prüfe, ob alle Kanäle lokal gespeichert sind.
-                foreach (Channel channel in managedChannels)
-                {
-                    if (!channelDatabaseManager.IsChannelContained(channel.Id))
-                    {
-                        Debug.WriteLine("Need to store the channel with id {0} in local DB.", channel.Id);
-                        channelDatabaseManager.StoreChannel(channel);
-                    }
-                    
-                    // Prüfe, ob der Moderator für den Kanal als Verantwortlicher eingetragen ist.
-                    if (!channelDatabaseManager.IsResponsibleForChannel(channel.Id, activeModerator.Id))
-                    {
-                        Debug.WriteLine("Need to add the moderator with id {0} as a responsible moderator " + 
-                            "for the channel with id {1}.", activeModerator.Id, channel.Id);
-                        channelDatabaseManager.AddModeratorToChannel(channel.Id, activeModerator.Id, true);
-                    }
-                }
-
-                // Frage verwaltete Kanäle aus der DB ab.
-                List<Channel> managedChannelsFromDB = channelDatabaseManager.GetManagedChannels(activeModerator.Id);
-                // Prüfe, ob es darin noch einen Kanal gibt, der nicht mehr in der aktuellen Liste von Kanälen steht.
-                for (int i = 0; i < managedChannelsFromDB.Count; i++ )
-                {
-                    bool isContained = false;
-
-                    foreach (Channel channel in managedChannels)
-                    {
-                        if (channel.Id == managedChannelsFromDB[i].Id)
-                        {
-                            isContained = true;
-                        }    
-                    }
-
-                    if (!isContained)
-                    {
-                        // Setzte Verantwortlichkeit auf inaktiv für diesen Kanal.
-                        Debug.WriteLine("Need to set moderator isActive to false for channel with id {0}.", managedChannelsFromDB[i].Id);
-                        channelDatabaseManager.AddModeratorToChannel(
-                            managedChannelsFromDB[i].Id,
-                            activeModerator.Id,
-                            false);
-                    }
-                }
-
-            }
-            catch (DatabaseException ex)
-            {
-                Debug.WriteLine("Database exception occurred in UpdateManagedChannelsRelationships. Msg is {0}.", ex.Message);
-                throw new ClientException(ErrorCodes.LocalDatabaseException, "Failed to update managed channels relationships.");
-            }
-        }
+        #region LocalManagedChannelsFunctions
 
         /// <summary>
         /// Hole die vom Moderator mit der angegebenen Id verwalteten Kanäle, die lokal in der Anwendung vorhanden sind.
@@ -1343,6 +1242,223 @@ namespace DataHandlingLayer.Controller
             return managedChannels;
         }
 
+        /// <summary>
+        /// Prüft, ob alle Beziehungen zwischen Kanalressourcen und dem aktuell eingeloggten
+        /// Moderator aktuell sind und aktualisiert diese falls notwendig. 
+        /// </summary>
+        /// <param name="managedChannels">Liste von aktuell verwalteten Kanälen des Moderators.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Aktualisierung fehlschlägt.</exception>
+        public void UpdateManagedChannelsRelationships(List<Channel> managedChannels)
+        {
+            Moderator activeModerator = GetLocalModerator();
+            if (activeModerator == null)
+                return;
+
+            try
+            {
+                // Prüfe, ob der aktuell eingeloggte Moderator schon in der Datenbank enthalten ist.
+                if (!moderatorDatabaseManager.IsModeratorStored(activeModerator.Id))
+                {
+                    Debug.WriteLine("Need to store the moderator with id {0} in local DB.", activeModerator.Id);
+                    moderatorDatabaseManager.StoreModerator(activeModerator);
+                }
+
+                // Prüfe, ob Moderator auch lokal als Verantwortlicher für Kanäle eingetragen ist.
+                foreach (Channel channel in managedChannels)
+                {
+                    if (!channelDatabaseManager.IsResponsibleForChannel(channel.Id, activeModerator.Id))
+                    {
+                        // Kanal gefunden, der vorher noch nicht von diesem Moderator verwaltet wurde.
+                        // Trage Moderator ein.
+                        Debug.WriteLine("Need to add the moderator with id {0} as a responsible moderator " +
+                            "for the channel with id {1}.", activeModerator.Id, channel.Id);
+                        channelDatabaseManager.AddModeratorToChannel(channel.Id, activeModerator.Id, true);
+
+                        // Stoße das Herunterladen der für den neu hinzugekommenen Kanal relevanten Daten an.
+                        // Bemerkung: Falls das fehlschlägt wird kein Fehler geworfen. Die Daten können auch im Fehlerfall später nachgeladen werden.
+                        Task.Run(() => retrieveAndStoreManagedChannelInfoAsync(channel.Id));
+                    }
+                }
+
+                // Frage verwaltete Kanäle aus der DB ab.
+                List<Channel> managedChannelsFromDB = channelDatabaseManager.GetManagedChannels(activeModerator.Id);
+                // Prüfe, ob es darin noch einen Kanal gibt, der nicht mehr in der aktuellen Liste von Kanälen steht.
+                for (int i = 0; i < managedChannelsFromDB.Count; i++)
+                {
+                    bool isContained = false;
+
+                    foreach (Channel channel in managedChannels)
+                    {
+                        if (channel.Id == managedChannelsFromDB[i].Id)
+                        {
+                            isContained = true;
+                        }
+                    }
+
+                    if (!isContained)
+                    {
+                        removeChannelFromManagedChannels(activeModerator, managedChannelsFromDB[i]);
+                    }
+                }
+
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("Database exception occurred in UpdateManagedChannelsRelationships. Msg is {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, "Failed to update managed channels relationships.");
+            }
+        }
+
+        /// <summary>
+        /// Nimmt einen Kanal aus der Liste der verwalteten Kanäle raus und räumt
+        /// mit diesem Kanal in Verbindung stehende Ressourcen weg, die dann nicht mehr
+        /// benötigt werden. 
+        /// </summary>
+        /// <param name="activeModerator">Der gerade aktive Moderator, für den der Kanal aus der Liste der
+        ///     verwalteten Kanäle ausgetragen wird.</param>
+        /// <param name="channel">Der Kanal, der aus der Liste genommen wird.</param>
+        private void removeChannelFromManagedChannels(Moderator activeModerator, Channel channel)
+        {
+            try
+            {
+                // Setzte Verantwortlichkeit auf inaktiv für diesen Kanal.
+                Debug.WriteLine("Need to set moderator isActive to false for channel with id {0}.", channel.Id);
+                channelDatabaseManager.AddModeratorToChannel(
+                    channel.Id,
+                    activeModerator.Id,
+                    false);
+
+                // Prüfe, ob der Kanal abonniert ist.
+                bool isSubscribed = channelDatabaseManager.IsChannelSubscribed(channel.Id);
+                if (!isSubscribed)
+                {
+                    // Kanal nicht noch vom lokalen Nutzer abonniert. Lösche Announcements und Moderator-Info.
+                    Debug.WriteLine("Channel with id {0} not subscribed. Delete announcements and moderator info.", channel.Id);
+                    channelDatabaseManager.DeleteAllAnnouncementsOfChannel(channel.Id);
+                    channelDatabaseManager.RemoveAllModeratorsFromChannel(channel.Id);
+                }
+
+                // Lösche in jedem Fall die Reminder.
+                Debug.WriteLine("Deleting reminders for channel with id {0}.", channel.Id);
+                channelDatabaseManager.DeleteRemindersForChannel(channel.Id);
+            }
+            catch (DatabaseException ex)
+            {
+                // Keine weitere Aktion, da diese Funktionalität im Hintergrund abläuft und
+                // nicht vom Nutzer aktiv ausgelöst wird.
+                Debug.WriteLine("Error during removal of managed channel. No further action is taken." + 
+                    "Error message is: {0}.", ex.Message);
+            }
+        }
+        #endregion LocalManagedChannelsFunctions
+
+        #region RemoteManagedChannelsFunctions
+
+        /// <summary>
+        /// Ruft die Liste an Kanalressourcen vom Server ab, für die der Moderator mit der angegebenen Id verantwortlich ist.
+        /// </summary>
+        /// <param name="moderatorId">Die Id des Moderators, für den die Liste an Kanälen abgefragt werden soll.</param>
+        /// <returns>Eine Liste von Channel Objekte.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abfrage vom Server fehlschlägt.</exception>
+        public async Task<List<Channel>> RetrieveManagedChannelsFromServerAsync(int moderatorId)
+        {
+            List<Channel> managedChannels = null;
+            Moderator activeModerator = GetLocalModerator();
+
+            try
+            {
+                if (activeModerator != null)
+                {
+                    Dictionary<string, string> parameters = new Dictionary<string, string>();
+                    parameters.Add("moderatorId", activeModerator.Id.ToString());
+
+                    string serverResponse = await api.SendHttpGetRequestAsync(
+                        activeModerator.ServerAccessToken,
+                        "/channel",
+                        parameters,
+                        false
+                        );
+
+                    managedChannels = parseChannelListFromJson(serverResponse);
+                    Debug.WriteLine("Retrieved a list of managed channels with {0} items.", managedChannels.Count);
+                }
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("Error occurred. Retrieving the managed channels has failed. " +
+                    "Message is: {0}.", ex.Message);
+                throw new ClientException(ex.ErrorCode, "Retrieving of managed channels failed.");
+            }
+
+            return managedChannels;
+        }
+
+        /// <summary>
+        /// Hilfsmethode zur Unterstützung der Synchronistation der verwalteten Kanäle.
+        /// Ruft Daten zu dem Kanal mit der angegebenen Id vom Server ab. Dazu gehören
+        /// die verantwortlichen Moderatoren und die Reminder. Speichert die Daten für den
+        /// Kanal in der lokalen Datenbank ab. Ruft jedoch nicht die eigentlichen Kanaldaten ab.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, für den die Daten abgerufen werden sollen.</param>
+        private async Task retrieveAndStoreManagedChannelInfoAsync(int channelId)
+        {
+            Moderator activeModerator = GetLocalModerator();
+            if (activeModerator == null)
+                return;
+
+            // Rufe alle Moderatoren zu dem Kanal ab.
+            try
+            {
+                List<Moderator> moderators = await GetResponsibleModeratorsAsync(channelId);
+ 
+                foreach (Moderator moderator in moderators)
+                {
+                    if (!moderatorDatabaseManager.IsModeratorStored(moderator.Id))
+                    {
+                        Debug.WriteLine("Need to store the moderator with id {0} in local DB.", moderator.Id);
+                        moderatorDatabaseManager.StoreModerator(moderator);
+                    }
+
+                    if (!channelDatabaseManager.IsResponsibleForChannel(channelId, moderator.Id))
+                    {
+                        Debug.WriteLine("Add moderator with id {0} to channel with id {1}.", channelId, moderator.Id);
+                        channelDatabaseManager.AddModeratorToChannel(channelId, moderator.Id, moderator.IsActive);
+                    }
+                }
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("Storing of the responsible moderators has failed.");
+                Debug.WriteLine("Message is: {0}.", ex.Message);
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("Retrieval of the responsible moderators has failed.");
+                Debug.WriteLine("Message is: {0} and error code is {1}.", ex.Message, ex.ErrorCode);
+            }
+            
+            // Rufe Reminder zu dem Kanal ab.
+            try
+            {
+                List<Reminder> reminders = await GetRemindersOfChannelAsync(channelId);
+                channelDatabaseManager.BulkInsertReminder(reminders);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("Storing of the reminders has failed.");
+                Debug.WriteLine("Message is: {0}.", ex.Message);
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("Retrieval of the reminders has failed.");
+                Debug.WriteLine("Message is: {0} and error code is {1}.", ex.Message, ex.ErrorCode);
+            }
+
+        }
+
+        #endregion RemoteManagedChannelsFunctions
+
+       
         /// <summary>
         /// Erzeugt eine neue Nachricht für den Kanal mit der angegebenen Id. 
         /// Die Announcement wird auf dem Server angelegt und dieser verteilt sie an 
@@ -1409,6 +1525,239 @@ namespace DataHandlingLayer.Controller
             }
 
             return true;
+        }
+
+        #region LocalReminderFunctions
+        /// <summary>
+        /// Holt die lokal verwalteten Reminder für den Kanal mit der angegebenen Id.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, für den die Reminder geholt werden sollen.</param>
+        /// <returns>Liste von Objekten vom Typ Reminder.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Fehler auftritt während des Lesens der Reminder.</exception>
+        public List<Reminder> GetRemindersOfChannel(int channelId)
+        {
+            List<Reminder> reminders = null;
+            try
+            {
+                reminders = channelDatabaseManager.GetRemindersForChannel(channelId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("Error during GetRemindersOfChannel. Msg is: {0}.", ex.Message);
+                // Abbilden auf ClientException.
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return reminders;
+        }
+
+        /// <summary>
+        /// Speichere den Reminder lokal im Speicher ab.
+        /// </summary>
+        /// <param name="reminder">Das Reminder Objekt mit den Reminder Daten.</param>
+        /// <exception cref="ClientException">Wirft Exception, wenn Speichern fehlschlägt.</exception>
+        public void StoreReminder(Reminder reminder)
+        {
+            try
+            {
+                if (!moderatorDatabaseManager.IsModeratorStored(reminder.AuthorId))
+                {
+                    Debug.WriteLine("Missing author. Can't store reminder directly. Start fallback method");
+                    Task.Run(() => storeReminderIncludingRelevantInformationAsync(reminder));
+                }
+                else
+                {
+                    channelDatabaseManager.StoreReminder(reminder);
+                }
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("Failed to store reminder.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Speichert eine Liste von Reminder Objekten lokal im Speicher ab.
+        /// </summary>
+        /// <param name="reminders">Eine Liste von Reminder Objekten.</param>
+        /// <exception cref="ClientException">Wirft Exception, wenn Speichern fehlschlägt.</exception>
+        public void StoreReminders(List<Reminder> reminders)
+        {
+            try
+            {
+                channelDatabaseManager.BulkInsertReminder(reminders);
+            }
+            catch (DatabaseException ex) 
+            {
+                Debug.WriteLine("Failed to store reminders.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Aktualisiert die lokalen Datensätze der Reminder eines Kanals, die in der Anwendung verwaltet werden.
+        /// </summary>
+        /// <param name="updatedList">Die aktualisierte Liste von Remindern, mittels deren die Aktualisierungen vorgenommen werden.</param>
+        /// <param name="channelId">Die Id des Kanals, zu dem die Reminder gehören.</param>
+        public void UpdateLocalReminders(List<Reminder> updatedList, int channelId)
+        {
+            try
+            {
+                // Hole zunächst die lokale Liste von Remindern.
+                List<Reminder> localReminderList = channelDatabaseManager.GetRemindersForChannel(channelId);
+
+                // Prüfe, ob es einen Eintrag in der Liste der aktualisierten Reminder gibt, der noch nicht lokal
+                // gespeichert ist und prüfe, ob ein bereits vorhandener Reminder aktualisiert werden muss.
+                foreach (Reminder reminder in updatedList)
+                {
+                    bool isContained = false;
+
+                    for (int i = 0; i < localReminderList.Count; i++)
+                    {
+                        if (reminder.Id == localReminderList[i].Id)
+                        {
+                            isContained = true;
+
+                            // Prüfe, ob Aktualisierung erforderlich.
+                            if (reminder.ModificationDate.CompareTo(localReminderList[i].ModificationDate) != 0)
+                            {
+                                Debug.WriteLine("Update of reminder with id {0} necessary.", reminder.Id);
+                                channelDatabaseManager.UpdateReminder(reminder);
+                            }
+                        }
+                    }
+
+                    if (!isContained)
+                    {
+                        Debug.WriteLine("Need to add reminder with id {0}.", reminder.Id);
+                        StoreReminder(reminder);
+                    }
+                }
+
+                // TODO - Prüfe, ob es einen lokalen Reminder gibt, der nicht mehr in der Liste der aktualisierten Reminder steht (?)
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("Error in UpdateLocalReminders. Message is: {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+        #endregion LocalReminderFunctions
+
+        #region RemoteReminderFunctions
+        /// <summary>
+        /// Ruft die Liste von Remindern für den Kanal mit der angegebenen Id vom Server ab.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, für den die Reminder abgerufen werden sollen.</param>
+        /// <returns>Liste von Reminder Objekten.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Reminder nicht abgerufen werden konnten.</exception>
+        public async Task<List<Reminder>> GetRemindersOfChannelAsync(int channelId)
+        {
+            List<Reminder> reminders = null;
+            Moderator activeModerator = GetLocalModerator();
+
+            if (activeModerator == null)
+                return null;
+
+            string serverResponse = null;
+            try
+            {
+                serverResponse = await api.SendHttpGetRequestAsync(
+                    activeModerator.ServerAccessToken,
+                    "/channel/" + channelId + "/reminder",
+                    null,
+                    false);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("Request to server not successful.");
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            if (serverResponse != null)
+            {
+                reminders = parseReminderListFromJson(serverResponse);
+            }
+
+            return reminders;
+        }
+
+        /// <summary>
+        /// Hilfsmethode, die eine Speicherung eines Reminders realisiert, bei der 
+        /// fehlende Informationen zunächst vom Server abgefragt werden. 
+        /// Beachte: Mögliche Fehler werden von dieser Methode nicht zurückgeliefert.
+        /// </summary>
+        /// <param name="reminder">Der zu speichernde Reminder.</param>
+        private async Task storeReminderIncludingRelevantInformationAsync(Reminder reminder)
+        {
+            Debug.WriteLine("Starting storeReminderIncludingRelevantInformationAsync.");
+            try
+            {
+                List<Moderator> moderators = await GetResponsibleModeratorsAsync(reminder.ChannelId);
+
+                foreach (Moderator moderator in moderators)
+                {
+                    if (!moderatorDatabaseManager.IsModeratorStored(moderator.Id))
+                    {
+                        Debug.WriteLine("Need to store moderator with id {0} in local DB.", moderator.Id);
+                        moderatorDatabaseManager.StoreModerator(moderator);
+                    }
+
+                    if (moderator.IsActive)
+                    {
+                        if (!channelDatabaseManager.IsResponsibleForChannel(reminder.ChannelId, moderator.Id))
+                        {
+                            Debug.WriteLine("Need to add moderator with id {0} as responsible moderator for channel with id {1}.",
+                                moderator.Id, reminder.ChannelId);
+                            channelDatabaseManager.AddModeratorToChannel(reminder.ChannelId, moderator.Id, true);
+                        }
+                    }
+                }
+
+                if (!moderatorDatabaseManager.IsModeratorStored(reminder.AuthorId))
+                {
+                    // Wenn noch immer der Moderator fehlt, dann bilde ab auf Dummy Moderator.
+                    Debug.WriteLine("Need to map author to dummy moderator.");
+                    reminder.AuthorId = 0;
+                }
+
+                // Speichere reminder.
+                channelDatabaseManager.StoreReminder(reminder);
+                Debug.WriteLine("Finished storeReminderIncludingRelevantInformationAsync.");
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("Fallback method storeReminderIncludingRelevantInformationAsync failed due to database exception." + 
+                    "Reminder with id {0} couldn't be stored. Msg is: {1}", reminder.Id, ex.Message);
+            }
+            catch (ClientException clientEx)
+            {
+                Debug.WriteLine("Fallback method storeReminderIncludingRelevantInformationAsync failed due to client exception." +
+                    "Reminder with id {0} couldn't be stored. ErrorCode is: {1}", reminder.Id, clientEx.ErrorCode);
+            }
+        }
+        #endregion RemoteReminderFunctions
+
+        #region JsonParsing
+        /// <summary>
+        /// Extrahiert eine Liste von Reminder Objekten aus dem übergebenen JSON Dokument.
+        /// </summary>
+        /// <param name="jsonString">Das übergebene JSON-Dokument.</param>
+        /// <returns>Liste von Reminder Objekten, oder null, wenn Deserialisierung fehlschlägt.</returns>
+        private List<Reminder> parseReminderListFromJson(string jsonString)
+        {
+            List<Reminder> reminders = null;
+            try
+            {
+                reminders = JsonConvert.DeserializeObject<List<Reminder>>(jsonString);
+            }
+            catch (JsonException jsonEx)
+            {
+                Debug.WriteLine("Could not extract list of reminders from json string.");
+                Debug.WriteLine("Message is: {0}.", jsonEx.Message);
+            }
+            return reminders;
         }
 
         /// <summary>
@@ -1626,7 +1975,7 @@ namespace DataHandlingLayer.Controller
 
             return channels;
         }
-
+        #endregion JsonParsing
 
     }
 }

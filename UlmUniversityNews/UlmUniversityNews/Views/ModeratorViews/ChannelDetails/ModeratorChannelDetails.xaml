@@ -30,6 +30,9 @@
         <valueconverter:MessageReadPropertyToBackgroundColorConverter x:Key="MessageReadPropertyToBackgroundColorConverter" />
         <!-- Bilde Kanaleigenschaft auf Hintergrundfarbe ab. Für Drawer Menü -->
         <valueconverter:ChannelToDrawerMenuBackgroundConverter x:Key="ChannelToDrawerMenuBackgroundConverter" />
+
+        <!-- Datumsstring Konverter für Reminder. -->
+        <valueconverter:ReminderDateTimeToStringConverter x:Key="ReminderDateTimeToStringConverter" />
         
         <!-- Data Template eines Eintrags einer Announcement-Ressource in der Detailansicht eines Kanals. -->
         <DataTemplate
@@ -100,6 +103,92 @@
                 </Grid>
 
                 <!-- 3. Zeile Sepeartor-->
+                <Line 
+                    Grid.Row="1"
+                    Margin="-5, 5, 19, 5"
+                    Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
+            </Grid>
+        </DataTemplate>
+        
+        <!-- Data Template für die Anzeige von Reminder-Einträgen in Liste. -->
+        <DataTemplate
+            x:Name="ReminderListItemStyle">
+            <Grid 
+                Background="{StaticResource MainFragmentBackgroundColor}"
+                Margin="0,5,19,5">
+                <Grid.RowDefinitions>
+                    <!-- Reminder Zeile -->
+                    <RowDefinition Height="Auto" />
+                    <!-- 2.Zeile:  Seperator-->
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                
+                <!-- Unterteilung der Anzeige in 3 Teile: Title, Content, und Next Reminder Date -->
+                <Grid Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <!-- Title -->
+                        <RowDefinition Height="Auto" />
+                        <!-- Text (Nachrichteninhalt) -->
+                        <RowDefinition Height="Auto" />
+                        <!-- Nächster Reminder Termin -->
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Titel -->
+                    <TextBlock
+                        Grid.Row="0"
+                        x:Name="ReminderTitle"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        TextAlignment="Left"
+                        Style="{StaticResource HeaderTextInAnnouncementList}"
+                        Text="{Binding Title}" />
+                    
+                    <!-- Text -->
+                    <TextBlock
+                        Grid.Row="1"
+                        x:Name="ReminderText"
+                        Style="{StaticResource TextInAnnouncementList}"
+                        Text="{Binding Text}"
+                        />
+                    
+                    <!-- Nächster Reminder Termin -->
+                    <Grid
+                        Margin="0, 5, 0, 0"
+                        Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock
+                            Grid.Column="0"
+                            x:Name="NextReminderDateDescription"
+                            x:Uid="NextReminderDateDescription"
+                            TextWrapping="WrapWholeWords"
+                            Style="{StaticResource TextInAnnouncementList}"
+                            FontWeight="SemiBold" />
+                        
+                        <TextBlock
+                            Grid.Column="1"
+                            x:Name="NextReminderDate"
+                            VerticalAlignment="Bottom"
+                            TextWrapping="WrapWholeWords"
+                            Style="{StaticResource TextInAnnouncementList}"
+                            Visibility="{Binding IsExpired, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='inverse'}"
+                            Text="{Binding NextDate, Converter={StaticResource ReminderDateTimeToStringConverter}}" />
+                        
+                        <TextBlock
+                            Grid.Column="1"
+                            x:Name="ReminderIsExpiredText"
+                            x:Uid="ReminderIsExpiredText"
+                            TextWrapping="WrapWholeWords"
+                            Style="{StaticResource TextInAnnouncementList}"
+                            Visibility="{Binding IsExpired, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            />
+                    </Grid>
+                </Grid>
+
                 <Line 
                     Grid.Row="1"
                     Margin="-5, 5, 19, 5"
@@ -205,7 +294,7 @@
                                 Grid.Row="0"
                                 x:Name="NoMessagesInChannelInfo"
                                 x:Uid="ChannelDetailsNoMessagesInChannelInfo"
-                                Style="{StaticResource BaseTextBlockStyle}" 
+                                Style="{StaticResource UniversityNewsUlmStandardText}" 
                                 Visibility="{Binding Announcements.Count, Converter={StaticResource ListCountToVisibilityConverter}}">
                                     In diesem Kanal sind noch keine Nachrichten vorhanden.
                             </TextBlock>
@@ -239,8 +328,40 @@
                         x:Name="ModeratorChannelDetailsReminderPivotItem"
                         x:Uid="ModeratorChannelDetailsReminderPivotItem"
                         Style="{StaticResource PivotItemStyle}"
+                        Loaded="ModeratorChannelDetailsReminderPivotItem_Loaded"
                         Header="Reminder">
-                                                
+                        
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            
+                            <!-- Text, der angezeigt wird, wenn keine Reminder vorhanden sind. -->
+                            <TextBlock
+                                Grid.Row="0"
+                                x:Name="NoReminderInChannelInfo"
+                                x:Uid="ChannelDetailsNoReminderInChannelInfo"
+                                Style="{StaticResource UniversityNewsUlmStandardText}" 
+                                Visibility="{Binding Reminders.Count, Converter={StaticResource ListCountToVisibilityConverter}}">
+                                    In diesem Kanal sind noch keine Reminder vorhanden.
+                            </TextBlock>
+
+                            <!-- Liste mit Remindern -->
+                            <ListView
+                                x:Name="ReminderList"
+                                Grid.Row="1"
+                                ItemTemplate="{StaticResource ReminderListItemStyle}"
+                                ItemsSource="{Binding Reminders}"
+                                HorizontalContentAlignment="Stretch"
+                                HorizontalAlignment="Stretch">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                            </ListView>
+                        </Grid>
                     </PivotItem>
                     
                     <!-- Pivot Item 3: Kanalinformation -->

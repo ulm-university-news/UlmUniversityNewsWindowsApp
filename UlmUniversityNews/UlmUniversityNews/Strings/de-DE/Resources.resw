@@ -760,4 +760,26 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
   <data name="ValidationErrorStartPageUserNameIsNull" xml:space="preserve">
     <value>Bitte geben Sie einen Nutzernamen an.</value>
   </data>
+  <data name="ModeratorChannelDetailsReminderEndDateInPastValidationError" xml:space="preserve">
+    <value>Das Ende-Datum darf nicht in der Vergangenheit sein.</value>
+  </data>
+  <data name="ModeratorChannelDetailsReminderInvalidIntervalValidationError" xml:space="preserve">
+    <value>Das Intervall ist nicht gültig. Bitte prüfen Sie ihre Eingabe.</value>
+  </data>
+  <data name="ModeratorChannelDetailsReminderStartAndEndDateEqualIntervalInvalidValidationError" xml:space="preserve">
+    <value>Wenn Start-Datum und Ende-Datum gleich sein, dann kann der Reminder nur als ein Reminder konfiguriert werden, der genau einmal feuert.</value>
+  </data>
+  <data name="ModeratorChannelDetailsReminderStartDateAfterEndDateValidationError" xml:space="preserve">
+    <value>Das Start-Datum darf nicht nach dem Ende-Datum sein.</value>
+  </data>
+  <data name="ModeratorChannelDetailsReminderStartOrEndDateNotSetValidationError" xml:space="preserve">
+    <value>Bitte geben Sie ein gültiges Start-Datum und ein gültiges Ende-Datum an.</value>
+  </data>
+  <data name="NextReminderDateDescription.Text" xml:space="preserve">
+    <value>Nächste Reminder 
+Nachricht am: </value>
+  </data>
+  <data name="ReminderIsExpiredText.Text" xml:space="preserve">
+    <value>Der Reminder ist abgelaufen.</value>
+  </data>
 </root>

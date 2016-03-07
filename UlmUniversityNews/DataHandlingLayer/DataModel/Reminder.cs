@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataHandlingLayer.DataModel.Enums;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using DataHandlingLayer.DataModel.Validator;
 
 namespace DataHandlingLayer.DataModel
 {
@@ -12,13 +15,14 @@ namespace DataHandlingLayer.DataModel
     /// eine definierte Announcement Nachricht erzeugt und in den Kanal schickt, für
     /// den der Reminder definiert ist.
     /// </summary>
-    public class Reminder
+    public class Reminder : ModelValidatorBase
     {
         #region Properties
         private int id;
         /// <summary>
         /// Die eindeutige Id der Reminder-Ressource.
         /// </summary>
+        [JsonProperty("id", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int Id
         {
             get { return id; }
@@ -29,6 +33,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Das Erstellungsdatum des Reminder.
         /// </summary>
+        [JsonProperty("creationDate", DefaultValueHandling=DefaultValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTime CreationDate
         {
             get { return creationDate; }
@@ -39,6 +44,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Das Änderungsdatum des Reminder.
         /// </summary>
+        [JsonProperty("modificationDate", DefaultValueHandling = DefaultValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTime ModificationDate
         {
             get { return modificationDate; }
@@ -49,6 +55,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Das Datum und die Uhrzeit, an dem der Reminder zum ersten Mal feuern soll.
         /// </summary>
+        [JsonProperty("startDate", DefaultValueHandling = DefaultValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTime StartDate
         {
             get { return startDate; }
@@ -59,6 +66,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Das Datum und die Uhrzeit, an dem der Reminder das nächste Mal feuert.
         /// </summary>
+        [JsonIgnore]
         public DateTime NextDate
         {
             get { return nextDate; }
@@ -69,6 +77,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Das Datum und die Uhrzeit, an dem der Reminder abläuft und deaktiviert werden soll.
         /// </summary>
+        [JsonProperty("endDate", DefaultValueHandling = DefaultValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTime EndDate
         {
             get { return endDate; }
@@ -78,7 +87,10 @@ namespace DataHandlingLayer.DataModel
         private int interval;
         /// <summary>
         /// Das Intervall, in dem der Reminder die Announcements feuert.
+        /// Ist das Intervall = 0, dann handelt es sich um ein One-Time Reminder, der genau 
+        /// einmal feuert.
         /// </summary>
+        [JsonProperty("interval", NullValueHandling = NullValueHandling.Ignore)]
         public int Interval
         {
             get { return interval; }
@@ -89,6 +101,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Gibt an, ob der Reminder beim nächsten Termin aussetzen soll.
         /// </summary>
+        [JsonProperty("ignore")]
         public bool Ignore
         {
             get { return ignore; }
@@ -99,6 +112,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Die Id des Kanals zu dem der Reminder gehört.
         /// </summary>
+        [JsonProperty("channelId", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int ChannelId
         {
             get { return channelId; }
@@ -109,6 +123,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Die Id des Autors (ein Moderator), der für die erzeugten Announcement als Autor eingetragen wird.
         /// </summary>
+        [JsonProperty("authorModerator", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int AuthorId
         {
             get { return authorModerator; }
@@ -119,6 +134,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Der Titel, der bei den vom Reminder erzeugten Announcements gesetzt wird.
         /// </summary>
+        [JsonProperty("title", NullValueHandling = NullValueHandling.Ignore)]
         public string Title
         {
             get { return title; }
@@ -129,6 +145,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Der Inhalt der Announcements, die durch den Reminder erzeugt werden.
         /// </summary>
+        [JsonProperty("text", NullValueHandling = NullValueHandling.Ignore)]
         public string Text
         {
             get { return text; }
@@ -139,11 +156,23 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Die Priorität, mit der vom Reminder erzeugte Announcements verschickt werden.
         /// </summary>
+        [JsonProperty("priority"), JsonConverter(typeof(StringEnumConverter))]
         public Priority MessagePriority
         {
             get { return messagePriority; }
             set { messagePriority = value; }
         }
+
+        private bool isExpired;
+        /// <summary>
+        /// Gibt an, ob der Reminder abgelaufen ist.
+        /// Ist der Reminder abgelaufen, so wird er keine Announcements mehr feuern.
+        /// </summary>
+        public bool IsExpired
+        {
+            get { return isExpired; }
+            set { isExpired = value; }
+        }  
         #endregion Properties
 
         /// <summary>
@@ -185,5 +214,158 @@ namespace DataHandlingLayer.DataModel
             this.text = text;
             this.messagePriority = priority;
         }
+
+        #region ReminderRelatedFunctionality
+        /// <summary>
+        /// Prüft, ob der Reminder bereits abgelaufen ist. Ein abgelaufener Reminder wird nicht mehr feuern.
+        /// Setzt den IsExpired Property Wert.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Reminder abgelaufen ist, ansonsten false.</returns>
+        public void EvaluateIsExpired()
+        {
+            // Wenn es ein One-Time Reminder ist, dann muss dessen Start-Datum in der Zukunft liegen.
+            if (Interval == 0)
+            {
+                int comparisonResult = DateTime.Compare(StartDate, DateTime.Now);
+                if (comparisonResult < 0)
+                {
+                    // StartDate ist früher als aktuelles Datum. Das heißt, der Reminder ist abgelaufen.
+                    IsExpired = true;
+                }
+                else
+                {
+                    // StartDate ist nicht früher als aktuelles Datum. Reminder noch aktiv.
+                    IsExpired = false;
+                }
+            }
+
+            // Prüfe, ob Ende-Datum des Reminders bereits vorbei ist.
+            int endDateComparisonResult = DateTime.Compare(EndDate, DateTime.Now);
+            if (endDateComparisonResult < 0)
+            {
+                // EndDate ist früher als das aktuelle Datum. Reminder ist abgelaufen.
+                IsExpired = true;
+            }
+
+            // Prüfe, ob der nächste Termin für den Reminder nach dem Ende-Datum liegt.
+            int nextReminderComparisonResult = DateTime.Compare(EndDate, NextDate);
+            if (nextReminderComparisonResult < 0)
+            {
+                // EndDate ist früher als nächster Termin des Reminders. Reminder ist abgelaufen.
+                IsExpired = true;
+            }
+
+            // Reminder noch nicht abgelaufen.
+            IsExpired = false;
+        }
+
+        /// <summary>
+        /// Berechnet und setzt den nächsten Termin, an dem der Reminder feuern wird.
+        /// </summary>
+        public void ComputeNextDate()
+        {
+            // Wenn das Intervall gleich 0 ist, dann ist es ein One-Time Reminder. 
+            // Man kann diesen somit als abgelaufen markieren.
+            if (Interval == 0)
+            {
+                NextDate = EndDate.AddSeconds(1.0f);
+            }
+            else
+            {
+                // Addiere Intervall auf, um nächstes Datum zu bekommen.
+                NextDate = NextDate.AddSeconds(Interval);
+            }
+        }
+
+        /// <summary>
+        /// Berechnet und setzt den ersten Termin, an dem Reminder feuern wird.
+        /// </summary>
+        public void ComputeFirstNextDate()
+        {
+            // Setze den ersten Termin für den Reminder. Setze zunächst auf den Start-Termin.
+            NextDate = StartDate;
+
+            // Bei Intervall gleich 0, d.h. One-Time Reminder, ist der nächste Termin gleich dem Start-Termin.
+            if (Interval == 0)
+            {
+                return;
+            }
+
+            // Der nächste Termin muss in der Zukunft liegen.
+            while (NextDate.CompareTo(DateTime.Now) < 0)
+            {
+                NextDate = NextDate.AddSeconds(Interval);
+            }
+        }
+        #endregion ReminderRelatedFunctionality
+
+        #region ValidationRules
+        /// <summary>
+        /// Validiert das Property "Interval".
+        /// </summary>
+        public void ValidateInterval()
+        {
+            // Interval 0 ist ein valides Interval (One-Time Reminder).
+            if (Interval == 0)
+                return;
+
+            // Wenn der Start-Termin gleich dem Ende-Termin ist, dann muss es sich um einen One-Time Reminder handeln.
+            if (StartDate.CompareTo(EndDate) == 0 && Interval != 0)
+            {
+                SetValidationError("Interval", "ModeratorChannelDetailsReminderStartAndEndDateEqualIntervalInvalidValidationError");
+            }
+            else
+            {
+                // Prüfe, ob das Interval ein mehrfaches eines Tages ist. (86400s = 24h * 60m * 60s).
+                if (Interval % 86400 != 0)
+                {
+                    SetValidationError("Interval", "ModeratorChannelDetailsReminderInvalidIntervalValidationError");
+                }
+                else
+                {
+                    // Prüfe, ob das Interval wenigstens einen Tag umfasst, und nicht mehr als 28 Tage (4 Wochen).
+                    if (Interval < 86400 || Interval > 2419200)
+                    {
+                        SetValidationError("Interval", "ModeratorChannelDetailsReminderInvalidIntervalValidationError");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Validiert die Properties StartDate und EndDate.
+        /// </summary>
+        public void ValidateStartAndEndDate()
+        {
+            // Prüfe zunächst, ob Start- und Ende-Datum gesetzt wurden.
+            if (StartDate == null || EndDate == null)
+            {
+                SetValidationError("StartAndEndDate", "ModeratorChannelDetailsReminderStartOrEndDateNotSetValidatonError");
+                return;
+            }
+
+            if (StartDate.CompareTo(DateTime.MinValue) == 0 || EndDate.CompareTo(DateTime.MinValue) == 0)
+            {
+                SetValidationError("StartAndEndDate", "ModeratorChannelDetailsReminderStartOrEndDateNotSetValidationError");
+                return;
+            }
+
+            // Prüfe, ob das Start-Datum nach dem Ende-Datum ist.
+            if (StartDate.CompareTo(EndDate) > 0)
+            {
+                SetValidationError("StartAndEndDate", "ModeratorChannelDetailsReminderStartDateAfterEndDateValidationError");
+            }
+            else if (EndDate.CompareTo(DateTime.Now) < 0)  // Prüfe, ob das Ende-Datum in der Zukunft liegt.
+            {
+                SetValidationError("StartAndEndDate", "ModeratorChannelDetailsReminderEndDateInPastValidationError");
+            }
+        }
+
+        public override void ValidateAll()
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
+        #endregion ValidatonRules
     }
 }

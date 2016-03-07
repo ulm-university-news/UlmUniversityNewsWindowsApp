@@ -33,6 +33,13 @@ namespace UlmUniversityNews.Converters
                 return Windows.UI.Xaml.Controls.ScrollBarVisibility.Hidden;
             }
 
+            // Sonderbehandlung. Wenn Parameter übergeben ist, und dieser anzeigt, dass man 
+            // den eingegebenen Boolean Wert invertiert haben will.
+            if (parameter != null && parameter.ToString() == "inverse")
+            {
+                input = !input;
+            }
+
             // Gebe die Visibility an abhängig vom Eingabewert.
             if (input)
             {

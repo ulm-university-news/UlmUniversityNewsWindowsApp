@@ -146,12 +146,18 @@ namespace DataHandlingLayer.ViewModel
             try
             {
                 Debug.WriteLine("Start the updating process of channel moderator relationships.");
+                
                 // Frage Daten vom Server ab und aktualisiere lokale Datensätze.
                 List<Channel> managedChannelsServer = await channelController.RetrieveManagedChannelsFromServerAsync(activeModerator.Id);
+
+                // Aktualisiere zunächst die lokalen Kanaldatensätze.
+                await Task.Run(() => channelController.UpdateChannels(managedChannelsServer));
+
+                // Aktualisiere die Beziehungen Moderator-Kanal für die verantwortlichen Moderatoren.
                 await Task.Run(() => channelController.UpdateManagedChannelsRelationships(managedChannelsServer));
+                
                 Debug.WriteLine("Finished the updating process of channel moderator relationships.");
-
-
+                
                 // Aktualisiere ManagedChannels Liste.
                 updateManagedChannelList(managedChannelsServer);
             }

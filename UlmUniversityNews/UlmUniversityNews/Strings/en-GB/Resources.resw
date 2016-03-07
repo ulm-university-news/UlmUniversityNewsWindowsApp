@@ -759,4 +759,26 @@
   <data name="ValidationErrorStartPageUserNameIsNull" xml:space="preserve">
     <value>Please enter a username.</value>
   </data>
+  <data name="ModeratorChannelDetailsReminderEndDateInPastValidationError" xml:space="preserve">
+    <value>The end date must not be in the past.</value>
+  </data>
+  <data name="ModeratorChannelDetailsReminderInvalidIntervalValidationError" xml:space="preserve">
+    <value>The entered interval is not valid. Please verify your input.</value>
+  </data>
+  <data name="ModeratorChannelDetailsReminderStartAndEndDateEqualIntervalInvalidValidationError" xml:space="preserve">
+    <value>If StartDate and EndDate are the same, the reminder can only be configured as a one-time reminder.</value>
+  </data>
+  <data name="ModeratorChannelDetailsReminderStartDateAfterEndDateValidationError" xml:space="preserve">
+    <value>The start date must not be after the end date.</value>
+  </data>
+  <data name="ModeratorChannelDetailsReminderStartOrEndDateNotSetValidationError" xml:space="preserve">
+    <value>Please enter a valid start date and a valid end date.</value>
+  </data>
+  <data name="NextReminderDateDescription.Text" xml:space="preserve">
+    <value>Next reminder 
+date: </value>
+  </data>
+  <data name="ReminderIsExpiredText.Text" xml:space="preserve">
+    <value>Reminder is expired.</value>
+  </data>
 </root>
