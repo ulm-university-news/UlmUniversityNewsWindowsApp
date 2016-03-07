@@ -1954,6 +1954,562 @@ namespace DataHandlingLayer.Database
             }
         }
 
+        #region Reminder
+        /// <summary>
+        /// Speichert den übergebenen Reminder in der lokalen Datenbank ab.
+        /// </summary>
+        /// <param name="reminder">Das Reminder Objekt mit den Daten des Reminder.</param>
+        /// <exception cref="DatabaseException">Wirft eine DatabaseException, wenn das Abspeichern fehlschlägt.</exception>
+        public void StoreReminder(Reminder reminder)
+        {
+            if (reminder == null)
+                return;
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string sql = @"INSERT INTO Reminder (Id, Channel_Id, StartDate, EndDate, CreationDate, 
+                            ModificationDate, ""Interval"", ""Ignore"", Title, Text, Priority, Author_Moderator_Id) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+                        using (var insertStmt = conn.Prepare(sql))
+                        {
+                            insertStmt.Bind(1, reminder.Id);
+                            insertStmt.Bind(2, reminder.ChannelId);
+                            insertStmt.Bind(3, DatabaseManager.DateTimeToSQLite(reminder.StartDate));
+                            insertStmt.Bind(4, DatabaseManager.DateTimeToSQLite(reminder.EndDate));
+                            insertStmt.Bind(5, DatabaseManager.DateTimeToSQLite(reminder.CreationDate));
+                            insertStmt.Bind(6, DatabaseManager.DateTimeToSQLite(reminder.ModificationDate));
+                            insertStmt.Bind(7, reminder.Interval);
+                            insertStmt.Bind(8, (reminder.Ignore) ? 1 : 0);
+                            insertStmt.Bind(9, reminder.Title);
+                            insertStmt.Bind(10, reminder.Text);
+                            insertStmt.Bind(11, (int)reminder.MessagePriority);
+                            insertStmt.Bind(12, reminder.AuthorId);
+
+                            insertStmt.Step();
+
+                            Debug.WriteLine("Stored reminder with id {0}.", reminder.Id);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("Couldn't store reminder with id {0}.", reminder.Id);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("StoreReminder has failed. The message is: {0} and stack trace is {1}.",
+                            ex.Message, ex.StackTrace);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+        }
+
+        /// <summary>
+        /// Speichert eine Liste von Reminder Objekten in der lokalen Datenbank ab.
+        /// </summary>
+        /// <param name="reminderList">Eine Liste von Reminder Objekten.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Bulk Insert fehlschlägt.</exception>
+        public void BulkInsertReminder(List<Reminder> reminderList)
+        {
+            if (reminderList == null || reminderList.Count == 0)
+                return;
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string sql = @"INSERT INTO Reminder (Id, Channel_Id, StartDate, EndDate, CreationDate, 
+                            ModificationDate, ""Interval"", ""Ignore"", Title, Text, Priority, Author_Moderator_Id) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+                        using (var insertStmt = conn.Prepare(sql))
+                        {
+                            // Führe Insert für alle Reminder aus.
+                            foreach (Reminder reminder in reminderList)
+                            {
+                                insertStmt.Bind(1, reminder.Id);
+                                insertStmt.Bind(2, reminder.ChannelId);
+                                insertStmt.Bind(3, DatabaseManager.DateTimeToSQLite(reminder.StartDate));
+                                insertStmt.Bind(4, DatabaseManager.DateTimeToSQLite(reminder.EndDate));
+                                insertStmt.Bind(5, DatabaseManager.DateTimeToSQLite(reminder.CreationDate));
+                                insertStmt.Bind(6, DatabaseManager.DateTimeToSQLite(reminder.ModificationDate));
+                                insertStmt.Bind(7, reminder.Interval);
+                                insertStmt.Bind(8, (reminder.Ignore) ? 1 : 0);
+                                insertStmt.Bind(9, reminder.Title);
+                                insertStmt.Bind(10, reminder.Text);
+                                insertStmt.Bind(11, (int)reminder.MessagePriority);
+                                insertStmt.Bind(12, reminder.AuthorId);
+
+                                if (insertStmt.Step() != SQLiteResult.DONE)
+                                {
+                                    Debug.WriteLine("Failed to insert reminder with id {0}.", reminder.Id);
+                                }
+
+                                // Vorbereiten des Stmt für nächste Iteration.
+                                insertStmt.Reset();
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("Bulk insert of reminders has failed. Msg is: {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Bulk insert of reminders has failed. The message is: {0} and stack trace is {1}.",
+                            ex.Message, ex.StackTrace);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+        }
+
+        /// <summary>
+        /// Aktualisiert den lokalen Datensatz für den übergebenen Reminder.
+        /// Schreibt die Werte des übergebenen Objekts als neuen Datensatz anstelle des alten
+        /// Datensatzes in die Datenbank.
+        /// </summary>
+        /// <param name="updatedReminder">Das Reminder Objekt mit den aktualisierten Reminder-Daten.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Update fehlschlägt.</exception>
+        public void UpdateReminder(Reminder updatedReminder)
+        {
+            if (updatedReminder == null)
+                return;
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string sql = @"UPDATE Reminder 
+                            SET Channel_Id=?, StartDate=?, EndDate=?, CreationDate=?, ModificationDate=?, 
+                            ""Interval""=?, ""Ignore""=?, Title=?, Text=?, Priority=?, Author_Moderator_Id=? 
+                            WHERE Id=?;";
+
+                        using (var updateStmt = conn.Prepare(sql))
+                        {
+                            updateStmt.Bind(1, updatedReminder.ChannelId);
+                            updateStmt.Bind(2, DatabaseManager.DateTimeToSQLite(updatedReminder.StartDate));
+                            updateStmt.Bind(3, DatabaseManager.DateTimeToSQLite(updatedReminder.EndDate));
+                            updateStmt.Bind(4, DatabaseManager.DateTimeToSQLite(updatedReminder.CreationDate));
+                            updateStmt.Bind(5, DatabaseManager.DateTimeToSQLite(updatedReminder.ModificationDate));
+                            updateStmt.Bind(6, updatedReminder.Interval);
+                            updateStmt.Bind(7, (updatedReminder.Ignore) ? 1 : 0);
+                            updateStmt.Bind(8, updatedReminder.Title);
+                            updateStmt.Bind(9, updatedReminder.Text);
+                            updateStmt.Bind(10, (int)updatedReminder.MessagePriority);
+                            updateStmt.Bind(11, updatedReminder.AuthorId);
+
+                            updateStmt.Bind(12, updatedReminder.Id);
+
+                            if (updateStmt.Step() != SQLiteResult.DONE)
+                                Debug.WriteLine("Update for reminder with id {0} has failed.", updatedReminder.Id);
+                            else
+                                Debug.WriteLine("Successfully updated reminder with id {0}.", updatedReminder.Id);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("Update of reminder with id {0} has failed. Msg is: {1}.",
+                            updatedReminder.Id,
+                            sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Update of reminder has failed. The message is: {0} and stack trace is {1}.",
+                            ex.Message, ex.StackTrace);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+        }
+
+        /// <summary>
+        /// Liefert eine Liste von Reminder Objekten, die in der lokalen Datenbank für den
+        /// Kanal mit der angegebenen Id gespeichert sind.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, für den die Reminder abgerufen werden sollen.</param>
+        /// <returns>Eine Liste von Reminder Objekten.</returns>
+        /// <exception cref="DatabaseException">Wirft eine DatabaseException, wenn das Abrufen der Informationen fehlschlägt.</exception>
+        public List<Reminder> GetRemindersForChannel(int channelId)
+        {
+            List<Reminder> reminders = new List<Reminder>();
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string sql = @"SELECT *
+                            FROM Reminder 
+                            WHERE Channel_Id=?;";
+
+                        int id, interval, authorId;
+                        string title, text;
+                        bool ignore;
+                        Priority priority;
+                        DateTime startDate, endDate, creationDate, modificationDate;
+
+                        using (var stmt = conn.Prepare(sql))
+                        {
+                            stmt.Bind(1, channelId);
+
+                            while (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                id = Convert.ToInt32(stmt["Id"]);
+                                startDate = DatabaseManager.DateTimeFromSQLite(stmt["StartDate"].ToString());
+                                endDate = DatabaseManager.DateTimeFromSQLite(stmt["EndDate"].ToString());
+                                creationDate = DatabaseManager.DateTimeFromSQLite(stmt["CreationDate"].ToString());
+                                modificationDate = DatabaseManager.DateTimeFromSQLite(stmt["ModificationDate"].ToString());
+                                interval = Convert.ToInt32(stmt["Interval"]);
+                                ignore = ((long)stmt["Ignore"] == 1) ? true : false;
+                                title = (string)stmt["Title"];
+                                text = (string)stmt["Text"];
+                                authorId = Convert.ToInt32(stmt["Author_Moderator_Id"]);
+                                priority = (Priority)Enum.ToObject(typeof(Priority), stmt["Priority"]);
+
+                                Reminder reminderTmp = new Reminder(id, creationDate, modificationDate, startDate, endDate, interval,
+                                    ignore, channelId, authorId, title, text, priority);
+                                reminders.Add(reminderTmp);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("Extraction of reminders for channel with id {0} has failed. Msg is: {1}.",
+                            channelId,
+                            sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetRemindersForChannel has failed. The message is: {0} and stack trace is {1}.",
+                            ex.Message, ex.StackTrace);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+
+            return reminders;
+        }
+
+        /// <summary>
+        /// Holt den Reminder mit der angegebenen Id aus der lokalen Datenbank, sofern
+        /// der Datensatz vorhanden ist.
+        /// </summary>
+        /// <param name="reminderId">Die Id des Reminders, der aus der DB geholt werden soll.</param>
+        /// <returns>Ein Objekt vom Typ Reminder, oder null, falls kein Datensatz existiert hat.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abruf der Daten fehlschlägt.</exception>
+        public Reminder GetReminder(int reminderId)
+        {
+            Reminder reminder = null;
+
+             // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string sql = @"SELECT * 
+                            FROM Reminder 
+                            WHERE Id=?;";
+
+                        int channelId, interval, authorId;
+                        string title, text;
+                        bool ignore;
+                        Priority priority;
+                        DateTime startDate, endDate, creationDate, modificationDate;
+
+                        using (var stmt = conn.Prepare(sql))
+                        {
+                            stmt.Bind(1, reminderId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                channelId = Convert.ToInt32(stmt["Channel_Id"]);
+                                startDate = DatabaseManager.DateTimeFromSQLite(stmt["StartDate"].ToString());
+                                endDate = DatabaseManager.DateTimeFromSQLite(stmt["EndDate"].ToString());
+                                creationDate = DatabaseManager.DateTimeFromSQLite(stmt["CreationDate"].ToString());
+                                modificationDate = DatabaseManager.DateTimeFromSQLite(stmt["ModificationDate"].ToString());
+                                interval = Convert.ToInt32(stmt["Interval"]);
+                                ignore = ((long)stmt["Ignore"] == 1) ? true : false;
+                                title = (string)stmt["Title"];
+                                text = (string)stmt["Text"];
+                                authorId = Convert.ToInt32(stmt["Author_Moderator_Id"]);
+                                priority = (Priority)Enum.ToObject(typeof(Priority), stmt["Priority"]);
+
+                                reminder = new Reminder(reminderId, creationDate, modificationDate, startDate, endDate, interval,
+                                    ignore, channelId, authorId, title, text, priority);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("Extraction of reminder with id {0} has failed. Msg is: {1}.",
+                            reminderId,
+                            sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetReminder has failed. The message is: {0} and stack trace is {1}.",
+                            ex.Message, ex.StackTrace);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+
+            return reminder;
+        }
+
+        /// <summary>
+        /// Löscht alle Reminder Datensätze, die zu dem Kanal mit der angegebenen Id gespeichert sind.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, für den die Reminder gelöscht werden sollen.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Löschen fehlschlägt.</exception>
+        public void DeleteRemindersForChannel(int channelId)
+        {
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string sql = @"DELETE FROM Reminder 
+                            WHERE Channel_Id=?;";
+
+                        using (var stmt = conn.Prepare(sql))
+                        {
+                            stmt.Bind(1, channelId);
+
+                            stmt.Step();
+                            Debug.WriteLine("Deleted reminders from channel with id {0}.", channelId);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("Deletion of reminders for channel with id {0} has failed. Msg is: {1}.",
+                            channelId,
+                            sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("DeleteRemindersForChannel has failed. The message is: {0} and stack trace is {1}.",
+                            ex.Message, ex.StackTrace);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+        }
+
+        /// <summary>
+        /// Löscht den Reminder mit der angegebenen Id aus der Datenbank. 
+        /// </summary>
+        /// <param name="reminderId">Die Id des zu löschenden Reminders.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Löschen fehlschlägt.</exception>
+        public void DeleteReminder(int reminderId)
+        {
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string sql = @"DELETE FROM Reminder 
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(sql))
+                        {
+                            stmt.Bind(1, reminderId);
+
+                            stmt.Step();
+                            Debug.WriteLine("Deleted reminder with id {0}.", reminderId);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("Deletion of reminder with id {0} has failed. Msg is: {1}.",
+                            reminderId,
+                            sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("DeleteReminder has failed. The message is: {0} and stack trace is {1}.",
+                            ex.Message, ex.StackTrace);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+        }
+
+        /// <summary>
+        /// Prüft, ob es einen Datensatz für den Reminder mit der übergebenen Id in der 
+        /// lokalen Datenbank gibt.
+        /// </summary>
+        /// <param name="reminderId">Die Id des zu prüfenden Reminder.</param>
+        /// <returns>Liefert true, wenn der Datensatz in der lokalen DB existiert, sonst false.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Prüfung fehlschlägt.</exception>
+        public bool IsReminderContained(int reminderId)
+        {
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string sql = @"SELECT COUNT(*) AS Amount
+                            FROM Reminder 
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(sql))
+                        {
+                            stmt.Bind(1, reminderId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                int resultAmount = Convert.ToInt32(stmt["Amount"]);
+
+                                if (resultAmount == 1)
+                                    return true;
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("Error during IsReminderContained execution. Msg is: {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("IsReminderContained has failed. The message is: {0} and stack trace is {1}.",
+                            ex.Message, ex.StackTrace);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+
+            return false;
+        }
+        #endregion Reminder
+
         /// <summary>
         /// Hilfsmethode, die aus einem durch eine Query zurückgelieferten Statement ein Objekt des Typs Kanal extrahiert.
         /// Je nach Typ des Kanals werden zusätzliche Informationen aus Subklassen-Tabellen abgefragt und ein Objekt
@@ -2077,8 +2633,6 @@ namespace DataHandlingLayer.Database
             
             return channel;
         }
-
-
 
     }
 }
