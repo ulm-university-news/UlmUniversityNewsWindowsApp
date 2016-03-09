@@ -1,0 +1,405 @@
+﻿using DataHandlingLayer.Controller;
+using DataHandlingLayer.DataModel;
+using DataHandlingLayer.ErrorMapperInterface;
+using DataHandlingLayer.Exceptions;
+using DataHandlingLayer.NavigationService;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using DataHandlingLayer.CommandRelays;
+
+namespace DataHandlingLayer.ViewModel
+{
+    public class AddAndEditReminderViewModel : DialogBaseViewModel
+    {
+        #region Fields
+        /// <summary>
+        /// Eine Referenz auf eine Instanz des ChannelController.
+        /// </summary>
+        private ChannelController channelController;
+        #endregion Fields
+
+        #region Properties
+
+        private bool isAddReminderDialog;
+        /// <summary>
+        /// Gibt an, ob es sich beim akutellen Dialog um einen 
+        /// "Reminder hinzufügen" Dialog handelt.
+        /// </summary>
+        public bool IsAddReminderDialog
+        {
+            get { return isAddReminderDialog; }
+            set { this.setProperty(ref this.isAddReminderDialog, value); }
+        }
+
+        private bool isEditReminderDialog;
+        /// <summary>
+        /// Gibt an, ob es sich beim aktuellen Dialog um einen
+        /// "Reminder bearbeiten" Dialog handelt.
+        /// </summary>
+        public bool IsEditReminderDialog
+        {
+            get { return isEditReminderDialog; }
+            set { this.setProperty(ref this.isEditReminderDialog, value); }
+        }
+        
+        private DateTimeOffset selectedStartDate;
+        /// <summary>
+        /// Das vom Nutzer gewählte Start-Datum.
+        /// </summary>
+        public DateTimeOffset SelectedStartDate
+        {
+            get { return selectedStartDate; }
+            set 
+            { 
+                this.setProperty(ref this.selectedStartDate, value);
+                updateNextReminderDate();
+            }
+        }
+
+        private DateTimeOffset selectedEndDate;
+        /// <summary>
+        /// Das vom Nutzer gewählte Ende-Datum.
+        /// </summary>
+        public DateTimeOffset SelectedEndDate
+        {
+            get { return selectedEndDate; }
+            set 
+            { 
+                this.setProperty(ref this.selectedEndDate, value);
+                updateNextReminderDate();
+            }
+        }
+
+        private TimeSpan selctedTime;
+        /// <summary>
+        /// Die vom Nutzer gewählte Zeit.
+        /// </summary>
+        public TimeSpan SelectedTime
+        {
+            get { return selctedTime; }
+            set 
+            { 
+                this.setProperty(ref this.selctedTime, value);
+                updateNextReminderDate();
+            }
+        }
+
+        private bool isReminderExpired;
+        /// <summary>
+        /// Gibt an, ob der Reminder mit den aktuellen Einstellungen bereits abgelaufen ist.
+        /// </summary>
+        public bool IsReminderExpired
+        {
+            get { return isReminderExpired; }
+            set { this.setProperty(ref this.isReminderExpired, value); }
+        }
+        
+        #region IntervalBlock
+        private bool isDailyIntervalSelected;
+        /// <summary>
+        /// Gibt an, ob es sich beim Intervall um eines vom Typ "Täglich" handelt.
+        /// </summary>
+        public bool IsDailyIntervalSelected
+        {
+            get { return isDailyIntervalSelected; }
+            set
+            {
+                this.setProperty(ref this.isDailyIntervalSelected, value);
+            }
+        }
+
+        private bool isWeeklyIntervalSelected;
+        /// <summary>
+        /// Gibt an, ob es sich beim Intervall um eines vom Typ "Wöchentlich" handelt.
+        /// </summary>
+        public bool IsWeeklyIntervalSelected
+        {
+            get { return isWeeklyIntervalSelected; }
+            set
+            {
+                this.setProperty(ref this.isWeeklyIntervalSelected, value);
+            }
+        }
+
+        private bool isIntervalOneTimeSelected;
+        /// <summary>
+        /// Gibt an, ob es sich beim Intervall um eines vom Typ "Einmalig" handelt.
+        /// </summary>
+        public bool IsIntervalOneTimeSelected
+        {
+            get { return isIntervalOneTimeSelected; }
+            set
+            {
+                this.setProperty(ref this.isIntervalOneTimeSelected, value);
+            }
+        }
+
+        private int selectedIntervalTypeComboBoxIndex;
+        /// <summary>
+        /// Der Index des ComboBox gewählten ComboBox Eintrags.
+        /// </summary>
+        public int SelectedIntervalTypeComboBoxIndex
+        {
+            get { return selectedIntervalTypeComboBoxIndex; }
+            set
+            {
+                this.setProperty(ref this.selectedIntervalTypeComboBoxIndex, value);
+                calculateIntervalValue();
+            }
+        }
+
+        private int selectedIntervalInDays = 1;
+        /// <summary>
+        /// Gibt das Intervall an, wenn das Intervall nach dem Typ "Täglich" gewählt wird.
+        /// </summary>
+        public int SelectedIntervalInDays
+        {
+            get { return selectedIntervalInDays; }
+            set 
+            { 
+                this.setProperty(ref this.selectedIntervalInDays, value);
+                calculateIntervalValue();
+            }
+        }
+
+        private int selectedIntervalInWeeks = 1;
+        /// <summary>
+        /// Gibt das Intervall an, wenn das Intervall nach dem Typ "Wöchentlich" gewählt wird.
+        /// </summary>
+        public int SelectedIntervalInWeeks
+        {
+            get { return selectedIntervalInWeeks; }
+            set 
+            { 
+                this.setProperty(ref this.selectedIntervalInWeeks, value);
+                calculateIntervalValue();
+            }
+        }
+
+        private bool skipNextReminderDate;
+        /// <summary>
+        /// Gibt an, ob der nächste Reminder-Termin ausgesetzt werden soll.
+        /// </summary>
+        public bool SkipNextReminderDate
+        {
+            get { return skipNextReminderDate; }
+            set 
+            { 
+                this.setProperty(ref this.skipNextReminderDate, value);
+                updateNextReminderDate();
+            }
+        }
+
+        private DateTime nextReminderDate;
+        /// <summary>
+        /// Das Datum und die Uhrzeit, an der der Reminder das nächste mal feuert.
+        /// </summary>
+        public DateTime NextReminderDate
+        {
+            get { return nextReminderDate; }
+            set { this.setProperty(ref this.nextReminderDate, value); }
+        }
+
+        private int intervalValue;
+        /// <summary>
+        /// Der Wert des Intervalls in Sekunden.
+        /// </summary>
+        public int IntervalValue
+        {
+            get { return intervalValue; }
+            set { this.setProperty(ref this.intervalValue, value); }
+        }        
+        #endregion IntervalBlock
+
+        private string title;
+        /// <summary>
+        /// Der Titel für den Reminder. Die von dem Reminder erzeugten 
+        /// Announcements werden diesen Titel besitzen.
+        /// </summary>
+        public string Title
+        {
+            get { return title; }
+            set { this.setProperty(ref this.title, value); }
+        }
+
+        private string text;
+        /// <summary>
+        /// Der Text für den Reminder. Die von dem Reminder erzeugten 
+        /// Announcements werden diesen Inhalt besitzen.
+        /// </summary>
+        public string Text
+        {
+            get { return text; }
+            set { this.setProperty(ref this.text, value); }
+        }
+
+        private bool isPriorityNormalSelected;
+        /// <summary>
+        /// Ist aktuell die Priorität "Normal" gewählt.
+        /// </summary>
+        public bool IsPriorityNormalSelcted
+        {
+            get { return isPriorityNormalSelected; }
+            set { this.setProperty(ref this.isPriorityNormalSelected, value); }
+        }
+
+        private bool isPriorityHighSelected;
+        /// <summary>
+        /// Ist aktuell die Priorität "Hoch" gewählt.
+        /// </summary>
+        public bool IsPriorityHighSelected
+        {
+            get { return isPriorityHighSelected; }
+            set { this.setProperty(ref this.isPriorityHighSelected, value); }
+        }
+
+        private Channel selectedChannel;
+        /// <summary>
+        /// Der gewählte Kanal, für den der Reminder hinzugefügt werden soll, oder
+        /// für den ein bestehender Reminder geändert werden soll.
+        /// </summary>
+        public Channel SelectedChannel
+        {
+            get { return selectedChannel; }
+            set { this.setProperty(ref this.selectedChannel, value); }
+        }
+        #endregion Properties
+
+        #region Commands
+        private AsyncRelayCommand createReminderCommand;
+        /// <summary>
+        /// Befehl zum Erzeugen eines neuen Reminder.
+        /// </summary>
+        public AsyncRelayCommand CreateReminderCommand
+        {
+            get { return createReminderCommand; }
+            set { createReminderCommand = value; }
+        }
+        #endregion Commands
+
+        /// <summary>
+        /// Erzeugt eine Instanz der Klasse AddAndEditReminderViewModel.
+        /// </summary>
+        /// <param name="navService">Eine Referenz auf den Navigationsdienst der Anwendung.</param>
+        /// <param name="errorMapper">Eine Referenz auf den Fehlerdienst der Anwendung.</param>
+        public AddAndEditReminderViewModel(INavigationService navService, IErrorMapper errorMapper)
+            : base(navService, errorMapper)
+        {
+            channelController = new ChannelController(this);
+
+            // Erzeuge Befehle.
+            CreateReminderCommand = new AsyncRelayCommand(param => executeCreateReminderCommand());
+        }
+
+        /// <summary>
+        /// Lädt den Kanal mit der angegebenen Id.
+        /// </summary>
+        /// <param name="channelId">Die Id des zu ladenden Kanals.</param>
+        public async Task LoadSelectedChannel(int channelId)
+        {
+            try
+            {
+                SelectedChannel = await Task.Run(() => channelController.GetChannel(channelId));
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("Couldn't load channel with id {0}.", channelId);
+                displayError(ex.ErrorCode);
+            }
+        }
+
+        /// <summary>
+        /// Lade einen Dialog zum Erstellen eines Reminders.
+        /// </summary>
+        public void LoadAddReminderDialog()
+        {
+            // Initialisiere ViewModel Parameter. 
+            IsAddReminderDialog = true;
+            IsEditReminderDialog = false;
+
+            SelectedStartDate = DateTime.Now;
+            SelectedEndDate = DateTime.Now;
+            SelectedTime = TimeSpan.FromHours(12.0f);
+
+            IsDailyIntervalSelected = true;
+            IsWeeklyIntervalSelected = false;
+            IsIntervalOneTimeSelected = false;
+
+            calculateIntervalValue();
+            updateNextReminderDate();
+        }
+
+        /// <summary>
+        /// Aktualisiert das Datum des nächsten Termins, an dem der Reminder feuert.
+        /// </summary>
+        private void updateNextReminderDate()
+        {
+            Debug.WriteLine("In updateNextReminderDate.");
+
+            DateTime reminderStartDate = new DateTime(SelectedStartDate.Year, SelectedStartDate.Month, SelectedStartDate.Day,
+                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds);
+            DateTime reminderEndDate = new DateTime(SelectedEndDate.Year, SelectedEndDate.Month, SelectedEndDate.Day,
+                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds);
+
+            // Erzeuge Reminder Objekt mit aktuellen Daten und lasse den nächsten
+            // Reminder Zeitpunkt bestimmen.
+            Reminder reminderTmp = new Reminder()
+            {
+                StartDate = reminderStartDate,
+                EndDate = reminderEndDate,
+                Ignore = SkipNextReminderDate,
+                Interval = IntervalValue
+            };
+
+            reminderTmp.ComputeFirstNextDate();
+            reminderTmp.EvaluateIsExpired();
+
+            if (reminderTmp.IsExpired)
+            {
+                Debug.WriteLine("Reminder is expired.");
+                IsReminderExpired = true;
+            }
+            else
+            {
+                IsReminderExpired = false;
+            }
+            
+            NextReminderDate = reminderTmp.NextDate;
+        }
+
+        /// <summary>
+        /// Hilfsmethode, welche den View Zustand aktualisiert bei einer Änderung des
+        /// gewählten Intervalltyps.
+        /// </summary>
+        private void calculateIntervalValue()
+        {
+            if (IsDailyIntervalSelected)
+            {
+                IntervalValue = SelectedIntervalInDays * 60 * 60 * 24;
+            }
+            else if (IsWeeklyIntervalSelected)
+            {
+                IntervalValue = SelectedIntervalInWeeks * 60 * 60 * 24 * 7;
+            }
+            else if (IsIntervalOneTimeSelected)
+            {
+                IntervalValue = 0;
+            }
+
+            Debug.WriteLine("In calculateIntervalValue. Calculated interval value is: {0}.", IntervalValue);
+            updateNextReminderDate();
+        }
+
+        /// <summary>
+        /// Führt den Befehl CreateReminderCommand aus. Legt einen neuen Reminder an.
+        /// </summary>
+        private async Task executeCreateReminderCommand()
+        {
+            // TODO
+        }
+    }
+}

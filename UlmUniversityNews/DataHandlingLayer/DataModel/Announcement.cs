@@ -91,7 +91,7 @@ namespace DataHandlingLayer.DataModel
                 SetValidationError("Title", "AddAnnouncementValidationErrorTitleIsNull");
                 return;
             }
-            if (!checkStringRange(0, 45, Title))
+            if (!checkStringRange(0, Constants.Constants.MaxAnnouncementTitleLength, Title))
             {
                 SetValidationError("Title", "AddAnnouncementValidationErrorTitleTooLong");
             }
@@ -107,7 +107,7 @@ namespace DataHandlingLayer.DataModel
                 SetValidationError("Text", "AddAnnouncementValidationErrorTextIsNull");
                 return;
             }
-            if (!checkStringRange(0, 500, Text))
+            if (!checkStringRange(0, Constants.Constants.MaxAnnouncementContentLength, Text))
             {
                 SetValidationError("Text", "AddAnnouncementValidationErrorTextTooLong");
             }

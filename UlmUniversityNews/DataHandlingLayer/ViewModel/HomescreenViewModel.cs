@@ -151,6 +151,7 @@ namespace DataHandlingLayer.ViewModel
                     AppSettings currentSettings = channelController.GetApplicationSettings();
                     cachedGeneralListSettings = currentSettings.GeneralListOrderSetting;
                     cachedChannelOrderSettings = currentSettings.ChannelOderSetting;
+
                     //Debug.WriteLine("HVM caches appSettings. The settings are: {0} and {1}.", cachedGeneralListSettings, cachedChannelOrderSettings);
 
                     // Speichere die Kanäle im Lookup-Verzeichnis.
@@ -207,6 +208,16 @@ namespace DataHandlingLayer.ViewModel
                                 Debug.WriteLine("Need to insert channel with id {0} into MyChannels.", channel.Id);
                                 MyChannels.Insert(channels.IndexOf(channel), channel);
                                 currentChannels.Add(channel.Id, channel);
+                            }
+                            else
+                            { 
+                                // Prüfe, ob die Kanaldaten aktualisiert werden müssen.
+                                Channel currentChannel = currentChannels[channel.Id];
+                                if (currentChannel.ModificationDate.CompareTo(channel.ModificationDate) < 0) {
+                                    // Aktualisiere Objektinstanz. // TODO - Teste das
+                                    Debug.WriteLine("Need to update local properties of channel object with id {0}.", channel.Id);
+                                    updateViewRelatedChannelProperties(currentChannel, channel);
+                                }
                             }
                         }
 
@@ -335,6 +346,7 @@ namespace DataHandlingLayer.ViewModel
                     {
                         // Speichere den Wert aus dem Verzeichnis als neue Anzahl an ungelesenen Announcements.
                         channel.NumberOfUnreadAnnouncements = numberOfUnreadAnnouncements[channel.Id];
+
                         // Debug.WriteLine("The new value for unreadMsg for channel with id {0} is {1}.",
                         //    channel.Id, channel.NumberOfUnreadAnnouncements);
                     }
@@ -345,6 +357,17 @@ namespace DataHandlingLayer.ViewModel
                     }
                 }
             }     
+        }
+
+        /// <summary>
+        /// Aktualisiert für einen Kanal die Properties, die für die Anzeige relvant sind.
+        /// <param name="oldChannel">Das Channel Objekt vor der Aktualisierung.</param>
+        /// <param name="updatedChannel">Das Channel Objekt nach der Aktualisierung.</param>
+        /// </summary>
+        private void updateViewRelatedChannelProperties(Channel oldChannel, Channel updatedChannel)
+        {
+            oldChannel.Name = updatedChannel.Name;
+            oldChannel.Term = updatedChannel.Term;
         }
 
         /// <summary>

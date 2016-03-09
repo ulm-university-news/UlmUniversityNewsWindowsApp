@@ -43,6 +43,9 @@ namespace DataHandlingLayer.Constants
         public const int MinUsernameLength = 3;
         public const int MaxUsernameLength = 35;
 
+        public const int MaxAnnouncementTitleLength = 45;
+        public const int MaxAnnouncementContentLength = 45;
+
         // Patterns
         public const string TermPattern = @"^[W,S][0-9]{4}$";
         public const string UserNamePattern = @"^[-_a-zA-Z0-9]+$";

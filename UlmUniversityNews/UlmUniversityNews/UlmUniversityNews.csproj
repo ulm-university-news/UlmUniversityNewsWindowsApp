@@ -82,6 +82,10 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <Page Include="Common\CustomUserControl\IntervalPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ItemPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -118,6 +122,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ModeratorViews\AddAndEditReminderDialog\AddAndEditReminder.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ModeratorViews\AddAnnouncementDialog\AddAnnouncement.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -140,6 +148,9 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\Behavior.cs" />
+    <Compile Include="Common\CustomUserControl\IntervalPicker.xaml.cs">
+      <DependentUpon>IntervalPicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Common\FlyoutHelper.cs" />
     <Compile Include="Common\HideablePivotItemBehavior.cs" />
     <Compile Include="Common\HyperLinkedTextBlock.cs" />
@@ -200,6 +211,9 @@
     </Compile>
     <Compile Include="Views\ModeratorViews\AddAndEditChannelDialog\AddAndEditChannel.xaml.cs">
       <DependentUpon>AddAndEditChannel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ModeratorViews\AddAndEditReminderDialog\AddAndEditReminder.xaml.cs">
+      <DependentUpon>AddAndEditReminder.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ModeratorViews\AddAnnouncementDialog\AddAnnouncement.xaml.cs">
       <DependentUpon>AddAnnouncement.xaml</DependentUpon>

@@ -193,6 +193,10 @@ namespace DataHandlingLayer.ViewModel
                         currentChannels.Add(updatedChannelList[i].Id, updatedChannelList[i]);
                         ManagedChannels.Insert(i, updatedChannelList[i]);
                     }
+                    else
+                    {
+                        // TODO - Prüfe, ob Aktualisierung der lokalen Kanal-Ressource erforderlich.
+                    }
                 }
 
                 // Vergleiche, ob ManagedChannels Kanäle enthält, die nicht mehr in updatedChannelList stehen.

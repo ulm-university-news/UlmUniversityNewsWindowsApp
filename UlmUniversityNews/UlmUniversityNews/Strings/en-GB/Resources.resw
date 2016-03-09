@@ -759,19 +759,19 @@
   <data name="ValidationErrorStartPageUserNameIsNull" xml:space="preserve">
     <value>Please enter a username.</value>
   </data>
-  <data name="ModeratorChannelDetailsReminderEndDateInPastValidationError" xml:space="preserve">
+  <data name="AddAndEditReminderEndDateInPastValidationError" xml:space="preserve">
     <value>The end date must not be in the past.</value>
   </data>
-  <data name="ModeratorChannelDetailsReminderInvalidIntervalValidationError" xml:space="preserve">
+  <data name="AddAndEditReminderInvalidIntervalValidationError" xml:space="preserve">
     <value>The entered interval is not valid. Please verify your input.</value>
   </data>
-  <data name="ModeratorChannelDetailsReminderStartAndEndDateEqualIntervalInvalidValidationError" xml:space="preserve">
+  <data name="AddAndEditReminderStartAndEndDateEqualIntervalInvalidValidationError" xml:space="preserve">
     <value>If StartDate and EndDate are the same, the reminder can only be configured as a one-time reminder.</value>
   </data>
-  <data name="ModeratorChannelDetailsReminderStartDateAfterEndDateValidationError" xml:space="preserve">
+  <data name="AddAndEditReminderStartDateAfterEndDateValidationError" xml:space="preserve">
     <value>The start date must not be after the end date.</value>
   </data>
-  <data name="ModeratorChannelDetailsReminderStartOrEndDateNotSetValidationError" xml:space="preserve">
+  <data name="AddAndEditReminderStartOrEndDateNotSetValidatonError" xml:space="preserve">
     <value>Please enter a valid start date and a valid end date.</value>
   </data>
   <data name="NextReminderDateDescription.Text" xml:space="preserve">
@@ -780,5 +780,101 @@ date: </value>
   </data>
   <data name="ReminderIsExpiredText.Text" xml:space="preserve">
     <value>Reminder is expired.</value>
+  </data>
+  <data name="AddAndEditReminderAddReminderDescription.Text" xml:space="preserve">
+    <value>Configuration of a reminder. A reminder sends messages automatically in a specified interval. All fields are mandatory fields.</value>
+  </data>
+  <data name="AddAndEditReminderAddReminderHeadline.Text" xml:space="preserve">
+    <value>Add reminder</value>
+  </data>
+  <data name="AddAndEditReminderContentTextBox.Header" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="AddAndEditReminderDailyIntervalSelectionDesc1.Text" xml:space="preserve">
+    <value>Reminder fires every </value>
+  </data>
+  <data name="AddAndEditReminderDailyIntervalSelectionDesc2.Text" xml:space="preserve">
+    <value> days.</value>
+  </data>
+  <data name="AddAndEditReminderEditReminderDescription.Text" xml:space="preserve">
+    <value>Here you can change the configuration of the reminder.</value>
+  </data>
+  <data name="AddAndEditReminderEditReminderHeadline.Text" xml:space="preserve">
+    <value>Edit reminder</value>
+  </data>
+  <data name="AddAndEditReminderEndDatePicker.Header" xml:space="preserve">
+    <value>End date</value>
+  </data>
+  <data name="AddAndEditReminderIntervalBlockHeadline.Text" xml:space="preserve">
+    <value>Please provide the interval of the reminder:</value>
+  </data>
+  <data name="AddAndEditReminderIntervalPickerDailyDescription.Text" xml:space="preserve">
+    <value>Interval in days: </value>
+  </data>
+  <data name="AddAndEditReminderIntervalPickerItemDayly.Content" xml:space="preserve">
+    <value>Daily</value>
+  </data>
+  <data name="AddAndEditReminderIntervalPickerItemOnce.Content" xml:space="preserve">
+    <value>Single-Event</value>
+  </data>
+  <data name="AddAndEditReminderIntervalPickerItemWeekly.Content" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="AddAndEditReminderIntervalPickerOneTimeDescription.Text" xml:space="preserve">
+    <value>Single-Event reminder</value>
+  </data>
+  <data name="AddAndEditReminderIntervalPickerWeeklyDescription.Text" xml:space="preserve">
+    <value>Interval in weeks:</value>
+  </data>
+  <data name="AddAndEditReminderIntervalType.Header" xml:space="preserve">
+    <value>Interval type</value>
+  </data>
+  <data name="AddAndEditReminderNextReminderDateText.Text" xml:space="preserve">
+    <value>Next reminder date: </value>
+  </data>
+  <data name="AddAndEditReminderOneTimeIntervalSelectionDescription.Text" xml:space="preserve">
+    <value>Reminder fires only once.</value>
+  </data>
+  <data name="AddAndEditReminderPriorityComboBox.Header" xml:space="preserve">
+    <value>Priority</value>
+  </data>
+  <data name="AddAndEditReminderPriorityHigh.Content" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="AddAndEditReminderPriorityNormal.Content" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="AddAndEditReminderReminderIsExpiredText.Text" xml:space="preserve">
+    <value>Reminder is expired.</value>
+  </data>
+  <data name="AddAndEditReminderSkipNextDateCheckBox.Content" xml:space="preserve">
+    <value>Skip next reminder date</value>
+  </data>
+  <data name="AddAndEditReminderStartDatePicker.Header" xml:space="preserve">
+    <value>Start date</value>
+  </data>
+  <data name="AddAndEditReminderTimePicker.Header" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="AddAndEditReminderTitleTextBox.Header" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="AddAndEditReminderWeeklyIntervalSelectionDesc1.Text" xml:space="preserve">
+    <value>Reminder fires every </value>
+  </data>
+  <data name="AddAndEditReminderWeeklyIntervalSelectionDesc2.Text" xml:space="preserve">
+    <value> weeks.</value>
+  </data>
+  <data name="IntervalPickerDayString" xml:space="preserve">
+    <value>days</value>
+  </data>
+  <data name="IntervalPickerIntervalStringDescription" xml:space="preserve">
+    <value>Send reminder every </value>
+  </data>
+  <data name="IntervalPickerSendOnceString" xml:space="preserve">
+    <value>Send reminder only once.</value>
+  </data>
+  <data name="IntervalPickerWeekString" xml:space="preserve">
+    <value>weeks</value>
   </data>
 </root>

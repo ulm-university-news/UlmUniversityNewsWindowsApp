@@ -1440,7 +1440,7 @@ namespace DataHandlingLayer.Controller
             // Rufe Reminder zu dem Kanal ab.
             try
             {
-                List<Reminder> reminders = await GetRemindersOfChannelAsync(channelId);
+                List<Reminder> reminders = await GetRemindersOfChannelAsync(channelId, false);
                 channelDatabaseManager.BulkInsertReminder(reminders);
             }
             catch (DatabaseException ex)
@@ -1650,9 +1650,11 @@ namespace DataHandlingLayer.Controller
         /// Ruft die Liste von Remindern für den Kanal mit der angegebenen Id vom Server ab.
         /// </summary>
         /// <param name="channelId">Die Id des Kanals, für den die Reminder abgerufen werden sollen.</param>
+        /// <param name="withCaching">Gibt an, ob der Request immer explizit asugeführt werden soll, oder ob 
+        ///     Ergebnisse aus dem Cache in Ordnung sind.</param>
         /// <returns>Liste von Reminder Objekten.</returns>
         /// <exception cref="ClientException">Wirft ClientException, wenn Reminder nicht abgerufen werden konnten.</exception>
-        public async Task<List<Reminder>> GetRemindersOfChannelAsync(int channelId)
+        public async Task<List<Reminder>> GetRemindersOfChannelAsync(int channelId, bool withCaching)
         {
             List<Reminder> reminders = null;
             Moderator activeModerator = GetLocalModerator();
@@ -1667,7 +1669,7 @@ namespace DataHandlingLayer.Controller
                     activeModerator.ServerAccessToken,
                     "/channel/" + channelId + "/reminder",
                     null,
-                    false);
+                    withCaching);
             }
             catch (APIException ex)
             {

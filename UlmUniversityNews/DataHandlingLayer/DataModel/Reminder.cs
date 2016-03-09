@@ -231,11 +231,13 @@ namespace DataHandlingLayer.DataModel
                 {
                     // StartDate ist früher als aktuelles Datum. Das heißt, der Reminder ist abgelaufen.
                     IsExpired = true;
+                    return;
                 }
                 else
                 {
                     // StartDate ist nicht früher als aktuelles Datum. Reminder noch aktiv.
                     IsExpired = false;
+                    return;
                 }
             }
 
@@ -245,6 +247,7 @@ namespace DataHandlingLayer.DataModel
             {
                 // EndDate ist früher als das aktuelle Datum. Reminder ist abgelaufen.
                 IsExpired = true;
+                return;
             }
 
             // Prüfe, ob der nächste Termin für den Reminder nach dem Ende-Datum liegt.
@@ -253,6 +256,7 @@ namespace DataHandlingLayer.DataModel
             {
                 // EndDate ist früher als nächster Termin des Reminders. Reminder ist abgelaufen.
                 IsExpired = true;
+                return;
             }
 
             // Reminder noch nicht abgelaufen.
@@ -296,10 +300,48 @@ namespace DataHandlingLayer.DataModel
             {
                 NextDate = NextDate.AddSeconds(Interval);
             }
+
+            // Wenn Reminder für nächsten Termin ausgesetzt ist.
+            if (Ignore)
+            {
+                ComputeNextDate();
+            }
         }
         #endregion ReminderRelatedFunctionality
 
         #region ValidationRules
+        /// <summary>
+        /// Validiert das Property Title.
+        /// </summary>
+        public void ValidateTitleProperty()
+        {
+            if (Title == null)
+            {
+                SetValidationError("Title", "AddAnnouncementValidationErrorTitleIsNull");   // Verwende gleiche Fehlernachricht wie bei Announcement.
+                return;
+            }
+            if (!checkStringRange(0, Constants.Constants.MaxAnnouncementTitleLength, Title))
+            {
+                SetValidationError("Title", "AddAnnouncementValidationErrorTitleTooLong");
+            }
+        }
+
+        /// <summary>
+        /// Validiert das Property Text.
+        /// </summary>
+        public void ValidateTextProperty()
+        {
+            if (Text == null)
+            {
+                SetValidationError("Text", "AddAnnouncementValidationErrorTextIsNull"); // Verwende gleiche Fehlernachricht wie bei Announcement.
+                return;
+            }
+            if (!checkStringRange(0, Constants.Constants.MaxAnnouncementContentLength, Text))
+            {
+                SetValidationError("Text", "AddAnnouncementValidationErrorTextTooLong");
+            }
+        }
+
         /// <summary>
         /// Validiert das Property "Interval".
         /// </summary>
@@ -312,21 +354,21 @@ namespace DataHandlingLayer.DataModel
             // Wenn der Start-Termin gleich dem Ende-Termin ist, dann muss es sich um einen One-Time Reminder handeln.
             if (StartDate.CompareTo(EndDate) == 0 && Interval != 0)
             {
-                SetValidationError("Interval", "ModeratorChannelDetailsReminderStartAndEndDateEqualIntervalInvalidValidationError");
+                SetValidationError("Interval", "AddAndEditReminderStartAndEndDateEqualIntervalInvalidValidationError");
             }
             else
             {
                 // Prüfe, ob das Interval ein mehrfaches eines Tages ist. (86400s = 24h * 60m * 60s).
                 if (Interval % 86400 != 0)
                 {
-                    SetValidationError("Interval", "ModeratorChannelDetailsReminderInvalidIntervalValidationError");
+                    SetValidationError("Interval", "AddAndEditReminderInvalidIntervalValidationError");
                 }
                 else
                 {
                     // Prüfe, ob das Interval wenigstens einen Tag umfasst, und nicht mehr als 28 Tage (4 Wochen).
                     if (Interval < 86400 || Interval > 2419200)
                     {
-                        SetValidationError("Interval", "ModeratorChannelDetailsReminderInvalidIntervalValidationError");
+                        SetValidationError("Interval", "AddAndEditReminderInvalidIntervalValidationError");
                     }
                 }
             }
@@ -340,31 +382,36 @@ namespace DataHandlingLayer.DataModel
             // Prüfe zunächst, ob Start- und Ende-Datum gesetzt wurden.
             if (StartDate == null || EndDate == null)
             {
-                SetValidationError("StartAndEndDate", "ModeratorChannelDetailsReminderStartOrEndDateNotSetValidatonError");
+                SetValidationError("StartAndEndDate", "AddAndEditReminderStartOrEndDateNotSetValidatonError");
                 return;
             }
 
             if (StartDate.CompareTo(DateTime.MinValue) == 0 || EndDate.CompareTo(DateTime.MinValue) == 0)
             {
-                SetValidationError("StartAndEndDate", "ModeratorChannelDetailsReminderStartOrEndDateNotSetValidationError");
+                SetValidationError("StartAndEndDate", "AddAndEditReminderStartOrEndDateNotSetValidatonError");
                 return;
             }
 
             // Prüfe, ob das Start-Datum nach dem Ende-Datum ist.
             if (StartDate.CompareTo(EndDate) > 0)
             {
-                SetValidationError("StartAndEndDate", "ModeratorChannelDetailsReminderStartDateAfterEndDateValidationError");
+                SetValidationError("StartAndEndDate", "AddAndEditReminderStartDateAfterEndDateValidationError");
             }
             else if (EndDate.CompareTo(DateTime.Now) < 0)  // Prüfe, ob das Ende-Datum in der Zukunft liegt.
             {
-                SetValidationError("StartAndEndDate", "ModeratorChannelDetailsReminderEndDateInPastValidationError");
+                SetValidationError("StartAndEndDate", "AddAndEditReminderEndDateInPastValidationError");
             }
         }
 
+        /// <summary>
+        /// Validiert alle Properties der Reminder Klasse, für die Validierungsregeln definiert sind.
+        /// </summary>
         public override void ValidateAll()
         {
-            // TODO
-            throw new NotImplementedException();
+            ValidateTitleProperty();
+            ValidateTextProperty();
+            ValidateStartAndEndDate();
+            ValidateInterval();
         }
         #endregion ValidatonRules
     }

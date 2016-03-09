@@ -158,6 +158,16 @@ namespace DataHandlingLayer.ViewModel
             get { return switchToEditChannelDialogCommand; }
             set { switchToEditChannelDialogCommand = value; }
         }
+
+        private RelayCommand switchToAddReminderDialogCommand;
+        /// <summary>
+        /// Befehl zum Wechseln auf den Dialog zur Erstellung eines Reminders.
+        /// </summary>
+        public RelayCommand SwitchToAddReminderDialogCommand
+        {
+            get { return switchToAddReminderDialogCommand; }
+            set { switchToAddReminderDialogCommand = value; }
+        }    
         #endregion Commands
 
         /// <summary>
@@ -180,6 +190,9 @@ namespace DataHandlingLayer.ViewModel
             SwitchToEditChannelDialogCommand = new RelayCommand(
                 param => executeSwitchToEditChannelDialogCommand(),
                 param => canSwitchToEditChannelDialog());
+            SwitchToAddReminderDialogCommand = new RelayCommand(
+                param => executeSwitchToAddReminderDialogCommand(),
+                param => canSwitchToAddReminderDialog());
 
             // Lade Anwendungseinstellungen und passe View Parameter entsprechend an.
             AppSettings appSettings = channelController.GetApplicationSettings();
@@ -308,7 +321,7 @@ namespace DataHandlingLayer.ViewModel
             displayIndeterminateProgressIndicator();
             try
             {
-                List<Reminder> reminderListServer = await Task.Run(() => channelController.GetRemindersOfChannelAsync(Channel.Id));
+                List<Reminder> reminderListServer = await Task.Run(() => channelController.GetRemindersOfChannelAsync(Channel.Id, true));
                 List<Reminder> reminderList = reminderListServer;
 
                 // Starte Aktualisierung der lokalen Datensätze asynchron.
@@ -334,6 +347,10 @@ namespace DataHandlingLayer.ViewModel
                         // Füge Reminder hinzu.
                         Reminders.Insert(reminderList.IndexOf(reminder), reminder);
                         reminderLookup.Add(reminder.Id, reminder);
+                    }
+                    else
+                    {
+                        // TODO - prüfe, ob der Reminder aktualisiert wurde.
                     }
                 }
 
@@ -387,6 +404,7 @@ namespace DataHandlingLayer.ViewModel
         {
             SwitchToAddAnnouncementDialogCommand.RaiseCanExecuteChanged();
             SwitchToEditChannelDialogCommand.RaiseCanExecuteChanged();
+            SwitchToAddReminderDialogCommand.RaiseCanExecuteChanged();
         }
 
         /// <summary>
@@ -442,5 +460,34 @@ namespace DataHandlingLayer.ViewModel
                 _navService.Navigate("AddAndEditChannel", Channel.Id);
             }
         }
+
+        /// <summary>
+        /// Gibt an, ob nach dem aktuellen Zustand der View ein Wechsel auf den Dialog
+        /// zur Erstellung eines Reminder möglich ist.
+        /// </summary>
+        /// <returns>Liefert true, wenn Wechsel auf Dialog möglich ist, ansonsten false.</returns>
+        private bool canSwitchToAddReminderDialog()
+        {
+            // Pivot Index 1 ist der Reminder-Tab
+            if (SelectedPivotItemIndex == 1)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl SwitchToAddReminderDialogCommand aus. Wechselt auf den Dialog
+        /// zur Erstellung eines Reminder. 
+        /// </summary>
+        private void executeSwitchToAddReminderDialogCommand()
+        {
+            if (Channel != null)
+            {
+                string navigationParameter = "navParam?channelId=" + Channel.Id;
+                _navService.Navigate("AddAndEditReminder", navigationParameter);
+            }
+        }
+
     }
 }

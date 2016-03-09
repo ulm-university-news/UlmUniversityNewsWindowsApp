@@ -34,7 +34,7 @@ namespace DataHandlingLayer.DataModel
         public string Name
         {
             get { return name; }
-            set { name = value; }
+            set { this.setProperty(ref this.name, value); }
         }
 
         private string description;
@@ -89,7 +89,7 @@ namespace DataHandlingLayer.DataModel
         public string Term
         {
             get { return term; }
-            set { term = value; }
+            set { this.setProperty(ref this.term, value); }
         }
 
         private string locations;

@@ -227,6 +227,13 @@
                 Icon="Edit"
                 Visibility="{Binding ElementName=ModeratorChannelDetailsEditChannelButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding SwitchToEditChannelDialogCommand}"/>
+            <AppBarButton
+                x:Name="ModeratorChannelDetailsAddReminderButton"
+                x:Uid="ModeratorChannelDetailsAddReminderButton"
+                Label="add reminder"
+                Icon="Add"
+                Visibility="{Binding ElementName=ModeratorChannelDetailsAddReminderButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding SwitchToAddReminderDialogCommand}"/>
         </CommandBar>
     </Page.BottomAppBar>
 
