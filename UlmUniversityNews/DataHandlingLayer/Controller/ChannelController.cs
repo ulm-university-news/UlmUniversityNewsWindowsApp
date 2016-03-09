@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using DataHandlingLayer.API;
 using Newtonsoft.Json;
 using DataHandlingLayer.DataModel.Enums;
+using Newtonsoft.Json.Converters;
 
 namespace DataHandlingLayer.Controller
 {
@@ -148,7 +149,7 @@ namespace DataHandlingLayer.Controller
             }
 
             // Versuche Response zu parsen.
-            channels = parseChannelListFromJson(serverResponse);
+            channels = jsonParser.ParseChannelListFromJson(serverResponse);
 
             return channels;
         }
@@ -319,7 +320,10 @@ namespace DataHandlingLayer.Controller
             {
                 // Frage die verantwortlichen Moderatoren für diesen Kanal ab und speichere sie in der Datenbank.
                 List<Moderator> responsibleModerators = await GetResponsibleModeratorsAsync(channelId);
-                StoreResponsibleModeratorsForChannel(channelId, responsibleModerators);
+                if (responsibleModerators != null)
+                {
+                    StoreResponsibleModeratorsForChannel(channelId, responsibleModerators);
+                }
 
                 // Frage die Nachrichten zum Kanal ab und speichere Sie in der Datenbank.
                 List<Announcement> announcements = await GetAnnouncementsOfChannelAsync(channelId, 0, false);
@@ -441,7 +445,7 @@ namespace DataHandlingLayer.Controller
                 return false;
 
             // Generiere JSON-Dokument aus Objekt.
-            string jsonContent = parceChannelToJsonString(newChannel);
+            string jsonContent = jsonParser.ParseChannelToJsonString(newChannel);
             if (jsonContent == null)
             {
                 Debug.WriteLine("Error during serialization from channel object to json string. Could " + 
@@ -460,7 +464,7 @@ namespace DataHandlingLayer.Controller
                     );
 
                 // Extrahiere erhaltene Channel Resource aus JSON-Dokument.
-                Channel createdChannel = parseChannelFromJson(serverResponse);
+                Channel createdChannel = jsonParser.ParseChannelFromJson(serverResponse);
                 if (createdChannel != null)
                 {
                     try
@@ -479,8 +483,12 @@ namespace DataHandlingLayer.Controller
                         Debug.WriteLine("Database Exception, message is: {0}.", ex.Message);
                         // Bilde ab auf ClientException.
                         throw new ClientException(ErrorCodes.LocalDatabaseException, "Storing process of " + 
-                        "created channel object in local DB has failed");
+                            "created channel object in local DB has failed");
                     }
+                }
+                else
+                {
+                    throw new ClientException(ErrorCodes.JsonParserError, "Parsing of server response has failed.");
                 }
             }
             catch (APIException ex)
@@ -524,13 +532,14 @@ namespace DataHandlingLayer.Controller
                 return true;    // Keine Aktualisierung nötig.
 
             // Erstelle JSON-Dokument für die Aktualisierung.
-            string jsonContent = parceChannelToJsonString(updatableChannelObj);
+            string jsonContent = jsonParser.ParseChannelToJsonString(updatableChannelObj);
             if (jsonContent == null)
             {
                 Debug.WriteLine("Channel object could not be translated to a json document.");
                 return false;
             }
 
+            // Server Request.
             string serverResponse = null;
             try
             {
@@ -553,9 +562,15 @@ namespace DataHandlingLayer.Controller
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
 
+            // Führe lokale Aktualisierung des Datensatzes aus.
             try
             {
-                Channel updatedChannel = parseChannelFromJson(serverResponse);
+                Channel updatedChannel = jsonParser.ParseChannelFromJson(serverResponse);
+                if (updatedChannel == null)
+                {
+                    throw new ClientException(ErrorCodes.JsonParserError, "Couldn't parse server response.");
+                }
+
                 // Notification Settings bleiben unverändert.
                 updatedChannel.AnnouncementNotificationSetting = oldChannel.AnnouncementNotificationSetting;
                 if (updatedChannel != null)
@@ -849,23 +864,11 @@ namespace DataHandlingLayer.Controller
                     true);
 
                 // Extrahiere Moderatoren-Objekte aus der Antwort.
-                // Parse JSON List in eine JArray Repräsentation. JArray repräsentiert ein JSON Array. 
-                Newtonsoft.Json.Linq.JArray jsonArray = Newtonsoft.Json.Linq.JArray.Parse(serverResponse);
-                foreach(var item in jsonArray)
-                {
-                    Moderator moderator = parseModeratorObjectFromJSON(item.ToString());
-                    responsibleModerators.Add(moderator);
-                }
-            }
-            catch (JsonException jsonEx)
-            {
-                Debug.WriteLine("Error during deserialization. Exception is: " + jsonEx.Message);
-                // Abbilden des aufgetretenen Fehlers auf eine ClientException.
-                throw new ClientException(ErrorCodes.JsonParserError, "Parsing of JSON object has failed.");
+                responsibleModerators = jsonParser.ParseModeratorListFromJson(serverResponse);
             }
             catch (APIException ex)
             {
-                Debug.WriteLine("Couldn't retrieve responsible moderators. " + 
+                Debug.WriteLine("Couldn't retrieve responsible moderators. " +
                 "Error code is: {0} and status code was {1}.", ex.ErrorCode, ex.ResponseStatusCode);
                 throw new ClientException(ex.ErrorCode, "API call failed.");
             }
@@ -899,7 +902,11 @@ namespace DataHandlingLayer.Controller
                     withCaching);
 
                 // Extrahiere Announcements aus JSON-Dokument.
-                announcements = parseAnnouncementListFromJson(serverResponse);
+                announcements = jsonParser.ParseAnnouncementListFromJson(serverResponse);
+                if (announcements == null)
+                {
+                    throw new ClientException(ErrorCodes.JsonParserError, "Error during parsing of server response.");
+                }
             }
             catch(APIException ex)
             {
@@ -942,8 +949,11 @@ namespace DataHandlingLayer.Controller
                     try
                     {
                         List<Moderator> responsibleModerators = await GetResponsibleModeratorsAsync(announcement.ChannelId);
-                        StoreResponsibleModeratorsForChannel(announcement.ChannelId, responsibleModerators);
-
+                        if (responsibleModerators != null)
+                        {
+                            StoreResponsibleModeratorsForChannel(announcement.ChannelId, responsibleModerators);
+                        }
+                        
                         // Prüfe erneut, ob Eintrag nun vorhanden ist.
                         if (!moderatorDatabaseManager.IsModeratorStored(announcement.AuthorId))
                         {
@@ -1030,6 +1040,12 @@ namespace DataHandlingLayer.Controller
                         try
                         {
                             List<Moderator> responsibleModerators = await GetResponsibleModeratorsAsync(announcement.ChannelId);
+                            if (responsibleModerators == null)
+                            {
+                                Debug.WriteLine("Couldn't retrieve responsible moderators.");
+                                continue;
+                            }
+
                             StoreResponsibleModeratorsForChannel(announcement.ChannelId, responsibleModerators);
 
                             // Prüfe erneut, ob Eintrag nun vorhanden ist.
@@ -1213,8 +1229,7 @@ namespace DataHandlingLayer.Controller
                     "The message is {1}.", channelId, ex.Message);
             }
         }
-
-       
+               
 
         #region LocalManagedChannelsFunctions
 
@@ -1379,7 +1394,7 @@ namespace DataHandlingLayer.Controller
                         false
                         );
 
-                    managedChannels = parseChannelListFromJson(serverResponse);
+                    managedChannels = jsonParser.ParseChannelListFromJson(serverResponse);
                     Debug.WriteLine("Retrieved a list of managed channels with {0} items.", managedChannels.Count);
                 }
             }
@@ -1410,6 +1425,8 @@ namespace DataHandlingLayer.Controller
             try
             {
                 List<Moderator> moderators = await GetResponsibleModeratorsAsync(channelId);
+                if (moderators == null)
+                    return;
  
                 foreach (Moderator moderator in moderators)
                 {
@@ -1492,7 +1509,7 @@ namespace DataHandlingLayer.Controller
                 return false;
             }
             
-            string jsonContent = parseAnnouncementToJsonString(newAnnouncement);
+            string jsonContent = jsonParser.ParseAnnouncementToJsonString(newAnnouncement);
             if (jsonContent == null)
             {
                 Debug.WriteLine("CreateAnnouncementAsync failed, the announcement could " + 
@@ -1509,7 +1526,7 @@ namespace DataHandlingLayer.Controller
                     null);
 
                 // Extrahiere Announcement aus ServerResponse.
-                Announcement createdAnnouncement = parseAnnouncementFromJsonString(serverResponse);
+                Announcement createdAnnouncement = jsonParser.ParseAnnouncementFromJsonString(serverResponse);
 
                 if (createdAnnouncement != null)
                 {
@@ -1679,10 +1696,78 @@ namespace DataHandlingLayer.Controller
 
             if (serverResponse != null)
             {
-                reminders = parseReminderListFromJson(serverResponse);
+                reminders = jsonParser.ParseReminderListFromJson(serverResponse);
             }
 
             return reminders;
+        }
+
+        /// <summary>
+        /// Erzeugt einen neuen Reminder. Führt die
+        /// Validierung der Daten durch. Überträgt die Reminder-Daten an den Server und
+        /// speichert die Daten lokal ab, wenn die Bestätigung vom Server kommt.
+        /// </summary>
+        /// <param name="newReminder">Das Objekt, welches die Daten des neu anzulegenden
+        ///     Reminders beinhaltet.</param>
+        /// <returns>Liefert true, wenn Reminder erfolgreich angelegt werden konnte, sonst false.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn ein Fehler während des Erstellungsvorgangs auftritt.
+        ///     Beispielsweise dann, wenn der Server den Request ablehnt.</exception>
+        public async Task<bool> CreateReminderAsync(Reminder newReminder)
+        {
+            if (newReminder == null)
+                return false;
+
+            Moderator activeModerator = GetLocalModerator();
+            if (activeModerator == null)
+            {
+                Debug.WriteLine("No active moderator. Need to abort CreateReminderAsync.");
+                return false;
+            }
+
+            // Führe Validierung durch.
+            clearValidationErrors();
+            newReminder.ClearValidationErrors();
+            newReminder.ValidateAll();
+            if (newReminder.HasValidationErrors())
+            {
+                // Melde Validierungsfehler und breche ab.
+                reportValidationErrors(newReminder.GetValidationErrors());
+                return false;
+            }
+
+            // Erstelle JSON-Dokument.
+            string jsonContent = jsonParser.ParseReminderToJson(newReminder);
+            if (jsonContent == null)
+            {
+                Debug.WriteLine("Couldn't parse reminder to json. Need to abort execution.");
+                return false;
+            }
+
+            string serverResponse = null;
+            try
+            {
+                // Setzte Request an Server ab.
+                serverResponse = await api.SendHttpPostRequestWithJsonBodyAsync(
+                    activeModerator.ServerAccessToken,
+                    jsonContent,
+                    "/channel/" + newReminder.ChannelId + "/reminder",
+                    null);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("Request to create reminder has failed.");
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            // Parse Reminder aus Server-Antwort.
+            Reminder createdReminder = jsonParser.ParseReminderFromJson(serverResponse);
+            if (createdReminder != null)
+            {
+                // Speichere Reminder lokal ab.
+                StoreReminder(createdReminder);
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -1697,6 +1782,8 @@ namespace DataHandlingLayer.Controller
             try
             {
                 List<Moderator> moderators = await GetResponsibleModeratorsAsync(reminder.ChannelId);
+                if (moderators == null)
+                    return;
 
                 foreach (Moderator moderator in moderators)
                 {
@@ -1740,244 +1827,5 @@ namespace DataHandlingLayer.Controller
             }
         }
         #endregion RemoteReminderFunctions
-
-        #region JsonParsing
-        /// <summary>
-        /// Extrahiert eine Liste von Reminder Objekten aus dem übergebenen JSON Dokument.
-        /// </summary>
-        /// <param name="jsonString">Das übergebene JSON-Dokument.</param>
-        /// <returns>Liste von Reminder Objekten, oder null, wenn Deserialisierung fehlschlägt.</returns>
-        private List<Reminder> parseReminderListFromJson(string jsonString)
-        {
-            List<Reminder> reminders = null;
-            try
-            {
-                reminders = JsonConvert.DeserializeObject<List<Reminder>>(jsonString);
-            }
-            catch (JsonException jsonEx)
-            {
-                Debug.WriteLine("Could not extract list of reminders from json string.");
-                Debug.WriteLine("Message is: {0}.", jsonEx.Message);
-            }
-            return reminders;
-        }
-
-        /// <summary>
-        /// Erstellt ein JSON Dokument aus einem Channel Objekt.
-        /// </summary>
-        /// <param name="channel">Das Objekt, das umgewandelt werden soll.</param>
-        /// <returns>JSON-Dokument des Objekts, oder null, falls Serialisierung fehlgeschlagen ist.</returns>
-        private string parceChannelToJsonString(Channel channel)
-        {
-            if (channel == null)
-                return null;
-
-            string jsonContent = null;
-            try
-            {
-                switch (channel.Type)
-                {
-                    case ChannelType.LECTURE:
-                        Lecture lecture = channel as Lecture;
-                        jsonContent = JsonConvert.SerializeObject(lecture);
-                        break;
-                    case ChannelType.EVENT:
-                        Event eventObj = channel as Event;
-                        jsonContent = JsonConvert.SerializeObject(eventObj);
-                        break;
-                    case ChannelType.SPORTS:
-                        Sports sportObj = channel as Sports;
-                        jsonContent = JsonConvert.SerializeObject(sportObj);
-                        break;
-                    default:
-                        jsonContent = JsonConvert.SerializeObject(channel);
-                        break;
-                }
-            }
-            catch (JsonException jsonEx)
-            {
-                Debug.WriteLine("Exception during serialization of an channel object.");
-                Debug.WriteLine("Message is: {0}.", jsonEx.Message);
-            }
-
-            return jsonContent;
-        }
-
-        /// <summary>
-        /// Erstellt ein JSON Dokument aus einem Announcement Objekt.
-        /// </summary>
-        /// <param name="announcement">Das Objekt, das umgewandelt werden soll.</param>
-        /// <returns>JSON-Dokument des Objekts, oder null, falls Serialisierung fehlgeschlagen ist.</returns>
-        private string parseAnnouncementToJsonString(Announcement announcement)
-        {
-            string jsonContent = null;
-            try
-            {
-                jsonContent = JsonConvert.SerializeObject(announcement);
-            }
-            catch (JsonException jsonEx)
-            {
-                Debug.WriteLine("Exception during serialization of an announcement object.");
-                Debug.WriteLine("Message is: {0}.", jsonEx.Message);
-            }
-            return jsonContent;
-        }
-
-        /// <summary>
-        /// Extrahiert ein Announcement Objekt aus einem JSON-Dokument.
-        /// </summary>
-        /// <param name="jsonString">Das JSON-Dokument.</param>
-        /// <returns>Eine Instanz von Announcement, oder null, falls die Deserialisierung fehlschlägt.</returns>
-        private Announcement parseAnnouncementFromJsonString(string jsonString)
-        {
-            Announcement announcement = null;
-            try
-            {
-                announcement = JsonConvert.DeserializeObject<Announcement>(jsonString);
-            }
-            catch (JsonException jsonEx)
-            {
-                Debug.WriteLine("Could not extract Announcement object from json string.");
-                Debug.WriteLine("Message is: {0}.", jsonEx.Message);
-            }
-            return announcement;
-        }
-
-        /// <summary>
-        /// Extrahiere eine Liste von Announcement Objekten aus einem gegebenen JSON-Dokument.
-        /// </summary>
-        /// <param name="jsonString">Das JSON-Dokument.</param>
-        /// <returns>Liste von Announcement-Objekten.</returns>
-        /// <exception cref="ClientException">Wirft eine ClientException, wenn keine Liste von
-        ///     Announcements aus dem JSON-Dokument extrahiert werden konnte.</exception>
-        private List<Announcement> parseAnnouncementListFromJson(string jsonString)
-        {
-            List<Announcement> announcements;
-            try
-            {
-                announcements = JsonConvert.DeserializeObject<List<Announcement>>(jsonString);
-            }
-            catch(JsonException ex)
-            {
-                Debug.WriteLine("Error during deserialization. Exception is: " + ex.Message);
-                // Abbilden des aufgetretenen Fehlers auf eine ClientException.
-                throw new ClientException(ErrorCodes.JsonParserError, "Parsing of JSON object has failed.");
-            }
-            return announcements;
-        }
-
-        /// <summary>
-        /// Extrahiert ein Objekt vom Typ Channel aus dem übergebenen JSON-Dokument.
-        /// </summary>
-        /// <param name="jsonString">Das JSON-Dokument.</param>
-        /// <returns>Eine Instanz der Klasse Channel, oder null, falls die Deserialisierung fehlschlägt.</returns>
-        private Channel parseChannelFromJson(string jsonString)
-        {
-            Channel extractedChannel = null;
-            try
-            {
-                var token = Newtonsoft.Json.Linq.JToken.Parse(jsonString);
-                if (token.Type == Newtonsoft.Json.Linq.JTokenType.Object)
-                {
-                    // Frage den Wert des Attributs "type" ab.
-                    string typeValue = token.Value<string>("type");
-
-                    ChannelType type;
-                    if (Enum.TryParse(typeValue.ToString(), false, out type))
-                    {
-                        // Parse Objekt abhängig vom Typ des Kanals.
-                        switch (type)
-                        {
-                            case ChannelType.LECTURE:
-                                Lecture lecture = JsonConvert.DeserializeObject<Lecture>(jsonString);
-                                extractedChannel = lecture;
-                                break;
-                            case ChannelType.EVENT:
-                                Event eventObj = JsonConvert.DeserializeObject<Event>(jsonString);
-                                extractedChannel = eventObj;
-                                break;
-                            case ChannelType.SPORTS:
-                                Sports sportsObj = JsonConvert.DeserializeObject<Sports>(jsonString);
-                                extractedChannel = sportsObj;
-                                break;
-                            default:
-                                // Für Student-Group und Other gibt es keine eigene Klasse.
-                                extractedChannel = JsonConvert.DeserializeObject<Channel>(jsonString);
-                                break;
-                        }
-                    }
-                }
-            }
-            catch (JsonException jsonEx)
-            {
-                Debug.WriteLine("Could not extract Announcement object from json string.");
-                Debug.WriteLine("Message is: {0}.", jsonEx.Message);
-            }
-            
-            return extractedChannel;
-        }
-
-        /// <summary>
-        /// Erzeugt eine Liste von Objekten vom Typ Kanal aus dem übergebenen JSON-Dokument.
-        /// </summary>
-        /// <param name="jsonString">Das JSON-Dokument.</param>
-        /// <returns>Liste von Kanal-Objekten.</returns>
-        /// <exception cref="ClientException">Wirft eine ClientException wenn keine
-        ///     Liste von Kanal-Objekten aus dem JSON String extrahiert werden kann.</exception>
-        private List<Channel> parseChannelListFromJson(string jsonString)
-        {
-            List<Channel> channels = new List<Channel>();
-            try
-            {
-                //channels = JsonConvert.DeserializeObject <List<Channel>>(jsonString);
-                
-                // Parse JSON List in eine JArray Repräsentation. JArray repräsentiert ein JSON Array. 
-                Newtonsoft.Json.Linq.JArray jsonArray = Newtonsoft.Json.Linq.JArray.Parse(jsonString);
-                foreach (var item in jsonArray)
-                {
-                    if(item.Type == Newtonsoft.Json.Linq.JTokenType.Object)
-                    {
-                        // Frage den Wert des Attributs "type" ab.
-                        string typeValue = item.Value<string>("type");
-
-                        ChannelType type;
-                        if (Enum.TryParse(typeValue.ToString(), false, out type))
-                        {
-                            // Führe weiteres Parsen abhängig von dem Typ des Kanals durch.
-                            switch(type)
-                            {
-                                case ChannelType.LECTURE:
-                                    Lecture lecture = JsonConvert.DeserializeObject<Lecture>(item.ToString());
-                                    channels.Add(lecture);
-                                    break;
-                                case ChannelType.EVENT:
-                                    Event eventObj = JsonConvert.DeserializeObject<Event>(item.ToString());
-                                    channels.Add(eventObj);
-                                    break;
-                                case ChannelType.SPORTS:
-                                    Sports sportsObj = JsonConvert.DeserializeObject<Sports>(item.ToString());
-                                    channels.Add(sportsObj);
-                                    break;
-                                default:
-                                    // Für Student-Group und Other gibt es keine eigene Klasse.
-                                    Channel channel = JsonConvert.DeserializeObject<Channel>(item.ToString());
-                                    channels.Add(channel);
-                                    break;
-                            }
-                        }
-                    }
-                }
-            }
-            catch(JsonException ex)
-            {
-                Debug.WriteLine("Error during deserialization. Exception is: " + ex.Message);
-                // Abbilden des aufgetretenen Fehlers auf eine ClientException.
-                throw new ClientException(ErrorCodes.JsonParserError, "Parsing of JSON object has failed.");
-            }
-
-            return channels;
-        }
-        #endregion JsonParsing
-
     }
 }

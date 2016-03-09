@@ -40,8 +40,8 @@ namespace DataHandlingLayer.Controller
         {
             return await Task.Run<IEnumerable<Announcement>>(() =>
             {
-                Debug.WriteLine("GetPagedItems in IncrementalAnnouncementLoaderController is called. Parameters are: resId {0}, pageIndex {1}, pageSize {2}.",
-                    resourceId, pageIndex, pageSize);
+               //  Debug.WriteLine("GetPagedItems in IncrementalAnnouncementLoaderController is called. Parameters are: resId {0}, pageIndex {1}, pageSize {2}.",
+               //     resourceId, pageIndex, pageSize);
                 List<Announcement> retrievedAnnouncements = null;
                 try
                 {

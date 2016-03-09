@@ -2,6 +2,7 @@
 using DataHandlingLayer.Database;
 using DataHandlingLayer.DataModel;
 using DataHandlingLayer.Exceptions;
+using DataHandlingLayer.JsonManager;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,11 +20,17 @@ namespace DataHandlingLayer.Controller
     /// </summary>
     public class MainController
     {
-
+        #region Fields
         /// <summary>
         /// Referenz auf eine Realisierung des IValidationErrorReport Interface mittels dem Fehler an den Aufrufer zurückgemeldet werden.
         /// </summary>
         private IValidationErrorReport _validationErrorReporter;
+
+        /// <summary>
+        /// Eine Referenz auf den JsonParsingManager der Anwendung.
+        /// </summary>
+        protected JsonParsingManager jsonParser;
+        #endregion Fields
 
         /// <summary>
         /// Konstruktor zur Initialisierung des MainController.
@@ -31,6 +38,7 @@ namespace DataHandlingLayer.Controller
         protected MainController(IValidationErrorReport validationErrorReporter)
         {
             this._validationErrorReporter = validationErrorReporter;
+            jsonParser = new JsonParsingManager();
         }
 
         /// <summary>
@@ -38,9 +46,10 @@ namespace DataHandlingLayer.Controller
         /// </summary>
         protected MainController()
         {
-
+            jsonParser = new JsonParsingManager();
         }
 
+        #region ValidationRelatedFunctions
         /// <summary>
         /// Liest die vom Model gelieferten Validierungsfehler aus und meldet sie gesammelt für jede fehlerhafte Property 
         /// zurück an das ViewModel.
@@ -80,6 +89,7 @@ namespace DataHandlingLayer.Controller
                 _validationErrorReporter.RemoveFailureMessagesForProperty(property);
             }
         }
+        #endregion ValidationRelatedFunctions
 
         /// <summary>
         /// Gibt den lokalen Nutzer zurück. Liefert null zurück wenn kein lokaler
@@ -166,28 +176,5 @@ namespace DataHandlingLayer.Controller
             return appSettings;
         }
 
-        /// <summary>
-        /// Erzeugt ein Moderator Objekt aus dem übergebenen JSON String. Ist eine
-        /// Umwandlung des JSON Strings nicht möglich, so wird eine ClientException 
-        /// geworfen.
-        /// </summary>
-        /// <param name="jsonString">Der JSON String, der in ein Moderator Objekt umgewandelt werden soll.</param>
-        /// <returns>Eine Instanz der Klasse Moderator.</returns>
-        /// <exception cref="ClientException">Wirft eine ClientException wenn kein Moderator Objekt aus dem JSON String übergeben werden kann.</exception>
-        protected Moderator parseModeratorObjectFromJSON(string jsonString)
-        {
-            Moderator moderator = null;
-            try
-            {
-                moderator = JsonConvert.DeserializeObject<Moderator>(jsonString);
-            }
-            catch (JsonException ex)
-            {
-                Debug.WriteLine("Error during deserialization. Exception is: " + ex.Message);
-                // Abbilden des aufgetretenen Fehlers auf eine ClientException.
-                throw new ClientException(ErrorCodes.JsonParserError, "Parsing of JSON object has failed.");
-            }
-            return moderator;
-        }
     }
 }

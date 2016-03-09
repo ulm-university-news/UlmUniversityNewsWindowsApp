@@ -878,4 +878,7 @@ Nachricht am: </value>
   <data name="IntervalPickerWeekString" xml:space="preserve">
     <value>Wochen</value>
   </data>
+  <data name="AddAndEditReminderAddReminderButton.Label" xml:space="preserve">
+    <value>reminder anlegen</value>
+  </data>
 </root>

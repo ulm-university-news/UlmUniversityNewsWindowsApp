@@ -322,11 +322,13 @@ namespace DataHandlingLayer.ViewModel
             try
             {
                 List<Reminder> reminderListServer = await Task.Run(() => channelController.GetRemindersOfChannelAsync(Channel.Id, true));
-                List<Reminder> reminderList = reminderListServer;
+                if (reminderListServer == null)
+                    return;
 
                 // Starte Aktualisierung der lokalen Datensätze asynchron.
                 Task updateTask = Task.Run(() => channelController.UpdateLocalReminders(reminderListServer, Channel.Id));
 
+                List<Reminder> reminderList = reminderListServer;
                 // Sortiere reminderList.
                 reminderList = new List<Reminder>(
                     from reminder in reminderList

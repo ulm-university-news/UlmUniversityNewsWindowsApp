@@ -877,4 +877,7 @@ date: </value>
   <data name="IntervalPickerWeekString" xml:space="preserve">
     <value>weeks</value>
   </data>
+  <data name="AddAndEditReminderAddReminderButton.Label" xml:space="preserve">
+    <value>create reminder</value>
+  </data>
 </root>

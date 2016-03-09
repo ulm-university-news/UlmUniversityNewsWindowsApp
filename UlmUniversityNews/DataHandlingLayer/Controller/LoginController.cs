@@ -79,7 +79,7 @@ namespace DataHandlingLayer.Controller
                 Password = passwordHash
             };
 
-            string moderatorJsonString = parseModeratorToJson(moderator);
+            string moderatorJsonString = jsonParser.ParseModeratorToJson(moderator);
 
             if (moderatorJsonString != null)
             {
@@ -91,7 +91,12 @@ namespace DataHandlingLayer.Controller
                         "/moderator/authentication",
                         null);
 
-                    Moderator loggedInModerator = parseModeratorObjectFromJSON(serverResponse);
+                    Moderator loggedInModerator = jsonParser.ParseModeratorFromJson(serverResponse);
+                    if (loggedInModerator == null)
+                    {
+                        // Bilde auf ClientException ab und reiche den Fehler weiter.
+                        throw new ClientException(ErrorCodes.JsonParserError, "Login not successful.");
+                    }
 
                     // Lege Moderatorobjekt mit Daten des eingeloggten Moderators in den Cache.
                     LocalModerator.GetInstance().CacheModeratorObject(loggedInModerator);
@@ -127,6 +132,10 @@ namespace DataHandlingLayer.Controller
                     Debug.WriteLine("Login failed.");
                     return false;
                 }
+            }
+            else
+            {
+                throw new ClientException(ErrorCodes.JsonParserError, "Login not successful.");
             }
 
             // Setze Zustand in Local Settings.
@@ -166,25 +175,6 @@ namespace DataHandlingLayer.Controller
             Debug.WriteLine("The hashed password is: {0}.", passwordHash);
 
             return passwordHash;
-        }
-
-        /// <summary>
-        /// Wandelt ein Objekt vom Typ Moderator in eine JSON Repräsentation um.
-        /// </summary>
-        /// <param name="moderator">Das umzuwandelnde Objekt.</param>
-        /// <returns>Ein JSON-Dokument, welches das übergebene Objekt repräsentiert. Null falls Umwandlung fehlschlägt.</returns>
-        private string parseModeratorToJson(Moderator moderator)
-        {
-            string jsonContent = null;
-            try
-            {
-                jsonContent = JsonConvert.SerializeObject(moderator);
-            }
-            catch(Exception ex)
-            {
-                Debug.WriteLine("Exception occurred during json parsing. Msg is {0}.", ex.Message);
-            }
-            return jsonContent;
         }
 
         /// <summary>

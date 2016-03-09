@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataHandlingLayer.CommandRelays;
+using DataHandlingLayer.DataModel.Enums;
 
 namespace DataHandlingLayer.ViewModel
 {
@@ -395,11 +396,89 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Erzeugt eine Instanz der Reminder Klasse, welche mit den Daten gefüllt
+        /// wird, die der Nutzer eingegeben hat.
+        /// </summary>
+        /// <returns>Eine Instanz von Reminder, oder null, falls Erzeugung fehlschlägt.</returns>
+        private Reminder createReminderFromEnteredData()
+        {
+            Moderator activeModerator = channelController.GetLocalModerator();
+            if (activeModerator == null)
+            {
+                Debug.WriteLine("No active moderator. Cannot continue.");
+                return null;
+            }
+            
+            // Start und Ende-Datum
+            DateTime reminderStartDate = new DateTime(SelectedStartDate.Year, SelectedStartDate.Month, SelectedStartDate.Day,
+                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds);
+            DateTime reminderEndDate = new DateTime(SelectedEndDate.Year, SelectedEndDate.Month, SelectedEndDate.Day,
+                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds);
+
+            int chosenInterval = IntervalValue;
+            int channelId = SelectedChannel.Id;
+            int authorId = activeModerator.Id;
+            string enteredTitle = Title;
+            string enteredContent = Text;
+            Priority priority = Priority.NORMAL;
+            if (IsPriorityHighSelected)
+            {
+                priority = Priority.HIGH;
+            }
+            bool ignoreFlag = SkipNextReminderDate;
+
+            Reminder newReminder = new Reminder()
+            {
+                StartDate = reminderStartDate,
+                EndDate = reminderEndDate,
+                Interval = chosenInterval,
+                ChannelId = channelId,
+                AuthorId = authorId,
+                Title = enteredTitle,
+                Text = enteredContent,
+                MessagePriority = priority,
+                Ignore = ignoreFlag
+            };
+
+            return newReminder;
+        }
+
+        /// <summary>
         /// Führt den Befehl CreateReminderCommand aus. Legt einen neuen Reminder an.
         /// </summary>
         private async Task executeCreateReminderCommand()
         {
-            // TODO
+            // Fülle Reminder Objekt mit eingegebenen Daten.
+            Reminder newReminder = createReminderFromEnteredData();
+            if (newReminder != null)
+            {
+                try
+                {
+                    displayIndeterminateProgressIndicator();
+
+                    bool successful = await channelController.CreateReminderAsync(newReminder);
+
+                    if (successful)
+                    {
+                        // Gehe zurück auf ModeratorChannelDetails Seite.
+                        if (_navService.CanGoBack())
+                        {
+                            _navService.GoBack();
+                        }
+                    }
+                }
+                catch (ClientException ex)
+                {
+                    Debug.WriteLine("Failed to create reminder. Msg is: {0}.", ex.Message);
+                    displayError(ex.ErrorCode);
+                }
+                finally
+                {
+                    hideIndeterminateProgressIndicator();
+                }
+            }
         }
+
+        
     }
 }

@@ -90,8 +90,13 @@ namespace DataHandlingLayer.Controller
             }
 
             // Generiere Json String aus dem Objekt.
-            string jsonContent = JsonConvert.SerializeObject(localUser);
+            string jsonContent = jsonParser.ParseUserToJsonString(localUser);
             Debug.WriteLine("The json String is: " + jsonContent);
+            if (jsonContent == null)
+            {
+                Debug.WriteLine("Error during serialization to json. Cannot continue.");
+                throw new ClientException(ErrorCodes.JsonParserError, "Creation of user account has failed.");
+            }
 
             // Sende einen Request zum Erstellen eines Nutzeraccounts.
             string responseString;
@@ -108,7 +113,7 @@ namespace DataHandlingLayer.Controller
             }
 
             // Deserialisiere den Antwort String des Servers.
-            localUser = parseUserObjectFromJSON(responseString);
+            localUser = jsonParser.ParseUserFromJson(responseString);
 
             // Speichere den erstellten Nutzeraccount in der Datenbank ab.
             if (localUser != null)
@@ -123,6 +128,11 @@ namespace DataHandlingLayer.Controller
                     // Abbilden des aufgetretenen Fehlers auf eine ClientException.
                     throw new ClientException(ErrorCodes.LocalDatabaseException, "Creation of user account has failed.");
                 }
+            }
+            else
+            {
+                // Abbilden des aufgetretenen Fehlers auf eine ClientException.
+                throw new ClientException(ErrorCodes.JsonParserError, "Creation of user account has failed.");
             }
 
             Debug.WriteLine("Finished createLocalUser().");
@@ -196,8 +206,10 @@ namespace DataHandlingLayer.Controller
                 if (doUpdate)
                 {
                     // Generiere Json String aus dem Objekt.
-                    string jsonContent = JsonConvert.SerializeObject(localUser);
+                    string jsonContent = jsonParser.ParseUserToJsonString(localUser);
                     Debug.WriteLine("The json String is: " + jsonContent);
+                    if (jsonContent == null)
+                        return;
 
                     string responseString;
                     try
@@ -214,7 +226,7 @@ namespace DataHandlingLayer.Controller
                     }
 
                     // Deserialisiere den Antwort String des Servers.
-                    localUser = parseUserObjectFromJSON(responseString);
+                    localUser = jsonParser.ParseUserFromJson(responseString);
 
                     // Aktualisiere Nutzeraccount in der Datenbank.
                     if (localUser != null)
@@ -233,30 +245,5 @@ namespace DataHandlingLayer.Controller
                 }
             }
         }
-
-        /// <summary>
-        /// Erzeugt ein User Objekt aus dem übergebenen JSON String. Ist eine
-        /// Umwandlung des JSON Strings nicht möglich, so wird eine ClientException 
-        /// geworfen.
-        /// </summary>
-        /// <param name="jsonString">Der JSON String, der in ein User Objekt umgewandelt werden soll.</param>
-        /// <returns>Eine Instanz der Klasse User.</returns>
-        /// <exception cref="ClientException">Wirft eine ClientException wenn kein User Objekt aus dem JSON String übergeben werden kann.</exception>
-        private User parseUserObjectFromJSON(string jsonString)
-        {
-            User localUser = null;
-            try
-            {
-                localUser = JsonConvert.DeserializeObject<User>(jsonString);
-            }
-            catch (JsonException ex)
-            {
-                Debug.WriteLine("Error during deserialization. Exception is: " + ex.Message);
-                // Abbilden des aufgetretenen Fehlers auf eine ClientException.
-                throw new ClientException(ErrorCodes.JsonParserError, "Parsing of JSON object has failed.");
-            }
-            return localUser;
-        }
-
     }
 }

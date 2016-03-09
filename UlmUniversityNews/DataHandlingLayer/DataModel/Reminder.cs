@@ -33,7 +33,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Das Erstellungsdatum des Reminder.
         /// </summary>
-        [JsonProperty("creationDate", DefaultValueHandling=DefaultValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
+        [JsonProperty("creationDate", DefaultValueHandling=DefaultValueHandling.Ignore)]
         public DateTime CreationDate
         {
             get { return creationDate; }
@@ -44,7 +44,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Das Änderungsdatum des Reminder.
         /// </summary>
-        [JsonProperty("modificationDate", DefaultValueHandling = DefaultValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
+        [JsonProperty("modificationDate", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public DateTime ModificationDate
         {
             get { return modificationDate; }
@@ -168,6 +168,7 @@ namespace DataHandlingLayer.DataModel
         /// Gibt an, ob der Reminder abgelaufen ist.
         /// Ist der Reminder abgelaufen, so wird er keine Announcements mehr feuern.
         /// </summary>
+        [JsonIgnore]
         public bool IsExpired
         {
             get { return isExpired; }
