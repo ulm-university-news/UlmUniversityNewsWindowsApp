@@ -880,4 +880,76 @@ date: </value>
   <data name="AddAndEditReminderAddReminderButton.Label" xml:space="preserve">
     <value>create reminder</value>
   </data>
+  <data name="BooleanValueFalseString" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="BooleanValueTrueString" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="PriorityEnumConverterStringPrioHigh" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="PriorityEnumConverterStringPrioNormal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="ReminderDetailsEditReminderButton.Label" xml:space="preserve">
+    <value>edit reminder</value>
+  </data>
+  <data name="ReminderDetailsHeadline.Text" xml:space="preserve">
+    <value>Reminder details</value>
+  </data>
+  <data name="ReminderDetailsReminderEndDateField.Text" xml:space="preserve">
+    <value>End date</value>
+  </data>
+  <data name="ReminderDetailsReminderIntervalField.Text" xml:space="preserve">
+    <value>Interval</value>
+  </data>
+  <data name="ReminderDetailsReminderLastModifiedByField.Text" xml:space="preserve">
+    <value>Last modified by</value>
+  </data>
+  <data name="ReminderDetailsReminderNextReminderDateField.Text" xml:space="preserve">
+    <value>Next reminder message</value>
+  </data>
+  <data name="ReminderDetailsReminderPriorityField.Text" xml:space="preserve">
+    <value>Priority</value>
+  </data>
+  <data name="ReminderDetailsReminderSkipNextReminderDateField.Text" xml:space="preserve">
+    <value>Skip next reminder date</value>
+  </data>
+  <data name="ReminderDetailsReminderStartDateField.Text" xml:space="preserve">
+    <value>Start date</value>
+  </data>
+  <data name="ReminderDetailsReminderTextField.Text" xml:space="preserve">
+    <value>Message content</value>
+  </data>
+  <data name="ReminderDetailsReminderTimeField.Text" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="ReminderDetailsReminderTitleField.Text" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="ReminderDetailsRemoveReminderButton.Label" xml:space="preserve">
+    <value>delete reminder</value>
+  </data>
+  <data name="ReminderIntervalConverterStringMultipleDaysDesc1" xml:space="preserve">
+    <value>Send reminder every</value>
+  </data>
+  <data name="ReminderIntervalConverterStringMultipleDaysDesc2" xml:space="preserve">
+    <value>days.</value>
+  </data>
+  <data name="ReminderIntervalConverterStringMultipleWeeksDesc1" xml:space="preserve">
+    <value>Send reminder message every</value>
+  </data>
+  <data name="ReminderIntervalConverterStringMultipleWeeksDesc2" xml:space="preserve">
+    <value>weeks.</value>
+  </data>
+  <data name="ReminderIntervalConverterStringOneDayDesc" xml:space="preserve">
+    <value>Send reminder message every day.</value>
+  </data>
+  <data name="ReminderIntervalConverterStringOneTimeReminderDesc" xml:space="preserve">
+    <value>Reminder message is only sent once.</value>
+  </data>
+  <data name="ReminderIntervalConverterStringOneWeekDesc" xml:space="preserve">
+    <value>Send reminder message every week.</value>
+  </data>
 </root>

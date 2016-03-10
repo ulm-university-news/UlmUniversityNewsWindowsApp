@@ -360,6 +360,7 @@
                                 Grid.Row="1"
                                 ItemTemplate="{StaticResource ReminderListItemStyle}"
                                 ItemsSource="{Binding Reminders}"
+                                IsItemClickEnabled="True"
                                 HorizontalContentAlignment="Stretch"
                                 HorizontalAlignment="Stretch">
                                 <ListView.ItemContainerStyle>
@@ -367,6 +368,14 @@
                                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                                     </Style>
                                 </ListView.ItemContainerStyle>
+
+                                <!-- Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
+                                <i:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="ItemClick">
+                                        <core:InvokeCommandAction Command="{Binding ReminderSelectedCommand}"
+                                                              InputConverter="{StaticResource ItemClickedConverter}" />
+                                    </core:EventTriggerBehavior>
+                                </i:Interaction.Behaviors>
                             </ListView>
                         </Grid>
                     </PivotItem>

@@ -1546,6 +1546,29 @@ namespace DataHandlingLayer.Controller
 
         #region LocalReminderFunctions
         /// <summary>
+        /// Holt den Reminder mit der angegebenen Id.
+        /// </summary>
+        /// <param name="reminderId">Die Id des Reminders.</param>
+        /// <returns>Eine Instanz der Klasse Reminder, oder null, falls kein
+        ///     Reminder mit dieser Id lokal verwaltet wird.</returns>
+        public Reminder GetReminder(int reminderId)
+        {
+            Reminder reminder = null;
+            try
+            {
+                reminder = channelDatabaseManager.GetReminder(reminderId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("Error during GetReminder. Msg is: {0}.", ex.Message);
+                // Abbilden auf ClientException.
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return reminder;
+        }
+
+        /// <summary>
         /// Holt die lokal verwalteten Reminder für den Kanal mit der angegebenen Id.
         /// </summary>
         /// <param name="channelId">Die Id des Kanals, für den die Reminder geholt werden sollen.</param>

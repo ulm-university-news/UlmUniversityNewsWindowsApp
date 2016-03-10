@@ -138,6 +138,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ModeratorViews\ReminderDetails\ReminderDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\StartPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -161,10 +165,13 @@
     <Compile Include="Common\StatusBarBehavior.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Converters\BooleanValueToLocalizedStringConverter.cs" />
     <Compile Include="Converters\ChannelToIconPathConverter.cs" />
     <Compile Include="Converters\ChannelToDrawerMenuBackgroundConverter.cs" />
     <Compile Include="Converters\ChannelTypeEnumToComboBoxItemIndexConverter.cs" />
     <Compile Include="Converters\ChannelTypeToStringConverter.cs" />
+    <Compile Include="Converters\DateTimeToPureDateStringConverter.cs" />
+    <Compile Include="Converters\DateTimeToPureTimeStringConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
     <Compile Include="Converters\DrawerMenuEntryNameToLocalizedStringConverter.cs" />
     <Compile Include="Converters\FacultyEnumToComboBoxItemIndexConverter.cs" />
@@ -173,7 +180,10 @@
     <Compile Include="Converters\ListCountToVisibilityConverter.cs" />
     <Compile Include="Converters\MessageReadPropertyToBackgroundColorConverter.cs" />
     <Compile Include="Converters\NullValuetoVisibilityConverter.cs" />
+    <Compile Include="Converters\PriorityEnumToLocalizedStringConverter.cs" />
     <Compile Include="Converters\ReminderDateTimeToStringConverter.cs" />
+    <Compile Include="Converters\ReminderIntervalToLocalizedStringConverter.cs" />
+    <Compile Include="Converters\SkipNextReminderDateToIconPathConverter.cs" />
     <Compile Include="Converters\StringToVisibilityConverter.cs" />
     <Compile Include="Converters\ValidationMessageOnLocalizedStringConverter.cs" />
     <Compile Include="Converters\ZeroIntegerToVisibilityConverter.cs" />
@@ -224,6 +234,9 @@
     <Compile Include="Views\ModeratorViews\Homescreen\HomescreenModerator.xaml.cs">
       <DependentUpon>HomescreenModerator.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ModeratorViews\ReminderDetails\ReminderDetails.xaml.cs">
+      <DependentUpon>ReminderDetails.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\StartPage.xaml.cs">
       <DependentUpon>StartPage.xaml</DependentUpon>
     </Compile>
@@ -261,6 +274,10 @@
     <Content Include="Assets\ResourceDetailsIcons\FacultyInfo.png" />
     <Content Include="Assets\ResourceDetailsIcons\CostInfo.png" />
     <Content Include="Assets\ResourceDetailsIcons\AmountOfParticipantsInfo.png" />
+    <Content Include="Assets\ResourceDetailsIcons\NotificationTrueInfo.png" />
+    <Content Include="Assets\ResourceDetailsIcons\NotificationFalseInfo.png" />
+    <Content Include="Assets\ResourceDetailsIcons\IntervalInfo.png" />
+    <Content Include="Assets\ResourceDetailsIcons\PriorityInfo.png" />
     <Content Include="Assets\ResourceDetailsIcons\WebsiteInfo.png" />
     <Content Include="Assets\ResourceDetailsIcons\NameInfo.png" />
     <Content Include="Assets\ResourceDetailsIcons\TypeInfo.png" />

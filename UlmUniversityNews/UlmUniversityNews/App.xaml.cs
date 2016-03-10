@@ -121,19 +121,7 @@ namespace UlmUniversityNews
                 rootFrame = new Frame();
 
                 // Erzeuge Instanz des Navigationsdiensts und lade die Seiten.
-                NavigationService = new UlmUniversityNews.NavigationService.NavigationService(rootFrame);
-                NavigationService.RegisterPage("StartPage", typeof(StartPage));
-                NavigationService.RegisterPage("Homescreen", typeof(Views.Homescreen.Homescreen));
-                NavigationService.RegisterPage("ChannelSearch", typeof(Views.ChannelSearch.ChannelSearch));
-                NavigationService.RegisterPage("ChannelDetails", typeof(Views.ChannelDetails.ChannelDetails));
-                NavigationService.RegisterPage("ApplicationSettings", typeof(Views.ApplicationSettings.ApplicationSettings));
-                NavigationService.RegisterPage("ChannelSettings", typeof(Views.ChannelDetails.ChannelSettings));
-                NavigationService.RegisterPage("LoginPage", typeof(Views.Login.LoginPage));
-                NavigationService.RegisterPage("HomescreenModerator", typeof(Views.ModeratorViews.Homescreen.HomescreenModerator));
-                NavigationService.RegisterPage("ModeratorChannelDetails", typeof(Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails));
-                NavigationService.RegisterPage("AddAnnouncement", typeof(Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement));
-                NavigationService.RegisterPage("AddAndEditChannel", typeof(Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel));
-                NavigationService.RegisterPage("AddAndEditReminder", typeof(Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder));
+                initializeNavigationService(rootFrame);
 
                 // Verknüpfen Sie den Frame mit einem SuspensionManager-Schlüssel.
                 SuspensionManager.RegisterFrame(rootFrame, "AppFrame");
@@ -190,20 +178,7 @@ namespace UlmUniversityNews
             else
             {
                 // Erzeuge Instanz des Navigationsdiensts und lade die Seiten.
-                NavigationService = new UlmUniversityNews.NavigationService.NavigationService(rootFrame);
-                NavigationService.RegisterPage("StartPage", typeof(StartPage));
-                NavigationService.RegisterPage("Homescreen", typeof(Views.Homescreen.Homescreen));
-                NavigationService.RegisterPage("ChannelSearch", typeof(Views.ChannelSearch.ChannelSearch));
-                NavigationService.RegisterPage("ChannelDetails", typeof(Views.ChannelDetails.ChannelDetails));
-                NavigationService.RegisterPage("ApplicationSettings", typeof(Views.ApplicationSettings.ApplicationSettings));
-                NavigationService.RegisterPage("ChannelSettings", typeof(Views.ChannelDetails.ChannelSettings));
-                NavigationService.RegisterPage("LoginPage", typeof(Views.Login.LoginPage));
-                NavigationService.RegisterPage("HomescreenModerator", typeof(Views.ModeratorViews.Homescreen.HomescreenModerator));
-                NavigationService.RegisterPage("ModeratorChannelDetails", typeof(Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails));
-                NavigationService.RegisterPage("AddAnnouncement", typeof(Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement));
-                NavigationService.RegisterPage("AddAndEditChannel", typeof(Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel));
-                NavigationService.RegisterPage("AddAndEditReminder", typeof(Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder));
-
+                initializeNavigationService(rootFrame);
             }
             
             // Wenn der Inhalt des RootFrames null ist, d.h. kein Content durch eine Wiederherstellung vorhanden ist.
@@ -318,6 +293,29 @@ namespace UlmUniversityNews
                 return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Initialisiert den Navigationsdienst der Anwendung. Registiert
+        /// alle Seiten der Anwendung beim Navigationsdienst.
+        /// <param name="rootFrame">Der Frame, der vom Navigationsdienst verwendet werden soll.</param>
+        /// </summary>
+        private void initializeNavigationService(Frame rootFrame)
+        {
+            NavigationService = new UlmUniversityNews.NavigationService.NavigationService(rootFrame);
+            NavigationService.RegisterPage("StartPage", typeof(StartPage));
+            NavigationService.RegisterPage("Homescreen", typeof(Views.Homescreen.Homescreen));
+            NavigationService.RegisterPage("ChannelSearch", typeof(Views.ChannelSearch.ChannelSearch));
+            NavigationService.RegisterPage("ChannelDetails", typeof(Views.ChannelDetails.ChannelDetails));
+            NavigationService.RegisterPage("ApplicationSettings", typeof(Views.ApplicationSettings.ApplicationSettings));
+            NavigationService.RegisterPage("ChannelSettings", typeof(Views.ChannelDetails.ChannelSettings));
+            NavigationService.RegisterPage("LoginPage", typeof(Views.Login.LoginPage));
+            NavigationService.RegisterPage("HomescreenModerator", typeof(Views.ModeratorViews.Homescreen.HomescreenModerator));
+            NavigationService.RegisterPage("ModeratorChannelDetails", typeof(Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails));
+            NavigationService.RegisterPage("AddAnnouncement", typeof(Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement));
+            NavigationService.RegisterPage("AddAndEditChannel", typeof(Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel));
+            NavigationService.RegisterPage("AddAndEditReminder", typeof(Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder));
+            NavigationService.RegisterPage("ReminderDetails", typeof(Views.ModeratorViews.ReminderDetails.ReminderDetails));
         }
 
         /// <summary>

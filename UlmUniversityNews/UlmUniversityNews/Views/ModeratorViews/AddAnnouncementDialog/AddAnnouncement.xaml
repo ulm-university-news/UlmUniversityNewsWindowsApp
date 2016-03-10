@@ -102,7 +102,7 @@
                     <!-- Grid für Beschreibung und Felder für Anlegen der neuen Nachricht. -->
                         <Grid
                             Grid.Row="1"
-                            Margin="0, 14.5, 0, 0">
+                            Margin="0, 0, 0, 0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />

@@ -137,7 +137,6 @@
                         <TextBlock Grid.Row="1"
                                    x:Name="AddAndEditReminderAddReminderDescription"
                                    x:Uid="AddAndEditReminderAddReminderDescription"
-                                   Margin="0, 14.5, 0, 0"
                                    Style="{StaticResource UniversityNewsUlmStandardText}"
                                    Visibility="{Binding IsAddReminderDialog, Converter={StaticResource BooleanToVisibilityConverter}}"
                                    Text="Konfigurieren Sie einen Reminder, welcher Nachrichten in einem bestimmten Intervall in den Kanal schickt. Alle Felder sind Pflichtfelder" 
@@ -146,7 +145,6 @@
                         <TextBlock Grid.Row="1"
                                    x:Name="AddAndEditReminderEditReminderDescription"
                                    x:Uid="AddAndEditReminderEditReminderDescription"
-                                   Margin="0, 14.5, 0, 0"
                                    Style="{StaticResource UniversityNewsUlmStandardText}"
                                    Visibility="{Binding IsEditReminderDialog, Converter={StaticResource BooleanToVisibilityConverter}}"
                                    />         

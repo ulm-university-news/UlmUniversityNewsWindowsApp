@@ -15,7 +15,7 @@ namespace DataHandlingLayer.DataModel
     /// eine definierte Announcement Nachricht erzeugt und in den Kanal schickt, für
     /// den der Reminder definiert ist.
     /// </summary>
-    public class Reminder : ModelValidatorBase
+    public class Reminder : PropertyChangedNotifier
     {
         #region Properties
         private int id;
@@ -70,7 +70,7 @@ namespace DataHandlingLayer.DataModel
         public DateTime NextDate
         {
             get { return nextDate; }
-            set { nextDate = value; }
+            set { this.setProperty(ref this.nextDate, value); }
         }
         
         private DateTime endDate;
@@ -172,7 +172,7 @@ namespace DataHandlingLayer.DataModel
         public bool IsExpired
         {
             get { return isExpired; }
-            set { isExpired = value; }
+            set { this.setProperty(ref this.isExpired, value); }
         }  
         #endregion Properties
 

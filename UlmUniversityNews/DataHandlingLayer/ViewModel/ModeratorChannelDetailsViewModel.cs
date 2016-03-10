@@ -167,7 +167,17 @@ namespace DataHandlingLayer.ViewModel
         {
             get { return switchToAddReminderDialogCommand; }
             set { switchToAddReminderDialogCommand = value; }
-        }    
+        }
+
+        private RelayCommand reminderSelectedCommand;
+        /// <summary>
+        /// Befehl, der ausgeführt wird, wenn ein Reminder vom Nutzer gewählt wurde.
+        /// </summary>
+        public RelayCommand ReminderSelectedCommand
+        {
+            get { return reminderSelectedCommand; }
+            set { reminderSelectedCommand = value; }
+        }   
         #endregion Commands
 
         /// <summary>
@@ -193,6 +203,8 @@ namespace DataHandlingLayer.ViewModel
             SwitchToAddReminderDialogCommand = new RelayCommand(
                 param => executeSwitchToAddReminderDialogCommand(),
                 param => canSwitchToAddReminderDialog());
+            ReminderSelectedCommand = new RelayCommand(
+                param => executeReminderSelectedCommand(param));
 
             // Lade Anwendungseinstellungen und passe View Parameter entsprechend an.
             AppSettings appSettings = channelController.GetApplicationSettings();
@@ -488,6 +500,20 @@ namespace DataHandlingLayer.ViewModel
             {
                 string navigationParameter = "navParam?channelId=" + Channel.Id;
                 _navService.Navigate("AddAndEditReminder", navigationParameter);
+            }
+        }
+
+        /// <summary>
+        /// Ausführung des Befehls ReminderSelectedCommand. Leitet auf die
+        /// Detailseite des gewählten Reminders weiter.
+        /// </summary>
+        /// <param name="selectedItem">Der gewählte Eintrag.</param>
+        private void executeReminderSelectedCommand(object selectedItem)
+        {
+            Reminder selectedReminder = selectedItem as Reminder;
+            if (selectedReminder != null)
+            {
+                _navService.Navigate("ReminderDetails", selectedReminder.Id);
             }
         }
 
