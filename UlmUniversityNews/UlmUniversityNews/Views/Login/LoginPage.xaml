@@ -86,7 +86,7 @@
             <Grid x:Name="MainFragment" Background="{StaticResource MainFragmentBackgroundColor}">
                 <!-- Der Inhalt der eigentlichen Seite kommt hier rein. -->
                 <ScrollViewer>
-                    <Grid>
+                    <Grid Style="{StaticResource PivotLikeGridStyle}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -98,7 +98,7 @@
                             Grid.Row="0"
                             x:Name="LoginPageDescription"
                             x:Uid="LoginPageDescription"
-                            Margin="19, 14.5, 19, 0"
+                            Margin="0, 14.5, 0, 0"
                             Style="{StaticResource UniversityNewsUlmStandardText}"
                             Text="Um zur Moderatorenansicht der Anwendung zu gelangen, geben Sie hier bitte Ihre Login Daten an."/>
 
@@ -106,7 +106,7 @@
                             Grid.Row="1"
                             x:Name="LoginPageUsernameTextBox"
                             x:Uid="LoginPageUsernameTextBox"
-                            Margin="19, 5, 19, 0"
+                            Margin="0, 5, 0, 0"
                             Header="Username"
                             InputScope="AlphanumericFullWidth"
                             Text="{Binding Username, Mode=TwoWay}"
@@ -116,7 +116,7 @@
                             Grid.Row="2"
                             x:Name="LoginPagePasswordTextBox"
                             x:Uid="LoginPagePasswordTextBox"
-                            Margin="19, 5, 19, 0"
+                            Margin="0, 5, 0, 0"
                             Header="Password"
                             Password="{Binding Password, Mode=TwoWay}"
                             />
@@ -125,7 +125,7 @@
                             Grid.Row="3"
                             x:Name="LoginPageErrorText"
                             x:Uid="LoginPageErrorText"
-                            Margin="19, 5, 19, 0"
+                            Margin="0, 5, 0, 0"
                             Style="{StaticResource UniversityNewsUlmStandardErrorText}"
                             Text="{Binding ValidationMessages[LoginFailedMsg], TargetNullValue='', FallbackValue='', Converter={StaticResource ValidationMessageOnLocalizedStringConverter}}" 
                             />

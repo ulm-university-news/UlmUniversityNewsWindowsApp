@@ -52,7 +52,7 @@
                 <Grid
                     Background="{StaticResource MainFragmentBackgroundColor}"
                     Height="Auto"       
-                    Margin="0,5,19,5">         <!-- Background="{Binding Read, Converter={StaticResource MessageReadPropertyToBackgroundColorConverter}} -->
+                    Margin="0,0,0,5">         <!-- Background="{Binding Read, Converter={StaticResource MessageReadPropertyToBackgroundColorConverter}} -->
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <!-- 1.Zeile für Announcement Titel und Datum -->
@@ -105,7 +105,7 @@
                 <!-- 3. Zeile Sepeartor-->
                 <Line 
                     Grid.Row="1"
-                    Margin="-5, 5, 19, 5"
+                    Margin="-5, 5, 0, 10"
                     Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
             </Grid>
         </DataTemplate>
@@ -115,7 +115,7 @@
             x:Name="ReminderListItemStyle">
             <Grid 
                 Background="{StaticResource MainFragmentBackgroundColor}"
-                Margin="0,5,19,5">
+                Margin="0,0,0,5">
                 <Grid.RowDefinitions>
                     <!-- Reminder Zeile -->
                     <RowDefinition Height="Auto" />
@@ -191,7 +191,7 @@
 
                 <Line 
                     Grid.Row="1"
-                    Margin="-5, 5, 19, 5"
+                    Margin="-5, 5, 0, 10"
                     Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
             </Grid>
         </DataTemplate>
@@ -384,7 +384,7 @@
                             <!-- Elemente mit Kanalinformationen einschließlich Subklasseninformationen. -->
                             <Grid
                             x:Name="GridWithChannelInformation"
-                            Margin="0,0,19,0"
+                            Margin="0,0,0,0"
                             HorizontalAlignment="Stretch">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />

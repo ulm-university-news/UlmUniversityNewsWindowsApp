@@ -124,7 +124,7 @@
 
                 <!-- Liste mit Kanälen. IsItemClickEnabled muss aktiviert sein, sonst funktioniert das Binding mittels der Behaviour SDK nicht.-->
                 <ListView Grid.Row="1"
-                          Margin="19,0,0,0"
+                          Margin="19,0,19,0"
                           HorizontalContentAlignment="Stretch"
                           HorizontalAlignment="Stretch"
                           IsItemClickEnabled="True"
