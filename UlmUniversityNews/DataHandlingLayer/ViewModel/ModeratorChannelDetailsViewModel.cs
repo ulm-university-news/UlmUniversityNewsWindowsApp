@@ -333,7 +333,7 @@ namespace DataHandlingLayer.ViewModel
             displayIndeterminateProgressIndicator();
             try
             {
-                List<Reminder> reminderListServer = await Task.Run(() => channelController.GetRemindersOfChannelAsync(Channel.Id, true));
+                List<Reminder> reminderListServer = await Task.Run(() => channelController.GetRemindersOfChannelAsync(Channel.Id, false));
                 if (reminderListServer == null)
                     return;
 

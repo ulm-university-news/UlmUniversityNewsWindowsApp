@@ -47,7 +47,7 @@
                 x:Name="ReminderDetailsRemoveReminderButton"
                 x:Uid="ReminderDetailsRemoveReminderButton"
                 Label="delete reminder"
-                Icon="Delete" />            <!-- TODO - Command Binding.-->
+                Icon="Delete"/>            <!-- TODO - Command Binding.-->
             <AppBarButton
                 x:Name="ReminderDetailsEditReminderButton"
                 x:Uid="ReminderDetailsEditReminderButton"

@@ -27,7 +27,8 @@ namespace UlmUniversityNews.Converters
                 if (intervalValue == 0)
                 {
                     // OneTime Reminder.
-                    loader.GetString("ReminderIntervalConverterStringOneTimeReminderDesc");
+                    localizedString= loader.GetString("ReminderIntervalConverterStringOneTimeReminderDesc");
+                    return localizedString;
                 }
 
                 // Berechne Intervall in Tage um.

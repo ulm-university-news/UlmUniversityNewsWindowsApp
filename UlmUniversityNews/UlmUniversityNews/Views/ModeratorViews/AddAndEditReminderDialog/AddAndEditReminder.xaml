@@ -55,6 +55,13 @@
                 Label="reminder anlegen"
                 Visibility="{Binding IsAddReminderDialog, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding CreateReminderCommand}" />
+            <AppBarButton 
+                x:Name="AddAndEditReminderEditReminderButton"
+                x:Uid="AddAndEditReminderEditReminderButton" 
+                Icon="Save"
+                Label="speichern"
+                Visibility="{Binding IsEditReminderDialog, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding EditReminderCommand}"/>
         </CommandBar>
     </Page.BottomAppBar>
 

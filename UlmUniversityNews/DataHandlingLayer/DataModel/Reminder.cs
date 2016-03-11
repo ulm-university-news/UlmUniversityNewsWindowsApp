@@ -7,6 +7,7 @@ using DataHandlingLayer.DataModel.Enums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using DataHandlingLayer.DataModel.Validator;
+using System.ComponentModel;
 
 namespace DataHandlingLayer.DataModel
 {
@@ -84,13 +85,14 @@ namespace DataHandlingLayer.DataModel
             set { endDate = value; }
         }
 
-        private int interval;
+        private int interval = -1;
         /// <summary>
         /// Das Intervall, in dem der Reminder die Announcements feuert.
         /// Ist das Intervall = 0, dann handelt es sich um ein One-Time Reminder, der genau 
         /// einmal feuert.
         /// </summary>
-        [JsonProperty("interval", NullValueHandling = NullValueHandling.Ignore)]
+        [DefaultValue(-1)]
+        [JsonProperty("interval", NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int Interval
         {
             get { return interval; }
@@ -415,5 +417,26 @@ namespace DataHandlingLayer.DataModel
             ValidateInterval();
         }
         #endregion ValidatonRules
+
+        public override string ToString()
+        {
+            string resultString = string.Empty;
+            resultString = string.Format("StartDate: {0}, EndDate: {1}, Interval: {2}, CreationDate: {3}, " + 
+                "ModificationDate: {4}, Ignore: {5}, Channel_Id: {6}, Author_Id: {7}, Title: {8}, Text: {9}, " + 
+                "MessagePriority: {10}, IsExpired: {11}",
+                StartDate,
+                EndDate,
+                Interval,
+                CreationDate,
+                ModificationDate,
+                Ignore,
+                ChannelId,
+                AuthorId,
+                Title,
+                Text,
+                MessagePriority,
+                IsExpired);
+            return resultString;
+        }
     }
 }

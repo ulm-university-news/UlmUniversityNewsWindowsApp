@@ -1766,6 +1766,8 @@ namespace DataHandlingLayer.Controller
         /// <param name="reminderId">Die Id des Reminders.</param>
         /// <returns>Eine Instanz der Klasse Reminder, oder null, falls kein
         ///     Reminder mit dieser Id lokal verwaltet wird.</returns>
+        /// <exception cref="ClientException">Wirft eine ClientException, wenn der
+        ///     Reminder nicht abgerufen werden konnte.</exception>
         public Reminder GetReminder(int reminderId)
         {
             Reminder reminder = null;
@@ -1846,6 +1848,26 @@ namespace DataHandlingLayer.Controller
             catch (DatabaseException ex) 
             {
                 Debug.WriteLine("Failed to store reminders.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Ersetze die lokal verwaltete Reminderressource durch eine neuere Version
+        /// derselben Ressource.
+        /// </summary>
+        /// <param name="newReminder">Die neuere Version der Reminderressource.</param>
+        /// <exception cref="ClientException">Wirft eine ClientException, wenn ein Fehler
+        ///     während des Vorgangs auftritt.</exception>
+        public void ReplaceLocalReminder(Reminder newReminder)
+        {
+            try
+            {
+                channelDatabaseManager.UpdateReminder(newReminder);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("Failed to replace local reminder.");
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
         }
@@ -2006,6 +2028,146 @@ namespace DataHandlingLayer.Controller
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Aktualisiert einen Reminder. Ermittelt die zu aktualisierenden Properties und führt einen
+        /// Aktualisierungsrequest an den Server aus, um die Ressource zu aktualisieren. Bei einer erfolgreichen
+        /// Aktualisierung wird auch der lokal gehaltene Datensatz aktualisiert.
+        /// </summary>
+        /// <param name="oldReminder">Das Reminder Objekt mit den Daten vor der Aktualisierung.</param>
+        /// <param name="newReminder">Das Reminder Objekt mit den aktualisiertern Daten.</param>
+        /// <returns>Liefert true, wenn die Aktualisierung erfolgreich durchgeführt werden konnte.
+        ///     Liefert false, wenn Aktualisierung fehlgeschlagen ist, z.B. aufgrund eines Validierungsfehlers.</returns>
+        /// <exception cref="ClientException">Wirft eine ClientException, wenn ein Fehler während der Aktualisierung auftritt, der
+        ///     dem Nutzer gemeldet werden muss, z.B. wenn der Server den Request abgelehnt hat.</exception>
+        public async Task<bool> UpdateReminderAsync(Reminder oldReminder, Reminder newReminder)
+        {
+            if (oldReminder == null || newReminder == null)
+                return false;
+
+            Moderator activeModerator = GetLocalModerator();
+            if (activeModerator == null)
+                return false;
+
+            // Validiere zunächst die neu eingegebenen Daten, bei Validierungsfehlern kann hier gleich abgebrochen werden.
+            clearValidationErrors();
+            newReminder.ClearValidationErrors();
+            newReminder.ValidateAll();
+            if (newReminder.HasValidationErrors())
+            {
+                // Melde Validierungsfehler und breche ab.
+                reportValidationErrors(newReminder.GetValidationErrors());
+                return false;
+            }
+
+            // Erstelle Objekt für Aktualisierungsrequest an den Server.
+            Reminder updatableReminder = createUpdatableReminderInstance(oldReminder, newReminder);
+            if (updatableReminder == null)
+            {
+                Debug.WriteLine("No changes in reminder object detected. No update request required.");
+                return true;
+            }
+
+            // Generiere Json-Dokument.
+            string jsonContent = jsonParser.ParseReminderToJson(updatableReminder);
+            if (jsonContent == null)
+                return false;
+
+            string serverResponse = null;
+            try
+            {
+                // Sende Request an den Server.
+                serverResponse = await api.SendHttpPatchRequestWithJsonBody(
+                    activeModerator.ServerAccessToken,
+                    jsonContent,
+                    "/channel/" + oldReminder.ChannelId + "/reminder/" + oldReminder.Id,
+                    null);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("Update request for reminder with id {0} has failed.", oldReminder.Id);
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            // Parse Server Antwort.
+            if (serverResponse != null)
+            {
+                Reminder updatedReminder = jsonParser.ParseReminderFromJson(serverResponse);
+                if (updatableReminder != null)
+                {
+                    ReplaceLocalReminder(updatedReminder);
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Erstellt ein Objekt vom Typ Reminder, bei welchem genau die Felder gesetzt sind, die sich 
+        /// bei den übergebenen Instanzen geändert haben. Das zurückgelieferte Objekt enthält dabei die aktualisierten
+        /// Werte in den geänderten Feldern. Das zurückgegebene Objekt kann direkt für einen Aktualisierungsrequest an den 
+        /// Server genutzt werden. Gab es überhaupt keine Änderung so liefert die Methode null zurück.
+        /// </summary>
+        /// <param name="oldReminder">Das Objekt mit den Daten vor der Aktualisierung.</param>
+        /// <param name="newReminder">Das Objekt mit den aktualisierten Werten.</param>
+        /// <returns>Ein Objekt vom Typ Reminder, in welchem genau die Felder gesetzt sind, die 
+        ///     sich geändert haben. Liefert null, wenn es gar keine Änderung gab.</returns>
+        private Reminder createUpdatableReminderInstance(Reminder oldReminder, Reminder newReminder)
+        {
+            bool hasChanged = false;
+            Reminder updatableReminder = new Reminder();
+
+            if (DateTime.Compare(oldReminder.StartDate, newReminder.StartDate) != 0)
+            {
+                hasChanged = true;
+                updatableReminder.StartDate = newReminder.StartDate;
+            }
+
+            if (DateTime.Compare(oldReminder.EndDate, newReminder.EndDate) != 0)
+            {
+                hasChanged = true;
+                updatableReminder.EndDate = newReminder.EndDate;
+            }
+
+            if (oldReminder.Interval != newReminder.Interval)
+            {
+                hasChanged = true;
+                updatableReminder.Interval = newReminder.Interval;
+            }
+
+            if (oldReminder.Ignore != newReminder.Ignore)
+            {
+                hasChanged = true;
+                updatableReminder.Ignore = newReminder.Ignore;
+            }
+
+            if (oldReminder.Text != newReminder.Text)
+            {
+                hasChanged = true;
+                updatableReminder.Text = newReminder.Text;
+            }
+
+            if (oldReminder.Title != newReminder.Title)
+            {
+                hasChanged = true;
+                updatableReminder.Title = newReminder.Title;
+            }
+
+            if (oldReminder.MessagePriority != newReminder.MessagePriority)
+            {
+                hasChanged = true;
+                updatableReminder.MessagePriority = newReminder.MessagePriority;
+            }
+
+            // Prüfe, ob sich überhaupt eine Property geändert hat.
+            if (!hasChanged)
+            {
+                Debug.WriteLine("No Property of reminder has been updated. Method will return null.");
+                updatableReminder = null;
+            }
+
+            return updatableReminder;
         }
 
         /// <summary>

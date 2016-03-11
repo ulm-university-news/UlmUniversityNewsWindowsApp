@@ -97,6 +97,7 @@ namespace DataHandlingLayer.ViewModel
             try
             {
                 SelectedReminder = await Task.Run(() => channelController.GetReminder(reminderId));
+                Debug.WriteLine("SelectedReminder properties: " + SelectedReminder.ToString());
 
                 if (SelectedReminder != null)
                 {

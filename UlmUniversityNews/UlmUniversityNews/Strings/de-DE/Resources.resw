@@ -953,6 +953,9 @@ Nachricht am: </value>
   <data name="ReminderIntervalConverterStringOneWeekDesc" xml:space="preserve">
     <value>Sende Reminder-Nachricht jede Woche.</value>
   </data>
+  <data name="AddAndEditReminderEditReminderButton.Label" xml:space="preserve">
+    <value>speichern</value>
+  </data>
   <data name="ModeratorChannelDetailsAddReminderButton.Label" xml:space="preserve">
     <value>reminder hinzufügen</value>
   </data>

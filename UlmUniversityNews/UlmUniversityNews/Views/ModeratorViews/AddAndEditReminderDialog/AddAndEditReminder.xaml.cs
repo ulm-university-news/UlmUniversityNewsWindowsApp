@@ -96,6 +96,7 @@ namespace UlmUniversityNews.Views.ModeratorViews.AddAndEditReminderDialog
                 if (reminderId != -1)
                 {
                     // TODO Load Edit Dialog
+                    await addAndEditReminderViewModel.LoadEditReminderDialog(reminderId);
                 }
                 else
                 {

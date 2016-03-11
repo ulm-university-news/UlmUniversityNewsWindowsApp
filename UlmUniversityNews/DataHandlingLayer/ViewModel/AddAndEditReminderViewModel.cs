@@ -268,6 +268,16 @@ namespace DataHandlingLayer.ViewModel
             get { return selectedChannel; }
             set { this.setProperty(ref this.selectedChannel, value); }
         }
+
+        private Reminder selectedReminder;
+        /// <summary>
+        /// Der gewählte Reminder, der bei einem Änderungsdialog geändert werden soll.
+        /// </summary>
+        public Reminder SelectedReminder
+        {
+            get { return selectedReminder; }
+            set { this.setProperty(ref this.selectedReminder, value); }
+        }
         #endregion Properties
 
         #region Commands
@@ -280,6 +290,16 @@ namespace DataHandlingLayer.ViewModel
             get { return createReminderCommand; }
             set { createReminderCommand = value; }
         }
+
+        private AsyncRelayCommand editReminderCommand;
+        /// <summary>
+        /// Befehl zum Speichern der erfolgten Bearbeitung eines Reminder.
+        /// </summary>
+        public AsyncRelayCommand EditReminderCommand
+        {
+            get { return editReminderCommand; }
+            set { editReminderCommand = value; }
+        } 
         #endregion Commands
 
         /// <summary>
@@ -294,6 +314,7 @@ namespace DataHandlingLayer.ViewModel
 
             // Erzeuge Befehle.
             CreateReminderCommand = new AsyncRelayCommand(param => executeCreateReminderCommand());
+            EditReminderCommand = new AsyncRelayCommand(param => executeEditReminderCommand());
         }
 
         /// <summary>
@@ -332,6 +353,71 @@ namespace DataHandlingLayer.ViewModel
 
             calculateIntervalValue();
             updateNextReminderDate();
+        }
+
+        /// <summary>
+        /// Lädt den Dialog zur Bearbeitung des Reminders mit der angegebenen Id.
+        /// </summary>
+        /// <param name="reminderId">Die Id des Reminder, der bearbeitet werden soll.</param>
+        public async Task LoadEditReminderDialog(int reminderId)
+        {
+            // Initialisiere ViewModel Parameter. 
+            IsAddReminderDialog = false;
+            IsEditReminderDialog = true;
+
+            try 
+            {
+                SelectedReminder = await Task.Run(() => channelController.GetReminder(reminderId));
+            }
+            catch (ClientException ex)
+            {
+                displayError(ex.ErrorCode);
+            }
+            
+            if (SelectedReminder != null)
+            {
+                SelectedStartDate = SelectedReminder.StartDate;
+                SelectedEndDate = SelectedReminder.EndDate;
+                SelectedTime = SelectedReminder.StartDate.TimeOfDay;
+                IntervalValue = SelectedReminder.Interval;
+                int intervalInDays = IntervalValue / (60 * 60 * 24);
+
+                // Lade Intervall Parameter.
+                IsIntervalOneTimeSelected = false;
+                IsDailyIntervalSelected = false;
+                IsWeeklyIntervalSelected = false;
+                if (intervalInDays == 0)
+                {
+                    IsIntervalOneTimeSelected = true;
+                    SelectedIntervalTypeComboBoxIndex = 2;  // Eintrag "Einmalig".
+                }
+                else if ((intervalInDays % 7) == 0)
+                {
+                    IsWeeklyIntervalSelected = true;
+                    SelectedIntervalTypeComboBoxIndex = 1;  // Eintrag "Wöchentlich".
+                    SelectedIntervalInWeeks = intervalInDays / 7;
+                }
+                else
+                {
+                    IsDailyIntervalSelected = true;
+                    selectedIntervalTypeComboBoxIndex = 0;  // Eintrag "Täglich".
+                    SelectedIntervalInDays = intervalInDays;
+                }
+
+                SkipNextReminderDate = SelectedReminder.Ignore;
+                Title = SelectedReminder.Title;
+                Text = SelectedReminder.Text;
+                if (SelectedReminder.MessagePriority == Priority.NORMAL)
+                {
+                    IsPriorityNormalSelcted = true;
+                    IsPriorityHighSelected = false;
+                }
+                else if (SelectedReminder.MessagePriority == Priority.HIGH)
+                {
+                    IsPriorityNormalSelcted = false;
+                    IsPriorityHighSelected = true;
+                }
+            }
         }
 
         /// <summary>
@@ -479,6 +565,42 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
-        
+        /// <summary>
+        /// Führt den Befehl EditReminderCommand aus. Führt die Bearbeitung
+        /// des Reminders aus.
+        /// </summary>
+        private async Task executeEditReminderCommand()
+        {
+            Reminder oldReminder = SelectedReminder;
+            Reminder newReminder = createReminderFromEnteredData();
+
+            if (oldReminder == null || newReminder == null)
+                return;
+
+            try
+            {
+                displayIndeterminateProgressIndicator();
+
+                bool successful = await channelController.UpdateReminderAsync(oldReminder, newReminder);
+
+                if (successful)
+                {
+                    // Gehe zurück auf ModeratorChannelDetails Seite.
+                    if (_navService.CanGoBack())
+                    {
+                        _navService.GoBack();
+                    }
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("Failed to edit reminder. Msg is: {0}.", ex.Message);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
+        }
     }
 }
