@@ -395,6 +395,11 @@ namespace DataHandlingLayer.ViewModel
                     loginController.PerformLogout();
                     // Navigiere zurück auf den Homescreen des Nutzers.
                     _navService.Navigate(menuEntry.ReferencedPageKey);
+
+                    // Lösche noch den Backstack, so dass nicht per Back-Key auf die Moderatorensicht
+                    // zurück navigiert werden kann.
+                    _navService.ClearBackStack();
+
                     return;
                 }
 

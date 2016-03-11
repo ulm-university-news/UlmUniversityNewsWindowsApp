@@ -22,6 +22,7 @@
         <valueconverter:ChannelToDrawerMenuBackgroundConverter x:Key="ChannelToDrawerMenuBackgroundConverter" />
         <valueconverter:ValidationMessageOnLocalizedStringConverter x:Key="ValidationMessageOnLocalizedStringConverter" />
         <valueconverter:ReminderDateTimeToStringConverter x:Key="ReminderDateTimeToStringConverter" />
+        <valueconverter:ReminderIntervalToLocalizedStringConverter x:Key="ReminderIntervalToLocalizedStringConverter" />
 
         <Style x:Name="IntervalBlockFontStyle" 
                x:Key="IntervalBlockFontStyle"
@@ -347,7 +348,14 @@
                             </Grid>
 
                             <!-- Beschreibung der Auswahl. -->
-                            <TextBlock
+                            <TextBlock 
+                                Grid.Row="3"
+                                x:Name="AddAndEditReminderIntervalDescription"
+                                x:Uid="AddAndEditReminderIntervalDescription"
+                                Style="{StaticResource IntervalBlockFontStyle}"
+                                Text="{Binding IntervalValue, Converter={StaticResource ReminderIntervalToLocalizedStringConverter}}"/>
+
+                            <!--<TextBlock
                                 Grid.Row="3"
                                 x:Name="AddAndEditReminderDailyIntervalSelectionDescription"
                                 x:Uid="AddAndEditReminderDailyIntervalSelectionDescription"
@@ -377,7 +385,7 @@
                                 x:Uid="AddAndEditReminderOneTimeIntervalSelectionDescription"
                                 Style="{StaticResource IntervalBlockFontStyle}"
                                 Visibility="{Binding IsIntervalOneTimeSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                />
+                                />-->
 
                             <!-- Validierungsfehler -->
                             <TextBlock Grid.Row="4"

@@ -9,6 +9,7 @@ using DataHandlingLayer.DataModel;
 using DataHandlingLayer.Exceptions;
 using DataHandlingLayer.Controller;
 using System.Diagnostics;
+using DataHandlingLayer.CommandRelays;
 
 namespace DataHandlingLayer.ViewModel
 {
@@ -59,6 +60,15 @@ namespace DataHandlingLayer.ViewModel
         #endregion Properties
 
         #region Commands
+        private RelayCommand switchToEditReminderDialogCommand;
+        /// <summary>
+        /// Befehl zum Wechseln auf den Dialog zum bearbeiten des Reminder.
+        /// </summary>
+        public RelayCommand SwitchToEditReminderDialogCommand
+        {
+            get { return switchToEditReminderDialogCommand; }
+            set { switchToEditReminderDialogCommand = value; }
+        }     
         #endregion Commands
 
         /// <summary>
@@ -71,6 +81,10 @@ namespace DataHandlingLayer.ViewModel
         {
             channelController = new ChannelController();
             moderatorController = new ModeratorController();
+
+            // Befehle anlegen.
+            SwitchToEditReminderDialogCommand = new RelayCommand(
+                param => executeSwitchToEditReminderCommand());
         }
 
         /// <summary>
@@ -106,6 +120,20 @@ namespace DataHandlingLayer.ViewModel
                 Debug.WriteLine("Error during loading process. Cannot continue." + 
                     " Message is: {0}.", ex.Message);
                 displayError(ex.ErrorCode);
+            }
+        }
+
+        /// <summary>
+        /// Führt den Befehl SwitchToEditReminderCommand aus. Wechselt auf den Dialog
+        /// zum Bearbeiten des Reminder.
+        /// </summary>
+        private void executeSwitchToEditReminderCommand()
+        {
+            if (SelectedReminder != null && SelectedChannel != null)
+            {
+                string navigationParameter = 
+                    "navParam?channelId=" + SelectedChannel.Id + "?reminderId=" + SelectedReminder.Id;
+                _navService.Navigate("AddAndEditReminder", navigationParameter);
             }
         }
     }

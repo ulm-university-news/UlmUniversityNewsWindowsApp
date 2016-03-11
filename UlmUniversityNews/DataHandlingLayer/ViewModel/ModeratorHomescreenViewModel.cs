@@ -27,6 +27,12 @@ namespace DataHandlingLayer.ViewModel
         /// Lookup Tabelle für Kanäle, in der alle aktuell im ViewModel verwalteten Kanäle gespeichert werden.
         /// </summary>
         private Dictionary<int, Channel> currentChannels;
+
+        // Speichert die AppSettings, die zum Zeitpunkt des Ladens der Kanäle aktuell gültig sind.
+        // Wird benötigt, um zu prüfen, ob bei geänderten Einstellungen die Liste der Kanäle neu 
+        // sortiert werden muss.
+        private OrderOption cachedGeneralListSettings;
+        private OrderOption cachedChannelOrderSettings;
         #endregion Fields
 
         #region Properties
@@ -105,6 +111,11 @@ namespace DataHandlingLayer.ViewModel
 
                     ManagedChannels = new ObservableCollection<Channel>(managedChannelList);
 
+                    // Speichere die aktuell gültigen Anwendungseinstellungen zwischen.
+                    AppSettings currentSettings = channelController.GetApplicationSettings();
+                    cachedGeneralListSettings = currentSettings.GeneralListOrderSetting;
+                    cachedChannelOrderSettings = currentSettings.ChannelOderSetting;
+
                     // Füge Kanäle noch dem Lookup-Verzeichnis hinzu.
                     foreach (Channel channel in managedChannelList)
                     {
@@ -116,14 +127,23 @@ namespace DataHandlingLayer.ViewModel
                 }
                 else
                 {
+                    // Seite kommt aus dem Cache.
                     Debug.WriteLine("We already have managed channels from cache.");
-
-                    // TODO - Application settings changed case
-
-                    // Frage nur die verwalteten Kanäle von der lokalen DB ab und schaue, ob Aktualisierungen der ManagedChannelsList notwendig sind.
-                    List<Channel> managedChannelList = await Task.Run(() => channelController.GetManagedChannels(activeModerator.Id));
-
-                    updateManagedChannelList(managedChannelList);
+                    
+                    // Prüfe zunächst, ob die Einstellungen aktualisiert wurden.
+                    AppSettings currentAppSettings = channelController.GetApplicationSettings();
+                    if (currentAppSettings.GeneralListOrderSetting != cachedGeneralListSettings ||
+                        currentAppSettings.ChannelOderSetting != cachedChannelOrderSettings)
+                    {
+                        // Aktualisiere Liste nach Änderung der Einstellungen.
+                        await updateViewModelChannelListOnSettingsChange(currentAppSettings);
+                    }
+                    else
+                    {
+                        // Synchronisiere nur die im ViewModel gehaltene Liste von Kanälen mit den
+                        // lokal im System vorhanden Kanälen.
+                        await updateViewModelChannelList();
+                    }
                 }
             }
             catch (ClientException ex)
@@ -150,16 +170,15 @@ namespace DataHandlingLayer.ViewModel
                 // Frage Daten vom Server ab und aktualisiere lokale Datensätze.
                 List<Channel> managedChannelsServer = await channelController.RetrieveManagedChannelsFromServerAsync(activeModerator.Id);
 
-                // Aktualisiere zunächst die lokalen Kanaldatensätze.
-                await Task.Run(() => channelController.UpdateChannels(managedChannelsServer));
-
                 // Aktualisiere die Beziehungen Moderator-Kanal für die verantwortlichen Moderatoren.
-                await Task.Run(() => channelController.UpdateManagedChannelsRelationships(managedChannelsServer));
+                await Task.Run(() => channelController.SynchronizeLocalManagedChannels(
+                    channelController.GetLocalModerator(),
+                    managedChannelsServer));
                 
                 Debug.WriteLine("Finished the updating process of channel moderator relationships.");
                 
                 // Aktualisiere ManagedChannels Liste.
-                updateManagedChannelList(managedChannelsServer);
+                await updateViewModelChannelList();
             }
             catch (ClientException ex)
             {
@@ -169,33 +188,43 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
-        /// Aktualisiert die ManagedChannel Liste auf Basis der übergebebenen Liste.
-        /// Fügt neu hinzugekommene Kanäle hinzu und nimmt nicht mehr vorhandene Kanäle
-        /// raus.
+        /// Aktualisiert die ManagedChannel Liste, die aktuell im ViewModel verwaltet wird durch
+        /// Synchronisation mit den aktuell in der Anwendung verwalteten Datensätzen. Es findet kein Aufruf
+        /// an den Server statt. Fügt der ManagedChannel Liste neu hinzugekommene Kanäle hinzu und nimmt nicht
+        /// mehr vorhandene Kanäle raus. Falls lokal ein neuerer Datensatz für einen Kanal vorliegt, werden die 
+        /// für die View relevanten Daten aktualisiert.
         /// </summary>
-        /// <param name="updatedChannelList">Die aktualisierte Liste an Kanalressourcen, die als Referenz dient.</param>
-        private void updateManagedChannelList(List<Channel> updatedChannelList)
+        private async Task updateViewModelChannelList()
         {
-            Debug.WriteLine("Start the updateManagedChannelList method. Current amount of items " + 
+            Debug.WriteLine("updateViewModelChannelList: Start method. Current amount of items " + 
                 "is {0} in the ManagedChannels list.", ManagedChannels.Count);
             Moderator activeModerator = channelController.GetLocalModerator();
+            if (activeModerator == null)
+                return;
+
+            List<Channel> localChannelList = await Task.Run(() => channelController.GetManagedChannels(activeModerator.Id));
 
             try
             {
-                updatedChannelList = sortChannelsByApplicationSetting(updatedChannelList);
+                localChannelList = sortChannelsByApplicationSetting(localChannelList);
 
                 // Vergleiche, ob updatedChannelList Kanäle enthält, die noch nicht in ManagedChannels stehen.
-                for (int i = 0; i < updatedChannelList.Count; i++)
+                for (int i = 0; i < localChannelList.Count; i++)
                 {
-                    if (!currentChannels.ContainsKey(updatedChannelList[i].Id))
+                    if (!currentChannels.ContainsKey(localChannelList[i].Id))
                     {
                         // Füge den Kanal der Liste hinzu.
-                        currentChannels.Add(updatedChannelList[i].Id, updatedChannelList[i]);
-                        ManagedChannels.Insert(i, updatedChannelList[i]);
+                        currentChannels.Add(localChannelList[i].Id, localChannelList[i]);
+                        ManagedChannels.Insert(i, localChannelList[i]);
                     }
                     else
                     {
-                        // TODO - Prüfe, ob Aktualisierung der lokalen Kanal-Ressource erforderlich.
+                        // Prüfe, ob Aktualisierung der lokalen Kanal-Ressource erforderlich.
+                        Channel currentChannel = currentChannels[localChannelList[i].Id];
+                        if (DateTime.Compare(currentChannel.ModificationDate, localChannelList[i].ModificationDate) < 0)
+                        {
+                            updateViewRelatedPropertiesOfChannel(currentChannel, localChannelList[i]);
+                        }
                     }
                 }
 
@@ -204,7 +233,7 @@ namespace DataHandlingLayer.ViewModel
                 {
                     bool isContained = false;
 
-                    foreach (Channel channel in updatedChannelList)
+                    foreach (Channel channel in localChannelList)
                     {
                         if (channel.Id == ManagedChannels[i].Id)
                         {
@@ -220,13 +249,57 @@ namespace DataHandlingLayer.ViewModel
                     }
                 }
 
-                Debug.WriteLine("Updated ManagedChannels list. It contains now {0} items.", ManagedChannels.Count);
+                Debug.WriteLine("updateViewModelChannelList: Finished! List contains now {0} items.", ManagedChannels.Count);
             }
             catch (ClientException ex)
             {
-                Debug.WriteLine("Error occurred in updateManagedChannelList");
-                Debug.WriteLine("Message is: {0}, Error Code is: {1}.", ex.Message, ex.ErrorCode);
+                Debug.WriteLine("updateViewModelChannelList: Error occurred.");
+                Debug.WriteLine("updateViewModelChannelList: Message is: {0}, Error Code is: {1}.", ex.Message, ex.ErrorCode);
             }
+        }
+
+        /// <summary>
+        /// Aktualisiert die Liste an vom Moderator verwalteten Kanäle nach einer
+        /// Änderung der kanalspezifischen oder listenspezifischen Anwendungseinstellungen. Die Einträge der Liste
+        /// müssen entsprechend der neuen Einstellungen neu angeordnet werden. In diesem Fall werden die Einträge neu
+        /// geladen und die Liste neu initialisiert.
+        /// </summary>
+        /// <param name="currentSettings">Die aktuellen Anwendungseinstellungen, die nach der Änderung gelten.</param>
+        private async Task updateViewModelChannelListOnSettingsChange(AppSettings currentSettings)
+        {
+            Moderator activeModerator = channelController.GetLocalModerator();
+            if (activeModerator == null)
+                return;
+
+            List<Channel> managedChannelList = await Task.Run(() => channelController.GetManagedChannels(activeModerator.Id));
+
+            // Sortiere nach aktuellen Anwendungseinstellungen.
+            managedChannelList = sortChannelsByApplicationSetting(managedChannelList);
+
+            // Lade die komplette Collection neu.
+            ManagedChannels = new ObservableCollection<Channel>(managedChannelList);
+
+            cachedGeneralListSettings = currentSettings.GeneralListOrderSetting;
+            cachedChannelOrderSettings = currentSettings.ChannelOderSetting;
+
+            // Füge Kanäle noch dem Lookup-Verzeichnis hinzu.
+            currentChannels.Clear();
+            foreach (Channel channel in managedChannelList)
+            {
+                currentChannels.Add(channel.Id, channel);
+            }
+        } 
+
+        /// <summary>
+        /// Aktualisiert nur die Properties, welche für die View aktuell relevant sind, also Properties, die
+        /// per Databinding an die View gebunden sind. Aktualisiert dabei die 
+        /// </summary>
+        /// <param name="updatableChannel">Das zu aktualisierende Channel Objekt.</param>
+        /// <param name="newChannel">Das Channel Objekt mit den neuen Daten.</param>
+        private void updateViewRelatedPropertiesOfChannel(Channel updatableChannel, Channel newChannel)
+        {
+            updatableChannel.Name = newChannel.Name;
+            updatableChannel.Term = newChannel.Term;
         }
 
         /// <summary>

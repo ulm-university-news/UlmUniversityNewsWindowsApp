@@ -158,25 +158,25 @@ namespace DataHandlingLayer.Controller
         /// Aktualisiert die Datensätze der Kanäle, die aktuell von der Anwendung verwaltet werden
         /// basierend auf der übergebenen Liste an Kanaldaten. Die Liste kann neue Kanäle enthalten,
         /// die dann in die lokalen Datensätze übernommen werden. Die Liste kann aber auch bestehende
-        /// Datensätze mit geänderten Datenwerten beinhalten, dann werden die lokalen Datensätze aktualisiert.
+        /// Datensätze mit geänderten Datenwerten beinhalten, dann werden die lokalen Datensätze durch die 
+        /// neueren ersetzt.
         /// </summary>
-        /// <param name="channels">Die Liste mit neuen oder geänderten Kanaldaten.</param>
+        /// <param name="updatedChannelList">Die Liste mit neuen oder geänderten Kanaldaten.</param>
         /// <exception cref="ClientException">Wirft ClientException, wenn Update fehlschlägt.</exception>
-        public void UpdateChannels(List<Channel> channels)
+        public void AddOrReplaceLocalChannels(List<Channel> updatedChannelList)
         {
             Channel currentChannel;
-            Channel channelDB;
 
             // Iteriere über Liste:
-            for (int i = 0; i < channels.Count; i++)
+            for (int i = 0; i < updatedChannelList.Count; i++)
             {
-                currentChannel = channels[i];
+                currentChannel = updatedChannelList[i];
 
                 try
                 {
                     // Prüfe zunächst, ob lokaler Datensatz existiert für den Kanal.
-                    channelDB = channelDatabaseManager.GetChannel(currentChannel.Id);
-                    if (channelDB != null)
+                    bool isContained = channelDatabaseManager.IsChannelContained(currentChannel.Id);
+                    if (isContained)
                     {
                         // Führe Aktualisierung durch.
                         channelDatabaseManager.UpdateChannelWithSubclass(currentChannel);
@@ -655,8 +655,8 @@ namespace DataHandlingLayer.Controller
         /// Bereitet ein Objekt vom Typ Channel vor, welches alle Properties enthält, die sich geändert haben.
         /// Die Methode bekommt eine alte Version eines Channel Objekts und eine neue Version und ermittelt 
         /// dann die Properties, die eine Aktualisierung erhalten haben und schreibt diese in eine neue Channel
-        /// Instanz. Die von der Methode zurückgelieferte Channel Instanz kann dann direkt für die Aktualisierung 
-        /// verwendet werden. Achtung: Hat sich überhaupt keine Property geändert, so gibt die Methode null zurück.
+        /// Instanz. Die von der Methode zurückgelieferte Channel Instanz kann dann direkt für die Aktualisierung auf
+        /// dem Server verwendet werden. Achtung: Hat sich überhaupt keine Property geändert, so gibt die Methode null zurück.
         /// </summary>
         /// <param name="oldChannel">Das Channel Objekt vor der Aktualisierung.</param>
         /// <param name="newChannel">Das Channel Objekt mit den aktuellen Werten.</param>
@@ -843,6 +843,43 @@ namespace DataHandlingLayer.Controller
             }
 
             return updatedChannel;
+        }
+
+        /// <summary>
+        /// Ersetzt die lokal verwaltete Version des Kanals durch eine neue
+        /// Version desselben Kanals.
+        /// </summary>
+        /// <param name="newChannel">Die neue Version des Kanals.</param>
+        ///<exception cref="ClientException">Wirft ClientException, wenn Aktion aufgrund eines 
+        ///     Fehlers nicht ausgeführt werden kann.</exception>
+        public void ReplaceLocalChannel(Channel newChannel)
+        {
+            try
+            {
+                channelDatabaseManager.UpdateChannelWithSubclass(newChannel);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("Couldn't perform the replace local channel functionality.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Fügt einen Kanal den lokal verwalteten Kanaldatensätzen hinzu.
+        /// </summary>
+        /// <param name="newChannel">Der hinzuzufügende Kanal.</param>
+        public void AddToLocalChannels(Channel newChannel)
+        {
+            try
+            {
+                channelDatabaseManager.StoreChannel(newChannel);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("Couldn't store channel.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
         }
 
         /// <summary>
@@ -1229,8 +1266,68 @@ namespace DataHandlingLayer.Controller
                     "The message is {1}.", channelId, ex.Message);
             }
         }
-               
 
+        /// <summary>
+        /// Fügt den übergebenen Kanal der Liste der verwalteten Kanäle hinzu für den übergebenen
+        /// Moderator. Trägt dabei den übergebenen Moderator als Verantwortlichen für den übergebenen Kanal
+        /// ein und schaut ob der lokale Datensatz des Kanals hinzugefügt oder aktualisiert werden muss. 
+        /// </summary>
+        /// <param name="moderator">Der Moderator, für den der Kanal zur Liste der verwalteten Kanäle hinzukommt.</param>
+        /// <param name="newManagedChannel">Der hinzuzufügende Kanal.</param>
+        public void AddChannelToLocalManagedChannels(Moderator moderator, Channel newManagedChannel)
+        {
+            if (moderator == null || newManagedChannel == null)
+                return;
+
+            try
+            {
+                // Prüfe, ob der aktuell eingeloggte Moderator schon in der Datenbank enthalten ist.
+                // Falls nicht, speichere ihn ab.
+                if (!moderatorDatabaseManager.IsModeratorStored(moderator.Id))
+                {
+                    Debug.WriteLine("SynchronizeLocalManagedChannels: Need to store the moderator with id {0} in local DB.",
+                        moderator.Id);
+                    moderatorDatabaseManager.StoreModerator(moderator);
+                }
+
+                // Prüfe ob Kanal schon in lokalen Datensätzen vorhanden ist.
+                if (!channelDatabaseManager.IsChannelContained(newManagedChannel.Id))
+                {
+                    Debug.WriteLine("AddChannelToLocalManagedChannels: Adding channel with id {0} to local channels.",
+                        newManagedChannel.Id);
+                    // Wenn nicht, füge Kanal hinzu. 
+                    AddToLocalChannels(newManagedChannel);
+                }
+                else
+                {
+                    // Frage lokale Version ab und prüfe, ob diese aktualisiert werden muss.
+                    Channel localChannel = GetChannel(newManagedChannel.Id);
+
+                    if (DateTime.Compare(localChannel.ModificationDate, newManagedChannel.ModificationDate) < 0)
+                    {
+                        Debug.WriteLine("SynchronizeLocalManagedChannels: Need to update channel with id {0}.",
+                            localChannel.Id);
+                        // Übernehme NotificationSettings von lokalem Kanal.
+                        newManagedChannel.AnnouncementNotificationSetting = localChannel.AnnouncementNotificationSetting;
+                        // Ersetze lokalen Datensatz durch neuen Datensatz.
+                        ReplaceLocalChannel(newManagedChannel);
+                    }
+                }
+
+                // Füge den Moderator als Verantwortlichen für den Kanal hinzu.
+                channelDatabaseManager.AddModeratorToChannel(newManagedChannel.Id, moderator.Id, true);
+
+                // Stoße das Herunterladen der für den neu hinzugekommenen Kanal relevanten Daten an.
+                // Bemerkung: Falls das fehlschlägt wird kein Fehler geworfen. Die Daten können auch im Fehlerfall später nachgeladen werden.
+                Task.Run(() => retrieveAndStoreManagedChannelInfoAsync(moderator, newManagedChannel.Id));
+            }
+            catch(DatabaseException ex)
+            {
+                Debug.WriteLine("Couldn't add channel to local managed channels. Msg is {0}.", 
+                    ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
         #region LocalManagedChannelsFunctions
 
         /// <summary>
@@ -1258,53 +1355,94 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
-        /// Prüft, ob alle Beziehungen zwischen Kanalressourcen und dem aktuell eingeloggten
-        /// Moderator aktuell sind und aktualisiert diese falls notwendig. 
+        /// Führe eine Synchronisation der lokalen Menge an Kanälen, für die der übergebene
+        /// Moderator als Verantwortlicher eingetragen ist, mit der übergebenen Liste an Kanalressourcen
+        /// durch. Die Methode prüft, ob die übergebene Menge an Kanalressourcen noch mit den aktuell lokal
+        /// gehaltenen Kanalressourcen übereinstimmt und fügt der lokal verwalteten Liste fehlende Kanäle
+        /// hinzu. Es können auch Kanäle aus der Liste rausgenommen werden, wenn diese nicht mehr vom übergebenen
+        /// Moderator verwaltet werden. Bereits lokal vorhanden Kanäle werden falls notwendig mit den aktuelleren
+        /// Daten der Referenzliste aktualisiert.
         /// </summary>
-        /// <param name="managedChannels">Liste von aktuell verwalteten Kanälen des Moderators.</param>
-        /// <exception cref="ClientException">Wirft ClientException, wenn Aktualisierung fehlschlägt.</exception>
-        public void UpdateManagedChannelsRelationships(List<Channel> managedChannels)
+        /// <param name="activeModerator">Der Moderator, der für die zu synchronisierenden Kanäle als Verantwortlicher eingetragen ist.</param>
+        /// <param name="referenceList">Die Liste an Kanalressourcen, gegen die die lokal verwaltete Liste synchronisiert wird.</param>
+        public void SynchronizeLocalManagedChannels(Moderator activeModerator, List<Channel> referenceList)
         {
-            Moderator activeModerator = GetLocalModerator();
             if (activeModerator == null)
                 return;
 
             try
             {
                 // Prüfe, ob der aktuell eingeloggte Moderator schon in der Datenbank enthalten ist.
+                // Falls nicht, speichere ihn ab.
                 if (!moderatorDatabaseManager.IsModeratorStored(activeModerator.Id))
                 {
-                    Debug.WriteLine("Need to store the moderator with id {0} in local DB.", activeModerator.Id);
+                    Debug.WriteLine("SynchronizeLocalManagedChannels: Need to store the moderator with id {0} in local DB.",
+                        activeModerator.Id);
                     moderatorDatabaseManager.StoreModerator(activeModerator);
                 }
+                
+                // Frage verwaltete Kanäle aus der DB ab.
+                List<Channel> managedChannelsFromDB = channelDatabaseManager.GetManagedChannels(activeModerator.Id);
 
-                // Prüfe, ob Moderator auch lokal als Verantwortlicher für Kanäle eingetragen ist.
-                foreach (Channel channel in managedChannels)
+                // Vergleiche beide Listen. Wenn Kanal in der Referenzliste ist, der noch nicht in den lokalen 
+                // Datensätzen vorhanden ist, dann füge ihn hinzu. Wenn ein Kanal schon lokal vorhanden ist, dann prüfe,
+                // ob eine Aktualisierung des lokalen Datensatzes notwendig ist.
+                foreach (Channel referenceChannel in referenceList)
                 {
-                    if (!channelDatabaseManager.IsResponsibleForChannel(channel.Id, activeModerator.Id))
+                    bool isContained = false;
+
+                    for (int i = 0; i < managedChannelsFromDB.Count; i++)
                     {
-                        // Kanal gefunden, der vorher noch nicht von diesem Moderator verwaltet wurde.
-                        // Trage Moderator ein.
-                        Debug.WriteLine("Need to add the moderator with id {0} as a responsible moderator " +
-                            "for the channel with id {1}.", activeModerator.Id, channel.Id);
-                        channelDatabaseManager.AddModeratorToChannel(channel.Id, activeModerator.Id, true);
+                        Channel localChannel = managedChannelsFromDB[i];
+
+                        // Prüfe Ids.
+                        if (referenceChannel.Id == localChannel.Id)
+                        {
+                            isContained = true;
+
+                            // Prüfe, ob Aktualisierung erforderlich.
+                            if (DateTime.Compare(localChannel.ModificationDate, referenceChannel.ModificationDate) < 0)
+                            {
+                                Debug.WriteLine("SynchronizeLocalManagedChannels: Need to update channel with id {0}.",
+                                    localChannel.Id);
+                                // Übernehme NotificationSettings von lokalem Kanal.
+                                referenceChannel.AnnouncementNotificationSetting = localChannel.AnnouncementNotificationSetting;
+                                // Ersetze lokalen Datensatz durch neuen Datensatz.
+                                ReplaceLocalChannel(referenceChannel);
+                            }
+
+                            // Beende Schleife, wenn Treffer gefunden.
+                            break;
+                        }
+                    }
+
+                    if (!isContained)
+                    {
+                        // Füge Kanal hinzu.
+                        Debug.WriteLine("SynchronizeLocalManagedChannels: Need to add channel with id {0}.",
+                                    referenceChannel.Id);
+                        AddToLocalChannels(referenceChannel);
+
+                        // Füge den Moderator als Verantwortlichen für den Kanal hinzu.
+                        channelDatabaseManager.AddModeratorToChannel(referenceChannel.Id, activeModerator.Id, true);
 
                         // Stoße das Herunterladen der für den neu hinzugekommenen Kanal relevanten Daten an.
                         // Bemerkung: Falls das fehlschlägt wird kein Fehler geworfen. Die Daten können auch im Fehlerfall später nachgeladen werden.
-                        Task.Run(() => retrieveAndStoreManagedChannelInfoAsync(channel.Id));
+                        Task.Run(() => retrieveAndStoreManagedChannelInfoAsync(activeModerator, referenceChannel.Id));
                     }
                 }
 
-                // Frage verwaltete Kanäle aus der DB ab.
-                List<Channel> managedChannelsFromDB = channelDatabaseManager.GetManagedChannels(activeModerator.Id);
-                // Prüfe, ob es darin noch einen Kanal gibt, der nicht mehr in der aktuellen Liste von Kanälen steht.
+
+                // Prüfe, ob ein Kanal nicht mehr vom Moderator verwaltet wird.
+                // Prüfe hierzu, ob in der Liste der lokalen verwalteten Kanäle einer steht, 
+                // der nicht mehr in der Referenz-Liste von Kanälen steht.
                 for (int i = 0; i < managedChannelsFromDB.Count; i++)
                 {
                     bool isContained = false;
 
-                    foreach (Channel channel in managedChannels)
+                    foreach (Channel referenceChannel in referenceList)
                     {
-                        if (channel.Id == managedChannelsFromDB[i].Id)
+                        if (referenceChannel.Id == managedChannelsFromDB[i].Id)
                         {
                             isContained = true;
                         }
@@ -1312,17 +1450,85 @@ namespace DataHandlingLayer.Controller
 
                     if (!isContained)
                     {
-                        removeChannelFromManagedChannels(activeModerator, managedChannelsFromDB[i]);
+                        RemoveChannelFromManagedChannels(activeModerator, managedChannelsFromDB[i]);
                     }
                 }
-
             }
             catch (DatabaseException ex)
             {
-                Debug.WriteLine("Database exception occurred in UpdateManagedChannelsRelationships. Msg is {0}.", ex.Message);
+                Debug.WriteLine("SynchronizeLocalManagedChannels: Database exception occurred in " + 
+                    "SynchronizeLocalManagedChannels. Msg is {0}.", ex.Message);
                 throw new ClientException(ErrorCodes.LocalDatabaseException, "Failed to update managed channels relationships.");
             }
+
         }
+
+        /// <summary>
+        /// Prüft, ob alle Beziehungen zwischen Kanalressourcen und dem aktuell eingeloggten
+        /// Moderator aktuell sind und aktualisiert diese falls notwendig. 
+        /// </summary>
+        /// <param name="managedChannels">Liste von aktuell verwalteten Kanälen des Moderators.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Aktualisierung fehlschlägt.</exception>
+        //public void UpdateManagedChannelsRelationships(List<Channel> managedChannels)
+        //{
+        //    Moderator activeModerator = GetLocalModerator();
+        //    if (activeModerator == null)
+        //        return;
+
+        //    try
+        //    {
+        //        // Prüfe, ob der aktuell eingeloggte Moderator schon in der Datenbank enthalten ist.
+        //        if (!moderatorDatabaseManager.IsModeratorStored(activeModerator.Id))
+        //        {
+        //            Debug.WriteLine("Need to store the moderator with id {0} in local DB.", activeModerator.Id);
+        //            moderatorDatabaseManager.StoreModerator(activeModerator);
+        //        }
+
+        //        // Prüfe, ob Moderator auch lokal als Verantwortlicher für Kanäle eingetragen ist.
+        //        foreach (Channel channel in managedChannels)
+        //        {
+        //            if (!channelDatabaseManager.IsResponsibleForChannel(channel.Id, activeModerator.Id))
+        //            {
+        //                // Kanal gefunden, der vorher noch nicht von diesem Moderator verwaltet wurde.
+        //                // Trage Moderator ein.
+        //                Debug.WriteLine("Need to add the moderator with id {0} as a responsible moderator " +
+        //                    "for the channel with id {1}.", activeModerator.Id, channel.Id);
+        //                channelDatabaseManager.AddModeratorToChannel(channel.Id, activeModerator.Id, true);
+
+        //                // Stoße das Herunterladen der für den neu hinzugekommenen Kanal relevanten Daten an.
+        //                // Bemerkung: Falls das fehlschlägt wird kein Fehler geworfen. Die Daten können auch im Fehlerfall später nachgeladen werden.
+        //                Task.Run(() => retrieveAndStoreManagedChannelInfoAsync(activeModerator, channel.Id));
+        //            }
+        //        }
+
+        //        // Frage verwaltete Kanäle aus der DB ab.
+        //        List<Channel> managedChannelsFromDB = channelDatabaseManager.GetManagedChannels(activeModerator.Id);
+        //        // Prüfe, ob es darin noch einen Kanal gibt, der nicht mehr in der aktuellen Liste von Kanälen steht.
+        //        for (int i = 0; i < managedChannelsFromDB.Count; i++)
+        //        {
+        //            bool isContained = false;
+
+        //            foreach (Channel channel in managedChannels)
+        //            {
+        //                if (channel.Id == managedChannelsFromDB[i].Id)
+        //                {
+        //                    isContained = true;
+        //                }
+        //            }
+
+        //            if (!isContained)
+        //            {
+        //                RemoveChannelFromManagedChannels(activeModerator, managedChannelsFromDB[i]);
+        //            }
+        //        }
+
+        //    }
+        //    catch (DatabaseException ex)
+        //    {
+        //        Debug.WriteLine("Database exception occurred in UpdateManagedChannelsRelationships. Msg is {0}.", ex.Message);
+        //        throw new ClientException(ErrorCodes.LocalDatabaseException, "Failed to update managed channels relationships.");
+        //    }
+        //}
 
         /// <summary>
         /// Nimmt einen Kanal aus der Liste der verwalteten Kanäle raus und räumt
@@ -1332,7 +1538,7 @@ namespace DataHandlingLayer.Controller
         /// <param name="activeModerator">Der gerade aktive Moderator, für den der Kanal aus der Liste der
         ///     verwalteten Kanäle ausgetragen wird.</param>
         /// <param name="channel">Der Kanal, der aus der Liste genommen wird.</param>
-        private void removeChannelFromManagedChannels(Moderator activeModerator, Channel channel)
+        public void RemoveChannelFromManagedChannels(Moderator activeModerator, Channel channel)
         {
             try
             {
@@ -1395,7 +1601,9 @@ namespace DataHandlingLayer.Controller
                         );
 
                     managedChannels = jsonParser.ParseChannelListFromJson(serverResponse);
-                    Debug.WriteLine("Retrieved a list of managed channels with {0} items.", managedChannels.Count);
+
+                    if (managedChannels != null)
+                        Debug.WriteLine("Retrieved a list of managed channels with {0} items.", managedChannels.Count);
                 }
             }
             catch (APIException ex)
@@ -1414,10 +1622,12 @@ namespace DataHandlingLayer.Controller
         /// die verantwortlichen Moderatoren und die Reminder. Speichert die Daten für den
         /// Kanal in der lokalen Datenbank ab. Ruft jedoch nicht die eigentlichen Kanaldaten ab.
         /// </summary>
+        /// <param name="activeModerator">Der Moderator, der für den Kanal als Verantwortlicher eingetragen ist.
+        ///     Ist der lokal eingeloggte Moderator.</param>
         /// <param name="channelId">Die Id des Kanals, für den die Daten abgerufen werden sollen.</param>
-        private async Task retrieveAndStoreManagedChannelInfoAsync(int channelId)
+        private async Task retrieveAndStoreManagedChannelInfoAsync(Moderator activeModerator, int channelId)
         {
-            Moderator activeModerator = GetLocalModerator();
+            Debug.WriteLine("retrieveAndStoreManagedChannelInfoAsync: Started method.");
             if (activeModerator == null)
                 return;
 
@@ -1432,26 +1642,29 @@ namespace DataHandlingLayer.Controller
                 {
                     if (!moderatorDatabaseManager.IsModeratorStored(moderator.Id))
                     {
-                        Debug.WriteLine("Need to store the moderator with id {0} in local DB.", moderator.Id);
+                        Debug.WriteLine("retrieveAndStoreManagedChannelInfoAsync: Need to store the " + 
+                            "moderator with id {0} in local DB.", moderator.Id);
                         moderatorDatabaseManager.StoreModerator(moderator);
                     }
 
                     if (!channelDatabaseManager.IsResponsibleForChannel(channelId, moderator.Id))
                     {
-                        Debug.WriteLine("Add moderator with id {0} to channel with id {1}.", channelId, moderator.Id);
+                        Debug.WriteLine("retrieveAndStoreManagedChannelInfoAsync: Add moderator with id {0} to " + 
+                            "channel with id {1}.", channelId, moderator.Id);
                         channelDatabaseManager.AddModeratorToChannel(channelId, moderator.Id, moderator.IsActive);
                     }
                 }
             }
             catch (DatabaseException ex)
             {
-                Debug.WriteLine("Storing of the responsible moderators has failed.");
-                Debug.WriteLine("Message is: {0}.", ex.Message);
+                Debug.WriteLine("retrieveAndStoreManagedChannelInfoAsync: Storing of the responsible moderators has failed.");
+                Debug.WriteLine("retrieveAndStoreManagedChannelInfoAsync: Message is: {0}.", ex.Message);
             }
             catch (ClientException ex)
             {
-                Debug.WriteLine("Retrieval of the responsible moderators has failed.");
-                Debug.WriteLine("Message is: {0} and error code is {1}.", ex.Message, ex.ErrorCode);
+                Debug.WriteLine("retrieveAndStoreManagedChannelInfoAsync: Retrieval of the responsible moderators has failed.");
+                Debug.WriteLine("retrieveAndStoreManagedChannelInfoAsync: " +
+                    "Message is: {0} and error code is {1}.", ex.Message, ex.ErrorCode);
             }
             
             // Rufe Reminder zu dem Kanal ab.
@@ -1462,15 +1675,17 @@ namespace DataHandlingLayer.Controller
             }
             catch (DatabaseException ex)
             {
-                Debug.WriteLine("Storing of the reminders has failed.");
-                Debug.WriteLine("Message is: {0}.", ex.Message);
+                Debug.WriteLine("retrieveAndStoreManagedChannelInfoAsync: Storing of the reminders has failed.");
+                Debug.WriteLine("retrieveAndStoreManagedChannelInfoAsync: Message is: {0}.", ex.Message);
             }
             catch (ClientException ex)
             {
-                Debug.WriteLine("Retrieval of the reminders has failed.");
-                Debug.WriteLine("Message is: {0} and error code is {1}.", ex.Message, ex.ErrorCode);
+                Debug.WriteLine("retrieveAndStoreManagedChannelInfoAsync: Retrieval of the reminders has failed.");
+                Debug.WriteLine("retrieveAndStoreManagedChannelInfoAsync: " + 
+                    "Message is: {0} and error code is {1}.", ex.Message, ex.ErrorCode);
             }
 
+            Debug.WriteLine("retrieveAndStoreManagedChannelInfoAsync: Finished method.");
         }
 
         #endregion RemoteManagedChannelsFunctions

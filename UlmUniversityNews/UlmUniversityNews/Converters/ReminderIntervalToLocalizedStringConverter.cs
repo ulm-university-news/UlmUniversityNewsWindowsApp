@@ -42,7 +42,7 @@ namespace UlmUniversityNews.Converters
                 else if (days == 14 || days == 21 || days == 28)
                 {
                     localizedString = loader.GetString("ReminderIntervalConverterStringMultipleWeeksDesc1") + 
-                        " " + (days % 7) + " " +
+                        " " + (days / 7) + " " +
                         loader.GetString("ReminderIntervalConverterStringMultipleWeeksDesc2");
                     return localizedString;
                 }

@@ -140,7 +140,7 @@ namespace DataHandlingLayer.ViewModel
 
                     // Führe Aktualisierungen auf den lokalen Datensätzen aus. Delegiere den Aufruf an einen Hintergrundthread.
                     Debug.WriteLine("Started updating the channel resources.");
-                    await Task.Run(() => channelController.UpdateChannels(updatedChannels));
+                    await Task.Run(() => channelController.AddOrReplaceLocalChannels(updatedChannels));
                     Debug.WriteLine("Finished updating the channel resources.");
 
                     // Setze Aktualisierungsdatum neu.
