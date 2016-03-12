@@ -431,13 +431,13 @@ namespace DataHandlingLayer.Database
                     }
                     catch (SQLiteException sqlEx)
                     {
-                        Debug.WriteLine("SQLiteException has occurred in GetChannels. The message is: {0}." + sqlEx.Message);
+                        Debug.WriteLine("SQLiteException has occurred in GetChannels. The message is: {0}.", sqlEx.Message);
                         throw new DatabaseException("Get channels has failed.");
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine("SQLiteException has occurred in GetChannels. The message is: {0}, " +
-                            "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                            "and the stack trace: {1}.", ex.Message, ex.StackTrace);
                         throw new DatabaseException("Get channels has failed.");
                     }
                     finally
@@ -483,13 +483,13 @@ namespace DataHandlingLayer.Database
                     }
                     catch (SQLiteException sqlEx)
                     {
-                        Debug.WriteLine("SQLiteException has occurred in DeleteChannel. The message is: {0}." + sqlEx.Message);
+                        Debug.WriteLine("SQLiteException has occurred in DeleteChannel. The message is: {0}.", sqlEx.Message);
                         throw new DatabaseException("Delete channel has failed.");
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine("SQLiteException has occurred in DeleteChannel. The message is: {0}, " +
-                            "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                            "and the stack trace: {1}.", ex.Message, ex.StackTrace);
                         throw new DatabaseException("Delete channel has failed.");
                     }
                     finally
@@ -544,13 +544,13 @@ namespace DataHandlingLayer.Database
                     }
                     catch (SQLiteException sqlEx)
                     {
-                        Debug.WriteLine("SQLiteException has occurred in IsChannelContained. The message is: {0}." + sqlEx.Message);
+                        Debug.WriteLine("SQLiteException has occurred in IsChannelContained. The message is: {0}.", sqlEx.Message);
                         return false;
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine("SQLiteException has occurred in IsChannelContained. The message is: {0}, " +
-                            "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                            "and the stack trace: {1}.", ex.Message, ex.StackTrace);
                         return false;
                     }
                     finally
@@ -597,13 +597,13 @@ namespace DataHandlingLayer.Database
                     }
                     catch (SQLiteException sqlEx)
                     {
-                        Debug.WriteLine("SQLiteException has occurred in MarkChannelAsDeleted. The message is: {0}." + sqlEx.Message);
+                        Debug.WriteLine("SQLiteException has occurred in MarkChannelAsDeleted. The message is: {0}.", sqlEx.Message);
                         throw new DatabaseException("Mark channel as deleted failed. " + sqlEx.Message);
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine("SQLiteException has occurred in MarkChannelAsDeleted. The message is: {0}, " +
-                            "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                            "and the stack trace: {1}.", ex.Message, ex.StackTrace);
                         throw new DatabaseException("Mark channel as deleted failed. " + ex.Message);
                     }
                     finally
@@ -671,13 +671,13 @@ namespace DataHandlingLayer.Database
                     }
                     catch (SQLiteException sqlEx)
                     {
-                        Debug.WriteLine("SQLiteException has occurred in GetChannel. The message is: {0}." + sqlEx.Message);
+                        Debug.WriteLine("SQLiteException has occurred in GetChannel. The message is: {0}.", sqlEx.Message);
                         throw new DatabaseException("Get channel has failed.");
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine("SQLiteException has occurred in GetChannel. The message is: {0}, " +
-                            "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                            "and the stack trace: {1}.", ex.Message, ex.StackTrace);
                         throw new DatabaseException("Get channel has failed.");
                     }
                     finally
@@ -929,10 +929,10 @@ namespace DataHandlingLayer.Database
         /// Liefert das Datum zurück, an dem zum letzten Mal ein Update der Liste aller in
         /// der Anwendung verwalteten Kanäle durchgeführt wurde.
         /// </summary>
-        /// <returns>Ein Objekt vom Typ DateTime.</returns>
-        public DateTime GetDateOfLastChannelListUpdate()
+        /// <returns>Ein Objekt vom Typ DateTimeOffset.</returns>
+        public DateTimeOffset GetDateOfLastChannelListUpdate()
         {
-            DateTime lastUpdate = DateTime.MinValue;
+            DateTimeOffset lastUpdate = DateTimeOffset.MinValue;
 
             using (SQLiteConnection conn = DatabaseManager.GetConnection())
             {
@@ -966,9 +966,9 @@ namespace DataHandlingLayer.Database
         /// <summary>
         /// Setzt das Datum der letzten Aktualisierung der Kanäle, die in der Anwendung verwaltet werden.
         /// </summary>
-        /// <param name="lastUpdate">Das Datum der letzten Änderung in Form eines DateTime Objekts.</param>
+        /// <param name="lastUpdate">Das Datum der letzten Änderung in Form eines DateTimeOffset Objekts.</param>
         /// <exception cref="DatabaseException">Wirft DatabaseException, wenn das Setzen des letzten Änderungsdatums fehlschlägt.</exception>
-        public void SetDateOfLastChannelListUpdate(DateTime lastUpdate)
+        public void SetDateOfLastChannelListUpdate(DateTimeOffset lastUpdate)
         {
             // Frage das Mutex Objekt ab.
             Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
@@ -981,8 +981,8 @@ namespace DataHandlingLayer.Database
                     try
                     {
                         // Frage zunächst ab, ob es schon ein Änderungsdatum in der Tabelle gibt.
-                        DateTime tableEntry = GetDateOfLastChannelListUpdate();
-                        if (tableEntry == DateTime.MinValue)
+                        DateTimeOffset tableEntry = GetDateOfLastChannelListUpdate();
+                        if (tableEntry == DateTimeOffset.MinValue)
                         {
                             // Noch kein Eintrag in Tabelle, füge also einen ein.
                             using (var statement = conn.Prepare(@"INSERT INTO LastUpdateOnChannelsList (Id, LastUpdate) VALUES (?,?);"))
@@ -1720,7 +1720,7 @@ namespace DataHandlingLayer.Database
                             {
                                 int id = Convert.ToInt32(stmt["Id"]);
                                 string text = (string)stmt["Text"];
-                                DateTime creationDate = DatabaseManager.DateTimeFromSQLite(stmt["CreationDate"].ToString());
+                                DateTimeOffset creationDate = DatabaseManager.DateTimeFromSQLite(stmt["CreationDate"].ToString());
                                 Priority priority = (Priority)Enum.ToObject(typeof(Priority), stmt["Priority"]);
                                 bool read = ((long)stmt["Read"] == 1) ? true : false;
                                 int messageNr = Convert.ToInt32(stmt["MessageNumber"]);
@@ -1799,7 +1799,7 @@ namespace DataHandlingLayer.Database
                             {
                                 int id = Convert.ToInt32(stmt["Id"]);
                                 string text = (string)stmt["Text"];
-                                DateTime creationDate = DatabaseManager.DateTimeFromSQLite(stmt["CreationDate"].ToString());
+                                DateTimeOffset creationDate = DatabaseManager.DateTimeFromSQLite(stmt["CreationDate"].ToString());
                                 Priority priority = (Priority)Enum.ToObject(typeof(Priority), stmt["Priority"]);
                                 bool read = ((long)stmt["Read"] == 1) ? true : false;
                                 int messageNr = Convert.ToInt32(stmt["MessageNumber"]);
@@ -2206,7 +2206,7 @@ namespace DataHandlingLayer.Database
                         string title, text;
                         bool ignore;
                         Priority priority;
-                        DateTime startDate, endDate, creationDate, modificationDate;
+                        DateTimeOffset startDate, endDate, creationDate, modificationDate;
 
                         using (var stmt = conn.Prepare(sql))
                         {
@@ -2289,7 +2289,7 @@ namespace DataHandlingLayer.Database
                         string title, text;
                         bool ignore;
                         Priority priority;
-                        DateTime startDate, endDate, creationDate, modificationDate;
+                        DateTimeOffset startDate, endDate, creationDate, modificationDate;
 
                         using (var stmt = conn.Prepare(sql))
                         {
@@ -2536,7 +2536,7 @@ namespace DataHandlingLayer.Database
                 ChannelType type;
                 Faculty faculty;
                 NotificationSetting announcementNotificationSetting;
-                DateTime creationDate, modificationDate;
+                DateTimeOffset creationDate, modificationDate;
 
                 // Frage Kanal-Werte ab.
                 id = Convert.ToInt32(stmt["Id"]);
@@ -2624,13 +2624,13 @@ namespace DataHandlingLayer.Database
                 channel.AnnouncementNotificationSetting = announcementNotificationSetting;
             }
             catch(SQLiteException sqlEx){
-                Debug.WriteLine("SQLiteException has occurred in retrieveChannelObjectFromStatement. The message is: {0}." + sqlEx.Message);
+                Debug.WriteLine("SQLiteException has occurred in retrieveChannelObjectFromStatement. The message is: {0}.", sqlEx.Message);
                 throw new DatabaseException("Retrieve channel has failed.");
             }
             catch(Exception ex)
             {
                 Debug.WriteLine("Exception has occurred in retrieveChannelObjectFromStatement. The message is: {0}, " +
-                    "and the stack trace: {1}." + ex.Message, ex.StackTrace);
+                    "and the stack trace: {1}.", ex.Message, ex.StackTrace);
                 throw new DatabaseException("Retrieve channel has failed.");
             }
             

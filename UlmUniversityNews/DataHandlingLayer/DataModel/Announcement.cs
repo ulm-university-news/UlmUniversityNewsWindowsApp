@@ -72,7 +72,7 @@ namespace DataHandlingLayer.DataModel
         /// <param name="channelId">Die Id des Kanals, zu dem diese Announcement gehört.</param>
         /// <param name="authorId">Die Id des Autors der Announcement.</param>
         /// <param name="title">Der Titel der Announcement.</param>
-        public Announcement(int id, string text, int messageNumber, DateTime creationDate, Priority priority, bool isRead,
+        public Announcement(int id, string text, int messageNumber, DateTimeOffset creationDate, Priority priority, bool isRead,
             int channelId, int authorId, string title)
             : base(id, text, messageNumber, creationDate, priority, isRead)
         {

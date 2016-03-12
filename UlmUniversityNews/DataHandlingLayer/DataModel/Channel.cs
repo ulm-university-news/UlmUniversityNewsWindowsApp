@@ -59,23 +59,23 @@ namespace DataHandlingLayer.DataModel
             set { type = value; }
         }
 
-        private DateTime creationDate;
+        private DateTimeOffset creationDate;
         /// <summary>
         /// Das Erstellungsdatum des Kanals.
         /// </summary>
         [JsonProperty("creationDate", NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
-        public DateTime CreationDate
+        public DateTimeOffset CreationDate
         {
             get { return creationDate; }
             set { creationDate = value; }
         }
 
-        private DateTime modificationDate;
+        private DateTimeOffset modificationDate;
         /// <summary>
         /// Das Datum der letzten Änderung des Kanals.
         /// </summary>
         [JsonProperty("modificationDate", NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
-        public DateTime ModificationDate
+        public DateTimeOffset ModificationDate
         {
             get { return modificationDate; }
             set { modificationDate = value; }
@@ -194,8 +194,8 @@ namespace DataHandlingLayer.DataModel
         /// <param name="contacts">Kontaktdaten von verantwortlichen Personen.</param>
         /// <param name="website">Ein oderer mehrere Links zu Webseiten.</param>
         /// <param name="deleted">Gibt an, ob der Kanal als gelöscht markiert wurde.</param>
-        public Channel(int id, string name, string description, ChannelType type, DateTime creationDate, 
-            DateTime modificationDate, string term, string locations, string dates, string contacts, string website, bool deleted)
+        public Channel(int id, string name, string description, ChannelType type, DateTimeOffset creationDate, 
+            DateTimeOffset modificationDate, string term, string locations, string dates, string contacts, string website, bool deleted)
         {
             this.id = id;
             this.name = name;

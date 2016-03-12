@@ -8,16 +8,16 @@ using Windows.UI.Xaml.Data;
 namespace UlmUniversityNews.Converters
 {
     /// <summary>
-    /// Wandelt ein übergebenes DateTime Objekt in einen formatierten String um.
+    /// Wandelt ein übergebenes DateTimeOffset Objekt in einen formatierten String um.
     /// </summary>
     public class DateTimeToStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            DateTime dateTime = (DateTime)value;
+            DateTimeOffset dateTime = (DateTimeOffset)value;
             string dateString = string.Empty;
             
-            if(dateTime.Date != DateTime.Now.Date)
+            if(dateTime.Date != DateTimeOffset.Now.Date)
             {
                 // Zeige Datum nur an, wenn das übergebene Datum nicht das aktuelle Datum ist.
                 dateString = dateString + String.Format("{0:d} \n", dateTime);

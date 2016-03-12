@@ -47,14 +47,14 @@ namespace DataHandlingLayer.API
         /// <param name="lastUpdated">Das Datum, ab dem man die Datensätze der Kanäle haben will.</param>
         /// <returns>Eine Liste von Kanal-Ressourcen in Form eines JSON Dokuments als String.</returns>
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
-        public async Task<string> SendGetChannelsRequestAsync(string serverAccessToken, DateTime lastUpdated)
+        public async Task<string> SendGetChannelsRequestAsync(string serverAccessToken, DateTimeOffset lastUpdated)
         {
             Dictionary<string, string> parameters = null;
-            if (lastUpdated != DateTime.MinValue)
+            if (lastUpdated != DateTimeOffset.MinValue)
             {
                 // Erzeuge Parameter für lastUpdate;
                 parameters = new Dictionary<string, string>();
-                parameters.Add("lastUpdated", base.ParseDateTimeToUTCFormat(lastUpdated));
+                parameters.Add("lastUpdated", base.ParseDateTimeToISO8601Format(lastUpdated));
             }
 
             string serverResponse = await base.SendHttpGetRequestAsync(

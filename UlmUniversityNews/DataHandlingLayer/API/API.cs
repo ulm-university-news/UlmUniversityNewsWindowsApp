@@ -167,7 +167,7 @@ namespace DataHandlingLayer.API
                 httpClient.DefaultRequestHeaders.IfModifiedSince = new DateTimeOffset(DateTime.UtcNow);
                 Debug.WriteLine("Adding header to prevent caching. Added header is: {0}.",
                     httpClient.DefaultRequestHeaders.IfModifiedSince);
-                //httpClient.DefaultRequestHeaders.Add("IfModifiedSince", DateTime.UtcNow.ToString("r"));     // Prevent caching for get requests.
+                //httpClient.DefaultRequestHeaders.Add("IfModifiedSince", DateTimeOffset.UtcNow.ToString("r"));     // Prevent caching for get requests.
             }
             httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
 
@@ -251,19 +251,19 @@ namespace DataHandlingLayer.API
         }
 
         /// <summary>
-        /// Eine Hilfsmethode, die ein DateTime Objekt in das Format der koordinierten Weltzeit umwandelt und
-        /// als String zurückliefert. Diese Methode kann verwendet werden, um DateTime Objekte in ein
+        /// Eine Hilfsmethode, die ein DateTimeOffset Objekt in ein Format umwandelt, welches dem ISO 8601 Standard entspricht, und
+        /// als String zurückliefert. Diese Methode kann verwendet werden, um DateTimeOffset Objekte in ein
         /// Format zu bringen, die vom Server verstanden werden. 
         /// </summary>
-        /// <param name="datetime">Das umzuwandelnde DateTime Objekt.</param>
+        /// <param name="datetime">Das umzuwandelnde DateTimeOffset Objekt.</param>
         /// <returns>Die Datums- und Uhrzeitangabe im UTC Format.</returns>
-        public string ParseDateTimeToUTCFormat(DateTime datetime)
+        public string ParseDateTimeToISO8601Format(DateTimeOffset datetime)
         {
-            DateTimeOffset dto = new DateTimeOffset(datetime,TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.Now));
+            // DateTimeOffset dto = new DateTimeOffset(datetime,TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.Now));
             CultureInfo cultureInfo = new CultureInfo("de-DE");
 
             string format = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffzzzz";
-            string datetimeString = dto.ToString(format, cultureInfo);
+            string datetimeString = datetime.ToString(format, cultureInfo);
 
             //string datetimeString = datetime.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");;
             

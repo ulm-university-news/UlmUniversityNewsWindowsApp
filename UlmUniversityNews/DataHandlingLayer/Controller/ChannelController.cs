@@ -192,9 +192,9 @@ namespace DataHandlingLayer.Controller
         /// <summary>
         /// Speichere das übergebene Datum als das letzte Aktualisierungsdatum der lokalen Kanalressourcen.
         /// </summary>
-        /// <param name="lastUpdate">Das Datum der letzten Aktualisierung als DateTime Objekt.</param>
+        /// <param name="lastUpdate">Das Datum der letzten Aktualisierung als DateTimeOffset Objekt.</param>
         /// <exception cref="ClientException">Wirft ClientException, wenn ein lokaler Datenbankfehler die Ausführung verhindert hat.</exception>
-        public void SetDateOfLastChannelListUpdate(DateTime lastUpdate)
+        public void SetDateOfLastChannelListUpdate(DateTimeOffset lastUpdate)
         {
             try
             {
@@ -309,7 +309,7 @@ namespace DataHandlingLayer.Controller
             List<Channel> channels = null;
 
             // Hole als erstes das Datum der letzten Aktualisierung.
-            DateTime lastUpdate = channelDatabaseManager.GetDateOfLastChannelListUpdate();
+            DateTimeOffset lastUpdate = channelDatabaseManager.GetDateOfLastChannelListUpdate();
             
             // Setze Request an den Server ab.
             string serverResponse;
@@ -1382,7 +1382,7 @@ namespace DataHandlingLayer.Controller
                     // Frage lokale Version ab und prüfe, ob diese aktualisiert werden muss.
                     Channel localChannel = GetChannel(newManagedChannel.Id);
 
-                    if (DateTime.Compare(localChannel.ModificationDate, newManagedChannel.ModificationDate) < 0)
+                    if (DateTimeOffset.Compare(localChannel.ModificationDate, newManagedChannel.ModificationDate) < 0)
                     {
                         Debug.WriteLine("SynchronizeLocalManagedChannels: Need to update channel with id {0}.",
                             localChannel.Id);
@@ -1479,7 +1479,7 @@ namespace DataHandlingLayer.Controller
                             isContained = true;
 
                             // Prüfe, ob Aktualisierung erforderlich.
-                            if (DateTime.Compare(localChannel.ModificationDate, referenceChannel.ModificationDate) < 0)
+                            if (DateTimeOffset.Compare(localChannel.ModificationDate, referenceChannel.ModificationDate) < 0)
                             {
                                 Debug.WriteLine("SynchronizeLocalManagedChannels: Need to update channel with id {0}.",
                                     localChannel.Id);
@@ -1497,7 +1497,7 @@ namespace DataHandlingLayer.Controller
                     if (!isContained)
                     {
                         // Füge Kanal hinzu.
-                        Debug.WriteLine("SynchronizeLocalManagedChannels: Need to add channel with id {0}.",
+                        Debug.WriteLine("SynchronizeLocalManagedChannels: Need to add channel with id {0} to managed channels.",
                                     referenceChannel.Id);
                         AddToLocalChannels(referenceChannel);
 
@@ -1900,7 +1900,7 @@ namespace DataHandlingLayer.Controller
                             isContained = true;
 
                             // Prüfe, ob Aktualisierung erforderlich.
-                            if (DateTime.Compare(localReminderList[i].ModificationDate, referenceReminder.ModificationDate) < 0)
+                            if (DateTimeOffset.Compare(localReminderList[i].ModificationDate, referenceReminder.ModificationDate) < 0)
                             {
                                 Debug.WriteLine("Update of reminder with id {0} necessary.", referenceReminder.Id);
                                 channelDatabaseManager.UpdateReminder(referenceReminder);
@@ -2137,13 +2137,13 @@ namespace DataHandlingLayer.Controller
             bool hasChanged = false;
             Reminder updatableReminder = new Reminder();
 
-            if (DateTime.Compare(oldReminder.StartDate, newReminder.StartDate) != 0)
+            if (DateTimeOffset.Compare(oldReminder.StartDate, newReminder.StartDate) != 0)
             {
                 hasChanged = true;
                 updatableReminder.StartDate = newReminder.StartDate;
             }
 
-            if (DateTime.Compare(oldReminder.EndDate, newReminder.EndDate) != 0)
+            if (DateTimeOffset.Compare(oldReminder.EndDate, newReminder.EndDate) != 0)
             {
                 hasChanged = true;
                 updatableReminder.EndDate = newReminder.EndDate;

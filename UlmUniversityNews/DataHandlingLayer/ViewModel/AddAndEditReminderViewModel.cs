@@ -195,11 +195,11 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
-        private DateTime nextReminderDate;
+        private DateTimeOffset nextReminderDate;
         /// <summary>
         /// Das Datum und die Uhrzeit, an der der Reminder das nächste mal feuert.
         /// </summary>
-        public DateTime NextReminderDate
+        public DateTimeOffset NextReminderDate
         {
             get { return nextReminderDate; }
             set { this.setProperty(ref this.nextReminderDate, value); }
@@ -343,8 +343,8 @@ namespace DataHandlingLayer.ViewModel
             IsAddReminderDialog = true;
             IsEditReminderDialog = false;
 
-            SelectedStartDate = DateTime.Now;
-            SelectedEndDate = DateTime.Now;
+            SelectedStartDate = DateTimeOffset.Now;
+            SelectedEndDate = DateTimeOffset.Now;
             SelectedTime = TimeSpan.FromHours(12.0f);
 
             IsDailyIntervalSelected = true;
@@ -427,10 +427,13 @@ namespace DataHandlingLayer.ViewModel
         {
             Debug.WriteLine("In updateNextReminderDate.");
 
-            DateTime reminderStartDate = new DateTime(SelectedStartDate.Year, SelectedStartDate.Month, SelectedStartDate.Day,
-                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds);
-            DateTime reminderEndDate = new DateTime(SelectedEndDate.Year, SelectedEndDate.Month, SelectedEndDate.Day,
-                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds);
+            if (SelectedStartDate == DateTimeOffset.MinValue || SelectedEndDate == DateTimeOffset.MinValue)
+                return;
+
+            DateTimeOffset reminderStartDate = new DateTimeOffset(SelectedStartDate.Year, SelectedStartDate.Month, SelectedStartDate.Day,
+                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds, TimeZoneInfo.Local.BaseUtcOffset);
+            DateTimeOffset reminderEndDate = new DateTimeOffset(SelectedEndDate.Year, SelectedEndDate.Month, SelectedEndDate.Day,
+                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds, TimeZoneInfo.Local.BaseUtcOffset);
 
             // Erzeuge Reminder Objekt mit aktuellen Daten und lasse den nächsten
             // Reminder Zeitpunkt bestimmen.
@@ -496,10 +499,10 @@ namespace DataHandlingLayer.ViewModel
             }
             
             // Start und Ende-Datum
-            DateTime reminderStartDate = new DateTime(SelectedStartDate.Year, SelectedStartDate.Month, SelectedStartDate.Day,
-                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds);
-            DateTime reminderEndDate = new DateTime(SelectedEndDate.Year, SelectedEndDate.Month, SelectedEndDate.Day,
-                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds);
+            DateTimeOffset reminderStartDate = new DateTimeOffset(SelectedStartDate.Year, SelectedStartDate.Month, SelectedStartDate.Day,
+                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds, TimeZoneInfo.Local.BaseUtcOffset);
+            DateTimeOffset reminderEndDate = new DateTimeOffset(SelectedEndDate.Year, SelectedEndDate.Month, SelectedEndDate.Day,
+                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds, TimeZoneInfo.Local.BaseUtcOffset);
 
             int chosenInterval = IntervalValue;
             int channelId = SelectedChannel.Id;

@@ -53,12 +53,12 @@ namespace DataHandlingLayer.DataModel
             set { messageNumber = value; }
         }
 
-        private DateTime creationDate;
+        private DateTimeOffset creationDate;
         /// <summary>
         /// Das Erstellungsdatum der Nachricht.
         /// </summary>
         [JsonProperty("creationDate", NullValueHandling = NullValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
-        public DateTime CreationDate
+        public DateTimeOffset CreationDate
         {
             get { return creationDate; }
             set { creationDate = value; }
@@ -104,7 +104,7 @@ namespace DataHandlingLayer.DataModel
         /// <param name="creationDate">Das Erstellungsdatum der Nachricht.</param>
         /// <param name="messagePriority">Die Priorität mit der die Nachricht verschickt wurde.</param>
         /// <param name="isRead">Gibt an, ob die Nachricht bereits gelesen wurde.</param>
-        public Message(int id, string text, int messageNumber, DateTime creationDate, Priority messagePriority, bool isRead)
+        public Message(int id, string text, int messageNumber, DateTimeOffset creationDate, Priority messagePriority, bool isRead)
         {
             this.id = id;
             this.text = text;

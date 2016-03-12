@@ -455,16 +455,16 @@ namespace DataHandlingLayer.JsonManager
         #endregion Reminder
 
         /// <summary>
-        /// Eine Hilfsmethode, die ein DateTime Objekt in das Format der koordinierten Weltzeit umwandelt und
-        /// als String zurückliefert. Diese Methode kann verwendet werden, um DateTime Objekte in ein
+        /// Eine Hilfsmethode, die ein DateTimeOffset Objekt in das Format der koordinierten Weltzeit umwandelt und
+        /// als String zurückliefert. Diese Methode kann verwendet werden, um DateTimeOffset Objekte in ein
         /// Format zu bringen, die vom Server verstanden werden. 
         /// </summary>
-        /// <param name="datetime">Das umzuwandelnde DateTime Objekt.</param>
+        /// <param name="datetime">Das umzuwandelnde DateTimeOffset Objekt.</param>
         /// <returns>Die Datums- und Uhrzeitangabe im UTC Format.</returns>
-        private string parseDateTimeToISO8601Format(DateTime datetime)
+        private string parseDateTimeToISO8601Format(DateTimeOffset datetime)
         {
             TimeSpan currentUTCOffset = TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.Now);
-            string datetimeString = datetime.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff"); ;
+            string datetimeString = datetime.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff"); ;
 
             currentUTCOffset.ToString();
             if (currentUTCOffset.TotalHours == 2.0f)

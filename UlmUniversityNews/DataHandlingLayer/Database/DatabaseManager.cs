@@ -66,26 +66,47 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
-        /// Wandelt eine Zeitangabe im DateTime Format um in einen String, um sie in einer
+        /// Wandelt eine Zeitangabe im DateTimeOffset Format um in einen String, um sie in einer
         /// SQLite Datenbank zu speichern.
         /// </summary>
-        /// <param name="datetime">Das umzuwandelnde Datum.</param>
+        /// <param name="datetime">Das umzuwandelnde Datum mit zugehöriger Uhrzeit und Zeitzonenoffset.</param>
         /// <returns>Das Ergebnis der Umwandlung als String.</returns>
-        public static string DateTimeToSQLite(DateTime datetime)
+        public static string DateTimeToSQLite(DateTimeOffset datetime)
         {
-            string dateTimeFormat = "{0}-{1}-{2} {3}:{4}:{5}.{6}";
-            return string.Format(dateTimeFormat, datetime.Year, datetime.Month, datetime.Day,
-                datetime.Hour, datetime.Minute, datetime.Second, datetime.Millisecond);
+            string dateTimeFormat = string.Empty;
+            //if (datetime.Offset.TotalHours > 0)
+            //{
+            //    dateTimeFormat = "{0}/{1}/{2} {3}:{4}:{5}.{6} +{7}";
+            //}
+            //else
+            //{
+            //    dateTimeFormat = "{0}/{1}/{2} {3}:{4}:{5}.{6} -{7}";
+            //}
+            //string dateString = string.Format(dateTimeFormat, datetime.Month, datetime.Day, datetime.Year,
+            //   datetime.Hour, datetime.Minute, datetime.Second, datetime.Millisecond, datetime.Offset.ToString());
+
+            dateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffzzzz";
+            CultureInfo cultureInfo = new CultureInfo("de-DE");
+            string datetimeString = datetime.ToString(dateTimeFormat, cultureInfo);
+
+            return datetimeString;
         }
 
         /// <summary>
-        /// Wandelt einen String aus der SQLite Datenbank um in ein Objekt vom Typ DateTime.
+        /// Wandelt einen String aus der SQLite Datenbank um in ein Objekt vom Typ DateTimeOffset.
         /// </summary>
         /// <param name="datetime">Der umzuwandelnde String.</param>
-        /// <returns>Objekt vom Typ DateTime.</returns>
-        public static DateTime DateTimeFromSQLite(string datetime)
+        /// <returns>Objekt vom Typ DateTimeOffset.</returns>
+        public static DateTimeOffset DateTimeFromSQLite(string datetime)
         {
-            return DateTime.Parse(datetime);
+            // DateTimeFormatInfo fmt = new CultureInfo("de-de").DateTimeFormat;
+            CultureInfo cultureInfo = new CultureInfo("de-DE");
+            string dateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffzzzz";
+            DateTimeOffset dateTimeObject = DateTimeOffset.ParseExact(datetime, dateTimeFormat, cultureInfo);
+
+            return dateTimeObject;
+
+            // return DateTimeOffset.Parse(datetime, fmt);
         }
 
         /// <summary>

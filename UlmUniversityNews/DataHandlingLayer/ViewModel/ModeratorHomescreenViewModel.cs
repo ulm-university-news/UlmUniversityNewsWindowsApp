@@ -221,7 +221,7 @@ namespace DataHandlingLayer.ViewModel
                     {
                         // Prüfe, ob Aktualisierung der lokalen Kanal-Ressource erforderlich.
                         Channel currentChannel = currentChannels[localChannelList[i].Id];
-                        if (DateTime.Compare(currentChannel.ModificationDate, localChannelList[i].ModificationDate) < 0)
+                        if (DateTimeOffset.Compare(currentChannel.ModificationDate, localChannelList[i].ModificationDate) < 0)
                         {
                             updateViewRelatedPropertiesOfChannel(currentChannel, localChannelList[i]);
                         }

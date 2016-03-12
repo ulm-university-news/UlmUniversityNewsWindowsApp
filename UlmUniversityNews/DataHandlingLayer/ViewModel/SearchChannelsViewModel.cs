@@ -131,7 +131,7 @@ namespace DataHandlingLayer.ViewModel
             List<Channel> updatedChannels = null;
             if (performOnlineUpdate)
             {
-                DateTime currentDate = DateTime.Now;
+                DateTimeOffset currentDate = DateTimeOffset.Now;
                 try
                 {
                     displayIndeterminateProgressIndicator();

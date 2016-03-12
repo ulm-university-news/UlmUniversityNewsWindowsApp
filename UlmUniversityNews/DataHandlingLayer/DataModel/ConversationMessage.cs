@@ -51,7 +51,7 @@ namespace DataHandlingLayer.DataModel
         /// <param name="isRead">Gibt an, ob die Konversationsnachricht vom Nutzer bereits gelesen wurde.</param>
         /// <param name="authorId">Die Id des Autors der Nachricht.</param>
         /// <param name="conversationId">Die Id der Konversation, zu der die Nachricht gehört.</param>
-        public ConversationMessage(int id, string text, int messageNumber, Priority priority, DateTime creationDate,
+        public ConversationMessage(int id, string text, int messageNumber, Priority priority, DateTimeOffset creationDate,
             bool isRead, int authorId, int conversationId)
             : base(id, text, messageNumber, creationDate, priority, isRead)
         {

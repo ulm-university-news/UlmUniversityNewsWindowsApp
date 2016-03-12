@@ -9,13 +9,13 @@ namespace UlmUniversityNews.Converters
 {
 
     /// <summary>
-    /// Wandelt ein übergebenes DateTime Objekt in einen formatierten String um.
+    /// Wandelt ein übergebenes DateTimeOffset Objekt in einen formatierten String um.
     /// </summary>
     public class ReminderDateTimeToStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            DateTime dateTime = (DateTime)value;
+            DateTimeOffset dateTime = (DateTimeOffset)value;
             string dateString = string.Empty;
 
             dateString = dateString + String.Format("{0:d} - ", dateTime);

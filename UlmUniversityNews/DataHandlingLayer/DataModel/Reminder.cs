@@ -30,56 +30,56 @@ namespace DataHandlingLayer.DataModel
             set { id = value; }
         }
 
-        private DateTime creationDate;
+        private DateTimeOffset creationDate;
         /// <summary>
         /// Das Erstellungsdatum des Reminder.
         /// </summary>
         [JsonProperty("creationDate", DefaultValueHandling=DefaultValueHandling.Ignore)]
-        public DateTime CreationDate
+        public DateTimeOffset CreationDate
         {
             get { return creationDate; }
             set { creationDate = value; }
         }
 
-        private DateTime modificationDate;
+        private DateTimeOffset modificationDate;
         /// <summary>
         /// Das Änderungsdatum des Reminder.
         /// </summary>
         [JsonProperty("modificationDate", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public DateTime ModificationDate
+        public DateTimeOffset ModificationDate
         {
             get { return modificationDate; }
             set { modificationDate = value; }
         }
 
-        private DateTime startDate;
+        private DateTimeOffset startDate;
         /// <summary>
         /// Das Datum und die Uhrzeit, an dem der Reminder zum ersten Mal feuern soll.
         /// </summary>
         [JsonProperty("startDate", DefaultValueHandling = DefaultValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
-        public DateTime StartDate
+        public DateTimeOffset StartDate
         {
             get { return startDate; }
             set { startDate = value; }
         }
 
-        private DateTime nextDate;
+        private DateTimeOffset nextDate;
         /// <summary>
         /// Das Datum und die Uhrzeit, an dem der Reminder das nächste Mal feuert.
         /// </summary>
         [JsonIgnore]
-        public DateTime NextDate
+        public DateTimeOffset NextDate
         {
             get { return nextDate; }
             set { this.setProperty(ref this.nextDate, value); }
         }
         
-        private DateTime endDate;
+        private DateTimeOffset endDate;
         /// <summary>
         /// Das Datum und die Uhrzeit, an dem der Reminder abläuft und deaktiviert werden soll.
         /// </summary>
         [JsonProperty("endDate", DefaultValueHandling = DefaultValueHandling.Ignore), JsonConverter(typeof(IsoDateTimeConverter))]
-        public DateTime EndDate
+        public DateTimeOffset EndDate
         {
             get { return endDate; }
             set { endDate = value; }
@@ -201,7 +201,7 @@ namespace DataHandlingLayer.DataModel
         /// <param name="title">Der Titel, der in den vom Reminder erzeugten Announcements gesetzt wird.</param>
         /// <param name="text">Der Inhalt der Announcements, die vom Reminder verschickt werden.</param>
         /// <param name="priority">Die Priorität, mit der die vom Reminder erzeugten Announcements verschickt werden sollen.</param>
-        public Reminder(int id, DateTime creationDate, DateTime modificationDate, DateTime startDate, DateTime endDate,
+        public Reminder(int id, DateTimeOffset creationDate, DateTimeOffset modificationDate, DateTimeOffset startDate, DateTimeOffset endDate,
             int interval, bool ignore, int channelId, int authorId, string title, string text, Priority priority)
         {
             this.id = id;
@@ -229,7 +229,7 @@ namespace DataHandlingLayer.DataModel
             // Wenn es ein One-Time Reminder ist, dann muss dessen Start-Datum in der Zukunft liegen.
             if (Interval == 0)
             {
-                int comparisonResult = DateTime.Compare(StartDate, DateTime.Now);
+                int comparisonResult = DateTimeOffset.Compare(StartDate, DateTimeOffset.Now);
                 if (comparisonResult < 0)
                 {
                     // StartDate ist früher als aktuelles Datum. Das heißt, der Reminder ist abgelaufen.
@@ -245,7 +245,7 @@ namespace DataHandlingLayer.DataModel
             }
 
             // Prüfe, ob Ende-Datum des Reminders bereits vorbei ist.
-            int endDateComparisonResult = DateTime.Compare(EndDate, DateTime.Now);
+            int endDateComparisonResult = DateTimeOffset.Compare(EndDate, DateTimeOffset.Now);
             if (endDateComparisonResult < 0)
             {
                 // EndDate ist früher als das aktuelle Datum. Reminder ist abgelaufen.
@@ -254,7 +254,7 @@ namespace DataHandlingLayer.DataModel
             }
 
             // Prüfe, ob der nächste Termin für den Reminder nach dem Ende-Datum liegt.
-            int nextReminderComparisonResult = DateTime.Compare(EndDate, NextDate);
+            int nextReminderComparisonResult = DateTimeOffset.Compare(EndDate, NextDate);
             if (nextReminderComparisonResult < 0)
             {
                 // EndDate ist früher als nächster Termin des Reminders. Reminder ist abgelaufen.
@@ -299,7 +299,7 @@ namespace DataHandlingLayer.DataModel
             }
 
             // Der nächste Termin muss in der Zukunft liegen.
-            while (NextDate.CompareTo(DateTime.Now) < 0)
+            while (NextDate.CompareTo(DateTimeOffset.Now) < 0)
             {
                 NextDate = NextDate.AddSeconds(Interval);
             }
@@ -389,7 +389,7 @@ namespace DataHandlingLayer.DataModel
                 return;
             }
 
-            if (StartDate.CompareTo(DateTime.MinValue) == 0 || EndDate.CompareTo(DateTime.MinValue) == 0)
+            if (StartDate.CompareTo(DateTimeOffset.MinValue) == 0 || EndDate.CompareTo(DateTimeOffset.MinValue) == 0)
             {
                 SetValidationError("StartAndEndDate", "AddAndEditReminderStartOrEndDateNotSetValidatonError");
                 return;
@@ -400,7 +400,7 @@ namespace DataHandlingLayer.DataModel
             {
                 SetValidationError("StartAndEndDate", "AddAndEditReminderStartDateAfterEndDateValidationError");
             }
-            else if (EndDate.CompareTo(DateTime.Now) < 0)  // Prüfe, ob das Ende-Datum in der Zukunft liegt.
+            else if (EndDate.CompareTo(DateTimeOffset.Now) < 0)  // Prüfe, ob das Ende-Datum in der Zukunft liegt.
             {
                 SetValidationError("StartAndEndDate", "AddAndEditReminderEndDateInPastValidationError");
             }

@@ -62,8 +62,8 @@ namespace DataHandlingLayer.DataModel
         /// <param name="deleted">Gibt an, ob das Event als gelöscht markiert wurde.</param>
         /// <param name="cost">Die dem Event zugeordneten Kosten.</param>
         /// <param name="organizer">Der Veranstalter des Events.</param>
-        public Event(int id, string name, string description, ChannelType type, DateTime creationDate, 
-            DateTime modiciationDate, string term, string locations, string dates, string contacts, 
+        public Event(int id, string name, string description, ChannelType type, DateTimeOffset creationDate, 
+            DateTimeOffset modiciationDate, string term, string locations, string dates, string contacts, 
             string website, bool deleted, string cost, string organizer)
             : base(id, name, description, type, creationDate, modiciationDate, term, locations, dates, contacts, website, deleted)
         {
