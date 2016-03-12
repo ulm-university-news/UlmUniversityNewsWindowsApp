@@ -142,7 +142,7 @@ namespace DataHandlingLayer.Controller
                     if (isContained)
                     {
                         // Führe Aktualisierung durch.
-                        channelDatabaseManager.UpdateChannelWithSubclass(currentChannel);
+                        ReplaceLocalChannelWhileKeepingNotificationSettings(currentChannel);
                     }
                     else
                     {
@@ -243,6 +243,28 @@ namespace DataHandlingLayer.Controller
             catch (DatabaseException ex)
             {
                 Debug.WriteLine("Couldn't perform the replace local channel functionality.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Ersetzt einen lokalen Kanal unter Beibehaltung der vom Nutzer eingestellten Anwendungseinstellungen.
+        /// </summary>
+        /// <param name="newChannel">Die neue Kanalressource, welche die alte Ressource lokal ersetzt.</param>
+        public void ReplaceLocalChannelWhileKeepingNotificationSettings(Channel newChannel)
+        {
+            try
+            {
+                Channel oldChannel = channelDatabaseManager.GetChannel(newChannel.Id);
+
+                // Übernehme NotificationSettings von lokalem Kanal.
+                newChannel.AnnouncementNotificationSetting = oldChannel.AnnouncementNotificationSetting;
+                // Ersetze lokalen Datensatz durch neuen Datensatz.
+                ReplaceLocalChannel(newChannel);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("ReplaceLocalChannelWhileKeepingNotificationSettings: Error occurred!");
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
         }
