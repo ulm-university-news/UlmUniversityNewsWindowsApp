@@ -27,38 +27,21 @@ namespace DataHandlingLayer.API
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
         public async Task<string> SendCreateChannelRequestAsync(string serverAccessToken, string jsonContent)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
+            // Setzte Request zum Anlegen eines Kanals ab.
+            string serverResponse = await base.SendHttpPostRequestWithJsonBodyAsync(
+                serverAccessToken,
+                jsonContent,
+                "/channel",
+                null
+                );
 
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithJsonBody(HttpMethod.Post, jsonContent, "/channel");
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if (statusCode == HttpStatusCode.Created)
-            {
-                Debug.WriteLine("Create channel request completed successfully.");
-                Debug.WriteLine("Response from server is: " + responseContent);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
-
-            return responseContent;
+            return serverResponse;
         }
 
         /// <summary>
         /// Fragt Kanäle vom Server ab. Die Anfrage kann dabei durch den lastUpdated Parameter eingeschränkt werden.
         /// Wird lastUpdated angegeben, so wird der Server nur Kanäle zurückgeben, die seit dem angegebenen Datum
-        /// geämdert wurden.
+        /// geändert wurden.
         /// </summary>
         /// <param name="serverAccessToken">Das Zugriffstoken des Requestors.</param>
         /// <param name="lastUpdated">Das Datum, ab dem man die Datensätze der Kanäle haben will.</param>
@@ -66,41 +49,21 @@ namespace DataHandlingLayer.API
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
         public async Task<string> SendGetChannelsRequestAsync(string serverAccessToken, DateTime lastUpdated)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
-
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            string restResourcePath = string.Empty;
-            if (lastUpdated != null)
+            Dictionary<string, string> parameters = null;
+            if (lastUpdated != DateTime.MinValue)
             {
-                restResourcePath = "/channel?lastUpdated=" + System.Net.WebUtility.UrlEncode(lastUpdated.ToString());
-            }
-            else
-            {
-                restResourcePath = "/channel";
-            }
-            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Get, restResourcePath);
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if (statusCode == HttpStatusCode.Ok)
-            {
-                Debug.WriteLine("Get channels request completed successfully.");
-                Debug.WriteLine("Response from server is: " + responseContent);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
+                // Erzeuge Parameter für lastUpdate;
+                parameters = new Dictionary<string, string>();
+                parameters.Add("lastUpdated", base.ParseDateTimeToUTCFormat(lastUpdated));
             }
 
-            return responseContent;
+            string serverResponse = await base.SendHttpGetRequestAsync(
+                serverAccessToken,
+                "/channel",
+                parameters,
+                true);
+
+            return serverResponse;
         }
 
         /// <summary>
@@ -113,32 +76,17 @@ namespace DataHandlingLayer.API
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
         public async Task<string> SendGetChannelsAssignedToModeratorRequestAsync(string serverAccessToken, int moderatorId)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("moderatorId", moderatorId.ToString());
 
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Get, "/channel?moderatorId="+moderatorId);       
+            string serverResponse = await base.SendHttpGetRequestAsync(
+                serverAccessToken,
+                "/channel",
+                parameters,
+                false
+                );
 
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if (statusCode == HttpStatusCode.Ok)
-            {
-                Debug.WriteLine("Get channels request completed successfully.");
-                Debug.WriteLine("Response from server is: " + responseContent);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
-
-            return responseContent;
+            return serverResponse;
         }
 
         /// <summary>
@@ -146,36 +94,19 @@ namespace DataHandlingLayer.API
         /// </summary>
         /// <param name="serverAccessToken">Das Zugriffstoken des Requestors.</param>
         /// <param name="channelId">Die Id des Kanals, zu dem man die Ressource abfragen will.</param>
+        /// <param name="withCaching">Gibt an, ob der HttpClient die Antwort auch aus dem Cache laden darf, falls
+        ///     derselbe Request vor kurzer Zeit bereits einmal ausgeführt wurde.</param>
         /// <returns>Gibt die angefragte Ressource in Form eines JSON Dokuments zurück.</returns>
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
-        public async Task<string> SendGetChannelRequestAsync(string serverAccessToken, int channelId)
+        public async Task<string> SendGetChannelRequestAsync(string serverAccessToken, int channelId, bool withCaching)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
+            string serverResponse = await base.SendHttpGetRequestAsync(
+                serverAccessToken,
+                "/channel/" + channelId,
+                null, 
+                withCaching);
 
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Get, "/channel/" + channelId);
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if (statusCode == HttpStatusCode.Ok)
-            {
-                Debug.WriteLine("Get channel with id {0} request completed successfully.", channelId);
-                Debug.WriteLine("Response from server is: " + responseContent);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
-
-            return responseContent;
+            return serverResponse;
         }
 
         /// <summary>
@@ -190,32 +121,13 @@ namespace DataHandlingLayer.API
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
         public async Task<string> SendUpdateChannelRequestAsync(string serverAccessToken, int channelId, string jsonContent)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
+            string serverResponse = await base.SendHttpPatchRequestWithJsonBody(
+                serverAccessToken,
+                jsonContent,
+                "/channel/" + channelId,
+                null);
 
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithJsonBody(HttpMethod.Patch, jsonContent, "/channel/" + channelId);
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if (statusCode == HttpStatusCode.Ok)
-            {
-                Debug.WriteLine("Update channel with id {0} request completed successfully.", channelId);
-                Debug.WriteLine("Response from server is: " + responseContent);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
-
-            return responseContent;
+            return serverResponse;
         }
 
         /// <summary>
@@ -227,29 +139,9 @@ namespace DataHandlingLayer.API
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
         public async Task SendDeleteChannelRequest(string serverAccessToken, int channelId)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
-
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Delete, "/channel/" + channelId);
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            if (statusCode == HttpStatusCode.NoContent)
-            {
-                Debug.WriteLine("Delete channel with id {0} request completed successfully.", channelId);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                string responseContent = await response.Content.ReadAsStringAsync();
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
+            await base.SendHttpDeleteRequestAsync(
+                serverAccessToken,
+                "/channel/" + channelId);
         }
 
         // Announcement Requests:
@@ -263,34 +155,15 @@ namespace DataHandlingLayer.API
         /// <param name="jsonContent">Die Announcement in Form eines JSON-Dokuments.</param>
         /// <returns>Die erstellte Announcement Ressource in Form eines JSON Dokuments.</returns>
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
-        public async Task<string> SendPostAnnouncementRequestAsync(string serverAccessToken, int channelId, string jsonContent)
+        public async Task<string> SendCreateAnnouncementRequestAsync(string serverAccessToken, int channelId, string jsonContent)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
+            string serverResponse = await base.SendHttpPostRequestWithJsonBodyAsync(
+                serverAccessToken,
+                jsonContent,
+                "/channel/" + channelId + "/announcement",
+                null);
 
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithJsonBody(HttpMethod.Post, jsonContent, "/channel/" + channelId + "/announcement");
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if (statusCode == HttpStatusCode.Created)
-            {
-                Debug.WriteLine("Post announcement in channel with id {0} request completed successfully.", channelId);
-                Debug.WriteLine("Response from server is: " + responseContent);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
-
-            return responseContent;
+            return serverResponse;
         }
 
         /// <summary>
@@ -301,36 +174,22 @@ namespace DataHandlingLayer.API
         /// <param name="serverAccessToken">Das Zugriffstoken des Requestors.</param>
         /// <param name="channelId">Die Id des Kanals zu dem die Announcements abgefragt werden.</param>
         /// <param name="messageNr">Die MessageNr, ab der man die Announcements vom Server haben will.</param>
+        /// <param name="withCaching">Gibt an, ob der HttpClient die Antwort auch aus dem Cache nehmen darf,
+        ///     wenn der selbe Request kurze Zeit zuvor schon ausgeführt wurde.</param>
         /// <returns>Eine Liste von Announcement Ressourcen in Form eines JSON-Dokuments.</returns>
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
-        public async Task<string> SendGetAnnouncementsRequestAsync(string serverAccessToken, int channelId, int messageNr)
+        public async Task<string> SendGetAnnouncementsRequestAsync(string serverAccessToken, int channelId, int messageNr, bool withCaching)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("messageNr", messageNr.ToString());
 
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Get, "/channel/" + channelId + "/announcement?messageNr=" + messageNr);
+            string serverResponse = await base.SendHttpGetRequestAsync(
+                serverAccessToken,
+                "/channel/" + channelId + "/announcement",
+                parameters,
+                withCaching);
 
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if (statusCode == HttpStatusCode.Ok)
-            {
-                Debug.WriteLine("Get announcements in channel with id {0} request completed successfully.", channelId);
-                Debug.WriteLine("Response from server is: " + responseContent);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
-
-            return responseContent;
+            return serverResponse;
         }
 
         /// <summary>
@@ -344,29 +203,10 @@ namespace DataHandlingLayer.API
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
         public async Task SendDeleteAnnouncementRequestAsync(string serverAccessToken, int channelId, int messageNr)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
-
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Get, "/channel/" + channelId + "/announcement/" + messageNr);
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            if (statusCode == HttpStatusCode.NoContent)
-            {
-                Debug.WriteLine("Delete announcement with messageNr {0} in channel with id {1} request completed successfully.", messageNr, channelId);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                string responseContent = await response.Content.ReadAsStringAsync();
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
+            await base.SendHttpDeleteRequestAsync(
+                serverAccessToken,
+                "/channel/" + channelId + "/announcement/" + messageNr
+                );
         }
 
         // Reminder Requests:
@@ -383,32 +223,14 @@ namespace DataHandlingLayer.API
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
         public async Task<string> SendCreateReminderRequestAsync(string serverAccessToken, int channelId, string jsonContent)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
+            // Setzte Request an Server ab.
+            string serverResponse = await base.SendHttpPostRequestWithJsonBodyAsync(
+                serverAccessToken,
+                jsonContent,
+                "/channel/" + channelId + "/reminder",
+                null);
 
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithJsonBody(HttpMethod.Post, jsonContent, "/channel/" + channelId + "/reminder");
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if (statusCode == HttpStatusCode.Created)
-            {
-                Debug.WriteLine("Create reminder in channel with id {0} request completed successfully.", channelId);
-                Debug.WriteLine("Response from server is: " + responseContent);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
-
-            return responseContent;
+            return serverResponse;
         }
 
         /// <summary>
@@ -417,36 +239,19 @@ namespace DataHandlingLayer.API
         /// </summary>
         /// <param name="serverAccessToken">Ds Zugriffstoken des Requestors.</param>
         /// <param name="channelId">Die Id des Kanals zu dem die Reminder abgefragt werden sollen.</param>
+        /// <param name="withCaching">Gibt an, ob der HttpClient die Antwort auch aus dem Cache laden darf, falls
+        ///     derselbe Request vor kurzer Zeit bereits einmal ausgeführt wurde.</param>
         /// <returns>Eine Liste von Reminder Ressourcen in Form eines JSON-Dokuments.</returns>
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
-        public async Task<string> SendGetRemindersRequestAsync(string serverAccessToken, int channelId)
+        public async Task<string> SendGetRemindersRequestAsync(string serverAccessToken, int channelId, bool withCaching)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
+            string serverResponse = await base.SendHttpGetRequestAsync(
+                serverAccessToken,
+                "/channel/" + channelId + "/reminder",
+                null,
+                withCaching);
 
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Get, "/channel/" + channelId + "/reminder");
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if (statusCode == HttpStatusCode.Ok)
-            {
-                Debug.WriteLine("Get reminders in channel with id {0} request completed successfully.", channelId);
-                Debug.WriteLine("Response from server is: " + responseContent);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
-
-            return responseContent;
+            return serverResponse;
         }
 
         /// <summary>
@@ -460,32 +265,13 @@ namespace DataHandlingLayer.API
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
         public async Task<string> SendGetReminderRequestAsync(string serverAccessToken, int channelId, int reminderId)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
+            string serverResponse = await base.SendHttpGetRequestAsync(
+                serverAccessToken,
+                "/channel/" + channelId + "/reminder/" + reminderId,
+                null,
+                false);
 
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Get, "/channel/" + channelId + "/reminder/" + reminderId);
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if (statusCode == HttpStatusCode.Ok)
-            {
-                Debug.WriteLine("Get reminder with the id {0} in channel with id {1} request completed successfully.", reminderId, channelId);
-                Debug.WriteLine("Response from server is: " + responseContent);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
-
-            return responseContent;
+            return serverResponse;
         }
 
         /// <summary>
@@ -501,32 +287,14 @@ namespace DataHandlingLayer.API
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
         public async Task<string> SendUpdateReminderRequestAsync(string serverAccessToken, int channelId, int reminderId, string jsonContent)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
+            // Sende Request an den Server.
+            string serverResponse = await base.SendHttpPatchRequestWithJsonBody(
+                serverAccessToken,
+                jsonContent,
+                "/channel/" + channelId + "/reminder/" + reminderId,
+                null);
 
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithJsonBody(HttpMethod.Patch, jsonContent, "/channel/" + channelId + "/reminder/" + reminderId);
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if (statusCode == HttpStatusCode.Ok)
-            {
-                Debug.WriteLine("Update reminder with the id {0} in channel with id {1} request completed successfully.", reminderId, channelId);
-                Debug.WriteLine("Response from server is: " + responseContent);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
-
-            return responseContent;
+            return serverResponse;
         }
 
         /// <summary>
@@ -539,29 +307,10 @@ namespace DataHandlingLayer.API
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
         public async Task SendDeleteReminderRequestAsync(string serverAccessToken, int channelId, int reminderId)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
-
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Delete, "/channel/" + channelId + "/reminder/" + reminderId);
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            if (statusCode == HttpStatusCode.NoContent)
-            {
-                Debug.WriteLine("Delete reminder with the id {0} in channel with id {1} request completed successfully.", reminderId, channelId);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                string responseContent = await response.Content.ReadAsStringAsync();
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
+            await base.SendHttpDeleteRequestAsync(
+                serverAccessToken,
+                "/channel/" + channelId + "/reminder/" + reminderId
+                );
         }
 
         // Abonnieren/Deabonnieren eines Kanals:
@@ -575,29 +324,11 @@ namespace DataHandlingLayer.API
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
         public async Task SendSubscribeChannelRequestAsync(string serverAccessToken, int channelId)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
-
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Post, "/channel/" + channelId + "/user");
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            if (statusCode == HttpStatusCode.Created)
-            {
-                Debug.WriteLine("Subscribe to channel with id {0} request completed successfully.", channelId);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                string responseContent = await response.Content.ReadAsStringAsync();
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
+            string serverResponse = await base.SendHttpPostRequestWithJsonBodyAsync(
+                serverAccessToken,
+                string.Empty,
+                "/channel/" + channelId + "/user",
+                null);
         }
 
         /// <summary>
@@ -611,67 +342,28 @@ namespace DataHandlingLayer.API
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
         public async Task<string> SendGetSubscribersRequestAsync(string serverAccessToken, int channelId)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
+            string serverResponse = await base.SendHttpGetRequestAsync(
+                serverAccessToken,
+                "/channel/" + channelId + "/user",
+                null,
+                false);
 
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Get, "/channel/" + channelId + "/user");
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if (statusCode == HttpStatusCode.Ok)
-            {
-                Debug.WriteLine("Get subscribers for the channel with id {0} request completed successfully.", channelId);
-                Debug.WriteLine("Response from server is: " + responseContent);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
-
-            return responseContent;
+            return serverResponse;
         }
 
         /// <summary>
-        /// Sende Request zum Deabonnieren des angebenen Kanals. Der Nutzer, der durch die angegbene
-        /// Id identifiziert wird, wird aus der Abonnentenliste des Kanals ausgetragen.
+        /// Sende Request zum Deabonnieren des angebenen Kanals. Der Nutzer, der durch das angegbene
+        /// AccessToken identifiziert wird, wird aus der Abonnentenliste des Kanals ausgetragen.
         /// </summary>
         /// <param name="serverAccessToken">Das Zugriffstoken des Requestors.</param>
         /// <param name="channelId">Die Id des Kanals, der deabonniert wird.</param>
-        /// <param name="userId">Die Id des Nutzers, der aus der Abonnentenliste ausgetragen wird.</param>
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
-        public async Task SendUnsubscribeChannelRequestAsync(string serverAccessToken, int channelId, int userId)
+        public async Task SendUnsubscribeChannelRequestAsync(string serverAccessToken, int channelId)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
-
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Delete, "/channel/" + channelId + "/user/" + userId);
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            if (statusCode == HttpStatusCode.NoContent)
-            {
-                Debug.WriteLine("Unsubscribe channel with id {0} request completed successfully.", channelId);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                string responseContent = await response.Content.ReadAsStringAsync();
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
+            await base.SendHttpDeleteRequestAsync(
+                serverAccessToken,
+                "/channel/" + channelId + "/user"
+                );
         }
 
         // Kanalverwaltung durch Moderatoren:
@@ -687,29 +379,11 @@ namespace DataHandlingLayer.API
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
         public async Task SendAddModeratorToChannelRequestAsync(string serverAccessToken, int channelId, string jsonContent)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
-
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithJsonBody(HttpMethod.Post, jsonContent, "/channel/" + channelId + "/moderator");
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            if (statusCode == HttpStatusCode.Created)
-            {
-                Debug.WriteLine("Add moderator as responsible moderator for the channel with id {0} request completed successfully.", channelId);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                string responseContent = await response.Content.ReadAsStringAsync();
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
+            await base.SendHttpPostRequestWithJsonBodyAsync(
+                serverAccessToken,
+                jsonContent,
+                "/channel/" + channelId + "/moderator",
+                null);
         }
 
         /// <summary>
@@ -722,32 +396,14 @@ namespace DataHandlingLayer.API
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
         public async Task<string> SendGetModeratorsOfChannelRequestAsync(string serverAccessToken, int channelId)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
+            // Frage die verantwortlichen Moderatoren für den Kanal ab. 
+            string serverResponse = await base.SendHttpGetRequestAsync(
+                serverAccessToken,
+                "/channel/" + channelId + "/moderator",
+                null,
+                false);
 
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Get, "/channel/" + channelId + "/moderator");
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if (statusCode == HttpStatusCode.Ok)
-            {
-                Debug.WriteLine("Get moderators of the channel with id {0} request completed successfully.", channelId);
-                Debug.WriteLine("Response from server is: " + responseContent);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
-
-            return responseContent;
+            return serverResponse;
         }
 
         /// <summary>
@@ -760,29 +416,9 @@ namespace DataHandlingLayer.API
         /// <exception cref="APIException">Wirft APIException, wenn Request fehlgeschlagen ist, oder Server den Request abgelehnt hat.</exception>
         public async Task SendRemoveModeratorFromChannelRequestAsync(string serverAccessToken, int channelId, int moderatorId)
         {
-            // Erstelle einen HTTP Request.
-            HttpClient httpClient = new HttpClient();
-
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
-            HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Get, "/channel/" + channelId + "/moderator/" + moderatorId);
-
-            // Sende den Request und warte auf die Antwort.
-            HttpResponseMessage response = await sendHttpRequest(httpClient, request);
-
-            // Lies Antwort aus.
-            var statusCode = response.StatusCode;
-            if (statusCode == HttpStatusCode.NoContent)
-            {
-                Debug.WriteLine("Remove moderator as responsible moderator from the channel with id {0} request completed successfully.", channelId);
-            }
-            else
-            {
-                // Bilde auf Fehlercode ab und werfe Exception.
-                string responseContent = await response.Content.ReadAsStringAsync();
-                mapNonSuccessfulRequestToAPIException(statusCode, responseContent);
-            }
+            await base.SendHttpDeleteRequestAsync(
+                serverAccessToken,
+                "/channel/" + channelId + "/moderator/" + moderatorId);
         }
     }
 }

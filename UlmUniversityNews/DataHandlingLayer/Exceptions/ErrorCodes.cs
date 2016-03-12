@@ -50,6 +50,19 @@ namespace DataHandlingLayer.Exceptions
         public const int ChannelInvalidEndDate = 3017;
         public const int ChannelNameAlreadyExists = 3018;
 
+        // Announcements:
+        public const int AnnouncementNotFound = 3100;
+        public const int AnnouncementDataIncomplete = 3102;
+        public const int AnnouncementInvalidText = 3103;
+        public const int AnnouncementInvalidTitle = 3104;
+
+        // Reminder
+        public const int ReminderNotFound = 3200;
+        public const int ReminderDataIncomplete = 3202;
+        public const int ReminderInvalidText = 3203;
+        public const int ReminderInvalidTitle = 3204;
+        public const int ReminderInvalidInterval = 3205;
+
         public const int ServerDatabaseFailure = 5000;
 
         // Allgemeingültige Fehlercodes (von HTTP).

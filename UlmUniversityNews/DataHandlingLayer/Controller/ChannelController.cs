@@ -29,9 +29,9 @@ namespace DataHandlingLayer.Controller
         private ModeratorDatabaseManager moderatorDatabaseManager;
 
         /// <summary>
-        /// Eine Referenz auf eine Instanz der API Klasse mittels der Requests an den Server abgesetzt werden können.
+        /// Eine Referenz auf eine Instanz der ChannelAPI Klasse.
         /// </summary>
-        private API.API api;
+        private ChannelAPI channelApi;
         #endregion Fields
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace DataHandlingLayer.Controller
         {
             channelDatabaseManager = new ChannelDatabaseManager();
             moderatorDatabaseManager = new ModeratorDatabaseManager();
-            api = new API.API();
+            channelApi = new ChannelAPI();
         }
 
         /// <summary>
@@ -54,9 +54,10 @@ namespace DataHandlingLayer.Controller
         {
             channelDatabaseManager = new ChannelDatabaseManager();
             moderatorDatabaseManager = new ModeratorDatabaseManager();
-            api = new API.API();
+            channelApi = new ChannelAPI();
         }
 
+        #region LocalChannelFunctions
         /// <summary>
         /// Liefert eine Liste von Kanälen zurück, die vom lokalen Nutzer abonniert wurden.
         /// </summary>
@@ -68,7 +69,7 @@ namespace DataHandlingLayer.Controller
             {
                 return channelDatabaseManager.GetSubscribedChannels();
             }
-            catch(DatabaseException ex)
+            catch (DatabaseException ex)
             {
                 Debug.WriteLine("DatabaseException with message {0} occurred.", ex.Message);
                 // Abbilden auf ClientException.
@@ -77,7 +78,7 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
-        /// Liefert eine Liste aller aktuell in der Datenbank gespeicherten Kanäle zurück.
+        /// Liefert eine Liste aller aktuell in der lokalen Datenbank gespeicherten Kanäle zurück.
         /// </summary>
         /// <returns>Eine Liste von Objekten der Klasse Kanal oder einer ihrer Subklassen.</returns>
         /// <exception cref="ClientException">Wirft eine Client Exception, wenn ein Fehler bei der Ausführung aufgetreten ist.</exception>
@@ -87,7 +88,7 @@ namespace DataHandlingLayer.Controller
             {
                 return channelDatabaseManager.GetChannels();
             }
-            catch(DatabaseException ex)
+            catch (DatabaseException ex)
             {
                 Debug.WriteLine("DatabaseException with message {0} occurred.", ex.Message);
                 // Abbilden auf ClientException.
@@ -114,44 +115,6 @@ namespace DataHandlingLayer.Controller
                 // Abbilden auf ClientException.
                 throw new ClientException(ErrorCodes.LocalDatabaseException, "Local database failure.");
             }
-        }
-
-        /// <summary>
-        /// Gibt eine Liste von Kanal-Objekten zurück, die seit der letzten Aktualisierung
-        /// der im System verwalteten Kanäle geändert wurden.
-        /// </summary>
-        /// <returns>Liste von Kanal-Objekten.</returns>
-        public async Task<List<Channel>> RetrieveUpdatedChannelsFromServerAsync()
-        {
-            List<Channel> channels = null;
-            Dictionary<string, string> parameters = null;
-
-            // Hole als erstes das Datum der letzten Aktualisierung.
-            DateTime lastUpdate = channelDatabaseManager.GetDateOfLastChannelListUpdate();
-            if(lastUpdate != DateTime.MinValue)
-            {
-                // Erzeuge Parameter für lastUpdate;
-                parameters = new Dictionary<string, string>();
-                parameters.Add("lastUpdated", api.ParseDateTimeToUTCFormat(lastUpdate));
-            }
-
-            // Setze Request an den Server ab.
-            string serverResponse;
-            try
-            {
-                serverResponse = await api.SendHttpGetRequestAsync(getLocalUser().ServerAccessToken, "/channel", parameters, true);
-            }
-            catch(APIException ex)
-            {
-                Debug.WriteLine("API request has failed.");
-                // Abbilden auf ClientException.
-                throw new ClientException(ex.ErrorCode, "API request to Server has failed.");
-            }
-
-            // Versuche Response zu parsen.
-            channels = jsonParser.ParseChannelListFromJson(serverResponse);
-
-            return channels;
         }
 
         /// <summary>
@@ -237,7 +200,7 @@ namespace DataHandlingLayer.Controller
             {
                 channelDatabaseManager.SetDateOfLastChannelListUpdate(lastUpdate);
             }
-            catch(DatabaseException ex)
+            catch (DatabaseException ex)
             {
                 Debug.WriteLine("DatabaseException with message {0} occurred.", ex.Message);
                 // Abbilden auf ClientException.
@@ -256,7 +219,7 @@ namespace DataHandlingLayer.Controller
             {
                 return channelDatabaseManager.IsChannelSubscribed(channeId);
             }
-            catch(DatabaseException ex)
+            catch (DatabaseException ex)
             {
                 // Keine Abbildung auf ClientException.
                 Debug.WriteLine("DatabaseException with message {0} occurred.", ex.Message);
@@ -264,6 +227,111 @@ namespace DataHandlingLayer.Controller
             return false;
         }
 
+        /// <summary>
+        /// Ersetzt die lokal verwaltete Version des Kanals durch eine neue
+        /// Version desselben Kanals.
+        /// </summary>
+        /// <param name="newChannel">Die neue Version des Kanals.</param>
+        ///<exception cref="ClientException">Wirft ClientException, wenn Aktion aufgrund eines 
+        ///     Fehlers nicht ausgeführt werden kann.</exception>
+        public void ReplaceLocalChannel(Channel newChannel)
+        {
+            try
+            {
+                channelDatabaseManager.UpdateChannelWithSubclass(newChannel);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("Couldn't perform the replace local channel functionality.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Fügt einen Kanal den lokal verwalteten Kanaldatensätzen hinzu.
+        /// </summary>
+        /// <param name="newChannel">Der hinzuzufügende Kanal.</param>
+        public void AddToLocalChannels(Channel newChannel)
+        {
+            try
+            {
+                channelDatabaseManager.StoreChannel(newChannel);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("Couldn't store channel.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Speichere für den Kanal mit der angegebenen Id die in der Liste definierten 
+        /// Moderatoren als die für diesen Kanal verantwortlichen Moderatoren ab.
+        /// Die Methode speichert die Datensätze der Moderatoren lokal in der Datenbank, falls sie dort
+        /// noch nicht gespeichert sind und trägt die Moderatoren als Verantwortliche für den Kanal ein.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, für den die Moderatoren als Verantworliche eingetragen werden sollen. </param>
+        /// <param name="responsibleModerators">Die Liste an Moderatoren, die als die Verantwortlichen eingetragen werden sollen.</param>
+        public void StoreResponsibleModeratorsForChannel(int channelId, List<Moderator> responsibleModerators)
+        {
+            try
+            {
+                foreach (Moderator moderator in responsibleModerators)
+                {
+                    if (!moderatorDatabaseManager.IsModeratorStored(moderator.Id))
+                    {
+                        Debug.WriteLine("Need to store the moderator with id {0} locally.", moderator.Id);
+                        moderatorDatabaseManager.StoreModerator(moderator);
+                    }
+                    // Füge Moderator noch als aktiven Verantwortlichen zum Kanal hinzu in der Datenbank.
+                    channelDatabaseManager.AddModeratorToChannel(channelId, moderator.Id, moderator.IsActive);
+                }
+            }
+            catch (DatabaseException ex)
+            {
+                // Fehler wird nicht weitergereicht, da es sich hierbei um eine Aktion handelt,
+                // die normalerweise im Hintergrund ausgeführt wird und nicht aktiv durch den 
+                // Nutzer ausgelöst wird.
+                Debug.WriteLine("Could not store responsible moderators for the channel with id {0}." +
+                    "The message is {1}.", channelId, ex.Message);
+            }
+        }
+        #endregion LocalChannelFunctions
+
+        #region RemoteChannelFunctions
+        /// <summary>
+        /// Gibt eine Liste von Kanal-Objekten zurück, die seit der letzten Aktualisierung
+        /// der im System verwalteten Kanäle geändert wurden.
+        /// </summary>
+        /// <returns>Liste von Kanal-Objekten.</returns>
+        public async Task<List<Channel>> RetrieveUpdatedChannelsFromServerAsync()
+        {
+            List<Channel> channels = null;
+
+            // Hole als erstes das Datum der letzten Aktualisierung.
+            DateTime lastUpdate = channelDatabaseManager.GetDateOfLastChannelListUpdate();
+            
+            // Setze Request an den Server ab.
+            string serverResponse;
+            try
+            {
+                serverResponse = await channelApi.SendGetChannelsRequestAsync(
+                    getLocalUser().ServerAccessToken,
+                    lastUpdate);
+            }
+            catch(APIException ex)
+            {
+                Debug.WriteLine("API request has failed.");
+                // Abbilden auf ClientException.
+                throw new ClientException(ex.ErrorCode, "API request to Server has failed.");
+            }
+
+            // Versuche Response zu parsen.
+            channels = jsonParser.ParseChannelListFromJson(serverResponse);
+
+            return channels;
+        }
+        
         /// <summary>
         /// Der lokale Nutzer abonniert den Kanal mit der angegebenen Id. Es wird die Kommunikation
         /// mit dem Server realisiert und der Kanal in der lokalen Datenbank entsprechend als abonnierter
@@ -289,8 +357,9 @@ namespace DataHandlingLayer.Controller
             try
             {
                 // Führe Request an den Server durch, um den Kanal zu abonnieren.
-                string serverResponse = 
-                    await api.SendHttpPostRequestWithJsonBodyAsync(localUser.ServerAccessToken, string.Empty, "/channel/" + channelId + "/user", null);
+                await channelApi.SendSubscribeChannelRequestAsync(
+                    localUser.ServerAccessToken,
+                    channelId);
             }
             catch(APIException ex)
             {
@@ -351,7 +420,10 @@ namespace DataHandlingLayer.Controller
             {
                 // Setze Request zum Deabonnieren des Kanals an den Server ab.
                 User localUser = getLocalUser();
-                await api.SendHttpDeleteRequestAsync(localUser.ServerAccessToken, "/channel/" + channelId + "/user");
+                await channelApi.SendUnsubscribeChannelRequestAsync(
+                    localUser.ServerAccessToken,
+                    channelId
+                    );
             }
             catch(APIException ex)
             {
@@ -364,11 +436,8 @@ namespace DataHandlingLayer.Controller
 
                     // Nehme den Kanal aus der Menge der abonnierten Kanäle raus.
                     channelDatabaseManager.UnsubscribeChannel(channelId);
-                    // Lösche die Einträge für die verantwortlichen Moderatoren.
-                    channelDatabaseManager.RemoveAllModeratorsFromChannel(channelId);
                     // Lösche die Announcements des Kanals.
                     channelDatabaseManager.DeleteAllAnnouncementsOfChannel(channelId);
-                    // TODO - Prüfe, ob Remove Moderators sinnvoll
 
                     // Channel Objekt selbst bleibt in Datenbank. Setze jedoch Notification-Wert zurück.
                     resetNotificationSettingForChannel(channelId);
@@ -382,11 +451,8 @@ namespace DataHandlingLayer.Controller
 
             // Nehme den Kanal aus der Menge der abonnierten Kanäle raus.
             channelDatabaseManager.UnsubscribeChannel(channelId);
-            // Lösche die Einträge für die verantwortlichen Moderatoren.
-            channelDatabaseManager.RemoveAllModeratorsFromChannel(channelId);
             // Lösche die Announcements des Kanals.
             channelDatabaseManager.DeleteAllAnnouncementsOfChannel(channelId);
-            // TODO - Prüfe, ob Remove Moderators sinnvoll
 
             // Channel Objekt selbst bleibt in Datenbank. Setze jedoch Notification-Wert zurück.
             resetNotificationSettingForChannel(channelId);
@@ -453,48 +519,46 @@ namespace DataHandlingLayer.Controller
                 return false;
             }
 
+            string serverResponse = null;
             try
             {
                 // Setzte Request zum Anlegen eines Kanals ab.
-                string serverResponse = await api.SendHttpPostRequestWithJsonBodyAsync(
+                serverResponse = await channelApi.SendCreateChannelRequestAsync(
                     activeModerator.ServerAccessToken,
-                    jsonContent,
-                    "/channel",
-                    null
-                    );
-
-                // Extrahiere erhaltene Channel Resource aus JSON-Dokument.
-                Channel createdChannel = jsonParser.ParseChannelFromJson(serverResponse);
-                if (createdChannel != null)
-                {
-                    try
-                    {
-                        // Speichere Kanal lokal ab.
-                        channelDatabaseManager.StoreChannel(createdChannel);
-
-                        // Füge den Moderator als verwantwortlichen Moderator hinzu.
-                        channelDatabaseManager.AddModeratorToChannel(
-                            createdChannel.Id,
-                            activeModerator.Id,
-                            true);
-                    }
-                    catch (DatabaseException ex)
-                    {
-                        Debug.WriteLine("Database Exception, message is: {0}.", ex.Message);
-                        // Bilde ab auf ClientException.
-                        throw new ClientException(ErrorCodes.LocalDatabaseException, "Storing process of " + 
-                            "created channel object in local DB has failed");
-                    }
-                }
-                else
-                {
-                    throw new ClientException(ErrorCodes.JsonParserError, "Parsing of server response has failed.");
-                }
+                    jsonContent);
             }
             catch (APIException ex)
             {
                 // Bilde ab auf ClientException.
                 throw new ClientException(ex.ErrorCode, "Server rejected create channel request.");
+            }
+
+            // Extrahiere erhaltene Channel Resource aus JSON-Dokument.
+            Channel createdChannel = jsonParser.ParseChannelFromJson(serverResponse);
+            if (createdChannel != null)
+            {
+                try
+                {
+                    // Speichere Kanal lokal ab.
+                    channelDatabaseManager.StoreChannel(createdChannel);
+
+                    // Füge den Moderator als verwantwortlichen Moderator hinzu.
+                    channelDatabaseManager.AddModeratorToChannel(
+                        createdChannel.Id,
+                        activeModerator.Id,
+                        true);
+                }
+                catch (DatabaseException ex)
+                {
+                    Debug.WriteLine("Database Exception, message is: {0}.", ex.Message);
+                    // Bilde ab auf ClientException.
+                    throw new ClientException(ErrorCodes.LocalDatabaseException, "Storing process of " +
+                        "created channel object in local DB has failed");
+                }
+            }
+            else
+            {
+                throw new ClientException(ErrorCodes.JsonParserError, "Parsing of server response has failed.");
             }
 
             return true;
@@ -544,11 +608,10 @@ namespace DataHandlingLayer.Controller
             try
             {
                 // Führe Request zur Aktualisierung des Inhalts aus.
-                serverResponse = await api.SendHttpPatchRequestWithJsonBody(
+                serverResponse = await channelApi.SendUpdateChannelRequestAsync(
                     activeModerator.ServerAccessToken,
-                    jsonContent,
-                    "/channel/" + oldChannel.Id,
-                    null);
+                    oldChannel.Id,
+                    jsonContent);
             }
             catch (APIException ex)
             {
@@ -845,43 +908,7 @@ namespace DataHandlingLayer.Controller
             return updatedChannel;
         }
 
-        /// <summary>
-        /// Ersetzt die lokal verwaltete Version des Kanals durch eine neue
-        /// Version desselben Kanals.
-        /// </summary>
-        /// <param name="newChannel">Die neue Version des Kanals.</param>
-        ///<exception cref="ClientException">Wirft ClientException, wenn Aktion aufgrund eines 
-        ///     Fehlers nicht ausgeführt werden kann.</exception>
-        public void ReplaceLocalChannel(Channel newChannel)
-        {
-            try
-            {
-                channelDatabaseManager.UpdateChannelWithSubclass(newChannel);
-            }
-            catch (DatabaseException ex)
-            {
-                Debug.WriteLine("Couldn't perform the replace local channel functionality.");
-                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// Fügt einen Kanal den lokal verwalteten Kanaldatensätzen hinzu.
-        /// </summary>
-        /// <param name="newChannel">Der hinzuzufügende Kanal.</param>
-        public void AddToLocalChannels(Channel newChannel)
-        {
-            try
-            {
-                channelDatabaseManager.StoreChannel(newChannel);
-            }
-            catch (DatabaseException ex)
-            {
-                Debug.WriteLine("Couldn't store channel.");
-                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
-            }
-        }
-
+       
         /// <summary>
         /// Frage die Moderatoren-Ressourcen vom Server ab, die für den Kanal mit der angegebenen Id verantwortlich sind.
         /// </summary>
@@ -891,17 +918,14 @@ namespace DataHandlingLayer.Controller
         public async Task<List<Moderator>> GetResponsibleModeratorsAsync(int channelId)
         {
             List<Moderator> responsibleModerators = new List<Moderator>();
+            
+            string serverResponse = null;
             try
             {
                 // Frage die verantwortlichen Moderatoren für den Kanal ab. 
-                string serverResponse =
-                    await api.SendHttpGetRequestAsync(getLocalUser().ServerAccessToken,
-                    "/channel/" + channelId + "/moderator",
-                    null,
-                    true);
-
-                // Extrahiere Moderatoren-Objekte aus der Antwort.
-                responsibleModerators = jsonParser.ParseModeratorListFromJson(serverResponse);
+                serverResponse = await channelApi.SendGetModeratorsOfChannelRequestAsync(
+                    getLocalUser().ServerAccessToken,
+                    channelId);
             }
             catch (APIException ex)
             {
@@ -909,9 +933,15 @@ namespace DataHandlingLayer.Controller
                 "Error code is: {0} and status code was {1}.", ex.ErrorCode, ex.ResponseStatusCode);
                 throw new ClientException(ex.ErrorCode, "API call failed.");
             }
+
+            // Extrahiere Moderatoren-Objekte aus der Antwort.
+            responsibleModerators = jsonParser.ParseModeratorListFromJson(serverResponse);
+
             return responsibleModerators;
         }
+        #endregion RemoteChannelFunctions
 
+        #region RemoteAnnouncementFunctions
         /// <summary>
         /// Frage die Announcements zu dem Kanal mit der angegebenen Id vom Server ab.
         /// Die Abfrage kann durch die Angabe der Nachrichtennummer beeinflusst werden. Es
@@ -927,23 +957,16 @@ namespace DataHandlingLayer.Controller
         public async Task<List<Announcement>> GetAnnouncementsOfChannelAsync(int channelId, int messageNr, bool withCaching)
         {
             List<Announcement> announcements = new List<Announcement>();
+
+            string serverResponse = null;
             try
             {
                 // Frage alle Announcements zu dem gegebenen Kanal ab, beginnend bei der angegebenen Nachrichtennummer.
-                Dictionary<string, string> parameters = new Dictionary<string, string>();
-                parameters.Add("messageNr", messageNr.ToString());
-                string serverResponse =
-                    await api.SendHttpGetRequestAsync(getLocalUser().ServerAccessToken,
-                    "/channel/" + channelId + "/announcement",
-                    parameters,
+                serverResponse = await channelApi.SendGetAnnouncementsRequestAsync(
+                    getLocalUser().ServerAccessToken,
+                    channelId,
+                    messageNr,
                     withCaching);
-
-                // Extrahiere Announcements aus JSON-Dokument.
-                announcements = jsonParser.ParseAnnouncementListFromJson(serverResponse);
-                if (announcements == null)
-                {
-                    throw new ClientException(ErrorCodes.JsonParserError, "Error during parsing of server response.");
-                }
             }
             catch(APIException ex)
             {
@@ -951,11 +974,20 @@ namespace DataHandlingLayer.Controller
                     "Error code is: {0} and status code was {1}.", ex.ErrorCode, ex.ResponseStatusCode);
                 throw new ClientException(ex.ErrorCode, "API call failed.");
             }
+
+            // Extrahiere Announcements aus JSON-Dokument.
+            announcements = jsonParser.ParseAnnouncementListFromJson(serverResponse);
+            if (announcements == null)
+            {
+                throw new ClientException(ErrorCodes.JsonParserError, "Error during parsing of server response.");
+            }
+
             return announcements;
         }
 
         /// <summary>
-        /// Speichere eine empfangen Announcement ab.
+        /// Speichere eine empfangen Announcement ab. Falls notwendig werden fehlende Informationene
+        /// (z.B. über den Autor) vom Server geladen.
         /// </summary>
         /// <param name="announcement">Das Announcement Objekt der empfangenen Announcement</param>
         public async Task StoreReceivedAnnouncementAsync(Announcement announcement)
@@ -1026,7 +1058,8 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
-        /// Speichere eine Menge von empfangenen Announcements in der Datenbank ab.
+        /// Speichere eine Menge von empfangenen Announcements in der Datenbank ab.Falls notwendig werden fehlende Informationene
+        /// (z.B. über den Autor) vom Server geladen.
         /// </summary>
         /// <param name="announcements">Eine Liste von Announcement Objekten.</param>
         /// <exception cref="ClientException">Wirft ClientException, wenn die übergebene Menge an Announcements nicht 
@@ -1139,6 +1172,82 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Erzeugt eine neue Nachricht für den Kanal mit der angegebenen Id. 
+        /// Die Announcement wird auf dem Server angelegt und dieser verteilt sie an 
+        /// alle Abonnenten.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, für den die Announcement angelegt werden soll.</param>
+        /// <param name="newAnnouncement">Ein neues Announcement Objekt.</param>
+        /// <returns>Liefert true, wenn die Announcement erfolgreich angelegt werden konnte, sonst false.</returns>
+        /// <exception cref="ClientException">Wirft eine ClientException, wenn das Anlegen auf dem Server fehlgeschlagen ist.</exception>
+        public async Task<bool> CreateAnnouncementAsync(int channelId, Announcement newAnnouncement)
+        {
+            if (newAnnouncement == null)
+                return false;
+
+            Moderator activeModerator = GetLocalModerator();
+            if (activeModerator == null)
+            {
+                Debug.WriteLine("Moderator not logged in.");
+                return false;
+            }
+
+
+            // Führe Validierung der übergebenen Daten durch.
+            clearValidationErrors();
+            newAnnouncement.ClearValidationErrors();
+            newAnnouncement.ValidateAll();
+            if (newAnnouncement.HasValidationErrors())
+            {
+                // Melde Validierungsfehler und breche ab.
+                reportValidationErrors(newAnnouncement.GetValidationErrors());
+                return false;
+            }
+
+            string jsonContent = jsonParser.ParseAnnouncementToJsonString(newAnnouncement);
+            if (jsonContent == null)
+            {
+                Debug.WriteLine("CreateAnnouncementAsync failed, the announcement could " +
+                    " not be translated into a json document.");
+                return false;
+            }
+
+            string serverResponse = null;
+            try
+            {
+                serverResponse = await channelApi.SendCreateAnnouncementRequestAsync(
+                    activeModerator.ServerAccessToken,
+                    channelId,
+                    jsonContent);
+            }
+            catch (APIException ex)
+            {
+                if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
+                {
+                    Debug.WriteLine("Server says channel not found. Channel is probably deleted.");
+                    // TODO - Behandlung von ChannelNotFound.
+                }
+
+                Debug.WriteLine("CreateAnnouncement failed. The message is: {0}.", ex.Message);
+                // Bilde ab auf ClientException.
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            // Extrahiere Announcement aus ServerResponse.
+            Announcement createdAnnouncement = jsonParser.ParseAnnouncementFromJsonString(serverResponse);
+
+            if (createdAnnouncement != null)
+            {
+                // Speichere Announcement.
+                await StoreReceivedAnnouncementAsync(createdAnnouncement);
+            }
+
+            return true;
+        }
+        #endregion RemoteAnnouncementFunctions
+
+        #region LocalAnnouncementFunctions
+        /// <summary>
         /// Ermittelt die Anzahl an ungelesenen Announcements für die vom lokalen Nutzer 
         /// abonnierten Kanäle. Gibt ein Verzeichnis zurück, indem mit der Kanal-Id
         /// als Schlüssel die Anzahl an ungelesenen Announcement-Nachrichten ermittelt werden kann.
@@ -1233,40 +1342,10 @@ namespace DataHandlingLayer.Controller
             }
             return lastReceivedAnnouncement;
         }
+        #endregion LocalAnnouncementFunctions
 
-        /// <summary>
-        /// Speichere für den Kanal mit der angegebenen Id die in der Liste definierten 
-        /// Moderatoren als die für diesen Kanal verantwortlichen Moderatoren ab.
-        /// Die Methode speichert die Datensätze der Moderatoren lokal in der Datenbank, falls sie dort
-        /// noch nicht gespeichert sind und trägt die Moderatoren als Verantwortliche für den Kanal ein.
-        /// </summary>
-        /// <param name="channelId">Die Id des Kanals, für den die Moderatoren als Verantworliche eingetragen werden sollen. </param>
-        /// <param name="responsibleModerators">Die Liste an Moderatoren, die als die Verantwortlichen eingetragen werden sollen.</param>
-        public void StoreResponsibleModeratorsForChannel(int channelId, List<Moderator> responsibleModerators)
-        {
-            try
-            {
-                foreach (Moderator moderator in responsibleModerators)
-                {
-                    if (!moderatorDatabaseManager.IsModeratorStored(moderator.Id))
-                    {
-                        Debug.WriteLine("Need to store the moderator with id {0} locally.", moderator.Id);
-                        moderatorDatabaseManager.StoreModerator(moderator);
-                    }
-                    // Füge Moderator noch als aktiven Verantwortlichen zum Kanal hinzu in der Datenbank.
-                    channelDatabaseManager.AddModeratorToChannel(channelId, moderator.Id, moderator.IsActive);
-                }
-            }
-            catch(DatabaseException ex)
-            {
-                // Fehler wird nicht weitergereicht, da es sich hierbei um eine Aktion handelt,
-                // die normalerweise im Hintergrund ausgeführt wird und nicht aktiv durch den 
-                // Nutzer ausgelöst wird.
-                Debug.WriteLine("Could not store responsible moderators for the channel with id {0}." + 
-                    "The message is {1}.", channelId, ex.Message);
-            }
-        }
-
+        
+        #region LocalManagedChannelsFunctions
         /// <summary>
         /// Fügt den übergebenen Kanal der Liste der verwalteten Kanäle hinzu für den übergebenen
         /// Moderator. Trägt dabei den übergebenen Moderator als Verantwortlichen für den übergebenen Kanal
@@ -1321,14 +1400,13 @@ namespace DataHandlingLayer.Controller
                 // Bemerkung: Falls das fehlschlägt wird kein Fehler geworfen. Die Daten können auch im Fehlerfall später nachgeladen werden.
                 Task.Run(() => retrieveAndStoreManagedChannelInfoAsync(moderator, newManagedChannel.Id));
             }
-            catch(DatabaseException ex)
+            catch (DatabaseException ex)
             {
-                Debug.WriteLine("Couldn't add channel to local managed channels. Msg is {0}.", 
+                Debug.WriteLine("Couldn't add channel to local managed channels. Msg is {0}.",
                     ex.Message);
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
         }
-        #region LocalManagedChannelsFunctions
 
         /// <summary>
         /// Hole die vom Moderator mit der angegebenen Id verwalteten Kanäle, die lokal in der Anwendung vorhanden sind.
@@ -1574,7 +1652,6 @@ namespace DataHandlingLayer.Controller
         #endregion LocalManagedChannelsFunctions
 
         #region RemoteManagedChannelsFunctions
-
         /// <summary>
         /// Ruft die Liste an Kanalressourcen vom Server ab, für die der Moderator mit der angegebenen Id verantwortlich ist.
         /// </summary>
@@ -1586,24 +1663,14 @@ namespace DataHandlingLayer.Controller
             List<Channel> managedChannels = null;
             Moderator activeModerator = GetLocalModerator();
 
+            string serverResponse = null;
             try
             {
                 if (activeModerator != null)
                 {
-                    Dictionary<string, string> parameters = new Dictionary<string, string>();
-                    parameters.Add("moderatorId", activeModerator.Id.ToString());
-
-                    string serverResponse = await api.SendHttpGetRequestAsync(
+                    serverResponse = await channelApi.SendGetChannelsAssignedToModeratorRequestAsync(
                         activeModerator.ServerAccessToken,
-                        "/channel",
-                        parameters,
-                        false
-                        );
-
-                    managedChannels = jsonParser.ParseChannelListFromJson(serverResponse);
-
-                    if (managedChannels != null)
-                        Debug.WriteLine("Retrieved a list of managed channels with {0} items.", managedChannels.Count);
+                        activeModerator.Id);
                 }
             }
             catch (APIException ex)
@@ -1612,6 +1679,11 @@ namespace DataHandlingLayer.Controller
                     "Message is: {0}.", ex.Message);
                 throw new ClientException(ex.ErrorCode, "Retrieving of managed channels failed.");
             }
+
+            managedChannels = jsonParser.ParseChannelListFromJson(serverResponse);
+
+            if (managedChannels != null)
+                Debug.WriteLine("Retrieved a list of managed channels with {0} items.", managedChannels.Count);
 
             return managedChannels;
         }
@@ -1689,75 +1761,6 @@ namespace DataHandlingLayer.Controller
         }
 
         #endregion RemoteManagedChannelsFunctions
-
-       
-        /// <summary>
-        /// Erzeugt eine neue Nachricht für den Kanal mit der angegebenen Id. 
-        /// Die Announcement wird auf dem Server angelegt und dieser verteilt sie an 
-        /// alle Abonnenten.
-        /// </summary>
-        /// <param name="channelId">Die Id des Kanals, für den die Announcement angelegt werden soll.</param>
-        /// <param name="newAnnouncement">Ein neues Announcement Objekt.</param>
-        /// <returns>Liefert true, wenn die Announcement erfolgreich angelegt werden konnte, sonst false.</returns>
-        /// <exception cref="ClientException">Wirft eine ClientException, wenn das Anlegen auf dem Server fehlgeschlagen ist.</exception>
-        public async Task<bool> CreateAnnouncementAsync(int channelId, Announcement newAnnouncement)
-        {
-            if (newAnnouncement == null)
-                return false;
-
-            Moderator activeModerator = GetLocalModerator();
-            if (activeModerator == null)
-            {
-                Debug.WriteLine("Moderator not logged in.");
-                return false;
-            }
-
-
-            // Führe Validierung der übergebenen Daten durch.
-            clearValidationErrors();
-            newAnnouncement.ClearValidationErrors();
-            newAnnouncement.ValidateAll();
-            if (newAnnouncement.HasValidationErrors())
-            {
-                // Melde Validierungsfehler und breche ab.
-                reportValidationErrors(newAnnouncement.GetValidationErrors());
-                return false;
-            }
-            
-            string jsonContent = jsonParser.ParseAnnouncementToJsonString(newAnnouncement);
-            if (jsonContent == null)
-            {
-                Debug.WriteLine("CreateAnnouncementAsync failed, the announcement could " + 
-                    " not be translated into a json document.");
-                return false;
-            }
-
-            try
-            {
-                string serverResponse = await api.SendHttpPostRequestWithJsonBodyAsync(
-                    activeModerator.ServerAccessToken,
-                    jsonContent,
-                    "/channel/" + channelId + "/announcement",
-                    null);
-
-                // Extrahiere Announcement aus ServerResponse.
-                Announcement createdAnnouncement = jsonParser.ParseAnnouncementFromJsonString(serverResponse);
-
-                if (createdAnnouncement != null)
-                {
-                    // Speichere Announcement.
-                    await StoreReceivedAnnouncementAsync(createdAnnouncement);
-                }
-            }
-            catch (APIException ex)
-            {
-                Debug.WriteLine("CreateAnnouncement failed. The message is: {0}.", ex.Message);
-                // Bilde ab auf ClientException.
-                throw new ClientException(ex.ErrorCode, ex.Message);
-            }
-
-            return true;
-        }
 
         #region LocalReminderFunctions
         /// <summary>
@@ -1886,29 +1889,29 @@ namespace DataHandlingLayer.Controller
 
                 // Prüfe, ob es einen Eintrag in der Liste der aktualisierten Reminder gibt, der noch nicht lokal
                 // gespeichert ist und prüfe, ob ein bereits vorhandener Reminder aktualisiert werden muss.
-                foreach (Reminder reminder in updatedList)
+                foreach (Reminder referenceReminder in updatedList)
                 {
                     bool isContained = false;
 
                     for (int i = 0; i < localReminderList.Count; i++)
                     {
-                        if (reminder.Id == localReminderList[i].Id)
+                        if (referenceReminder.Id == localReminderList[i].Id)
                         {
                             isContained = true;
 
                             // Prüfe, ob Aktualisierung erforderlich.
-                            if (reminder.ModificationDate.CompareTo(localReminderList[i].ModificationDate) != 0)
+                            if (DateTime.Compare(localReminderList[i].ModificationDate, referenceReminder.ModificationDate) < 0)
                             {
-                                Debug.WriteLine("Update of reminder with id {0} necessary.", reminder.Id);
-                                channelDatabaseManager.UpdateReminder(reminder);
+                                Debug.WriteLine("Update of reminder with id {0} necessary.", referenceReminder.Id);
+                                channelDatabaseManager.UpdateReminder(referenceReminder);
                             }
                         }
                     }
 
                     if (!isContained)
                     {
-                        Debug.WriteLine("Need to add reminder with id {0}.", reminder.Id);
-                        StoreReminder(reminder);
+                        Debug.WriteLine("Need to add reminder with id {0}.", referenceReminder.Id);
+                        StoreReminder(referenceReminder);
                     }
                 }
 
@@ -1942,10 +1945,9 @@ namespace DataHandlingLayer.Controller
             string serverResponse = null;
             try
             {
-                serverResponse = await api.SendHttpGetRequestAsync(
+                serverResponse = await channelApi.SendGetRemindersRequestAsync(
                     activeModerator.ServerAccessToken,
-                    "/channel/" + channelId + "/reminder",
-                    null,
+                    channelId,
                     withCaching);
             }
             catch (APIException ex)
@@ -2007,14 +2009,19 @@ namespace DataHandlingLayer.Controller
             try
             {
                 // Setzte Request an Server ab.
-                serverResponse = await api.SendHttpPostRequestWithJsonBodyAsync(
+                serverResponse = await channelApi.SendCreateReminderRequestAsync(
                     activeModerator.ServerAccessToken,
-                    jsonContent,
-                    "/channel/" + newReminder.ChannelId + "/reminder",
-                    null);
+                    newReminder.ChannelId,
+                    jsonContent);
             }
             catch (APIException ex)
             {
+                if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
+                {
+                    Debug.WriteLine("Channel not found on server. Channel probably deleted.");
+                    // TODO - Behandlung Not Found. Kanal wahrscheinlich gelöscht.
+                }
+
                 Debug.WriteLine("Request to create reminder has failed.");
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -2078,14 +2085,26 @@ namespace DataHandlingLayer.Controller
             try
             {
                 // Sende Request an den Server.
-                serverResponse = await api.SendHttpPatchRequestWithJsonBody(
+                serverResponse = await channelApi.SendUpdateReminderRequestAsync(
                     activeModerator.ServerAccessToken,
-                    jsonContent,
-                    "/channel/" + oldReminder.ChannelId + "/reminder/" + oldReminder.Id,
-                    null);
+                    oldReminder.ChannelId,
+                    oldReminder.Id,
+                    jsonContent);
             }
             catch (APIException ex)
             {
+                if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
+                {
+                    Debug.WriteLine("Channel not found on server. Channel probably deleted.");
+                    // TODO - Behandlung Not Found. Kanal wahrscheinlich gelöscht.
+                }
+
+                if (ex.ErrorCode == ErrorCodes.ReminderNotFound)
+                {
+                    Debug.WriteLine("Reminder not found on server. Reminder probably deleted.");
+                    // TODO - Behandlung von Not Found. Reminder wahrscheinlich gelöscht.
+                }
+
                 Debug.WriteLine("Update request for reminder with id {0} has failed.", oldReminder.Id);
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }

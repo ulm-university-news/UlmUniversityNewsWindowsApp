@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -163,8 +164,9 @@ namespace DataHandlingLayer.API
             httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
             if(!withCaching)
             {
-                Debug.WriteLine("Adding header to prevent caching.");
                 httpClient.DefaultRequestHeaders.IfModifiedSince = new DateTimeOffset(DateTime.UtcNow);
+                Debug.WriteLine("Adding header to prevent caching. Added header is: {0}.",
+                    httpClient.DefaultRequestHeaders.IfModifiedSince);
                 //httpClient.DefaultRequestHeaders.Add("IfModifiedSince", DateTime.UtcNow.ToString("r"));     // Prevent caching for get requests.
             }
             httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
@@ -176,6 +178,8 @@ namespace DataHandlingLayer.API
             }
 
             HttpRequestMessage request = createHttpRequestMessageWithoutContent(HttpMethod.Get, restResourcePath);
+
+            Debug.WriteLine("GET Request to URI: {0}", request.RequestUri);
 
             // Sende den Request und warte auf die Antwort.
             HttpResponseMessage response = await sendHttpRequest(httpClient, request);
@@ -255,7 +259,14 @@ namespace DataHandlingLayer.API
         /// <returns>Die Datums- und Uhrzeitangabe im UTC Format.</returns>
         public string ParseDateTimeToUTCFormat(DateTime datetime)
         {
-            string datetimeString = datetime.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");;
+            DateTimeOffset dto = new DateTimeOffset(datetime,TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.Now));
+            CultureInfo cultureInfo = new CultureInfo("de-DE");
+
+            string format = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffzzzz";
+            string datetimeString = dto.ToString(format, cultureInfo);
+
+            //string datetimeString = datetime.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");;
+            
             return datetimeString;
         }
 
