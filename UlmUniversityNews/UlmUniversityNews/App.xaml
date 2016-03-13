@@ -281,10 +281,18 @@
             <Setter Property="BorderThickness" Value="2" />
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="Height" Value="Auto" />
+            <Setter Property="MinHeight" Value="180" />
+            <Setter Property="Width" Value="Auto" />
         </Style>
         <!-- <Setter Property="MinHeight" Value="180px" /> -->
-        
+
+        <Style
+            x:Key="FlyoutSingleButtonStyle"
+            TargetType="Button">
+            <Setter Property="Margin" Value="0, 0, 15, 10" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+        </Style>
         
         <!-- ************************************************************************************************************************************ -->
         <!-- Layout eines Eintrages einer Kanal-Ressource in der Übersichtliste von Kanälen.-->

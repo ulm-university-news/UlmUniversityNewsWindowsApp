@@ -665,7 +665,7 @@
                               HorizontalAlignment="Stretch">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
                             <TextBlock
                                 Grid.Row="0"
@@ -677,8 +677,7 @@
                                 x:Uid="FlyoutWariningDialogCloseButton"
                                 Content="Dialog verlassen"
                                 Command="{Binding PerformOriginalDrawerMenuActionCommand}"
-                                Margin="0,0,15,15"
-                                HorizontalAlignment="Right" />
+                                Style="{StaticResource FlyoutSingleButtonStyle}" />
                         </Grid>
                     </Flyout>
                 </FlyoutBase.AttachedFlyout>

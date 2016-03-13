@@ -47,7 +47,38 @@
                 x:Name="ReminderDetailsRemoveReminderButton"
                 x:Uid="ReminderDetailsRemoveReminderButton"
                 Label="delete reminder"
-                Icon="Delete"/>            <!-- TODO - Command Binding.-->
+                Icon="Delete">
+                <AppBarButton.Flyout>
+                    <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}">
+                        <Grid
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Warnhinweis bezüglich Löschoperation. -->
+                            <TextBlock 
+                                Grid.Row="0"
+                                x:Name="DeleteReminderWarning"
+                                x:Uid="ReminderDetailsDeleteReminderWarning"
+                                Style="{StaticResource TextInFlyoutsStyle}" >
+                                Wollen Sie den Reminder wirklich löschen?
+                            </TextBlock>
+
+                            <!-- Löschen Button-->
+                            <Button
+                                Grid.Row="1"
+                                x:Name="DeleteReminderFlyoutButton"
+                                x:Uid="ReminderDetailsDeleteReminderFlyoutButton"
+                                Style="{StaticResource FlyoutSingleButtonStyle}"
+                                Content="Delete"
+                                Command="{Binding DeleteReminderCommand}"/>
+                        </Grid>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
             <AppBarButton
                 x:Name="ReminderDetailsEditReminderButton"
                 x:Uid="ReminderDetailsEditReminderButton"

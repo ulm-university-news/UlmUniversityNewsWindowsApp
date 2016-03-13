@@ -958,4 +958,10 @@ date: </value>
   <data name="ModeratorChannelDetailsAddReminderButton.Label" xml:space="preserve">
     <value>add reminder</value>
   </data>
+  <data name="ReminderDetailsDeleteReminderFlyoutButton.Content" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="ReminderDetailsDeleteReminderWarning.Text" xml:space="preserve">
+    <value>Do you really want to delete the reminder?</value>
+  </data>
 </root>

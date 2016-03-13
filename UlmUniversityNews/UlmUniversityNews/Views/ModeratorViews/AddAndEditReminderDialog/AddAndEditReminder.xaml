@@ -535,10 +535,11 @@
                         FlyoutPresenterStyle="{StaticResource ResourceKey=FlyoutStyle}"
                             common:FlyoutHelper.IsOpen="{Binding IsFlyoutOpen, Mode=TwoWay}"
                             common:FlyoutHelper.Parent="{Binding ElementName=ListFragment}">
+                        <StackPanel>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
                             <TextBlock
                                 Grid.Row="0"
@@ -550,9 +551,9 @@
                                 x:Uid="FlyoutWariningDialogCloseButton"
                                 Content="Dialog verlassen"
                                 Command="{Binding PerformOriginalDrawerMenuActionCommand}"
-                                Margin="0,0,15,15"
-                                HorizontalAlignment="Right" />
+                                Style="{StaticResource FlyoutSingleButtonStyle}" />
                         </Grid>
+                        </StackPanel>
                     </Flyout>
                 </FlyoutBase.AttachedFlyout>
 

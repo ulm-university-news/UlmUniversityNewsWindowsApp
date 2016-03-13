@@ -959,4 +959,10 @@ Nachricht am: </value>
   <data name="ModeratorChannelDetailsAddReminderButton.Label" xml:space="preserve">
     <value>reminder hinzufügen</value>
   </data>
+  <data name="ReminderDetailsDeleteReminderFlyoutButton.Content" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="ReminderDetailsDeleteReminderWarning.Text" xml:space="preserve">
+    <value>Wollen Sie den Reminder wirklich löschen?</value>
+  </data>
 </root>

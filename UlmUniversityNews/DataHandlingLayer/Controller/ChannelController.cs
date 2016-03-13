@@ -2195,10 +2195,16 @@ namespace DataHandlingLayer.Controller
                 updatableReminder.Title = newReminder.Title;
             }
 
+            // Beachte: Message Priority muss gesetzt werden, da sonst der Default-Wert beim JSON Parsing
+            // in das JSON Dokument geschrieben wird und dadurch ungewollt die Einstellung des Reminder ändern könnte.
             if (oldReminder.MessagePriority != newReminder.MessagePriority)
             {
                 hasChanged = true;
                 updatableReminder.MessagePriority = newReminder.MessagePriority;
+            }
+            else
+            {
+                updatableReminder.MessagePriority = oldReminder.MessagePriority;
             }
 
             // Prüfe, ob sich überhaupt eine Property geändert hat.
@@ -2209,6 +2215,45 @@ namespace DataHandlingLayer.Controller
             }
 
             return updatableReminder;
+        }
+
+        /// <summary>
+        /// Löscht einen Reminder. Es wird ein Request zum Löschen des Reminder-Datensatzes an den Server
+        /// geschickt. Der Reminder wird bei einer erfolgreichen Löschung auf dem Server auch lokal gelöscht.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, zu dem der Reminder gehört.</param>
+        /// <param name="reminderId">Die Id des Reminder, der gelöscht werden soll.</param>
+        /// <exception cref="ClientException">Wirft eine ClientException, wenn der Löschvorgang fehlgeschlagen ist.</exception>
+        public async Task DeleteReminderAsync(int channelId, int reminderId)
+        {
+            Moderator activeModerator = GetLocalModerator();
+            if (activeModerator == null)
+                return;
+
+            try
+            {
+                // Sende Request zum Löschen des Reminder.
+                await channelApi.SendDeleteReminderRequestAsync(
+                    activeModerator.ServerAccessToken, 
+                    channelId,
+                    reminderId);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("DeleteReminderAsync: Failed to delete reminder, server request has failed.");
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            // Wenn Request erfolgreich, dann lösche Reminder auch lokal.
+            try
+            {
+                channelDatabaseManager.DeleteReminder(reminderId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("DeleteReminderAsync: Failed to delete reminder locally.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
         }
 
         /// <summary>

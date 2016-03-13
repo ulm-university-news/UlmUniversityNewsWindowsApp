@@ -68,7 +68,17 @@ namespace DataHandlingLayer.ViewModel
         {
             get { return switchToEditReminderDialogCommand; }
             set { switchToEditReminderDialogCommand = value; }
-        }     
+        }
+
+        private AsyncRelayCommand deleteReminderCommand;
+        /// <summary>
+        /// Befehl zum Löschen eines Reminder.
+        /// </summary>
+        public AsyncRelayCommand DeleteReminderCommand
+        {
+            get { return deleteReminderCommand; }
+            set { deleteReminderCommand = value; }
+        }
         #endregion Commands
 
         /// <summary>
@@ -85,6 +95,8 @@ namespace DataHandlingLayer.ViewModel
             // Befehle anlegen.
             SwitchToEditReminderDialogCommand = new RelayCommand(
                 param => executeSwitchToEditReminderCommand());
+            DeleteReminderCommand = new AsyncRelayCommand(
+                param => executeDeleteReminderCommand());
         }
 
         /// <summary>
@@ -97,7 +109,7 @@ namespace DataHandlingLayer.ViewModel
             try
             {
                 SelectedReminder = await Task.Run(() => channelController.GetReminder(reminderId));
-                Debug.WriteLine("SelectedReminder properties: " + SelectedReminder.ToString());
+                //Debug.WriteLine("SelectedReminder properties: " + SelectedReminder.ToString());
 
                 if (SelectedReminder != null)
                 {
@@ -135,6 +147,36 @@ namespace DataHandlingLayer.ViewModel
                 string navigationParameter = 
                     "navParam?channelId=" + SelectedChannel.Id + "?reminderId=" + SelectedReminder.Id;
                 _navService.Navigate("AddAndEditReminder", navigationParameter);
+            }
+        }
+
+        /// <summary>
+        /// Führt den Befehl DeleteReminderCommand aus.
+        /// </summary>
+        private async Task executeDeleteReminderCommand()
+        {
+            if (SelectedChannel == null || SelectedReminder == null)
+                return;
+
+            try
+            {
+                displayIndeterminateProgressIndicator();
+
+                await channelController.DeleteReminderAsync(SelectedChannel.Id, SelectedReminder.Id);
+
+                // Bei erfolgreicher Löschung, navigiere zurück zum ModeratorChannelDetails View.
+                _navService.Navigate("ModeratorChannelDetails", SelectedChannel.Id);
+
+                // Lösche den letzten Eintrag aus dem Backstack, so dass nicht auf die Details-Seite zurück navigiert werden kann.
+                _navService.RemoveEntryFromBackStack();
+            }
+            catch (ClientException ex)
+            {
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
             }
         }
     }
