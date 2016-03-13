@@ -318,6 +318,46 @@ namespace DataHandlingLayer.Controller
                     "The message is {1}.", channelId, ex.Message);
             }
         }
+
+        /// <summary>
+        /// Markiert den lokal gespeicherten Kanal mit der angegebenen Id als gelöscht.
+        /// Ein als gelöscht markierter Kanal hat keinen Repräsentanten mehr auf dem Server.
+        /// Die lokale Instanz bleibt jedoch zunächst noch erhalten.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn markieren des Kanals
+        ///     als gelöscht fehlschlägt.</exception>
+        public void MarkChannelAsDeleted(int channelId)
+        {
+            try
+            {
+                channelDatabaseManager.MarkChannelAsDeleted(channelId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("MarkChannelAsDeleted: Error during execution.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Löscht den Kanal mit der angegebenen Id aus den lokal verwalteten
+        /// Datensätzen der Anwendung.
+        /// </summary>
+        /// <param name="channelId">Die Id des zu löschenden Kanals.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn löschen des Kanals fehlschlägt.</exception>
+        public void DeleteLocalChannel(int channelId)
+        {
+            try
+            {
+                channelDatabaseManager.DeleteChannel(channelId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("DeleteLocalChannel: Couldn't delete local channel.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
         #endregion LocalChannelFunctions
 
         #region RemoteChannelFunctions
@@ -960,6 +1000,35 @@ namespace DataHandlingLayer.Controller
             responsibleModerators = jsonParser.ParseModeratorListFromJson(serverResponse);
 
             return responsibleModerators;
+        }
+
+        /// <summary>
+        /// Löscht den Kanal mit der angegebenen Id. Sendet einen Löschrequest an den Server,
+        /// so dass der Kanal auf dem Server gelöscht wird.
+        /// Lokal wird der Kanal zunächst nur als gelöscht markiert, der Datensatz bleibt aber erhalten.
+        /// </summary>
+        /// <param name="channelId">Die Id des zu löschenden Kanals.</param>
+        public async Task DeleteChannelAsync(int channelId)
+        {
+            Moderator activeModerator = GetLocalModerator();
+            if (activeModerator == null)
+                return;
+
+            try
+            {
+                // Sende Löschrequest an den Server.
+                await channelApi.SendDeleteChannelRequest(
+                    activeModerator.ServerAccessToken,
+                    channelId);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("DeleteChannelAsync: Error during deletion process. No successful deletion on server.");
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            // Wenn Löschrequest an Server erfolgreich, dann markiere den Kanal lokal als gelöscht.
+            MarkChannelAsDeleted(channelId);
         }
         #endregion RemoteChannelFunctions
 

@@ -958,6 +958,15 @@ date: </value>
   <data name="ModeratorChannelDetailsAddReminderButton.Label" xml:space="preserve">
     <value>add reminder</value>
   </data>
+  <data name="ModeratorChannelDetailsDeleteChannelButton.Label" xml:space="preserve">
+    <value>delete channel</value>
+  </data>
+  <data name="ModeratorChannelDetailsDeleteChannelFlyoutButton.Content" xml:space="preserve">
+    <value>Delete channel</value>
+  </data>
+  <data name="ModeratorChannelDetailsDeleteChannelWarning.Text" xml:space="preserve">
+    <value>Do you really want to delete the channel?</value>
+  </data>
   <data name="ReminderDetailsDeleteReminderFlyoutButton.Content" xml:space="preserve">
     <value>Delete</value>
   </data>

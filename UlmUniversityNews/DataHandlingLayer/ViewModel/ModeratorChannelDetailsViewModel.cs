@@ -116,6 +116,16 @@ namespace DataHandlingLayer.ViewModel
             set { showScrollBar = value; }
         }
 
+        private bool canDeleteChannel;
+        /// <summary>
+        /// Gibt an, ob aktuell der Befehl zum Löschen des Kanals zur Vefügung steht.
+        /// </summary>
+        public bool CanDeleteChannel
+        {
+            get { return canDeleteChannel; }
+            set { this.setProperty(ref this.canDeleteChannel, value); }
+        }
+        
         private IncrementalLoadingCollection<IncrementalAnnouncementLoaderController, Announcement> announcements = null;
         /// <summary>
         /// Die zum Kanal gehörenden Announcements in einer Collection. Hierbei handelt es sich um eine Collection,
@@ -177,7 +187,17 @@ namespace DataHandlingLayer.ViewModel
         {
             get { return reminderSelectedCommand; }
             set { reminderSelectedCommand = value; }
-        }   
+        }
+
+        private AsyncRelayCommand deleteChannelCommand;
+        /// <summary>
+        /// Befehl zum Löschen eines Kanals.
+        /// </summary>
+        public AsyncRelayCommand DeleteChannelCommand
+        {
+            get { return deleteChannelCommand; }
+            set { deleteChannelCommand = value; }
+        }
         #endregion Commands
 
         /// <summary>
@@ -205,6 +225,8 @@ namespace DataHandlingLayer.ViewModel
                 param => canSwitchToAddReminderDialog());
             ReminderSelectedCommand = new RelayCommand(
                 param => executeReminderSelectedCommand(param));
+            DeleteChannelCommand = new AsyncRelayCommand(
+                param => executeDeleteChannelCommand());
 
             // Lade Anwendungseinstellungen und passe View Parameter entsprechend an.
             AppSettings appSettings = channelController.GetApplicationSettings();
@@ -390,6 +412,9 @@ namespace DataHandlingLayer.ViewModel
         /// <exception cref="ClientException">Wirft ClientException, wenn die Aktualisierung der Announcements fehlschlägt.</exception>
         private async Task updateAnnouncements(bool withCaching)
         {
+            if (Channel == null)
+                return;
+
             // Extrahiere als erstes die aktuell höchste MessageNr einer Announcement in diesem Kanal.
             int maxMsgNr = 0;
             maxMsgNr = channelController.GetHighestMsgNrForChannel(Channel.Id);
@@ -419,6 +444,15 @@ namespace DataHandlingLayer.ViewModel
             SwitchToAddAnnouncementDialogCommand.RaiseCanExecuteChanged();
             SwitchToEditChannelDialogCommand.RaiseCanExecuteChanged();
             SwitchToAddReminderDialogCommand.RaiseCanExecuteChanged();
+            
+            if (SelectedPivotItemIndex == 2)    // Channel-Details Pivotitem gewählt.
+            {
+                CanDeleteChannel = true;
+            }
+            else
+            {
+                CanDeleteChannel = false;
+            }
         }
 
         /// <summary>
@@ -517,5 +551,52 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
+        ///// <summary>
+        ///// Gibt an, ob mit dem aktuellen Zustand der View der Befehl
+        ///// "Kanal löschen" zur Verfügung steht. 
+        ///// </summary>
+        ///// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        //private bool canDeleteChannel()
+        //{
+        //    // Pivot Index 2 ist der Kanalinformationen-Tab.
+        //    if (SelectedPivotItemIndex == 2)
+        //    {
+        //        return true;
+        //    }
+        //    return false;
+        //}
+
+        /// <summary>
+        /// Führt den Befehl DeleteChannelCommand aus. Löscht den Kanal,
+        /// der aktuell gewählt ist.
+        /// </summary>
+        private async Task executeDeleteChannelCommand()
+        {
+            if (Channel == null)
+                return;
+
+            try
+            {
+                displayIndeterminateProgressIndicator();
+
+                await channelController.DeleteChannelAsync(Channel.Id);
+
+                // Bei erfolgreicher Löschung, gehe zurück auf den Homescreen.
+                _navService.Navigate("HomescreenModerator");
+
+                // Lösche den letzten Eintrag aus dem BackStack, so dass nicht auf die Detailseite zurück navigiert
+                // werden kann mittels des Back-Keys.
+                _navService.RemoveEntryFromBackStack();
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("Error during DeleteChannelCommand execution. Message is: {0}.", ex.Message);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
+        }
     }
 }

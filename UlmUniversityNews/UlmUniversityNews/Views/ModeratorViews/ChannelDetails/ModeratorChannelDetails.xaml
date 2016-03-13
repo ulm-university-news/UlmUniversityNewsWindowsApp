@@ -221,6 +221,42 @@
                 Visibility="{Binding ElementName=ModeratorChannelDetailsAddAnnounementButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding SwitchToAddAnnouncementDialogCommand}"/>
             <AppBarButton
+                x:Name="ModeratorChannelDetailsDeleteChannelButton"
+                x:Uid="ModeratorChannelDetailsDeleteChannelButton"
+                Icon="Delete"
+                Label="delete channel"
+                Visibility="{Binding CanDeleteChannel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <AppBarButton.Flyout>
+                    <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}">
+                        <Grid
+                            HorizontalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Warnhinweis bezüglich Löschoperation. -->
+                            <TextBlock 
+                                Grid.Row="0"
+                                x:Name="DeleteChannelWarning"
+                                x:Uid="ModeratorChannelDetailsDeleteChannelWarning"
+                                Style="{StaticResource TextInFlyoutsStyle}" >
+                                Wollen Sie den Kanal wirklich löschen?
+                            </TextBlock>
+
+                            <!-- Löschen Button-->
+                            <Button
+                                Grid.Row="1"
+                                x:Name="DeleteChannelFlyoutButton"
+                                x:Uid="ModeratorChannelDetailsDeleteChannelFlyoutButton"
+                                Style="{StaticResource FlyoutSingleButtonStyle}"
+                                Content="Delete"
+                                Command="{Binding DeleteChannelCommand}"/>
+                        </Grid>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+            <AppBarButton
                 x:Name="ModeratorChannelDetailsEditChannelButton"
                 x:Uid="ModeratorChannelDetailsEditChannelButton"
                 Label="edit channel"

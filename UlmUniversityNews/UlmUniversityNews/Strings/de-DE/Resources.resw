@@ -959,6 +959,15 @@ Nachricht am: </value>
   <data name="ModeratorChannelDetailsAddReminderButton.Label" xml:space="preserve">
     <value>reminder hinzufügen</value>
   </data>
+  <data name="ModeratorChannelDetailsDeleteChannelButton.Label" xml:space="preserve">
+    <value>lösche kanal</value>
+  </data>
+  <data name="ModeratorChannelDetailsDeleteChannelFlyoutButton.Content" xml:space="preserve">
+    <value>Lösche Kanal</value>
+  </data>
+  <data name="ModeratorChannelDetailsDeleteChannelWarning.Text" xml:space="preserve">
+    <value>Wollen Sie den Kanal wirklich löschen?</value>
+  </data>
   <data name="ReminderDetailsDeleteReminderFlyoutButton.Content" xml:space="preserve">
     <value>Löschen</value>
   </data>
