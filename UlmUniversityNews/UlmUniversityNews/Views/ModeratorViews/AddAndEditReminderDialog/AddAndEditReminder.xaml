@@ -536,7 +536,9 @@
                             common:FlyoutHelper.IsOpen="{Binding IsFlyoutOpen, Mode=TwoWay}"
                             common:FlyoutHelper.Parent="{Binding ElementName=ListFragment}">
                         <StackPanel>
-                        <Grid>
+                        <Grid 
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />

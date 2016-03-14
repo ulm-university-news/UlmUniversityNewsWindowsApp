@@ -151,7 +151,20 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
             if (moderatorChannelDetailsViewModel != null)
             {
                 await moderatorChannelDetailsViewModel.LoadRemindersOfChannel();
-                await moderatorChannelDetailsViewModel.SynchroniseRemindersWithServer();
+                await moderatorChannelDetailsViewModel.CheckForMissingReminders();
+            }
+        }
+
+        /// <summary>
+        /// Wird aufgerufen, wenn Pivot Item "Kanalinformationen" geladen wird. Es wird das Laden der Moderatoreninformation angestoßen.
+        /// </summary>
+        /// <param name="sender">Die Quelle des Ereignisses.</param>
+        /// <param name="e">Eventparameter.</param>
+        private async void ModeratorChannelDetailsChannelInfoPivotItem_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (moderatorChannelDetailsViewModel != null)
+            {
+                await moderatorChannelDetailsViewModel.LoadModeratorsOfChannel();
             }
         }
     }

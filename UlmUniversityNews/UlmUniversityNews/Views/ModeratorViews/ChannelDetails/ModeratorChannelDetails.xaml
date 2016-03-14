@@ -213,13 +213,6 @@
     <Page.BottomAppBar>
         <CommandBar x:Name="ModeratorChannelDetailsCommandBar"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
-            <AppBarButton 
-                x:Name="ModeratorChannelDetailsAddAnnounementButton"
-                x:Uid="ModeratorChannelDetailsAddAnnounementButton"
-                Label="add message"
-                Icon="add"
-                Visibility="{Binding ElementName=ModeratorChannelDetailsAddAnnounementButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
-                Command="{Binding SwitchToAddAnnouncementDialogCommand}"/>
             <AppBarButton
                 x:Name="ModeratorChannelDetailsDeleteChannelButton"
                 x:Uid="ModeratorChannelDetailsDeleteChannelButton"
@@ -229,6 +222,7 @@
                 <AppBarButton.Flyout>
                     <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}">
                         <Grid
+                            VerticalAlignment="Stretch"
                             HorizontalAlignment="Stretch">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -256,6 +250,20 @@
                     </Flyout>
                 </AppBarButton.Flyout>
             </AppBarButton>
+            <AppBarButton
+                x:Name="ModeratorChannelDetailsSynchronizeButton"
+                x:Uid="ModeratorChannelDetailsSynchonizeButton"
+                Icon="Sync"
+                Label="update"
+                Command="{Binding SynchronizeWithServerCommand}"
+                />
+            <AppBarButton 
+                x:Name="ModeratorChannelDetailsAddAnnounementButton"
+                x:Uid="ModeratorChannelDetailsAddAnnounementButton"
+                Label="add message"
+                Icon="add"
+                Visibility="{Binding ElementName=ModeratorChannelDetailsAddAnnounementButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding SwitchToAddAnnouncementDialogCommand}"/>
             <AppBarButton
                 x:Name="ModeratorChannelDetailsEditChannelButton"
                 x:Uid="ModeratorChannelDetailsEditChannelButton"
@@ -421,6 +429,7 @@
                         x:Name="ModeratorChannelDetailsChannelInfoPivotItem"
                         x:Uid="ModeratorChannelDetailsChannelInfoPivotItem"
                         Style="{StaticResource PivotItemStyle}"
+                        Loaded="ModeratorChannelDetailsChannelInfoPivotItem_Loaded"
                         Header="Kanalinformation">
 
                         <ScrollViewer 
@@ -432,6 +441,7 @@
                             Margin="0,0,0,0"
                             HorizontalAlignment="Stretch">
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
@@ -475,7 +485,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/NameInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_info_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -516,7 +526,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/TypeInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_details_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -558,7 +568,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/DescriptionInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_info_outline_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -599,7 +609,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/TermInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_date_range_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -640,7 +650,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/CreationDateInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_today_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -682,7 +692,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/ModificationDateInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_event_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -723,7 +733,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/LocationsInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_room_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -764,7 +774,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/TimesInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_schedule_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -805,7 +815,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/ContactsInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_account_circle_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -847,7 +857,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/WebsiteInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_public_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -905,7 +915,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/FacultyInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_school_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -946,7 +956,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/StartDateInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_today_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -986,7 +996,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/EndDateInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_event_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -1026,7 +1036,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/LecturerInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_person_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -1066,7 +1076,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/AssistantInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_person_outline_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -1121,7 +1131,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/CostInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_attach_money_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -1161,7 +1171,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/AmountOfParticipantsInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_group_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -1216,7 +1226,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/CostInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_attach_money_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -1256,7 +1266,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetailsIcons/LecturerInfo.png"
+                                                   Source="/Assets/ResourceDetails/ic_person_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
@@ -1281,9 +1291,48 @@
                                 </Grid>
                                 <!-- Ende Grid für Eventdaten. -->
 
-                            </Grid>
-                            <!-- Ende Grid für Elemente mit Kanalinformationen einschließlich Subklasseninformationen-->
+                                <!-- Moderatoren des Kanals. -->
+                                <Grid 
+                                Grid.Row="4"
+                                Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
 
+                                    <!-- Icon und Title für Moderatoren. -->
+                                    <Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetails/ic_group_black_36dp.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                        <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsModeratorField"
+                                                x:Name="Moderators"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Moderatoren" />
+                                    </Grid>
+
+                                    <TextBlock
+                                            Grid.Row="1"
+                                            x:Name="ModeratorContent"
+                                            Style="{StaticResource TextInPropertyDescriptions}"
+                                            Text="{Binding Moderators, TargetNullValue='', FallbackValue=''}" />
+
+                                    <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
+                                </Grid>
+
+                            </Grid>
+                            <!-- Ende Grid für Elemente mit Kanalinformationen einschließlich Subklasseninformationen-->                            
                         </ScrollViewer>
 
                     </PivotItem>

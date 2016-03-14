@@ -79,6 +79,16 @@ namespace DataHandlingLayer.ViewModel
             set { this.setProperty(ref this.eventObj, value); }
         }
 
+        private string moderators;
+        /// <summary>
+        /// Die Namen der für den Kanal verantwortlichen Moderatoren.
+        /// </summary>
+        public string Moderators
+        {
+            get { return moderators; }
+            set { this.setProperty(ref this.moderators, value); }
+        }
+        
         private int selectedPivotItemIndex;
         /// <summary>
         /// Gibt den Index des aktuell ausgewählten PivotItems an.
@@ -198,6 +208,16 @@ namespace DataHandlingLayer.ViewModel
             get { return deleteChannelCommand; }
             set { deleteChannelCommand = value; }
         }
+
+        private AsyncRelayCommand synchronizeWithServerCommand;
+        /// <summary>
+        /// Befehl zum Aktualisieren der Informationen durch Synchronisation mit dem Server.
+        /// </summary>
+        public AsyncRelayCommand SynchronizeWithServerCommand
+        {
+            get { return synchronizeWithServerCommand; }
+            set { synchronizeWithServerCommand = value; }
+        }
         #endregion Commands
 
         /// <summary>
@@ -227,6 +247,8 @@ namespace DataHandlingLayer.ViewModel
                 param => executeReminderSelectedCommand(param));
             DeleteChannelCommand = new AsyncRelayCommand(
                 param => executeDeleteChannelCommand());
+            SynchronizeWithServerCommand = new AsyncRelayCommand(
+                param => executeSynchronizeWithServerCommand());
 
             // Lade Anwendungseinstellungen und passe View Parameter entsprechend an.
             AppSettings appSettings = channelController.GetApplicationSettings();
@@ -294,7 +316,7 @@ namespace DataHandlingLayer.ViewModel
             try
             {
                 displayIndeterminateProgressIndicator();
-                await this.updateAnnouncements(false);
+                await this.updateAnnouncements(true);
             }
             catch (ClientException ex)
             {
@@ -319,11 +341,7 @@ namespace DataHandlingLayer.ViewModel
             {
                 List<Reminder> reminderList = await Task.Run(() => channelController.GetRemindersOfChannel(Channel.Id));
 
-                reminderList = new List<Reminder>(
-                    from reminder in reminderList
-                    orderby reminder.Title
-                    select reminder
-                );
+                reminderList = sortReminderListEntries(reminderList);
 
                 foreach (Reminder reminder in reminderList)
                 {
@@ -344,10 +362,36 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
-        /// Führe eine Synchronisation der lokalen Datensätze mit den Datensätzen auf dem
-        /// Server aus. Aktualisiere lokale Datensätze falls notwendig.
+        /// Lädt die Moderatoren des gewählten Kanals.
         /// </summary>
-        public async Task SynchroniseRemindersWithServer()
+        public async Task LoadModeratorsOfChannel()
+        {
+            if (Channel == null)
+                return;
+
+            string moderatorString = string.Empty;
+            try
+            {
+                List<Moderator> moderators = await Task.Run(() => channelController.GetModeratorsOfChannel(Channel.Id));
+
+                foreach (Moderator moderator in moderators)
+                {
+                    moderatorString += moderator.FirstName + " " + moderator.LastName + "\n";
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("Error during loading of moderators. Error code is: {0}.", ex.ErrorCode);
+            }
+
+            Moderators = moderatorString;
+        }
+
+        /// <summary>
+        /// Ruft die neueste Liste von Reminder für den gegebenen Kanal vom Server ab
+        /// und prüft, ob lokal entsprechend Reminder hinzugefügt oder aktualisiert werden müssen.
+        /// </summary>
+        public async Task CheckForMissingReminders()
         {
             if (Channel == null)
                 return;
@@ -360,15 +404,50 @@ namespace DataHandlingLayer.ViewModel
                     return;
 
                 // Starte Aktualisierung der lokalen Datensätze asynchron.
-                Task updateTask = Task.Run(() => channelController.UpdateLocalReminders(reminderListServer, Channel.Id));
+                await Task.Run(() => channelController.AddOrUpdateLocalReminders(reminderListServer, Channel.Id));
 
-                List<Reminder> reminderList = reminderListServer;
-                // Sortiere reminderList.
-                reminderList = new List<Reminder>(
-                    from reminder in reminderList
-                     orderby reminder.Title
-                     select reminder
-                );
+                // Aktualisiere die im ViewModel gehaltene Liste von Reminders.
+                await updateRemindersList();
+            }
+            catch (ClientException ex)
+            {
+                // Zeige Fehler hier zunächst nicht an.
+                Debug.WriteLine("CheckForMissingReminders: Check of missing reminders failed. Error code is: {0}.", ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
+        }
+
+        /// <summary>
+        /// Sortiert die Liste von Remindern Objekten. Aktuell werden die Reminder alphabetisch
+        /// nach ihrem Titel sortiert.
+        /// </summary>
+        /// <param name="reminderList">Die zu sortierende Liste von Remindern.</param>
+        /// <returns>Eine sortierte Liste von Remindern.</returns>
+        private List<Reminder> sortReminderListEntries(List<Reminder> reminderList)
+        {               
+            // Sortiere reminderList.
+            reminderList = new List<Reminder>(
+                from reminder in reminderList
+                orderby reminder.Title
+                select reminder
+            );
+            return reminderList;
+        }
+
+        /// <summary>
+        /// Aktualisiert die im ViewModel gehaltene Liste von Reminder-Objekten. Synchronisiert die
+        /// Liste mit den lokal in der Anwendung für den gegebenen Kanal verwalteten Reminder Objekten.
+        /// </summary>
+        private async Task updateRemindersList()
+        {
+            try
+            {
+                List<Reminder> reminderList = await Task.Run(() => channelController.GetRemindersOfChannel(Channel.Id));
+
+                reminderList = sortReminderListEntries(reminderList);
 
                 // Prüfe, ob es einen Reminder gibt, der noch nicht in der View verwaltet wird.
                 foreach (Reminder reminder in reminderList)
@@ -386,22 +465,64 @@ namespace DataHandlingLayer.ViewModel
                     }
                     else
                     {
-                        // TODO - prüfe, ob der Reminder aktualisiert wurde.
+                        // Prüfe, ob der Reminder aktualisiert wurde.
+                        Reminder currentReminder = reminderLookup[reminder.Id];
+                        if (DateTimeOffset.Compare(currentReminder.ModificationDate, reminder.ModificationDate) < 0)
+                        {
+                            // Aktualisiere relevante Properties für die View.
+                            updateViewRelatedPropertiesOfReminder(currentReminder, reminder);
+                        }
+                        else if (currentReminder.Ignore != reminder.Ignore) // Hat sich das Ignore Flag geändert.
+                        {
+                            // Aktualisiere auch hier relevante Properties für die View.
+                            updateViewRelatedPropertiesOfReminder(currentReminder, reminder);
+                        }
                     }
                 }
 
-                // Warte noch auf das Beenden der Aktualisierungen der lokalen Datensätze.
-                await updateTask;
+                // Prüfe, ob in Reminders ein Reminder-Objekt ist, welches lokal nicht mehr vorhanden ist.
+                for (int i = 0; i < Reminders.Count; i++)
+                {
+                    bool isContained = false;
+
+                    foreach (Reminder reminder in reminderList)
+                    {
+                        if (reminder.Id == Reminders[i].Id)
+                        {
+                            isContained = true;
+                        }
+                    }
+
+                    if (!isContained)
+                    {
+                        Debug.WriteLine("Need to take reminder with id {0} from the list.", Reminders[i].Id);
+                        reminderLookup.Remove(Reminders[i].Id);                     
+                        Reminders.RemoveAt(i);
+                    }
+                }
+
             }
             catch (ClientException ex)
             {
-                // Zeige Fehler hier zunächst nicht an.
-                Debug.WriteLine("Synchronization of reminders failed. Error code is: {0}.", ex.ErrorCode);
+                Debug.WriteLine("updateRemindersList: Error occurred. Error code is: {0}.", ex.ErrorCode);
             }
-            finally
-            {
-                hideIndeterminateProgressIndicator();
-            }
+        }
+
+        /// <summary>
+        /// Aktualisiert die für die View relevanten Parameter eines Reminder Objekts, welches aktuell
+        /// vom ViewModel gehalten wird.
+        /// </summary>
+        /// <param name="currentReminder">Die aktuell gehaltene Reminder-Instanz.</param>
+        /// <param name="newReminder">Die Reminder-Instanz mit den neuen Daten.</param>
+        private void updateViewRelatedPropertiesOfReminder(Reminder currentReminder, Reminder newReminder)
+        {
+            currentReminder.StartDate = newReminder.StartDate;
+            currentReminder.EndDate = newReminder.EndDate;
+            currentReminder.Interval = newReminder.Interval;
+            currentReminder.Ignore = newReminder.Ignore;
+
+            currentReminder.ComputeFirstNextDate();
+            currentReminder.EvaluateIsExpired();
         }
 
         /// <summary>
@@ -430,6 +551,60 @@ namespace DataHandlingLayer.ViewModel
                 foreach (Announcement announcement in receivedAnnouncements)
                 {
                     Announcements.Insert(0, announcement);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Führe eine Synchronisation der lokalen Datensätze mit den Datensätzen auf dem
+        /// Server aus. Aktualisiere lokale Datensätze falls notwendig.
+        /// </summary>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Synchronisation fehlschlägt.</exception>
+        private async Task synchroniseRemindersWithServer()
+        {
+            if (Channel == null)
+                return;
+
+            List<Reminder> reminderListServer = await Task.Run(() => channelController.GetRemindersOfChannelAsync(Channel.Id, false));
+            if (reminderListServer == null)
+                return;
+
+            // Starte Aktualisierung der lokalen Datensätze asynchron.
+            await Task.Run(() => channelController.SynchronizeLocalReminders(reminderListServer, Channel.Id));
+
+            // Aktualisiere die im ViewModel gehaltene Liste von Reminders.
+            await updateRemindersList();
+        }
+
+        /// <summary>
+        /// Stößt eine Synchronisation der Kanal- und Moderatoreninformationen
+        /// des gewählten Kanals an. Fragt entsprechende Informationen vom Server ab
+        /// und stößt die Aktualisierung der lokalen Datensätze an.
+        /// </summary>
+        private async Task synchroniseChannelInformation()
+        {
+            if (Channel == null)
+                return;
+
+            // Synchronisiere verantwortliche Moderatoren.
+            List<Moderator> responsibleModerators = await Task.Run(() => channelController.GetResponsibleModeratorsAsync(Channel.Id));
+
+            // Stoße lokale Synchronisation an.
+            await Task.Run(() => channelController.SynchronizeResponsibleModerators(Channel.Id, responsibleModerators));
+
+            // Lade Moderatoren View Property neu.
+            await LoadModeratorsOfChannel();
+
+            // Synchronisiere Kanalinformationen.
+            Channel channel = await Task.Run(() => channelController.GetChannelInfoAsync(Channel.Id));
+            if (channel != null)
+            {
+                if (DateTimeOffset.Compare(Channel.ModificationDate, channel.ModificationDate) < 0)
+                {
+                    // Aktualisierung erforderlich.
+                    channelController.ReplaceLocalChannel(channel);
+                    // Lade View neu.
+                    LoadSelectedChannel(Channel.Id);
                 }
             }
         }
@@ -591,6 +766,50 @@ namespace DataHandlingLayer.ViewModel
             catch (ClientException ex)
             {
                 Debug.WriteLine("Error during DeleteChannelCommand execution. Message is: {0}.", ex.Message);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
+        }
+
+        /// <summary>
+        /// Führt den Befehl SynchronizeWithServerCommand aus. Aktualisiert entsprechend dem
+        /// aktuellen View Zustand die Ressourcen.
+        /// </summary>
+        private async Task executeSynchronizeWithServerCommand()
+        {
+            if (Channel == null)
+                return;
+
+            try
+            {
+                switch (SelectedPivotItemIndex)
+                {
+                    case 0:
+                        // Abfrage, ob neue Announcement Nachrichten vorliegen.
+                        Debug.WriteLine("executeSynchronizeWithServerCommand: Start to update announcements.");
+                        await updateAnnouncements(false);
+                        break;
+                    case 1:
+                        // Synchronisiere Reminder-Informationen mit dem Server.
+                        Debug.WriteLine("executeSynchronizeWithServerCommand: Start to update reminders.");
+                        await synchroniseRemindersWithServer();
+                        break;
+                    case 2:
+                        // Frage Informationen zu diesem Kanal ab.
+                        Debug.WriteLine("executeSynchronizeWithServerCommand: Start to update channel and moderator info.");
+                        await synchroniseChannelInformation();
+                        break;
+                    default:
+                        // Mache nichts.
+                        break;
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("Error during SynchronizeWithServerCommand execution. Message is: {0}.", ex.Message);
                 displayError(ex.ErrorCode);
             }
             finally

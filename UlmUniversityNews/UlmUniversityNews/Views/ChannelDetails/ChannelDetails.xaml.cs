@@ -67,7 +67,8 @@ namespace UlmUniversityNews.Views.ChannelDetails
         /// <param name="e">Die Eventparameter.</param>
         async void ChannelDetails_Loaded(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("In ChannelDetails_Loaded event handler.");
+            Debug.WriteLine("In ChannelDetails_Loaded event handler. Resolution scale is: {0}.",
+                DisplayInformation.GetForCurrentView().ResolutionScale);
             if(channelDetailsViewModel != null && channelDetailsViewModel.ChannelSubscribedStatus == true)
             {
                 await channelDetailsViewModel.PerformAnnouncementUpdate();

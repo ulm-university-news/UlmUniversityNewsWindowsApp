@@ -974,4 +974,10 @@ Nachricht am: </value>
   <data name="ReminderDetailsDeleteReminderWarning.Text" xml:space="preserve">
     <value>Wollen Sie den Reminder wirklich löschen?</value>
   </data>
+  <data name="ChannelDetailsModeratorField.Text" xml:space="preserve">
+    <value>Moderatoren</value>
+  </data>
+  <data name="ModeratorChannelDetailsSynchonizeButton.Label" xml:space="preserve">
+    <value>aktuali-sieren</value>
+  </data>
 </root>

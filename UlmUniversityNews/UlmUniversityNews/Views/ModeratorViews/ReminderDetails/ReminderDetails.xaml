@@ -184,7 +184,7 @@
                                         </Grid.ColumnDefinitions>
 
                                         <Image Grid.Column="0"
-                                           Source="/Assets/ResourceDetailsIcons/NameInfo.png"
+                                           Source="/Assets/ResourceDetails/ic_info_black_36dp.png"
                                            Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                            />
 
@@ -225,7 +225,7 @@
                                         </Grid.ColumnDefinitions>
 
                                         <Image Grid.Column="0"
-                                           Source="/Assets/ResourceDetailsIcons/DescriptionInfo.png"
+                                           Source="/Assets/ResourceDetails/ic_info_outline_black_36dp.png"
                                            Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                            />
 
@@ -266,7 +266,7 @@
                                         </Grid.ColumnDefinitions>
 
                                         <Image Grid.Column="0"
-                                           Source="/Assets/ResourceDetailsIcons/PriorityInfo.png"
+                                           Source="/Assets/ResourceDetails/ic_report_problem_black_36dp.png"
                                            Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                            />
 
@@ -307,7 +307,7 @@
                                         </Grid.ColumnDefinitions>
 
                                         <Image Grid.Column="0"
-                                           Source="/Assets/ResourceDetailsIcons/StartDateInfo.png"
+                                           Source="/Assets/ResourceDetails/ic_today_black_36dp.png"
                                            Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                            />
 
@@ -348,7 +348,7 @@
                                         </Grid.ColumnDefinitions>
 
                                         <Image Grid.Column="0"
-                                           Source="/Assets/ResourceDetailsIcons/EndDateInfo.png"
+                                           Source="/Assets/ResourceDetails/ic_event_black_36dp.png"
                                            Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                            />
 
@@ -389,7 +389,7 @@
                                         </Grid.ColumnDefinitions>
 
                                         <Image Grid.Column="0"
-                                           Source="/Assets/ResourceDetailsIcons/TimesInfo.png"
+                                           Source="/Assets/ResourceDetails/ic_schedule_black_36dp.png"
                                            Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                            />
 
@@ -430,7 +430,7 @@
                                         </Grid.ColumnDefinitions>
 
                                         <Image Grid.Column="0"
-                                           Source="/Assets/ResourceDetailsIcons/IntervalInfo.png"
+                                           Source="/Assets/ResourceDetails/ic_update_black_36dp.png"
                                            Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                            />
 
@@ -471,7 +471,7 @@
                                         </Grid.ColumnDefinitions>
 
                                         <Image Grid.Column="0"
-                                           Source="/Assets/ResourceDetailsIcons/TermInfo.png"
+                                           Source="/Assets/ResourceDetails/ic_date_range_black_36dp.png"
                                            Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                            />
 
@@ -567,7 +567,7 @@
                                         </Grid.ColumnDefinitions>
 
                                         <Image Grid.Column="0"
-                                           Source="/Assets/ResourceDetailsIcons/LecturerInfo.png"
+                                           Source="/Assets/ResourceDetails/ic_person_black_36dp.png"
                                            Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                            />
 

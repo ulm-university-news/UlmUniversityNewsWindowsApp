@@ -21,11 +21,11 @@ namespace UlmUniversityNews.Converters
                 bool input = (bool)value;
                 if (input)
                 {
-                    iconPath = "/Assets/ResourceDetailsIcons/NotificationFalseInfo.png";
+                    iconPath = "/Assets/ResourceDetails/ic_notifications_off_black_36dp.png";
                 }
                 else
                 {
-                    iconPath = "/Assets/ResourceDetailsIcons/NotificationTrueInfo.png";
+                    iconPath = "/Assets/ResourceDetails/ic_notifications_black_36dp.png";
                 }
             }
             return iconPath;

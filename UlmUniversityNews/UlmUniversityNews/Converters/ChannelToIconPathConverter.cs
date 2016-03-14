@@ -39,32 +39,37 @@ namespace UlmUniversityNews.Converters
                             switch (faculty)
                             {
                                 case Faculty.ENGINEERING_COMPUTER_SCIENCE_PSYCHOLOGY:
-                                    iconPath = "/Assets/ChannelIcons/V_informatik.png";
+                                    iconPath = "/Assets/channelIcons/ic_lecture_informatics.png";
                                     break;
                                 case Faculty.MATHEMATICS_ECONOMICS:
-                                    iconPath = "/Assets/ChannelIcons/V_mathe.png";
+                                    iconPath = "/Assets/channelIcons/ic_lecture_mathematics.png";
                                     break;
                                 case Faculty.MEDICINES:
-                                    iconPath = "/Assets/ChannelIcons/V_medicine.png";
+                                    iconPath = "/Assets/channelIcons/ic_lecture_medicines.png";
                                     break;
                                 case Faculty.NATURAL_SCIENCES:
-                                    iconPath = "/Assets/ChannelIcons/V_science.png";
+                                    iconPath = "/Assets/channelIcons/ic_lecture_science.png";
                                     break;
                             }
                         }
                         break;
                     case ChannelType.EVENT:
-                        iconPath = "/Assets/ChannelIcons/event.png";
+                        iconPath = "/Assets/channelIcons/ic_event.png";
                         break;
                     case ChannelType.SPORTS:
-                        iconPath = "/Assets/ChannelIcons/sport.png";
+                        iconPath = "/Assets/channelIcons/ic_sport.png";
                         break;
                     case ChannelType.STUDENT_GROUP:
-                        iconPath = "/Assets/ChannelIcons/student_group.png";
+                        iconPath = "/Assets/channelIcons/ic_group.png";
                         break;
                     case ChannelType.OTHER:
-                        iconPath = "/Assets/ChannelIcons/other.png";
+                        iconPath = "/Assets/channelIcons/ic_other.png";
                         break;
+                }
+
+                if (channel.Deleted)
+                {
+                    iconPath = "/Assets/channelIcons/ic_deleted.png";
                 }
             }
 

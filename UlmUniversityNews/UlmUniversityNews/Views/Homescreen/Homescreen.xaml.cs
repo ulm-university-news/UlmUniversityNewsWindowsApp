@@ -106,7 +106,8 @@ namespace UlmUniversityNews.Views.Homescreen
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            Debug.WriteLine("LoadState Homescreen");
+            Debug.WriteLine("LoadState Homescreen. Resolution scale is: {0}.",
+                DisplayInformation.GetForCurrentView().ResolutionScale);
             // Erforderlich wegen Caching. Falls Seite aus Cache geladen wird und Drawer war offen
             // bleibt er sonst offen.
             if (DrawerLayout.IsDrawerOpen)

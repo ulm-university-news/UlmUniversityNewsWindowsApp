@@ -108,8 +108,10 @@
             TargetType="Image">
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Width" Value="35px" />
-            <Setter Property="Height" Value="35px" />
+            <!-- <Setter Property="MinHeight" Value="30" />
+            <Setter Property="MinWidth" Value="30" /> -->
+            <!--<Setter Property="Width" Value="Auto" /> --><!-- Before: 35 px -->
+            <!--<Setter Property="Height" Value="Auto" /> --><!-- Before: 35 px -->
         </Style>
         
         <!-- *************************************************************************************************************************************-->
@@ -301,32 +303,29 @@
             <!-- Verwende feste Höhe pro Eintrag. -->
             <Grid 
                 Background="{StaticResource UniUlmAccentColorListItemBackground}"
-                Height="70px"       
-                Margin="0,0,0,5">
+                Margin="0,0,0,5"> <!--Height="70px"-->
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="70px" /> <!-- Spalte für Icon-->
+                    <ColumnDefinition Width="Auto" /> <!-- Spalte für Icon-->
                     <ColumnDefinition Width="*" /> <!-- Spalte für restliche Information-->
                 </Grid.ColumnDefinitions>
-                
-                <!-- TODO - entferne Icon und erstetze durch Kreis mit definiertem Text -->
+               
                 <!-- Icon -->
                 <Image Source="{Binding Converter={StaticResource ChannelToIconPathConverter}}" 
                        Grid.Column="0"
-                       Height="60px"
-                       Width="60px"
+                       Margin="5, 5, 0, 5"
                        HorizontalAlignment="Center"
-                       VerticalAlignment="Center"/>
-                
+                       VerticalAlignment="Center"/>     <!--Height="60px"   Width="60px"-->
+
                 <!-- andere Informationen -->
-                <Grid Grid.Column="1" Margin="5,0,0,0">
+                <Grid Grid.Column="1" Margin="10,0,0,0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="35px" /> <!-- Zeile für Name des Kanals und Icon für Anzahl ungelesener Nachrichten. -->
-                        <RowDefinition Height="35px" /> <!-- Zeile für Typ und Semester -->
+                        <RowDefinition Height="Auto" /> <!-- Zeile für Name des Kanals und Icon für Anzahl ungelesener Nachrichten. -->
+                        <RowDefinition Height="*" /> <!-- Zeile für Typ und Semester -->
                     </Grid.RowDefinitions>
 
                     <!-- Zeile 1 -->
                     <!-- Anzeige für Name und Icon für ungelsesen Nachrichten -->
-                    <Grid Grid.Row="0">
+                    <Grid Grid.Row="0" VerticalAlignment="Top" Margin="0, 7, 0, 0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="4*" />
                             <ColumnDefinition Width="1*" />
@@ -334,7 +333,7 @@
                         
                         <!-- Name -->
                         <TextBlock Grid.Column="0"
-                               VerticalAlignment="Center"
+                               VerticalAlignment="Top"
                                HorizontalAlignment="Left"
                                TextWrapping="NoWrap"
                                TextTrimming="WordEllipsis"
@@ -350,8 +349,8 @@
                             Visibility="{Binding NumberOfUnreadAnnouncements, FallbackValue=Collapsed, TargetNullValue=Collapsed, Converter={StaticResource ZeroIntegerToVisibilityConverter}}">
                             <Ellipse 
                                 Fill="Gray" 
-                                Height="30px"
-                                Width="30px"
+                                Height="33px"
+                                Width="33px"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center" />   <!-- Hintergrund der Anzeige der ungelesenen Nachrichten-->
                             <TextBlock 
@@ -369,7 +368,8 @@
                     <!-- Anzeige für Typ und Semester.-->
                     <Grid Grid.Row="1"
                           x:Name="TypAndSemester"
-                          VerticalAlignment="Center">
+                          VerticalAlignment="Bottom"
+                          Margin="0, 0, 0, 7" >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
