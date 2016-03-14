@@ -30,7 +30,6 @@ namespace UlmUniversityNews.Views.ChannelDetails
     public sealed partial class ChannelDetails : Page
     {
         private NavigationHelper navigationHelper;
-        private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
         /// <summary>
         /// Eine Referenz auf die ViewModel Klasse ChannelDetailsViewModel.
@@ -67,8 +66,8 @@ namespace UlmUniversityNews.Views.ChannelDetails
         /// <param name="e">Die Eventparameter.</param>
         async void ChannelDetails_Loaded(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("In ChannelDetails_Loaded event handler. Resolution scale is: {0}.",
-                DisplayInformation.GetForCurrentView().ResolutionScale);
+            //Debug.WriteLine("In ChannelDetails_Loaded event handler. Resolution scale is: {0}.",
+            //    DisplayInformation.GetForCurrentView().ResolutionScale);
             if(channelDetailsViewModel != null && channelDetailsViewModel.ChannelSubscribedStatus == true)
             {
                 await channelDetailsViewModel.PerformAnnouncementUpdate();
@@ -115,15 +114,6 @@ namespace UlmUniversityNews.Views.ChannelDetails
         public NavigationHelper NavigationHelper
         {
             get { return this.navigationHelper; }
-        }
-
-        /// <summary>
-        /// Ruft das Anzeigemodell für diese <see cref="Page"/> ab.
-        /// Dies kann in ein stark typisiertes Anzeigemodell geändert werden.
-        /// </summary>
-        public ObservableDictionary DefaultViewModel
-        {
-            get { return this.defaultViewModel; }
         }
 
         /// <summary>

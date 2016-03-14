@@ -421,6 +421,39 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Aktualisiert den View Zustand, wenn eine neue Announcement per PushNachricht empfangen wurde.
+        /// </summary>
+        public async Task UpdateAnnouncementsOnAnnouncementReceived()
+        {
+            Debug.WriteLine("Update announcements on ReceivedAnnouncement event.");
+            if (Channel != null)
+            {
+                Announcement receivedAnnouncement = await Task.Run(() => channelController.GetLastReceivedAnnouncement(Channel.Id));
+                if (Announcements != null && receivedAnnouncement != null
+                    && Announcements.Count > 0)
+                {
+                    // Prüfe, ob die Announcement schon in der Liste ist.
+                    // Prüfe hier nur die ersten paar Einträge (die neusten).
+                    int maxIndex = 5;
+                    if (Announcements.Count < 5)
+                        maxIndex = Announcements.Count;
+
+                    for (int i = 0; i < maxIndex; i++)
+                    {
+                        if (receivedAnnouncement.Id == Announcements[i].Id)
+                        {
+                            // Beende die Methode. Einfügen nicht notwendig.
+                            return;
+                        }
+                    }
+
+                    // Füge die Announcement der Liste hinzu.
+                    Announcements.Insert(0, receivedAnnouncement);
+                }
+            }
+        }
+
+        /// <summary>
         /// Sortiert die Liste von Remindern Objekten. Aktuell werden die Reminder alphabetisch
         /// nach ihrem Titel sortiert.
         /// </summary>

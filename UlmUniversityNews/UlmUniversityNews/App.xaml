@@ -45,7 +45,7 @@
             TargetType="TextBlock"
             BasedOn="{StaticResource ListTextStyle}">
             <Setter Property="TextWrapping" Value="NoWrap" />
-            <Setter Property="TextTrimming" Value="WordEllipsis" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="FontSize" Value="20" />
             <Setter Property="Margin" Value="5,3,0,5" />
@@ -66,7 +66,7 @@
             TargetType="TextBlock"
             BasedOn="{StaticResource ListTextStyle}">
             <Setter Property="TextWrapping" Value="NoWrap" />
-            <Setter Property="TextTrimming" Value="WordEllipsis" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="FontSize" Value="20" />
             <Setter Property="Margin" Value="5,0,0,5" />
@@ -144,7 +144,7 @@
             <Setter Property="FontSize"  Value="20"/>
             <Setter Property="FontFamily" Value="Arial" />
             <Setter Property="TextWrapping" Value="NoWrap" />
-            <Setter Property="TextTrimming" Value="WordEllipsis" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
             <Setter Property="FontWeight" Value="Bold" />
         </Style>
         
@@ -336,7 +336,7 @@
                                VerticalAlignment="Top"
                                HorizontalAlignment="Left"
                                TextWrapping="NoWrap"
-                               TextTrimming="WordEllipsis"
+                               TextTrimming="CharacterEllipsis"
                                x:Name="ChannelName"
                                Style="{StaticResource ListTextStyle}"
                                FontWeight="Bold"

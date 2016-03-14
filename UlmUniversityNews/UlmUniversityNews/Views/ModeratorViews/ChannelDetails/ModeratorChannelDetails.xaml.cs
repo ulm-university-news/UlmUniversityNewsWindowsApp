@@ -16,6 +16,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using DataHandlingLayer.ViewModel;
+using UlmUniversityNews.PushNotifications.EventArgClasses;
+using Windows.ApplicationModel.Core;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -43,7 +45,6 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
             // Initialisiere das Drawer Layout.
             DrawerLayout.InitializeDrawerLayout();
             ListMenuItems.ItemsSource = moderatorChannelDetailsViewModel.DrawerMenuEntriesStatusLoggedIn;
-
         }
 
         /// <summary>
@@ -65,13 +66,19 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
         /// <see cref="Frame.Navigate(Type, Object)"/> als diese Seite ursprünglich angefordert wurde und
         /// ein Wörterbuch des Zustands, der von dieser Seite während einer früheren
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
-        private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
+        private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             if (e.NavigationParameter != null)
             {
                 int channelId = Convert.ToInt32(e.NavigationParameter);
                 moderatorChannelDetailsViewModel.LoadSelectedChannel(channelId);
+                await moderatorChannelDetailsViewModel.PerformAnnouncementUpdate();
+                await moderatorChannelDetailsViewModel.LoadRemindersOfChannel();
+                await moderatorChannelDetailsViewModel.CheckForMissingReminders();
+                await moderatorChannelDetailsViewModel.LoadModeratorsOfChannel();
             }
+
+            subscribeToPushManagerEvents();
         }
 
         /// <summary>
@@ -84,6 +91,7 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
         /// serialisierbarer Zustand.</param>
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
+            unsubscribeFromPushManagerEvents();
         }
 
         #region NavigationHelper-Registrierung
@@ -113,6 +121,51 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
 
         #endregion
 
+        #region PushNotificationManagerEvents
+        /// <summary>
+        /// Abonniere für die ModeratorChannelDetails View relevante Events, die vom PushNotificationManager bereitgestellt werden.
+        /// Beim Empfangen dieser Events wird die ChannelDetails View ihren Zustand aktualisieren.
+        /// </summary>
+        private void subscribeToPushManagerEvents()
+        {
+            PushNotifications.PushNotificationManager pushManager = PushNotifications.PushNotificationManager.GetInstance();
+            pushManager.ReceivedAnnouncement += pushManager_ReceivedAnnouncement;
+        }
+
+        /// <summary>
+        /// Deabonniere alle Events des PushNotificationManager, für die sich die View registriert hat.
+        /// </summary>
+        private void unsubscribeFromPushManagerEvents()
+        {
+            PushNotifications.PushNotificationManager pushManager = PushNotifications.PushNotificationManager.GetInstance();
+            pushManager.ReceivedAnnouncement -= pushManager_ReceivedAnnouncement;
+        }
+
+        /// <summary>
+        /// EventHandler für das ReceivedAnnouncement Event. Dieser EventHandler wird aufgerufen, wenn eine
+        /// neue Announcement per PushNachricht empfangen wurde.
+        /// </summary>
+        /// <param name="sender">Der Sender des Events, hier der PushNotificationManager.</param>
+        /// <param name="e">Die Eventparameter.</param>
+        async void pushManager_ReceivedAnnouncement(object sender, AnnouncementReceivedEventArgs e)
+        {
+            if (moderatorChannelDetailsViewModel != null)
+            {
+                // Ausführung auf UI-Thread abbilden.
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                    {
+                        // Aktualisiere View, wenn eigener Kanal betroffen.
+                        if (moderatorChannelDetailsViewModel.Channel != null
+                            && moderatorChannelDetailsViewModel.Channel.Id == e.ChannelId)
+                        {
+                            await moderatorChannelDetailsViewModel.UpdateAnnouncementsOnAnnouncementReceived();
+                        }
+                    });
+            }
+        }
+        #endregion PushNotificationManagerEvents
+
         /// <summary>
         /// Behandelt Klick Events für das Drawer-Layout. Das Menü wird mittels eines Klicks
         /// auf das Drawer Icon abhängig vom aktuellen Zustand ein oder ausgeklappt.
@@ -128,43 +181,6 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
             else
             {
                 DrawerLayout.OpenDrawer();
-            }
-        }
-
-        /// <summary>
-        /// Wird aufgerufen, wenn das Announcement-Pivot Element geladen wurde.
-        /// </summary>
-        /// <param name="sender">Der Sender des Events.</param>
-        /// <param name="e">Die Eventparameter.</param>
-        private async void ModeratorChannelDetailsAnnouncementPivotItem_Loaded(object sender, RoutedEventArgs e)
-        {
-            await moderatorChannelDetailsViewModel.PerformAnnouncementUpdate();
-        }
-
-        /// <summary>
-        /// Wenn Pivot Item "Reminder" geladen wird, dann wird das Laden der Reminder angestoßen.
-        /// </summary>
-        /// <param name="sender">Die Quelle des Ereignisses.</param>
-        /// <param name="e">Eventparameter.</param>
-        private async void ModeratorChannelDetailsReminderPivotItem_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (moderatorChannelDetailsViewModel != null)
-            {
-                await moderatorChannelDetailsViewModel.LoadRemindersOfChannel();
-                await moderatorChannelDetailsViewModel.CheckForMissingReminders();
-            }
-        }
-
-        /// <summary>
-        /// Wird aufgerufen, wenn Pivot Item "Kanalinformationen" geladen wird. Es wird das Laden der Moderatoreninformation angestoßen.
-        /// </summary>
-        /// <param name="sender">Die Quelle des Ereignisses.</param>
-        /// <param name="e">Eventparameter.</param>
-        private async void ModeratorChannelDetailsChannelInfoPivotItem_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (moderatorChannelDetailsViewModel != null)
-            {
-                await moderatorChannelDetailsViewModel.LoadModeratorsOfChannel();
             }
         }
     }

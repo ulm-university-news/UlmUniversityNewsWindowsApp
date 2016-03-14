@@ -331,7 +331,6 @@
                         x:Name="ModeratorChannelDetailsAnnouncementPivotItem"
                         x:Uid="ModeratorChannelDetailsAnnouncementPivotItem"
                         Style="{StaticResource PivotItemStyle}"
-                        Loaded="ModeratorChannelDetailsAnnouncementPivotItem_Loaded"
                         Header="Nachrichten">
 
                         <Grid>
@@ -379,7 +378,6 @@
                         x:Name="ModeratorChannelDetailsReminderPivotItem"
                         x:Uid="ModeratorChannelDetailsReminderPivotItem"
                         Style="{StaticResource PivotItemStyle}"
-                        Loaded="ModeratorChannelDetailsReminderPivotItem_Loaded"
                         Header="Reminder">
                         
                         <Grid>
@@ -429,7 +427,6 @@
                         x:Name="ModeratorChannelDetailsChannelInfoPivotItem"
                         x:Uid="ModeratorChannelDetailsChannelInfoPivotItem"
                         Style="{StaticResource PivotItemStyle}"
-                        Loaded="ModeratorChannelDetailsChannelInfoPivotItem_Loaded"
                         Header="Kanalinformation">
 
                         <ScrollViewer 
