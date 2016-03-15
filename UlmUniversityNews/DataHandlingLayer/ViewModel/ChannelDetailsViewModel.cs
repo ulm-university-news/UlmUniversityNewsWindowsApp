@@ -12,7 +12,6 @@ using System.Diagnostics;
 using DataHandlingLayer.CommandRelays;
 using DataHandlingLayer.Exceptions;
 using DataHandlingLayer.Common;
-using Windows.ApplicationModel.Core;
 
 namespace DataHandlingLayer.ViewModel
 {
@@ -93,6 +92,16 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
+        private bool canUnsubscribeChannel;
+        /// <summary>
+        /// Gibt an, ob man den Kanal deabonnieren kann.
+        /// </summary>
+        public bool CanUnsubscribeChannel
+        {
+            get { return canUnsubscribeChannel; }
+            set { this.setProperty(ref this.canUnsubscribeChannel, value); }
+        }
+        
         private int selectedPivotItemIndex;
         /// <summary>
         /// Gibt den Index des aktuell ausgewählten PivotItems an.
@@ -128,8 +137,41 @@ namespace DataHandlingLayer.ViewModel
         {
             get { return showScrollBar; }
             set { showScrollBar = value; }
-        }  
+        }
 
+        private bool isDeletionNotificationOpen;
+        /// <summary>
+        /// Gibt an, ob das Flyout zur Anzeige der Benachrichtigung über die Löschung des Kanals
+        /// aktuell angezeigt wird.
+        /// </summary>
+        public bool IsDeletionNotificationOpen
+        {
+            get { return isDeletionNotificationOpen; }
+            set { this.setProperty(ref this.isDeletionNotificationOpen, value); }
+        }
+
+        private bool isUpdateAnnouncementsPossible;
+        /// <summary>
+        /// Gibt an, ob mit dem aktuellen Zustand der View eine Online-Aktualisierung der Announcements
+        /// des Kanals möglich ist.
+        /// </summary>
+        public bool IsUpdateAnnouncementsPossible
+        {
+            get { return isUpdateAnnouncementsPossible; }
+            set { this.setProperty(ref this.isUpdateAnnouncementsPossible, value); }
+        }
+        
+        private bool isDeleteChannelWarningFlyoutOpen;
+        /// <summary>
+        /// Gibt an, ob aktuell das Flyout zur Anzeige des Warnhinweises bezüglich der Löschoperation
+        /// des Kanals aus den lokalen Datensätzen aktuell aktiv ist.
+        /// </summary>
+        public bool IsDeleteChannelWarningFlyoutOpen
+        {
+            get { return isDeleteChannelWarningFlyoutOpen; }
+            set { this.setProperty(ref this.isDeleteChannelWarningFlyoutOpen, value); }
+        }
+        
         private IncrementalLoadingCollection<IncrementalAnnouncementLoaderController, Announcement> announcements = null;
         /// <summary>
         /// Die zum Kanal gehörenden Announcements in einer Collection. Hierbei handelt es sich um eine Collection,
@@ -145,7 +187,7 @@ namespace DataHandlingLayer.ViewModel
         #region Commands
         private AsyncRelayCommand subscribeChannelCommand;
         /// <summary>
-        /// Das Kommando wird gefeuert, wenn der aktuell angezeigte Kanal abonniert werden soll.
+        /// Der Befehl wird gefeuert, wenn der aktuell angezeigte Kanal abonniert werden soll.
         /// </summary>
         public AsyncRelayCommand SubscribeChannelCommand
         {
@@ -155,7 +197,7 @@ namespace DataHandlingLayer.ViewModel
 
         private AsyncRelayCommand unsubscribeChannelCommand;
         /// <summary>
-        /// Das Kommando wird gefeuert, wenn der aktuell angezeigte Kanal deabonniert werden soll.
+        /// Der Befehl wird gefeuert, wenn der aktuell angezeigte Kanal deabonniert werden soll.
         /// </summary>
         public AsyncRelayCommand UnsubscribeChannelCommand
         {
@@ -165,7 +207,7 @@ namespace DataHandlingLayer.ViewModel
 
         private AsyncRelayCommand updateAnnouncementsCommand;
         /// <summary>
-        /// Das Kommando löst die Aktualisierung der Announcements des Kanals aus.
+        /// Der Befehl löst die Aktualisierung der Announcements des Kanals aus.
         /// </summary>
         public AsyncRelayCommand UpdateAnnouncementsCommand
         {
@@ -182,6 +224,27 @@ namespace DataHandlingLayer.ViewModel
             get { return switchToChannelSettingsCommand; }
             set { switchToChannelSettingsCommand = value; }
         }
+        
+        private RelayCommand openDeleteChannelLocallyFlyoutCommand;
+        /// <summary>
+        /// Befehl zum Anzeigen des Warnhinweis bezüglich des lokalen Löschen eines als gelöscht 
+        /// markierten Kanals.
+        /// </summary>
+        public RelayCommand OpenDeleteChannelLocallyFlyoutCommand
+        {
+            get { return openDeleteChannelLocallyFlyoutCommand; }
+            set { openDeleteChannelLocallyFlyoutCommand = value; }
+        }
+
+        private RelayCommand deleteChannelLocallyFlyoutCommand;
+        /// <summary>
+        /// Befehl zum lokalen Löschen eines als gelöscht markierten Kanals.
+        /// </summary>
+        public RelayCommand DeleteChannelLocallyFlyoutCommand
+        {
+            get { return deleteChannelLocallyFlyoutCommand; }
+            set { deleteChannelLocallyFlyoutCommand = value; }
+        }
         #endregion Commands
 
         /// <summary>
@@ -196,9 +259,11 @@ namespace DataHandlingLayer.ViewModel
 
             // Initialisiere Befehle.
             SubscribeChannelCommand = new AsyncRelayCommand(param => executeSubscribeChannel(), param => canSubscribeChannel());
-            UnsubscribeChannelCommand = new AsyncRelayCommand(param => executeUnsubscribeChannel(), param => canUnsubscribeChannel());
+            UnsubscribeChannelCommand = new AsyncRelayCommand(param => executeUnsubscribeChannel());
             UpdateAnnouncementsCommand = new AsyncRelayCommand(param => executeUpdateAnnouncementsCommand(), param => canUpdateAnnouncements());
             SwitchToChannelSettingsCommand = new RelayCommand(param => executeSwitchToChannelSettingsCommand(), param => canSwitchToChannelSettings());
+            OpenDeleteChannelLocallyFlyoutCommand = new RelayCommand(param => executeOpenDeleteChannelLocallyFlyoutCommand(), param => canOpenDeleteChannelLocallyFlyout());
+            DeleteChannelLocallyFlyoutCommand = new RelayCommand(param => executeDeleteChannelLocallyCommand(), param => canDeleteChannelLocally());
 
             // Führe Online Aktualisierung am Anfang durch, d.h. wenn das ViewModel geladen wurde.
             performOnlineAnnouncementUpdate = true;
@@ -292,6 +357,15 @@ namespace DataHandlingLayer.ViewModel
                 // Prüfe, ob Kanal bereits abonniert wurde.
                 ChannelSubscribedStatus = channelController.IsChannelSubscribed(Channel.Id);
 
+                if (ChannelSubscribedStatus && !Channel.Deleted)
+                {
+                    CanUnsubscribeChannel = true;
+                }
+                else
+                {
+                    CanUnsubscribeChannel = false;
+                }
+
                 if(ChannelSubscribedStatus == true)
                 {
                     // Aktiviere dynamisches Laden der Announcements.
@@ -320,7 +394,9 @@ namespace DataHandlingLayer.ViewModel
         {
             Debug.WriteLine("PerformAnnouncementUpdate called.");
             // Prüfe, ob eine Online-Aktualisierung vorgenommen werden soll.
-            if(performOnlineAnnouncementUpdate)
+            if(performOnlineAnnouncementUpdate && 
+                Channel == null &&
+                !Channel.Deleted)
             {
                 try
                 {
@@ -375,6 +451,42 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Prüft, ob der Kanal lokal als gelöscht markiert ist und zeigt falls notwendig
+        /// eine Benachrichtigung für den Nutzer an.
+        /// </summary>
+        /// <returns></returns>
+        public void CheckWhetherChannelIsDeleted()
+        {
+            if (Channel == null)
+                return;
+
+            if (Channel.Deleted)
+            {
+                showChannelDeletionNotification();
+            }
+        }
+
+        /// <summary>
+        /// Zeigt, soweit für den Kanal aktiviert, eine Benachrichtigung über die Löschung
+        /// des Kanals für den Nutzer an.
+        /// </summary>
+        private void showChannelDeletionNotification()
+        {
+            if (Channel == null)
+                return;
+
+            bool notificationRequired = channelController.IsNotificationAboutDeletionRequired(Channel.Id);
+            if (notificationRequired)
+            {
+                IsDeletionNotificationOpen = true;
+
+                // Deaktiviere zukünftige Benachrichtigungen.
+                channelController.DisableNotificationAboutDeletion(Channel.Id);
+            }
+        }
+
+        #region CommandFunctionality
+        /// <summary>
         /// Eine Hilfsmethode, die nach einer Statusänderung des Pivot Elements prüft,
         /// ob noch alle Kommandos ausgeführt werden können.
         /// </summary>
@@ -382,8 +494,8 @@ namespace DataHandlingLayer.ViewModel
         {
             SwitchToChannelSettingsCommand.RaiseCanExecuteChanged();
             SubscribeChannelCommand.OnCanExecuteChanged();
-            UnsubscribeChannelCommand.OnCanExecuteChanged();
             UpdateAnnouncementsCommand.OnCanExecuteChanged();
+            OpenDeleteChannelLocallyFlyoutCommand.RaiseCanExecuteChanged();
         }
 
         /// <summary>
@@ -392,9 +504,11 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Liefert true zurück, wenn der Kanal abonniert werden kann, ansonsten false.</returns>
         private bool canSubscribeChannel()
         {
-            //  Prüfe nicht auf SelectedPivotItemIndex == 1, da das Nachrichten PivotElement entfernt wird bei ChannelSubscribedStatus == false. 
+            //  Prüfe nicht auf SelectedPivotItemIndex == 1, da das Nachrichten PivotElement entfernt wird bei ChannelSubscribedStatus == false.
+            // In "Kanalinformationen" PivotItem und der Kanal wurde noch nicht abonniert, Kanal nicht als gelöscht markiert.
             if (Channel != null &&
-                ChannelSubscribedStatus == false)    // In "Kanalinformationen" PivotItem und der Kanal wurde noch nicht abonniert.
+                ChannelSubscribedStatus == false &&
+                Channel.Deleted == false)    
             {
                 return true;
             }
@@ -415,6 +529,15 @@ namespace DataHandlingLayer.ViewModel
                 //Setze Kanal als abonniert.
                 ChannelSubscribedStatus = true;
 
+                if (ChannelSubscribedStatus && !Channel.Deleted)
+                {
+                    CanUnsubscribeChannel = true;
+                }
+                else
+                {
+                    CanUnsubscribeChannel = false;
+                }
+
                 // Bleibe auf der Seite, aber lade die Nachrichten nach.
                 List<Announcement> announcements = await Task.Run(() => channelController.GetAllAnnouncementsOfChannel(Channel.Id));
                 // Setze PageSize auf 0, d.h. lade keine Elemente nach.
@@ -426,7 +549,9 @@ namespace DataHandlingLayer.ViewModel
                 // Markiere Kanal in lokaler Liste als gelöscht, wenn er nicht auf dem Server gefunden wurde.
                 if(ex.ErrorCode == ErrorCodes.ChannelNotFound)
                 {
+                    // Passe View an.
                     Channel.Deleted = true;
+                    checkCommandExecution();
                 }
 
                 displayError(ex.ErrorCode);
@@ -435,20 +560,6 @@ namespace DataHandlingLayer.ViewModel
             {
                 hideIndeterminateProgressIndicator();
             }
-        }
-
-        /// <summary>
-        /// Gibt an, ob der Kanal aktuell deabonniert werden kann.
-        /// </summary>
-        /// <returns>Liefert true zurück, wenn der Kanal deabonniert werden kann, ansonsten false.</returns>
-        private bool canUnsubscribeChannel()
-        {
-            if (Channel != null &&
-                ChannelSubscribedStatus == true)    // In "Kanalinformationen" PivotItem und der Kanal wurde bereits abonniert.
-            {
-                return true;
-            }
-            return false;
         }
 
         /// <summary>
@@ -464,6 +575,10 @@ namespace DataHandlingLayer.ViewModel
                 ChannelSubscribedStatus = false;
                 // Gehe zurück auf den Homescreen.
                 _navService.Navigate("Homescreen");
+
+                // Lösche den letzten Back-Stack Eintrag, so dass nicht auf die Detail-Seite
+                // per Back-Key gewechselt werden kann.
+                _navService.RemoveEntryFromBackStack();
             }
             catch(ClientException ex)
             {
@@ -481,12 +596,16 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Liefert true zurück, wenn das Kommando ausgeführt werden kann, ansonsten false.</returns>
         private bool canUpdateAnnouncements()
         {
+            // Wenn Kanal abonniert und nicht als gelöscht markiert ist.
             if(Channel != null &&
                SelectedPivotItemIndex == 0 && 
-               channelSubscribedStatus == true)
+               channelSubscribedStatus == true &&
+               Channel.Deleted == false)
             {
+                IsUpdateAnnouncementsPossible = true;
                 return true;
             }
+            IsUpdateAnnouncementsPossible = false;
             return false;
         }
 
@@ -499,7 +618,8 @@ namespace DataHandlingLayer.ViewModel
             try
             {
                 displayIndeterminateProgressIndicator();
-                await updateAnnouncements(false);   // Kein caching hier. Der Request soll jedes mal auch tatsächlich abgesetzt werden, wenn der Benutzer es will.
+                // Kein caching hier. Der Request soll jedes mal auch tatsächlich abgesetzt werden, wenn der Benutzer es will.
+                await updateAnnouncements(false);   
             }
             catch (ClientException ex)
             {
@@ -525,8 +645,6 @@ namespace DataHandlingLayer.ViewModel
             maxMsgNr = channelController.GetHighestMsgNrForChannel(Channel.Id);
             Debug.WriteLine("Perform update announcement operation with max messageNumber of {0}.", maxMsgNr);
 
-            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-
             // Frage die Announcements ab.
             List<Announcement> receivedAnnouncements = await channelController.GetAnnouncementsOfChannelAsync(Channel.Id, maxMsgNr, withCaching);
 
@@ -535,14 +653,10 @@ namespace DataHandlingLayer.ViewModel
                 await Task.Run(() => channelController.StoreReceivedAnnouncementsAsync(receivedAnnouncements));
 
                 // Trage die empfangenen Announcements in die Liste aktueller Announcements ein.
-                // Führe das auf dem UI Thread aus, da die Collection an die View gebunden ist.
-                await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                foreach (Announcement announcement in receivedAnnouncements)
                 {
-                    foreach (Announcement announcement in receivedAnnouncements)
-                    {
-                        Announcements.Insert(0, announcement);
-                    }
-                });
+                    Announcements.Insert(0, announcement);
+                }
             }
         }
 
@@ -552,7 +666,10 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Liefert true, falls die Navigation erlaubt ist, ansonsten false.</returns>
         private bool canSwitchToChannelSettings()
         {
-            if(Channel != null && ChannelSubscribedStatus)
+            // Wenn der Kanal abonniert wurde und nicht als gelöscht markiert ist.
+            if(Channel != null && 
+                ChannelSubscribedStatus && 
+                Channel.Deleted == false)
             {
                 return true;
             }
@@ -569,5 +686,76 @@ namespace DataHandlingLayer.ViewModel
                 _navService.Navigate("ChannelSettings", Channel.Id);
             }
         }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zum Anzeigen des Warnhinweises
+        /// bezüglich der Löschoperation des Kanals aus den lokalen
+        /// Datensätzen zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canOpenDeleteChannelLocallyFlyout()
+        {
+            if (Channel != null &&
+                Channel.Deleted)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl OpenDeleteChannelLocallyFlyoutCommand aus. Zeigt einen
+        /// Warnhinweis bezüglich der Löschung der lokalen Kanalressource an. Macht dadurch auch
+        /// den Befehl DeleteChannelLocallyCommand verfügbar.
+        /// </summary>
+        private void executeOpenDeleteChannelLocallyFlyoutCommand()
+        {
+            IsDeleteChannelWarningFlyoutOpen = true;
+        }
+        
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zum Löschen eines Kanals aus
+        /// den lokalen Datensätzen zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canDeleteChannelLocally()
+        {
+            if (Channel != null && 
+                Channel.Deleted)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl DeleteChannelLocallyCommand aus. Löscht den
+        /// aktuell markierten Kanal aus den lokalen Datensätzen.
+        /// </summary>
+        private void executeDeleteChannelLocallyCommand()
+        {
+            if (Channel == null)
+                return;
+
+            try
+            {
+                IsDeleteChannelWarningFlyoutOpen = false;
+                channelController.DeleteLocalChannel(Channel.Id);
+
+                // Navigiere zum Homescreen.
+                _navService.Navigate("Homescreen");
+
+                // Lösche letzten Back-Stack Eintrag, so dass nicht auf diese Seite zurück navigiert werden kann
+                // mittels des Back-Key.
+                _navService.RemoveEntryFromBackStack();
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("executeDeleteChannelLocallyCommand: Command execution failed.");
+                displayError(ex.ErrorCode);
+            }
+        }
+        #endregion CommandFunctionality
     }
 }

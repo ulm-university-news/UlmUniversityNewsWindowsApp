@@ -535,10 +535,7 @@
                         FlyoutPresenterStyle="{StaticResource ResourceKey=FlyoutStyle}"
                             common:FlyoutHelper.IsOpen="{Binding IsFlyoutOpen, Mode=TwoWay}"
                             common:FlyoutHelper.Parent="{Binding ElementName=ListFragment}">
-                        <StackPanel>
-                        <Grid 
-                            VerticalAlignment="Stretch"
-                            HorizontalAlignment="Stretch">
+                        <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
@@ -555,7 +552,6 @@
                                 Command="{Binding PerformOriginalDrawerMenuActionCommand}"
                                 Style="{StaticResource FlyoutSingleButtonStyle}" />
                         </Grid>
-                        </StackPanel>
                     </Flyout>
                 </FlyoutBase.AttachedFlyout>
 

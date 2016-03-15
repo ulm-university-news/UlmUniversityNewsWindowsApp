@@ -642,6 +642,7 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
+        #region CommandFunctions
         /// <summary>
         /// Hilfsmethode, welche die Überprüfung der Ausführbarkeit der Befehle 
         /// anstößt. Kann verwendet werden, um die Ausführbarkeit nach einer Änderung des
@@ -821,16 +822,19 @@ namespace DataHandlingLayer.ViewModel
                 switch (SelectedPivotItemIndex)
                 {
                     case 0:
+                        displayIndeterminateProgressIndicator("Synchronize messages");
                         // Abfrage, ob neue Announcement Nachrichten vorliegen.
                         Debug.WriteLine("executeSynchronizeWithServerCommand: Start to update announcements.");
                         await updateAnnouncements(false);
                         break;
                     case 1:
+                        displayIndeterminateProgressIndicator("Synchronize reminders");
                         // Synchronisiere Reminder-Informationen mit dem Server.
                         Debug.WriteLine("executeSynchronizeWithServerCommand: Start to update reminders.");
                         await synchroniseRemindersWithServer();
                         break;
                     case 2:
+                        displayIndeterminateProgressIndicator("Synchronize channel information");
                         // Frage Informationen zu diesem Kanal ab.
                         Debug.WriteLine("executeSynchronizeWithServerCommand: Start to update channel and moderator info.");
                         await synchroniseChannelInformation();
@@ -850,5 +854,6 @@ namespace DataHandlingLayer.ViewModel
                 hideIndeterminateProgressIndicator();
             }
         }
+        #endregion CommandFunctions
     }
 }

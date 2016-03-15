@@ -129,11 +129,55 @@
         <CommandBar x:Name="ChannelDetailsCommandBar"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
             <AppBarButton
+                x:Name="ChannelDetailsDeleteChannelLocallyButton"
+                x:Uid="ChannelDetailsDeleteChannelLocallyButton"
+                Icon="Delete"
+                Label="delete channel"
+                Visibility="{Binding ElementName=ChannelDetailsDeleteChannelLocallyButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding OpenDeleteChannelLocallyFlyoutCommand}">
+                <AppBarButton.Flyout>
+                    <Flyout Placement="Full"
+                            FlyoutPresenterStyle="{StaticResource FlyoutStyle}"
+                            common:FlyoutHelper.IsOpen="{Binding IsDeleteChannelWarningFlyoutOpen, Mode=TwoWay}"
+                            common:FlyoutHelper.Parent="{Binding ElementName=ChannelDetailsDeleteChannelLocallyButton}">
+                        <Grid
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Warnhinweis bezüglich Löschoperation. -->
+                            <TextBlock 
+                                Grid.Row="0"
+                                x:Name="DeleteChannelWarning"
+                                x:Uid="ChannelDetailsDeleteChannelWarning"
+                                Style="{StaticResource TextInFlyoutsStyle}" >
+                                Der Kanal hat keine Repräsentation auf dem Server. Wollen Sie den Kanal auch aus
+                                den lokalen Datensätzen entfernen? Alle zu diesem Kanal gespeicherten Daten werden dann
+                                gelöscht und können nicht mehr abgerufen werden.
+                            </TextBlock>
+
+                            <!-- Löschen Button-->
+                            <Button
+                                Grid.Row="1"
+                                x:Name="DeleteChannelFlyoutButton"
+                                x:Uid="ChannelDetailsDeleteChannelFlyoutButton"
+                                Style="{StaticResource FlyoutSingleButtonStyle}"
+                                Content="Delete"
+                                Command="{Binding DeleteChannelLocallyFlyoutCommand}"/>
+                        </Grid>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+
+            <AppBarButton
                 x:Name="UpdateAnnouncementsButton"
                 x:Uid="ChannelDetailsUpdateAnnouncementsButton"
                 Icon="Sync"
                 Label="update messages"
-                Visibility="{Binding ElementName=UpdateAnnouncementsButton,Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Visibility="{Binding IsUpdateAnnouncementsPossible, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding UpdateAnnouncementsCommand}"
                 />
             
@@ -151,7 +195,7 @@
                 x:Uid="ChannelDetailsSubscribeChannelButton"
                 Icon="Favorite"
                 Label="subscribe channel"
-                Visibility="{Binding ElementName=SubscribeChannelButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Visibility="{Binding ChannelSubscribedStatus, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='inverse'}"
                 Command="{Binding SubscribeChannelCommand}" />
             
             <AppBarButton
@@ -159,10 +203,11 @@
                 x:Uid="ChannelDetailsUnsubscribeChannelButton"
                 Icon="UnFavorite"
                 Label="unsubscribe channel"
-                Visibility="{Binding ChannelSubscribedStatus, Converter={StaticResource BooleanToVisibilityConverter}}"> <!--Visibility="{Binding ElementName=UnsubscribeChannelButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" Command="{Binding UnsubscribeChannelCommand}"-->
+                Visibility="{Binding CanUnsubscribeChannel, Converter={StaticResource BooleanToVisibilityConverter}}"> <!--Visibility="{Binding ElementName=UnsubscribeChannelButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" Command="{Binding UnsubscribeChannelCommand}"-->
                 <AppBarButton.Flyout>
                     <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}">
                         <Grid
+                            VerticalAlignment="Stretch"
                             HorizontalAlignment="Stretch">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -191,17 +236,32 @@
                 </AppBarButton.Flyout>
             </AppBarButton>
             
-            <!-- Testweise mal ein Secondary Command eingefügt. -->
-            <CommandBar.SecondaryCommands>
-                <AppBarButton
-                    x:Name="ChannelDetailsAboutUniversityNewsButton"
-                    Label="about" />
-            </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
 
     <!-- Layout Root -->
     <Grid x:Name="LayoutRoot">
+        <!-- Flyout, welches angezeigt wird, falls der Kanal gelöscht wurde. Dieses ist direkt an das LayoutRoot Grid gebunden.-->
+        <FlyoutBase.AttachedFlyout>
+            <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}"
+                    common:FlyoutHelper.IsOpen="{Binding IsDeletionNotificationOpen, Mode=TwoWay}"
+                    common:FlyoutHelper.Parent="{Binding ElementName=LayoutRoot}">
+                <Grid
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch">
+                    <!-- Nachricht, die angezeigt wird, wenn der Kanal gelöscht ist. -->
+                    <TextBlock 
+                                Grid.Row="0"
+                                x:Name="DeleteChannelNotification"
+                                x:Uid="ChannelDetailsDeleteChannelNotification"
+                                Style="{StaticResource TextInFlyoutsStyle}" >
+                                Der Kanal wurde auf dem Server gelöscht. Es werden keine neuen Nachrichten für diesen
+                                Kanal mehr verschickt werden. Sie können den Kanal jedoch noch in ihren lokalen Datensätzen
+                                gespeichert lassen.
+                    </TextBlock>
+                </Grid>
+            </Flyout>
+        </FlyoutBase.AttachedFlyout>
 
         <Grid.ChildrenTransitions>
             <TransitionCollection>
@@ -220,6 +280,7 @@
               Background="{Binding Channel, Converter={StaticResource ChannelToDrawerMenuBackgroundConverter}}" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
@@ -234,6 +295,12 @@
                        x:Uid="ChannelDetailsPageTitle"
                        Style="{StaticResource DrawerTextStyle}"
                        Text="{Binding Channel.Name, TargetNullValue='Details', FallbackValue='Details'}" />
+            
+            <!-- Gelöscht Markierung -->
+            <TextBlock Grid.Column="2"
+                       x:Uid="ChannelDetailsChannelMarkedAsDeletedText"
+                       Style="{StaticResource DrawerTextStyle}"
+                       Visibility="{Binding Channel.Deleted, TargetNullValue='0', FallbackValue='0', Converter={StaticResource BooleanToVisibilityConverter}}" />
           
         </Grid> <!-- Ende Titelbereich Drawer -->
 
@@ -292,12 +359,6 @@
                                 <ListView.ItemContainerStyle>
                                     <Style TargetType="ListViewItem">
                                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                        <!--<Setter Property="RenderTransformOrigin" Value="0.5, 0.5" />
-                                        <Setter Property="RenderTransform">
-                                            <Setter.Value>
-                                                <RotateTransform Angle="{Binding ListRotationAngle2, Mode=OneTime}" />    --><!--TODO Data Binding--><!--
-                                            </Setter.Value>
-                                        </Setter>-->
                                     </Style>
                                 </ListView.ItemContainerStyle>
                             </ListView>

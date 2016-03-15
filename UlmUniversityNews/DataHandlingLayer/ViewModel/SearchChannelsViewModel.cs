@@ -162,9 +162,8 @@ namespace DataHandlingLayer.ViewModel
             }
             else
             {
-                //// TODO - Teste diese Implementierung.
-                //// Führe Offline Aktualisierung durch.
-                // updatedChannels = await Task.Run(() => channelController.GetAllChannels());
+                // Führe Offline Aktualisierung durch.
+                updatedChannels = await checkForLocallyUpdatedChannels();
             }
 
             // Aktualisiere Liste im ViewController.
@@ -226,6 +225,56 @@ namespace DataHandlingLayer.ViewModel
             {
                 displayError(ex.ErrorCode);
             }
+        }
+
+        /// <summary>
+        /// Prüft, ob es Änderungen in den lokalen Datensätzen gibt. Falls Aktualisierungen erforderlich sind
+        /// werden die für die View relevanten Properties der im ViewModel verwalteten Kanäle aktualisiert. Falls neue
+        /// Datensätze hinzugekommen sind, werden diese in Form einer Liste zurückgegeben.
+        /// </summary>
+        /// <returns>Eine Liste von neu hinzugekommenen Kanalressourcen.</returns>
+        private async Task<List<Channel>> checkForLocallyUpdatedChannels()
+        {
+            List<Channel> updatableChannels = new List<Channel>();
+            List<Channel> localChannels = await Task.Run(() => channelController.GetAllChannels());
+
+            foreach (Channel localChannel in localChannels)
+            {
+                if (allChannels.ContainsKey(localChannel.Id))
+                {
+                    Channel currentChannel = allChannels[localChannel.Id];
+                    // Prüfe, ob Aktualisierung des Kanals erforderlich.
+                    if (DateTimeOffset.Compare(currentChannel.ModificationDate, localChannel.ModificationDate) < 0)
+                    {
+                        updateViewRelatedPropeties(currentChannel, localChannel);
+                    }
+
+                    // Prüfe, ob ein Kanal als gelöscht markiert wurde.
+                    if (currentChannel.Deleted != localChannel.Deleted)
+                    {
+                        // Füge den Kanal der Liste zu aktualisierender Kanäle hinzu.
+                        updatableChannels.Add(localChannel);
+                    }
+                }
+                else
+                {
+                    // Kanal hinzugekommen.
+                    updatableChannels.Add(localChannel);
+                }
+            }
+
+            return updatableChannels;
+        }
+
+        /// <summary>
+        /// Aktualisiert die für die View relevanten Properties des im ViewModel verwalteten Kanals.
+        /// </summary>
+        /// <param name="currentChannel">Der aktuell im ViewModel verwaltete Kanal.</param>
+        /// <param name="newChannel">Der Kanal mit den aktualisierten Daten.</param>
+        private void updateViewRelatedPropeties(Channel currentChannel, Channel newChannel)
+        {
+            currentChannel.Name = newChannel.Name;
+            currentChannel.Term = newChannel.Term;
         }
 
         /// <summary>

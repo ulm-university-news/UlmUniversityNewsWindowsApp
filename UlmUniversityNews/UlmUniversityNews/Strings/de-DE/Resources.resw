@@ -980,4 +980,22 @@ Nachricht am: </value>
   <data name="ModeratorChannelDetailsSynchonizeButton.Label" xml:space="preserve">
     <value>aktuali-sieren</value>
   </data>
+  <data name="ChannelDetailsChannelMarkedAsDeletedText.Text" xml:space="preserve">
+    <value>(gelöscht)</value>
+  </data>
+  <data name="ChannelDetailsDeleteChannelFlyoutButton.Content" xml:space="preserve">
+    <value>Lösche Kanal</value>
+  </data>
+  <data name="ChannelDetailsDeleteChannelLocallyButton.Label" xml:space="preserve">
+    <value>lösche kanal</value>
+  </data>
+  <data name="ChannelDetailsDeleteChannelNotification.Text" xml:space="preserve">
+    <value>Der Kanal wurde auf dem Server gelöscht. Es werden keine neuen Nachrichten für diesen Kanal mehr verschickt werden. Sie können den Kanal jedoch noch in ihren lokalen Datensätzen gespeichert lassen.</value>
+  </data>
+  <data name="ChannelDetailsDeleteChannelWarning.Text" xml:space="preserve">
+    <value>Der Kanal hat keine Repräsentation auf dem Server. Wollen Sie den Kanal auch aus den lokalen Datensätzen entfernen? Alle zu diesem Kanal gespeicherten Daten werden gelöscht und können nicht mehr abgerufen werden.</value>
+  </data>
+  <data name="ChannelDetailsNoReminderInChannelInfo.Text" xml:space="preserve">
+    <value>Für diesen Kanal wurden noch keine Reminder definiert.</value>
+  </data>
 </root>

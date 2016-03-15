@@ -225,6 +225,14 @@ namespace DataHandlingLayer.ViewModel
                         {
                             updateViewRelatedPropertiesOfChannel(currentChannel, localChannelList[i]);
                         }
+
+                        // Prüfe, ob Kanal als gelöscht markiert wurde.
+                        if (localChannelList[i].Deleted && !currentChannel.Deleted)
+                        {
+                            // Nehme Eintrag aus Liste raus und speichere ihn wieder rein, um Icon zu aktualisieren.
+                            ManagedChannels.RemoveAt(i);
+                            ManagedChannels.Insert(i, localChannelList[i]);
+                        }
                     }
                 }
 

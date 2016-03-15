@@ -298,7 +298,7 @@
     <value>subscribe channel</value>
   </data>
   <data name="ChannelDetailsUnsubscribeChannelButton.Label" xml:space="preserve">
-    <value>unsub-scribe channel</value>
+    <value>unsub-scribe</value>
   </data>
   <data name="ChannelDetailsNoMessagesInChannelInfo.Text" xml:space="preserve">
     <value>This channel doesn't contain any messages.</value>
@@ -613,7 +613,7 @@
     <value>Dates</value>
   </data>
   <data name="AddAndEditChannelDescriptionAddChannel.Text" xml:space="preserve">
-    <value>Enter the data for the new channel. There is the posibility to switch between different channel types. Depending on the selected type, the template will be adjusted and provides relevant data fields for this kind of channel. The fields with a * mark are mandatory fields.</value>
+    <value>Enter the data for the new channel. There is the possibility to switch between different channel types. Depending on the selected type, the template will be adjusted and provides relevant data fields for this kind of channel. The fields with a * mark are mandatory fields.</value>
   </data>
   <data name="AddAndEditChannelDescriptionEditChannel.Text" xml:space="preserve">
     <value>The information of the selected channel can be altered here. The fields with a * mark are mandatory fields.</value>
@@ -978,5 +978,23 @@ date: </value>
   </data>
   <data name="ModeratorChannelDetailsSynchonizeButton.Label" xml:space="preserve">
     <value>update</value>
+  </data>
+  <data name="ChannelDetailsChannelMarkedAsDeletedText.Text" xml:space="preserve">
+    <value>(deleted)</value>
+  </data>
+  <data name="ChannelDetailsDeleteChannelFlyoutButton.Content" xml:space="preserve">
+    <value>Delete channel</value>
+  </data>
+  <data name="ChannelDetailsDeleteChannelLocallyButton.Label" xml:space="preserve">
+    <value>delete channel</value>
+  </data>
+  <data name="ChannelDetailsDeleteChannelNotification.Text" xml:space="preserve">
+    <value>The channel was deleted from the server. There will be no new messages for this channel. However, you can keep the local version of the channel.</value>
+  </data>
+  <data name="ChannelDetailsDeleteChannelWarning.Text" xml:space="preserve">
+    <value>There is no more represenation of this channel on the server. Do you want to remove the channel from the local datasets? The corresponding data will be deleted and can not be accessed anymore.</value>
+  </data>
+  <data name="ChannelDetailsNoReminderInChannelInfo.Text" xml:space="preserve">
+    <value>There are no reminder for this channel so far.</value>
   </data>
 </root>

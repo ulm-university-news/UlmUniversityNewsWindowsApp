@@ -191,7 +191,7 @@
             x:Key="DrawerTextStyle"
             TargetType="TextBlock">
             <Setter Property="TextWrapping" Value="NoWrap" />
-            <Setter Property="TextTrimming" Value="WordEllipsis" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontFamily" Value="Arial" />
             <Setter Property="Foreground" Value="White" />

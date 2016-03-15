@@ -144,7 +144,7 @@ namespace DataHandlingLayer.DataModel
         public bool Deleted
         {
             get { return deleted; }
-            set { deleted = value; }
+            set { this.setProperty(ref this.deleted, value); }
         }
 
         private int numberOfUnreadAnnouncements;

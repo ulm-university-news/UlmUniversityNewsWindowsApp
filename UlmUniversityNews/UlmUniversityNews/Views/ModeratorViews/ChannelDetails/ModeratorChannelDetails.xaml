@@ -250,6 +250,7 @@
                     </Flyout>
                 </AppBarButton.Flyout>
             </AppBarButton>
+            
             <AppBarButton
                 x:Name="ModeratorChannelDetailsSynchronizeButton"
                 x:Uid="ModeratorChannelDetailsSynchonizeButton"
@@ -257,6 +258,7 @@
                 Label="update"
                 Command="{Binding SynchronizeWithServerCommand}"
                 />
+            
             <AppBarButton 
                 x:Name="ModeratorChannelDetailsAddAnnounementButton"
                 x:Uid="ModeratorChannelDetailsAddAnnounementButton"
@@ -264,6 +266,7 @@
                 Icon="add"
                 Visibility="{Binding ElementName=ModeratorChannelDetailsAddAnnounementButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding SwitchToAddAnnouncementDialogCommand}"/>
+            
             <AppBarButton
                 x:Name="ModeratorChannelDetailsEditChannelButton"
                 x:Uid="ModeratorChannelDetailsEditChannelButton"
@@ -271,6 +274,7 @@
                 Icon="Edit"
                 Visibility="{Binding ElementName=ModeratorChannelDetailsEditChannelButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding SwitchToEditChannelDialogCommand}"/>
+            
             <AppBarButton
                 x:Name="ModeratorChannelDetailsAddReminderButton"
                 x:Uid="ModeratorChannelDetailsAddReminderButton"
@@ -332,7 +336,6 @@
                         x:Uid="ModeratorChannelDetailsAnnouncementPivotItem"
                         Style="{StaticResource PivotItemStyle}"
                         Header="Nachrichten">
-
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>

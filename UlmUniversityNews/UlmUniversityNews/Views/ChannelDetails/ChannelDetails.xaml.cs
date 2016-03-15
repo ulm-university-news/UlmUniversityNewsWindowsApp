@@ -66,11 +66,12 @@ namespace UlmUniversityNews.Views.ChannelDetails
         /// <param name="e">Die Eventparameter.</param>
         async void ChannelDetails_Loaded(object sender, RoutedEventArgs e)
         {
-            //Debug.WriteLine("In ChannelDetails_Loaded event handler. Resolution scale is: {0}.",
-            //    DisplayInformation.GetForCurrentView().ResolutionScale);
             if(channelDetailsViewModel != null && channelDetailsViewModel.ChannelSubscribedStatus == true)
             {
                 await channelDetailsViewModel.PerformAnnouncementUpdate();
+
+                // Prüfe, ob der Kanal gelöscht wurde und zeige falls notwendig eine Benachrichtigung an.
+                channelDetailsViewModel.CheckWhetherChannelIsDeleted();
             }
         }
 

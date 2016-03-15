@@ -620,6 +620,128 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Gibt an, ob für den Kanal mit der übergebenen Id das Flag DeletionNoticed gesetzt ist.
+        /// Das Flag gibt an, ob der Nutzer bereits über die Löschung des Kanals informiert wurde, d.h.
+        /// diese auf jeden Fall bemerkt hat.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, zu dem das Flag abgefragt wird.</param>
+        /// <returns>Liefert true, wenn das Flag gesetzt ist, sonst false.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abruf fehlschlägt.</exception>
+        public bool IsChannelDeletionNoticedFlagSet(int channelId)
+        {
+            bool deletionNoticed = false;
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string sql = @"SELECT DeletionNoticedFlag 
+                            FROM Channel 
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(sql))
+                        {
+                            stmt.Bind(1, channelId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                int deletionNoticedFlag = Convert.ToInt32(stmt["DeletionNoticedFlag"]);
+
+                                deletionNoticed = (deletionNoticedFlag == 1) ? true : false;
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in IsChannelDeletionNoticedFlagSet. The message is: {0}.", sqlEx.Message);
+                        throw new DatabaseException("Retrieve DeletionNoticedFlag failed. Msg is: " + sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in IsChannelDeletionNoticedFlagSet. The message is: {0}, " +
+                            "and the stack trace: {1}.", ex.Message, ex.StackTrace);
+                        throw new DatabaseException("Retrieve DeletionNoticedFlag failed. Msg is: " + ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+
+            return deletionNoticed;
+        }
+
+        /// <summary>
+        /// Setzt das Flag DeletionNoticed für den Kanal mit der angegebenen Id.
+        /// Das Flag gibt an, ob der Nutzer bereits über die Löschung des Kanals informiert wurde, d.h.
+        /// diese auf jeden Fall bemerkt hat.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, für den das Flag gesetzt wird.</param>
+        /// <param name="flagValue">Der Wert des Flags.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn das Setzten des Flags fehlschlägt.</exception>
+        public void SetChannelDeletionNoticedFlag(int channelId, bool flagValue)
+        {
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string sql = @"UPDATE Channel 
+                            SET DeletionNoticedFlag=? 
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(sql))
+                        {
+                            stmt.Bind(1, (flagValue) ? 1 : 0);
+                            stmt.Bind(2, channelId);
+
+                            stmt.Step();
+                            Debug.WriteLine("Updated the DeletionNoticedFlag for channel with id {0}."  + 
+                                "New value is: {1}.", channelId, flagValue);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in SetChannelDeletionNoticedFlag. The message is: {0}.", sqlEx.Message);
+                        throw new DatabaseException("Setting of DeletionNoticedFlag failed. Msg is: " + sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in SetChannelDeletionNoticedFlag. The message is: {0}, " +
+                            "and the stack trace: {1}.", ex.Message, ex.StackTrace);
+                        throw new DatabaseException("Setting of DeletionNoticedFlag failed. Msg is: " + ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+        }
+
+        /// <summary>
         /// Rufe den Kanal mit der angegebenen Id aus der Datenbank ab ung gibt ein Objekt
         /// vom Typ Channel mit den Daten zurück.
         /// </summary>

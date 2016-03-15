@@ -321,6 +321,7 @@ namespace DataHandlingLayer.Database
                                         Contact             TEXT,
                                         Website             TEXT,
                                         Deleted             BOOLEAN,
+                                        DeletionNoticedFlag INTEGER DEFAULT 0,     
                                         NotificationSettings_NotifierId INTEGER, 
                                         PRIMARY KEY(Id),
                                         FOREIGN KEY(NotificationSettings_NotifierId) REFERENCES NotificationSettings(NotifierId)
@@ -661,7 +662,7 @@ namespace DataHandlingLayer.Database
                                         Priority            INTEGER NOT NULL,
                                         Author_Moderator_Id INTEGER NOT NULL,
                                         PRIMARY KEY(Id),
-                                        FOREIGN KEY(Channel_Id) REFERENCES Channel(Id),
+                                        FOREIGN KEY(Channel_Id) REFERENCES Channel(Id) ON DELETE CASCADE,
                                         FOREIGN KEY(Author_Moderator_Id) REFERENCES Moderator(Id)                                        
                             );";
             using (var statement = conn.Prepare(sql))

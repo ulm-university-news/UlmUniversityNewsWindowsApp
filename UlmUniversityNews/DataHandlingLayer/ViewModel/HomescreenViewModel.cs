@@ -234,23 +234,39 @@ namespace DataHandlingLayer.ViewModel
 
             // Prüfe, ob inzwischen ein neuer Kanal abonniert wurde.
             // Füge fehlende Kanäle der Liste hinzu, an der Position, an der sie laut Sortierung stehen sollten.
-            foreach (Channel channel in channels)
+            foreach (Channel localChannel in channels)
             {
-                if (!currentChannels.ContainsKey(channel.Id))
+                if (!currentChannels.ContainsKey(localChannel.Id))
                 {
-                    Debug.WriteLine("Need to insert channel with id {0} into MyChannels.", channel.Id);
-                    MyChannels.Insert(channels.IndexOf(channel), channel);
-                    currentChannels.Add(channel.Id, channel);
+                    Debug.WriteLine("Need to insert channel with id {0} into MyChannels.", localChannel.Id);
+                    MyChannels.Insert(channels.IndexOf(localChannel), localChannel);
+                    currentChannels.Add(localChannel.Id, localChannel);
                 }
                 else
                 {
                     // Prüfe, ob die Kanaldaten aktualisiert werden müssen.
-                    Channel currentChannel = currentChannels[channel.Id];
-                    if (currentChannel.ModificationDate.CompareTo(channel.ModificationDate) < 0)
+                    Channel currentChannel = currentChannels[localChannel.Id];
+                    if (currentChannel.ModificationDate.CompareTo(localChannel.ModificationDate) < 0)
                     {
-                        // Aktualisiere Objektinstanz. // TODO - Teste das
-                        Debug.WriteLine("Need to update local properties of channel object with id {0}.", channel.Id);
-                        updateViewRelatedChannelProperties(currentChannel, channel);
+                        // Aktualisiere Objektinstanz.
+                        Debug.WriteLine("Need to update local properties of channel object with id {0}.", localChannel.Id);
+                        updateViewRelatedChannelProperties(currentChannel, localChannel);
+                    }
+
+                    // Prüfe, ob Kanal als gelöscht markiert wurde.
+                    if (localChannel.Deleted && !currentChannel.Deleted)
+                    {
+                        currentChannel.Deleted = true;
+                        // Redraw herbeiführen durch Löschen und Wiedereinfügen. TODO: Gibt es hier nichts besseres?
+                        Channel affectedChannel = MyChannels.Where(channel => channel.Id == localChannel.Id).FirstOrDefault();
+                        if (affectedChannel != null)
+                        {
+                            Debug.WriteLine("It seems that the channel with id {0} is deleted on the server.", affectedChannel.Id);
+                            affectedChannel.Deleted = true;
+                            int index = MyChannels.IndexOf(affectedChannel);
+                            MyChannels.RemoveAt(index);
+                            MyChannels.Insert(index, affectedChannel);
+                        }
                     }
                 }
             }

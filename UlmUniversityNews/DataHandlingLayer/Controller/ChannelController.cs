@@ -9,9 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataHandlingLayer.API;
-using Newtonsoft.Json;
 using DataHandlingLayer.DataModel.Enums;
-using Newtonsoft.Json.Converters;
 
 namespace DataHandlingLayer.Controller
 {
@@ -467,6 +465,53 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Gibt an, ob für den Kanal mit der angegebenen Id eine Benachrichtigung
+        /// bezüglich der Löschung des Kanals angezeigt werden soll.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals.</param>
+        /// <returns>Liefert true, wenn Benachrichtigung erforderlich, sonst false.</returns>
+        public bool IsNotificationAboutDeletionRequired(int channelId)
+        {
+            bool notificationRequired = true;
+            try
+            {
+                bool deletionNoticed = channelDatabaseManager.IsChannelDeletionNoticedFlagSet(channelId);
+
+                if (deletionNoticed)
+                {
+                    notificationRequired = false;
+                }
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("IsChannelDeletionNoticedFlagSet: Database failure. Msg is: {0}.",
+                    ex.Message);
+                // Gebe Fehler nicht an Aufrufer weiter in diesem Fall. Keine kritische Aktion.
+            }
+            return notificationRequired;
+        }
+
+        /// <summary>
+        /// Deaktiviere für den Kanal mit der angegebenen Id die Benachrichtigung über die Löschung
+        /// des Kanals. Der Nutzer wird im Fall einer Löschung des Kanals dann nicht weiter über diese
+        /// Löschung informiert.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals.</param>
+        public void DisableNotificationAboutDeletion(int channelId)
+        {
+            try
+            {
+                channelDatabaseManager.SetChannelDeletionNoticedFlag(channelId, true);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("DisableNotificationAboutDeletion: Database failure. Msg is: {0}.",
+                    ex.Message);
+                // Gebe Fehler nicht an Aufrufer weiter in diesem Fall. Keine kritische Aktion.
+            }
+        }
+
+        /// <summary>
         /// Löscht den Kanal mit der angegebenen Id aus den lokal verwalteten
         /// Datensätzen der Anwendung.
         /// </summary>
@@ -476,6 +521,10 @@ namespace DataHandlingLayer.Controller
         {
             try
             {
+                // Lösche alle Announcements des Kanals.
+                RemoveAllAnnouncementsFromChannel(channelId);
+
+                // Restliche zu diesem Kanal gehörenden Ressourcen sollten per ON DELETE CASCADE gelöscht werden.
                 channelDatabaseManager.DeleteChannel(channelId);
             }
             catch (DatabaseException ex)
@@ -593,15 +642,8 @@ namespace DataHandlingLayer.Controller
                 // Wenn der Kanal auf Serverseite gar nicht mehr existiert.
                 if(ex.ErrorCode == ErrorCodes.ChannelNotFound)
                 {
-                    Debug.WriteLine("User tried to subscribe to a channel that doesn't exist anymore. Remove the channel from the local database.");
-                    try
-                    {
-                        channelDatabaseManager.DeleteChannel(channelId);
-                    }
-                    catch(DatabaseException dEx)
-                    {
-                        Debug.WriteLine("Channel with id {0} couldn't be deleted. Message is: {1}.", channelId, dEx.Message);
-                    }
+                    Debug.WriteLine("User tried to subscribe to a channel that doesn't exist anymore. Mark the channel as deleted.");
+                    MarkChannelAsDeleted(channelId);
                 }
 
                 Debug.WriteLine("Couldn't subscribe channel. Server returned status code {0} and error code {1}.", ex.ResponseStatusCode, ex.ErrorCode);
@@ -1191,6 +1233,13 @@ namespace DataHandlingLayer.Controller
 
             // Wenn Löschrequest an Server erfolgreich, dann markiere den Kanal lokal als gelöscht.
             MarkChannelAsDeleted(channelId);
+
+            // Setze die Moderatoren des Kanals auf inaktiv.
+            List<Moderator> moderators = GetModeratorsOfChannel(channelId);
+            foreach (Moderator moderator in moderators)
+            {
+                RemoveModeratorFromChannel(channelId, moderator.Id);
+            }
         }
         #endregion RemoteChannelFunctions
 
@@ -1594,6 +1643,24 @@ namespace DataHandlingLayer.Controller
                 Debug.WriteLine("Retrieval of announcement has failed. Message is {0}.", ex.Message);
             }
             return lastReceivedAnnouncement;
+        }
+
+        /// <summary>
+        /// Löscht alle zu dem Kanal mit der angegebenen Id gehörenden Announcement Nachrichten.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, zu dem die zugehörigen Announcements gelöscht werden.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Löschen fehlschlägt.</exception>
+        public void RemoveAllAnnouncementsFromChannel(int channelId)
+        {
+            try
+            {
+                channelDatabaseManager.DeleteAllAnnouncementsOfChannel(channelId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("RemoveAllAnnouncementsFromChannel: Deletion failed.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
         }
         #endregion LocalAnnouncementFunctions
                 
