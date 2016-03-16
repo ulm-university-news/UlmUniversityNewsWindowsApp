@@ -255,8 +255,8 @@
                     common:FlyoutHelper.IsOpen="{Binding IsDeletionNotificationOpen, Mode=TwoWay}"
                     common:FlyoutHelper.Parent="{Binding ElementName=LayoutRoot}">
                 <Grid
-                    VerticalAlignment="Stretch"
-                    HorizontalAlignment="Stretch">
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
                     <!-- Nachricht, die angezeigt wird, wenn der Kanal gelöscht ist. -->
                     <TextBlock 
                                 Grid.Row="0"

@@ -997,6 +997,9 @@ date: </value>
   <data name="ChannelDetailsNoReminderInChannelInfo.Text" xml:space="preserve">
     <value>There are no reminder for this channel so far.</value>
   </data>
+  <data name="ApplicationSettingsLanguageChangedNotification.Text" xml:space="preserve">
+    <value>The settings regarding the favored language have changed. Please restart the application in order to enable the new settings.</value>
+  </data>
   <data name="ChannelDetailsSynchronizeChannelInformationButton.Label" xml:space="preserve">
     <value>update</value>
   </data>

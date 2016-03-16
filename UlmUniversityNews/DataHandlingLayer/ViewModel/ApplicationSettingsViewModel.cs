@@ -283,6 +283,16 @@ namespace DataHandlingLayer.ViewModel
         }
         #endregion BallotSettings
 
+        private bool isLanguageChangedFlyoutOpen;
+        /// <summary>
+        /// Gibt an, ob das Flyout mit dem Hinweis bezüglich einer Änderung der Sprache
+        /// aktuell angezeigt wird.
+        /// </summary>
+        public bool IsLanguageChangedFlyoutOpen
+        {
+            get { return isLanguageChangedFlyoutOpen; }
+            set { this.setProperty(ref this.isLanguageChangedFlyoutOpen, value); }
+        }
         #endregion Properties
 
         #region Commands
@@ -539,11 +549,13 @@ namespace DataHandlingLayer.ViewModel
                         // Einstellung bezüglich Sprache.
                         if(IsEnglishLanguageSelected && appSettings.LanguageSetting == Language.GERMAN)
                         {
+                            IsLanguageChangedFlyoutOpen = true;
                             // Ändere Sprache auf Englisch.
                             applicationSettingsController.UpdateFavoredLanguageSettings(Language.ENGLISH);
                         }
                         else if(IsGermanLanguageSelected && appSettings.LanguageSetting == Language.ENGLISH)
                         {
+                            IsLanguageChangedFlyoutOpen = true;
                             // Ändere Sprache auf Deutsch.
                             applicationSettingsController.UpdateFavoredLanguageSettings(Language.GERMAN);
                         }

@@ -42,11 +42,30 @@
                 x:Uid="ApplicationSettingsSaveSettingsButton"
                 Label="save settings"
                 Icon="Save"
-                Command="{Binding SaveSettingsCommand}"/>      <!-- TODO Bind command -->
+                Command="{Binding SaveSettingsCommand}"/>   
         </CommandBar>
     </Page.BottomAppBar>
 
     <Grid x:Name="LayoutRoot">
+        <!-- Flyout, welches angezeigt wird, wenn die Spracheinstellungen geändert wurden.-->
+        <FlyoutBase.AttachedFlyout>
+            <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}"
+                    common:FlyoutHelper.IsOpen="{Binding IsLanguageChangedFlyoutOpen, Mode=TwoWay}"
+                    common:FlyoutHelper.Parent="{Binding ElementName=LayoutRoot}">
+                <Grid
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
+                    <!-- Nachricht, die angezeigt wird, wenn die Spracheinstellungen geändert wurden. -->
+                    <TextBlock 
+                                Grid.Row="0"
+                                x:Name="LanguageChangedNotification"
+                                x:Uid="ApplicationSettingsLanguageChangedNotification"
+                                Style="{StaticResource TextInFlyoutsStyle}" >
+                                Damit die Einstellungen bezüglich der bevorzugten Sprache wirksam werden, starten Sie die Anwendung neu.
+                    </TextBlock>
+                </Grid>
+            </Flyout>
+        </FlyoutBase.AttachedFlyout>
 
         <Grid.ChildrenTransitions>
             <TransitionCollection>

@@ -998,6 +998,9 @@ Nachricht am: </value>
   <data name="ChannelDetailsNoReminderInChannelInfo.Text" xml:space="preserve">
     <value>Für diesen Kanal wurden noch keine Reminder definiert.</value>
   </data>
+  <data name="ApplicationSettingsLanguageChangedNotification.Text" xml:space="preserve">
+    <value>Damit die Einstellungen bezüglich der bevorzugten Sprache wirksam werden, starten Sie die Anwendung bitte neu.</value>
+  </data>
   <data name="ChannelDetailsSynchronizeChannelInformationButton.Label" xml:space="preserve">
     <value>aktuali-sieren</value>
   </data>
