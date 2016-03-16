@@ -600,7 +600,15 @@ namespace DataHandlingLayer.Controller
             }
             catch (APIException ex)
             {
-                Debug.WriteLine("The get request to retrieve channel info has failed.");
+                if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
+                {
+                    Debug.WriteLine("GetChannelInfoAsync: Channel with id {0} seems to be deleted on the server.",
+                        channelId);
+                    // Behandlung Kanal gelöscht.
+                    MarkChannelAsDeleted(channelId);
+                }
+
+                Debug.WriteLine("GetChannelInfoAsync: The get request to retrieve channel info has failed.");
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
 
@@ -891,7 +899,8 @@ namespace DataHandlingLayer.Controller
                 if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
                 {
                     Debug.WriteLine("Channel not found on server. Channel probably deleted.");
-                    // TODO - Behandlung Not Found. Kanal wahrscheinlich gelöscht.
+                    // Behandlung Not Found. Kanal wahrscheinlich gelöscht.
+                    MarkChannelAsDeleted(oldChannel.Id);
                 }
 
                 // Bilde ab auf ClientException.
@@ -1272,6 +1281,12 @@ namespace DataHandlingLayer.Controller
             }
             catch(APIException ex)
             {
+                if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
+                {
+                    Debug.WriteLine("Channel with id {0} seems to be deleted from the server.", channelId);
+                    MarkChannelAsDeleted(channelId);
+                }
+
                 Debug.WriteLine("Couldn't retrieve announcements of channel. " +
                     "Error code is: {0} and status code was {1}.", ex.ErrorCode, ex.ResponseStatusCode);
                 throw new ClientException(ex.ErrorCode, "API call failed.");
@@ -1527,7 +1542,8 @@ namespace DataHandlingLayer.Controller
                 if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
                 {
                     Debug.WriteLine("Server says channel not found. Channel is probably deleted.");
-                    // TODO - Behandlung von ChannelNotFound.
+                    // Behandlung von ChannelNotFound.
+                    MarkChannelAsDeleted(channelId);
                 }
 
                 Debug.WriteLine("CreateAnnouncement failed. The message is: {0}.", ex.Message);
@@ -2343,7 +2359,14 @@ namespace DataHandlingLayer.Controller
             }
             catch (APIException ex)
             {
-                Debug.WriteLine("Request to server not successful.");
+                if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
+                {
+                    Debug.WriteLine("GetRemindersOfChannelAsync: Channel with id {0} seems to be deleted on the server.",
+                        channelId);
+                    MarkChannelAsDeleted(channelId);
+                }
+
+                Debug.WriteLine("GetRemindersOfChannelAsync: Request to server not successful.");
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
 
@@ -2410,7 +2433,8 @@ namespace DataHandlingLayer.Controller
                 if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
                 {
                     Debug.WriteLine("Channel not found on server. Channel probably deleted.");
-                    // TODO - Behandlung Not Found. Kanal wahrscheinlich gelöscht.
+                    // Behandlung Not Found. Kanal wahrscheinlich gelöscht.
+                    MarkChannelAsDeleted(newReminder.ChannelId);
                 }
 
                 Debug.WriteLine("Request to create reminder has failed.");
@@ -2487,13 +2511,15 @@ namespace DataHandlingLayer.Controller
                 if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
                 {
                     Debug.WriteLine("Channel not found on server. Channel probably deleted.");
-                    // TODO - Behandlung Not Found. Kanal wahrscheinlich gelöscht.
+                    // Behandlung Not Found. Kanal wahrscheinlich gelöscht.
+                    MarkChannelAsDeleted(oldReminder.ChannelId);
                 }
 
                 if (ex.ErrorCode == ErrorCodes.ReminderNotFound)
                 {
                     Debug.WriteLine("Reminder not found on server. Reminder probably deleted.");
-                    // TODO - Behandlung von Not Found. Reminder wahrscheinlich gelöscht.
+                    // Behandlung von Not Found. Reminder wahrscheinlich gelöscht.
+                    DeleteLocalReminder(oldReminder.Id);
                 }
 
                 Debug.WriteLine("Update request for reminder with id {0} has failed.", oldReminder.Id);

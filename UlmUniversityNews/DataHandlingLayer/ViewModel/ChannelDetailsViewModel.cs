@@ -818,6 +818,13 @@ namespace DataHandlingLayer.ViewModel
             }
             catch (ClientException ex)
             {
+                if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
+                {
+                    // Markiere Kanal als gelöscht.
+                    Channel.Deleted = true;
+                    checkCommandExecution();
+                }
+
                 Debug.WriteLine("executeSynchronizeChannelInformationCommand: Something went wrong during execution. " + 
                     "The message is: {0}", ex.Message);
                 displayError(ex.ErrorCode);

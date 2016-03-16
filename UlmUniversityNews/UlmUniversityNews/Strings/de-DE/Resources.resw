@@ -117,13 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BadRequestError" xml:space="preserve">
+  <data name="ApplicationErrorBadRequestError" xml:space="preserve">
     <value>Der Request wurde vom Server als ungültig abgelehnt.</value>
   </data>
   <data name="ErrorDialogBoxTitle" xml:space="preserve">
     <value>Fehler</value>
   </data>
-  <data name="LocalDatabaseError" xml:space="preserve">
+  <data name="ApplicationErrorLocalDatabaseError" xml:space="preserve">
     <value>Es ist ein Fehler bei einer Operation auf der lokalen Datenbank aufgetreten.</value>
   </data>
   <data name="doNotShowAgainCheckBoxText" xml:space="preserve">
@@ -135,25 +135,25 @@
   <data name="lockScreenAccessDeniedContentDialogTitle" xml:space="preserve">
     <value>Hintergrundaufgaben</value>
   </data>
-  <data name="MethodNotAllowedError" xml:space="preserve">
+  <data name="ApplicationErrorMethodNotAllowedError" xml:space="preserve">
     <value>Der Server hat den Request abgelehnt aufgrund einer falschen HTTP Methode.</value>
   </data>
-  <data name="NotFoundError" xml:space="preserve">
-    <value>Die angegebene Ressource konnte auf dem Server nicht gefunden werden.</value>
+  <data name="ApplicationErrorNotFoundError" xml:space="preserve">
+    <value>Der Server konnte nicht erreicht werden. Der Server ist wahrscheinlich aktuell offline.</value>
   </data>
-  <data name="ServerUnreachableError" xml:space="preserve">
+  <data name="ApplicationErrorServerUnreachableError" xml:space="preserve">
     <value>Der Server konnte nicht erreicht werden. Bitte stellen Sie sicher, dass eine Internetverbindung besteht.</value>
   </data>
-  <data name="UnsupportedMediaTypeError" xml:space="preserve">
+  <data name="ApplicationErrorUnsupportedMediaTypeError" xml:space="preserve">
     <value>Der Request wurde abgelehnt aufgrund einer falschen Angabe beim Media Type.</value>
   </data>
-  <data name="UserDataIncompleteError" xml:space="preserve">
+  <data name="ApplicationErrorUserDataIncompleteError" xml:space="preserve">
     <value>Es wurden nicht alle erforderlichen Nutzerdaten angegeben.</value>
   </data>
-  <data name="UserForbiddenError" xml:space="preserve">
+  <data name="ApplicationErrorUserForbiddenError" xml:space="preserve">
     <value>Sie haben nicht die erforderlichen Rechte für diese Aktion.</value>
   </data>
-  <data name="UserNameInvalidError" xml:space="preserve">
+  <data name="ApplicationErrorUserNameInvalidError" xml:space="preserve">
     <value>Der von Ihnen angegebene Nutzername ist nicht gültig.</value>
   </data>
   <data name="ValidationErrorStartPageUserNameLengthInvalid" xml:space="preserve">
@@ -162,13 +162,13 @@
   <data name="ValidationErrorStartPAgeUserNameTextInvalid" xml:space="preserve">
     <value>Bitte verwenden Sie für den Nutzernamen keine Leerzeichen und Sonderzeichen.</value>
   </data>
-  <data name="UserNotFoundError" xml:space="preserve">
+  <data name="ApplicationErrorUserNotFoundError" xml:space="preserve">
     <value>Der angegebene Nutzer konnte nicht gefunden werden.</value>
   </data>
-  <data name="UserPushTokenInvalidError" xml:space="preserve">
+  <data name="ApplicationErrorUserPushTokenInvalidError" xml:space="preserve">
     <value>Es wurde kein gültiges Push-Token an den Server übermittelt.</value>
   </data>
-  <data name="WnsChannelInitializationFailed" xml:space="preserve">
+  <data name="ApplicationErrorWnsChannelInitializationFailed" xml:space="preserve">
     <value>Die Initialisierung des Push Nachrichten Dienstes ist fehlgeschlagen. Bitte stellen Sie sicher, dass eine Internetverbindung besteht.</value>
   </data>
   <data name="StartPageCreateAccountButton.Label" xml:space="preserve">
@@ -459,7 +459,7 @@
   <data name="ApplicationSettingsHeaderGroupListSettings.Text" xml:space="preserve">
     <value>Gruppen</value>
   </data>
-  <data name="ErrorServerDatabaseFailure" xml:space="preserve">
+  <data name="ApplicationErrorErrorServerDatabaseFailure" xml:space="preserve">
     <value>Der Server konnte den Request nicht bearbeiten. Es gab Probleme mit der Server-Datenbank. Bitte versuchen Sie es nochmals.</value>
   </data>
   <data name="ChannelDetailsChannelSettingsButton.Label" xml:space="preserve">
@@ -997,6 +997,63 @@ Nachricht am: </value>
   </data>
   <data name="ChannelDetailsNoReminderInChannelInfo.Text" xml:space="preserve">
     <value>Für diesen Kanal wurden noch keine Reminder definiert.</value>
+  </data>
+  <data name="ApplicationErrorChannelDataIncompleteError" xml:space="preserve">
+    <value>Es fehlen Pflichtangaben. Bitte stellen Sie sicher, dass Sie alle relevanten Daten bereitgestellt haben.</value>
+  </data>
+  <data name="ApplicationErrorChannelDescriptionError" xml:space="preserve">
+    <value>Die Beschreibung des Kanals ist invalide und wurde vom Server abgelehnt.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidAssistantError" xml:space="preserve">
+    <value>Die Angaben bezüglich des Übungsleiters sind invalide und wurden vom Server abgelehnt.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidCostError" xml:space="preserve">
+    <value>Die Beschreibung hinsichtlich der Kosten ist invalide und wurde vom Server abgelehnt.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidDatesError" xml:space="preserve">
+    <value>Die Beschreibung hinsichtlich der Termine ist invalide und wurde vom Server abgelehnt.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidEndDateError" xml:space="preserve">
+    <value>Die Angabe bezüglich des Ende-Datums ist invalide und wurde vom Server abgelehnt.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidLecturerError" xml:space="preserve">
+    <value>Die Angaben über den Dozent sind invalide und wurden vom Server abgelehnt.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidLocationsError" xml:space="preserve">
+    <value>Die Ortsangaben sind invalide und wurden vom Server abgelehnt.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidNameError" xml:space="preserve">
+    <value>Der Kanalname wurde vom Server abgelehnt.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidOrganizerError" xml:space="preserve">
+    <value>Die Informationen bezüglich des Organisators wurden vom Server abgelehnt.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidParticipantsError" xml:space="preserve">
+    <value>Die Informationen bezüglich der Teilnehmer wurden vom Server abgelehnt.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidStartDateError" xml:space="preserve">
+    <value>Die Information bezüglich des Start-Datums des Kanals wurde vom Server abgelehnt.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidTermError" xml:space="preserve">
+    <value>Der Kanal hat eine invalide Semesterangabe.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidTypeError" xml:space="preserve">
+    <value>Der Kanal hat keinen gültigen Typ. Der Server hat den Request abgelehnt.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidWebsiteError" xml:space="preserve">
+    <value>Die eingegebenen Informationen bezüglich der Webseite sind invalide.</value>
+  </data>
+  <data name="ApplicationErrorChannelNameAlreadyExistsError" xml:space="preserve">
+    <value>Es existiert bereits ein Kanal mit diesem Namen auf dem Server. Der Name eines Kanals sollte eindeutig sein, um es den Nutzern einfacher zu machen einzelne Kanäle zu unterscheiden. Bitte ändern Sie den Kanalnamen nochmals ab.</value>
+  </data>
+  <data name="ApplicationErrorChannelNotFoundError" xml:space="preserve">
+    <value>Die Kanalressource konnte auf dem Server nicht gefunden werden. Der Kanal scheint keinen Repräsentanten auf dem Server mehr zu haben. Der Kanal wurde wahrscheinlich gelöscht.</value>
+  </data>
+  <data name="ApplicationErrorDefaultCase" xml:space="preserve">
+    <value>Ein Fehler ist aufgetreten. Das tut uns leid. Das hätte nicht passieren dürfen.</value>
+  </data>
+  <data name="ApplicationErrorReminderNotFoundError" xml:space="preserve">
+    <value>Der Reminder konnte auf dem Server nicht gefunden werden. Der Reminder scheint keinen Repräsentanten auf dem Server mehr zu haben. Wahrscheinlich wurde der Reminder gelöscht.</value>
   </data>
   <data name="ApplicationSettingsLanguageChangedNotification.Text" xml:space="preserve">
     <value>Damit die Einstellungen bezüglich der bevorzugten Sprache wirksam werden, starten Sie die Anwendung bitte neu.</value>

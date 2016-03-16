@@ -42,46 +42,103 @@ namespace UlmUniversityNews.ErrorHandling
             switch (errorCode)
             {
                 case ErrorCodes.UserNotFound:
-                    errorDescription = loader.GetString("UserNotFoundError");
+                    errorDescription = loader.GetString("ApplicationErrorUserNotFoundError");
                     break;
                 case ErrorCodes.UserForbidden:
-                    errorDescription = loader.GetString("UserForbiddenError");
+                    errorDescription = loader.GetString("ApplicationErrorUserForbiddenError");
                     break;
                 case ErrorCodes.UserDataIncomplete:
-                    errorDescription = loader.GetString("UserDataIncompleteError");
+                    errorDescription = loader.GetString("ApplicationErrorUserDataIncompleteError");
                     break;
                 case ErrorCodes.UserNameInvalid:
-                    errorDescription = loader.GetString("UserNameInvalidError");
+                    errorDescription = loader.GetString("ApplicationErrorUserNameInvalidError");
                     break;
                 case ErrorCodes.UserPushTokenInvalid:
-                    errorDescription = loader.GetString("UserPushTokenInvalidError");
+                    errorDescription = loader.GetString("ApplicationErrorUserPushTokenInvalidError");
+                    break;
+                case ErrorCodes.ChannelNotFound:
+                    errorDescription = loader.GetString("ApplicationErrorChannelNotFoundError");
+                    break;
+                case ErrorCodes.ChannelNameAlreadyExists:
+                    errorDescription = loader.GetString("ApplicationErrorChannelNameAlreadyExistsError");
+                    break;
+                case ErrorCodes.ChannelInvalidWebsite:
+                    errorDescription = loader.GetString("ApplicationErrorChannelInvalidWebsiteError");
+                    break;
+                case ErrorCodes.ChannelInvalidType:
+                    errorDescription = loader.GetString("ApplicationErrorChannelInvalidTypeError");
+                    break;
+                case ErrorCodes.ChannelInvalidTerm:
+                    errorDescription = loader.GetString("ApplicationErrorChannelInvalidTermError");
+                    break;
+                case ErrorCodes.ChannelInvalidStartDate:
+                    errorDescription = loader.GetString("ApplicationErrorChannelInvalidStartDateError");
+                    break;
+                case ErrorCodes.ChannelInvalidParticipants:
+                    errorDescription = loader.GetString("ApplicationErrorChannelInvalidParticipantsError");
+                    break;
+                case ErrorCodes.ChannelInvalidOrganizer:
+                    errorDescription = loader.GetString("ApplicationErrorChannelInvalidOrganizerError");
+                    break;
+                case ErrorCodes.ChannelInvalidName:
+                    errorDescription = loader.GetString("ApplicationErrorChannelInvalidNameError");
+                    break;
+                case ErrorCodes.ChannelInvalidLocations:
+                    errorDescription = loader.GetString("ApplicationErrorChannelInvalidLocationsError");
+                    break;
+                case ErrorCodes.ChannelInvalidLecturer:
+                    errorDescription = loader.GetString("ApplicationErrorChannelInvalidLecturerError");
+                    break;
+                case ErrorCodes.ChannelInvalidEndDate:
+                    errorDescription = loader.GetString("ApplicationErrorChannelInvalidEndDateError");
+                    break;
+                case ErrorCodes.ChannelInvalidDescription:
+                    errorDescription = loader.GetString("ApplicationErrorChannelDescriptionError");
+                    break;
+                case ErrorCodes.ChannelInvalidDates:
+                    errorDescription = loader.GetString("ApplicationErrorChannelInvalidDatesError");
+                    break;
+                case ErrorCodes.ChannelInvalidCost:
+                    errorDescription = loader.GetString("ApplicationErrorChannelInvalidCostError");
+                    break;
+                case ErrorCodes.ChannelInvalidContacts:
+                    errorDescription = loader.GetString("ApplicationErrorChannelInvalidContacts");
+                    break;
+                case ErrorCodes.ChannelInvalidAssistant:
+                    errorDescription = loader.GetString("ApplicationErrorChannelInvalidAssistantError");
+                    break;
+                case ErrorCodes.ChannelDataIncomplete:
+                    errorDescription = loader.GetString("ApplicationErrorChannelDataIncompleteError");
+                    break;
+                case ErrorCodes.ReminderNotFound:
+                    errorDescription = loader.GetString("ApplicationErrorReminderNotFoundError");
                     break;
                 case ErrorCodes.BadRequest:
-                    errorDescription = loader.GetString("BadRequestError");;
+                    errorDescription = loader.GetString("ApplicationErrorBadRequestError");;
                     break;
                 case ErrorCodes.MethodNotAllowed:
-                    errorDescription = loader.GetString("MethodNotAllowedError");
+                    errorDescription = loader.GetString("ApplicationErrorMethodNotAllowedError");
                     break;
                 case ErrorCodes.NotFound:
-                    errorDescription = loader.GetString("NotFoundError");
+                    errorDescription = loader.GetString("ApplicationErrorNotFoundError");
                     break;
                 case ErrorCodes.UnsupportedMediaType:
-                    errorDescription = loader.GetString("UnsupportedMediaTypeError");
+                    errorDescription = loader.GetString("ApplicationErrorUnsupportedMediaTypeError");
                     break;
                 case ErrorCodes.WnsChannelInitializationFailed:
-                    errorDescription = loader.GetString("WnsChannelInitializationFailed");
+                    errorDescription = loader.GetString("ApplicationErrorWnsChannelInitializationFailed");
                     break;
                 case ErrorCodes.LocalDatabaseException:
-                    errorDescription = loader.GetString("LocalDatabaseError");
+                    errorDescription = loader.GetString("ApplicationErrorLocalDatabaseError");
                     break;
                 case ErrorCodes.ServerUnreachable:
-                    errorDescription = loader.GetString("ServerUnreachableError");
+                    errorDescription = loader.GetString("ApplicationErrorServerUnreachableError");
                     break;
                 case ErrorCodes.ServerDatabaseFailure:
-                    errorDescription = loader.GetString("ErrorServerDatabaseFailure");
+                    errorDescription = loader.GetString("ApplicationErrorErrorServerDatabaseFailure");
                     break;
                 default:
-                    errorDescription = "Something went wrong. We are sorry!";
+                    errorDescription = loader.GetString("ApplicationErrorDefaultCase");
                     break;
             }
 

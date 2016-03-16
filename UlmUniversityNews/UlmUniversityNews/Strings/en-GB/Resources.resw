@@ -117,13 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BadRequestError" xml:space="preserve">
+  <data name="ApplicationErrorBadRequestError" xml:space="preserve">
     <value>The request was rejected from the server and marked as invalid.</value>
   </data>
   <data name="ErrorDialogBoxTitle" xml:space="preserve">
     <value>Error</value>
   </data>
-  <data name="LocalDatabaseError" xml:space="preserve">
+  <data name="ApplicationErrorLocalDatabaseError" xml:space="preserve">
     <value>An error occurred during an operation on the local database.</value>
   </data>
   <data name="doNotShowAgainCheckBoxText" xml:space="preserve">
@@ -135,25 +135,25 @@
   <data name="lockScreenAccessDeniedContentDialogTitle" xml:space="preserve">
     <value>Background Tasks</value>
   </data>
-  <data name="MethodNotAllowedError" xml:space="preserve">
+  <data name="ApplicationErrorMethodNotAllowedError" xml:space="preserve">
     <value>The request was rejected from the server due to a wrong HTTP-method.</value>
   </data>
-  <data name="NotFoundError" xml:space="preserve">
-    <value>The specified resource could not be found on the server.</value>
+  <data name="ApplicationErrorNotFoundError" xml:space="preserve">
+    <value>The server could not be reached. The server is probably offline at the moment.</value>
   </data>
-  <data name="ServerUnreachableError" xml:space="preserve">
+  <data name="ApplicationErrorServerUnreachableError" xml:space="preserve">
     <value>The server could not be reached. Please make sure that your device is connected to the internet.</value>
   </data>
-  <data name="UnsupportedMediaTypeError" xml:space="preserve">
+  <data name="ApplicationErrorUnsupportedMediaTypeError" xml:space="preserve">
     <value>The request was rejected due to a wrong media type.</value>
   </data>
-  <data name="UserDataIncompleteError" xml:space="preserve">
+  <data name="ApplicationErrorUserDataIncompleteError" xml:space="preserve">
     <value>Some required user data is missing.</value>
   </data>
-  <data name="UserForbiddenError" xml:space="preserve">
+  <data name="ApplicationErrorUserForbiddenError" xml:space="preserve">
     <value>You do no have the required permissions for this operation.</value>
   </data>
-  <data name="UserNameInvalidError" xml:space="preserve">
+  <data name="ApplicationErrorUserNameInvalidError" xml:space="preserve">
     <value>The specified user name is invalid.</value>
   </data>
   <data name="ValidationErrorStartPageUserNameLengthInvalid" xml:space="preserve">
@@ -162,13 +162,13 @@
   <data name="ValidationErrorStartPageUserNameTextInvalid" xml:space="preserve">
     <value>Please don't use any special characters or whitespaces.</value>
   </data>
-  <data name="UserNotFoundError" xml:space="preserve">
+  <data name="ApplicationErrorUserNotFoundError" xml:space="preserve">
     <value>The specified user could not be found.</value>
   </data>
-  <data name="UserPushTokenInvalidError" xml:space="preserve">
+  <data name="ApplicationErrorUserPushTokenInvalidError" xml:space="preserve">
     <value>A valid push token needs to be provided to the server.</value>
   </data>
-  <data name="WnsChannelInitializationFailed" xml:space="preserve">
+  <data name="ApplicationErrorWnsChannelInitializationFailed" xml:space="preserve">
     <value>The initialization of the push notification service has failed. Please make sure that your device is connected to the internet.</value>
   </data>
   <data name="StartPageCreateAccountButton.Label" xml:space="preserve">
@@ -459,7 +459,7 @@
   <data name="ApplicationSettingsHeaderGroupListSettings.Text" xml:space="preserve">
     <value>Group Order Settings</value>
   </data>
-  <data name="ErrorServerDatabaseFailure" xml:space="preserve">
+  <data name="ApplicationErrorErrorServerDatabaseFailure" xml:space="preserve">
     <value>The server could not handle the request successfully. There was a problem with the internal database of the server. Please try again.</value>
   </data>
   <data name="ChannelDetailsChannelSettingsButton.Label" xml:space="preserve">
@@ -996,6 +996,66 @@ date: </value>
   </data>
   <data name="ChannelDetailsNoReminderInChannelInfo.Text" xml:space="preserve">
     <value>There are no reminder for this channel so far.</value>
+  </data>
+  <data name="ApplicationErrorChannelDataIncompleteError" xml:space="preserve">
+    <value>Mandatory data is missing. Make sure you have provided all necessary information.</value>
+  </data>
+  <data name="ApplicationErrorChannelDescriptionError" xml:space="preserve">
+    <value>The description of the channel is invalid.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidAssistantError" xml:space="preserve">
+    <value>The information about the lecture assistant are invalid.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidContacts" xml:space="preserve">
+    <value>The information about the contacts are invalid.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidCostError" xml:space="preserve">
+    <value>The information about the cost are invalid.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidDatesError" xml:space="preserve">
+    <value>The information about the dates are invalid.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidEndDateError" xml:space="preserve">
+    <value>The information about the end date is invalid.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidLecturerError" xml:space="preserve">
+    <value>The information about the lecturer are invalid.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidLocationsError" xml:space="preserve">
+    <value>The information about the locations are invalid.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidNameError" xml:space="preserve">
+    <value>The channel name was rejected by the server.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidOrganizerError" xml:space="preserve">
+    <value>The information about the organizer was rejected by the server.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidParticipantsError" xml:space="preserve">
+    <value>The information about the participants was rejected by the server.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidStartDateError" xml:space="preserve">
+    <value>The start date of the channel was rejected by the server.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidTermError" xml:space="preserve">
+    <value>The term information of the channel is invalid.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidTypeError" xml:space="preserve">
+    <value>The channel has an invalid type.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidWebsiteError" xml:space="preserve">
+    <value>The provided website information is invalid.</value>
+  </data>
+  <data name="ApplicationErrorChannelNameAlreadyExistsError" xml:space="preserve">
+    <value>There is already a channel resource with this name. Channel name should be unique in order to enable users to distinguish channels more easily. Please change the channel name.</value>
+  </data>
+  <data name="ApplicationErrorChannelNotFoundError" xml:space="preserve">
+    <value>The channel resource could not be localized on the server. It doesn't seem to have a representation on the server anymore. The channel has probably been deleted.</value>
+  </data>
+  <data name="ApplicationErrorDefaultCase" xml:space="preserve">
+    <value>Something went wrong. We are sorry. That was not supposed to happen.</value>
+  </data>
+  <data name="ApplicationErrorReminderNotFoundError" xml:space="preserve">
+    <value>The reminder could not be localized on the server. The reminder resource has probably been deleted.</value>
   </data>
   <data name="ApplicationSettingsLanguageChangedNotification.Text" xml:space="preserve">
     <value>The settings regarding the favoured language have changed. Please restart the application in order to enable the new settings.</value>

@@ -283,8 +283,11 @@ namespace DataHandlingLayer.Controller
                 // Rufe die neuesten Informationen zum Kanal ab.
                 Channel newChannel = await channelController.GetChannelInfoAsync(channelId);
 
-                // Speichere die neusten Kanalinformationen lokal ab.
-                channelController.ReplaceLocalChannel(newChannel);
+                if (newChannel != null)
+                {
+                    // Speichere die neusten Kanalinformationen lokal ab.
+                    channelController.ReplaceLocalChannel(newChannel);
+                }
             }
             catch (ClientException ex)
             {
