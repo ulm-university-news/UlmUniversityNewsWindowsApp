@@ -62,10 +62,12 @@ namespace DataHandlingLayer.Controller
                     handledSuccessfully = handleChannelDeletedPushMsg(receivedNotificationMessage);
                     break;
                 case PushType.MODERATOR_ADDED:
+                    handledSuccessfully = await handleModeratorAddedPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.MODERATOR_CHANGED:
                     break;
                 case PushType.MODERATOR_REMOVED:
+                    handledSuccessfully = handleModeratorRemovedPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.GROUP_DELETED:
                     break;
@@ -322,6 +324,81 @@ namespace DataHandlingLayer.Controller
             }
 
             return true;
+        }
+
+
+        /// <summary>
+        /// Behandelt eine eingehende Push Nachricht vom Typ MODERATOR_ADDED. Fügt den 
+        /// betroffenen Moderator als Verantwortlichen zu dem angegebenen Kanal hinzu.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private async Task<bool> handleModeratorAddedPushMsgAsync(PushMessage msg)
+        {
+            // Lese die Kanal-Id des betroffenen Kanals aus.
+            int channelId = msg.Id1;
+
+            // Lese die Moderator-Id des betroffenene Moderator aus.
+            int moderatorId = msg.Id2;
+
+            try
+            {
+                // Frage Moderatorendatensätze des Kanals ab.
+                List<Moderator> moderators = await channelController.GetResponsibleModeratorsAsync(channelId);
+                if (moderators != null)
+                {
+                    foreach (Moderator moderator in moderators)
+                    {
+                        if (moderator.Id == moderatorId)
+                        {
+                            // Füge den Moderator dem Kanal hinzu.
+                            channelController.AddModeratorToChannel(channelId, moderator);
+                        }
+                    }
+                }
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund sind.
+                Debug.WriteLine("Handling of Moderator_Added push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Push Nachricht vom Typ MODERATOR_REMOVED. Entfernt den 
+        /// betroffenen Moderator aus Liste der Verantwortlichen für den angegebenen Kanal.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private bool handleModeratorRemovedPushMsgAsync(PushMessage msg)
+        {
+            // Lese die Kanal-Id des betroffenen Kanals aus.
+            int channelId = msg.Id1;
+
+            // Lese die Moderator-Id des betroffenene Moderator aus.
+            int moderatorId = msg.Id2;
+
+            try
+            {
+                channelController.RemoveModeratorFromChannel(channelId, moderatorId);
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund sind.
+                Debug.WriteLine("Handling of Moderator_Removed push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        private async Task<bool> handleModeratorChangedPushMsgAsync(PushMessage msg)
+        {
+            // TODO
+            return false;
         }
     }
 }

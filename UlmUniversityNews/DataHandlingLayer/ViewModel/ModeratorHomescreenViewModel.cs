@@ -175,6 +175,32 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Aktualisiert den Zustand der View im Falle eines eingehenden Events, welches über die
+        /// Änderung eines Kanals informiert. Schaut, ob der betroffene Kanal in der Auflistung ist und löst
+        /// eine Aktualisierung der Anzeige aus.
+        /// </summary>
+        /// <param name="channelId">Die Id des betroffenen Kanals.</param>
+        public async Task PerformViewUpdateOnChannelChangedEvent(int channelId)
+        {
+            // Aktualisiere die für die View relevanten Properties.
+            Channel affectedChannel = ManagedChannels.Where(channel => channel.Id == channelId).FirstOrDefault();
+            if (affectedChannel != null)
+            {
+                try
+                {
+                    Channel latestLocalChannel = await Task.Run(() => channelController.GetChannel(channelId));
+                    updateViewRelatedPropertiesOfChannel(affectedChannel, latestLocalChannel);
+                }
+                catch (ClientException ex)
+                {
+                    // Gebe Fehler nicht weiter.
+                    Debug.WriteLine("PerformViewUpdateOnChannelChangedEvent: Error occurred." + 
+                        "Message is: {0}.", ex.Message);
+                }
+            }
+        }
+
+        /// <summary>
         /// Stößt die Aktualisierung der Kanal-Moderatoren Beziehungen an.
         /// Fragt dabei die aktuellste Liste an verantwortlichen Kanälen vom Server ab
         /// und stößt die Aktualisierung der lokalen Datenbankeinträge an. Aktualisiert

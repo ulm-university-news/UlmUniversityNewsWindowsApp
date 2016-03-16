@@ -344,6 +344,30 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Fügt einen Moderator dem Kanal mit der angegebenen Id hinzu. 
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, zu dem der Moderator hinzugefügt werden soll.</param>
+        /// <param name="newModerator">Der Moderator, der dem Kanal hinzugefügt werden soll.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Moderator nicht zum Kanal hinzugefügt werden konnte.</exception>
+        public void AddModeratorToChannel(int channelId, Moderator newModerator)
+        {
+            if (newModerator == null)
+                return;
+
+            try
+            {
+                channelDatabaseManager.AddModeratorToChannel(channelId,
+                    newModerator.Id,
+                    newModerator.IsActive);
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("AddModeratorToChannel: Failed to add moderator to channel with id {0}.", channelId);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Setzt den Moderator mit der angegebnen Id als inaktiv bezüglich des
         /// Kanals mit der angegebenen Id. Der Moderator ist dann kein aktiver Verantwortlicher
         /// des Kanals mehr.
@@ -1243,6 +1267,14 @@ namespace DataHandlingLayer.Controller
             }
             catch (APIException ex)
             {
+                if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
+                {
+                    // Kanal wohl schon gelöscht.
+                    Debug.WriteLine("DeleteChannelAsync: Channel seems to be deleted already.");
+                    MarkChannelAsDeleted(channelId);
+                    return;
+                }
+
                 Debug.WriteLine("DeleteChannelAsync: Error during deletion process. No successful deletion on server.");
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -2635,6 +2667,14 @@ namespace DataHandlingLayer.Controller
             }
             catch (APIException ex)
             {
+                if (ex.ErrorCode == ErrorCodes.ReminderNotFound)
+                {
+                    // Reminder wohl schon gelöscht.
+                    Debug.WriteLine("DeleteReminderAsync: Reminder seems to be already deleted.");
+                    DeleteLocalReminder(reminderId);
+                    return;
+                }
+
                 Debug.WriteLine("DeleteReminderAsync: Failed to delete reminder, server request has failed.");
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }

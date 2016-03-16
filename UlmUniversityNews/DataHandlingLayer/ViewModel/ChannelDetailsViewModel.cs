@@ -520,6 +520,30 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Aktualisiere den View-Zustand. Es wurd ein ChannelChanged
+        /// Event empfangen, d.h. die Daten des im ViewModel gehaltenen 
+        /// Kanals werden aktualisiert.
+        /// </summary>
+        public async Task PerformViewUpdateOnChannelChangedEvent()
+        {
+            if (Channel == null)
+                return;
+
+            try
+            {
+                // Rufe neusten lokalen Datensatz ab und aktualisiere.
+                Channel latestChannelObj = await Task.Run(() => channelController.GetChannel(Channel.Id));
+                updateViewRelatedChannelProperties(Channel, latestChannelObj);
+            }
+            catch (ClientException ex)
+            {
+                // Keine Fehlermeldung anzeigen.
+                Debug.WriteLine("Failed to perform view update on channel changed event." + 
+                    "Message is: {0}.", ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Zeigt, soweit für den Kanal aktiviert, eine Benachrichtigung über die Löschung
         /// des Kanals für den Nutzer an.
         /// </summary>

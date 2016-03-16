@@ -131,6 +131,7 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
             PushNotifications.PushNotificationManager pushManager = PushNotifications.PushNotificationManager.GetInstance();
             pushManager.ReceivedAnnouncement += pushManager_ReceivedAnnouncement;
             pushManager.ChannelDeleted += pushManager_ChannelDeleted;
+            pushManager.ChannelChanged += pushManager_ChannelChanged;
         }
 
         /// <summary>
@@ -141,6 +142,7 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
             PushNotifications.PushNotificationManager pushManager = PushNotifications.PushNotificationManager.GetInstance();
             pushManager.ReceivedAnnouncement -= pushManager_ReceivedAnnouncement;
             pushManager.ChannelDeleted -= pushManager_ChannelDeleted;
+            pushManager.ChannelChanged -= pushManager_ChannelChanged;
         }
 
         /// <summary>
@@ -179,13 +181,37 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
             {
                 // Ausführung auf UI-Thread abbilden.
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
-                    Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                     {
                         // Aktualisiere View, wenn eigener Kanal betroffen.
                         if (moderatorChannelDetailsViewModel.Channel != null
                             && moderatorChannelDetailsViewModel.Channel.Id == e.ChannelId)
                         {
                             moderatorChannelDetailsViewModel.PerformViewUpdateOnChannelDeletedEvent();
+                        }
+                    });
+            }
+        }
+
+        /// <summary>
+        /// Event-Handler, der ausgeführt wird, wenn vom PushNotificationManager ein 
+        /// ChannelChanged-Event verschickt wird.
+        /// </summary>
+        /// <param name="sender">Der Sender des Events, d.h. hier der PushNotificationManager.</param>
+        /// <param name="e">Eventparameter.</param>
+        async void pushManager_ChannelChanged(object sender, ChannelChangedEventArgs e)
+        {
+            if (moderatorChannelDetailsViewModel != null)
+            {
+                // Ausführung auf UI-Thread abbilden.
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                    {
+                        // Aktualisiere View, wenn eigener Kanal betroffen.
+                        if (moderatorChannelDetailsViewModel.Channel != null
+                            && moderatorChannelDetailsViewModel.Channel.Id == e.ChannelId)
+                        {
+                            await moderatorChannelDetailsViewModel.PerformViewUpdateOnChannelChangedEvent();
                         }
                     });
             }

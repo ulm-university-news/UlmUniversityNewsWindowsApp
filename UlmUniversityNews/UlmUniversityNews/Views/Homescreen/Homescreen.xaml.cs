@@ -33,7 +33,6 @@ namespace UlmUniversityNews.Views.Homescreen
     public sealed partial class Homescreen : Page
     {
         private NavigationHelper navigationHelper;
-        private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
         private HomescreenViewModel homescreenViewModel;
 
@@ -82,15 +81,6 @@ namespace UlmUniversityNews.Views.Homescreen
         public NavigationHelper NavigationHelper
         {
             get { return this.navigationHelper; }
-        }
-
-        /// <summary>
-        /// Ruft das Anzeigemodell für diese <see cref="Page"/> ab.
-        /// Dies kann in ein stark typisiertes Anzeigemodell geändert werden.
-        /// </summary>
-        public ObservableDictionary DefaultViewModel
-        {
-            get { return this.defaultViewModel; }
         }
 
         /// <summary>
@@ -145,6 +135,7 @@ namespace UlmUniversityNews.Views.Homescreen
             PushNotificationManager pushManager = PushNotificationManager.GetInstance();
             pushManager.ReceivedAnnouncement += pushManager_ReceivedAnnouncement;
             pushManager.ChannelDeleted += pushManager_ChannelDeleted;
+            pushManager.ChannelChanged += pushManager_ChannelChanged;
         }
 
         /// <summary>
@@ -156,6 +147,7 @@ namespace UlmUniversityNews.Views.Homescreen
             PushNotificationManager pushManager = PushNotificationManager.GetInstance();
             pushManager.ReceivedAnnouncement -= pushManager_ReceivedAnnouncement;
             pushManager.ChannelDeleted -= pushManager_ChannelDeleted;
+            pushManager.ChannelChanged -= pushManager_ChannelChanged;
         }
 
         /// <summary>
@@ -192,6 +184,25 @@ namespace UlmUniversityNews.Views.Homescreen
                     Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                     {
                         homescreenViewModel.PerformViewUpdateOnChannelDeletedEvent(e.ChannelId);
+                    });
+            }
+        }
+
+        /// <summary>
+        /// Event-Handler, der ausgeführt wird, wenn vom PushNotificationManager ein 
+        /// ChannelChanged-Event verschickt wird.
+        /// </summary>
+        /// <param name="sender">Der Sender des Events, d.h. hier der PushNotificationManager.</param>
+        /// <param name="e">Eventparameter.</param>
+        async void pushManager_ChannelChanged(object sender, PushNotifications.EventArgClasses.ChannelChangedEventArgs e)
+        {
+            if (homescreenViewModel != null)
+            {
+                // Ausführung auf UI-Thread abbilden.
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                    {
+                        await homescreenViewModel.PerformViewUpdateOnChannelChangedEvent(e.ChannelId);
                     });
             }
         }

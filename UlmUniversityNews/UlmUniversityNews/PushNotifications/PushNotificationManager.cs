@@ -46,6 +46,7 @@ namespace UlmUniversityNews.PushNotifications
         #region Events
         public event EventHandler<AnnouncementReceivedEventArgs> ReceivedAnnouncement;
         public event EventHandler<ChannelDeletedEventArgs> ChannelDeleted;
+        public event EventHandler<ChannelChangedEventArgs> ChannelChanged;
         #endregion Events
 
         /// <summary>
@@ -204,6 +205,13 @@ namespace UlmUniversityNews.PushNotifications
                                 {
                                     // Sende ChannelDeleted Event mit Kanal-Id des betroffenen Kanals.
                                     ChannelDeleted(this, new ChannelDeletedEventArgs(pushMsg.Id1));
+                                }
+                                break;
+                            case PushType.CHANNEL_CHANGED:
+                                if (ChannelChanged != null)
+                                {
+                                    // Sende ChannelDeleted Event mit Kanal-Id des betroffenen Kanals.
+                                    ChannelChanged(this, new ChannelChangedEventArgs(pushMsg.Id1));
                                 }
                                 break;
                             default:

@@ -79,6 +79,7 @@ namespace UlmUniversityNews.Views.ModeratorViews.Homescreen
             }
 
             await moderatorHomescreenViewModel.LoadManagedChannels();
+            subscribeToPushManagerEvents();
         }
 
         /// <summary>
@@ -91,6 +92,7 @@ namespace UlmUniversityNews.Views.ModeratorViews.Homescreen
         /// serialisierbarer Zustand.</param>
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
+            unsubscribeFromPushManagerEvents();
         }
 
         #region PushNotificationManagerEvents
@@ -103,6 +105,7 @@ namespace UlmUniversityNews.Views.ModeratorViews.Homescreen
             // Registriere PushNotification Events, die für die HomescreenModerator View von Interesse sind.
             PushNotificationManager pushManager = PushNotificationManager.GetInstance();
             pushManager.ChannelDeleted += pushManager_ChannelDeleted;
+            pushManager.ChannelChanged += pushManager_ChannelChanged;
         }
 
         /// <summary>
@@ -113,6 +116,7 @@ namespace UlmUniversityNews.Views.ModeratorViews.Homescreen
             // Deregistriere PushNotification Events, die für die HomescreenModerator View von Interesse sind.
             PushNotificationManager pushManager = PushNotificationManager.GetInstance();
             pushManager.ChannelDeleted -= pushManager_ChannelDeleted;
+            pushManager.ChannelChanged -= pushManager_ChannelChanged;
         }
 
         /// <summary>
@@ -130,6 +134,25 @@ namespace UlmUniversityNews.Views.ModeratorViews.Homescreen
                     Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                     {
                         moderatorHomescreenViewModel.PerformViewUpdateOnChannelDeletedEvent(e.ChannelId);
+                    });
+            }
+        }
+
+        /// <summary>
+        /// Event-Handler, der ausgeführt wird, wenn vom PushNotificationManager ein 
+        /// ChannelChanged-Event verschickt wird.
+        /// </summary>
+        /// <param name="sender">Der Sender des Events, d.h. hier der PushNotificationManager.</param>
+        /// <param name="e">Eventparameter.</param>
+        async void pushManager_ChannelChanged(object sender, PushNotifications.EventArgClasses.ChannelChangedEventArgs e)
+        {
+            if (moderatorHomescreenViewModel != null)
+            {
+                // Ausführung auf UI-Thread abbilden.
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                    {
+                        await moderatorHomescreenViewModel.PerformViewUpdateOnChannelChangedEvent(e.ChannelId);
                     });
             }
         }
