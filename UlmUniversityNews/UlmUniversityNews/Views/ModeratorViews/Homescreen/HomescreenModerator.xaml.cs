@@ -16,6 +16,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using DataHandlingLayer.ViewModel;
+using UlmUniversityNews.PushNotifications;
+using Windows.ApplicationModel.Core;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -90,6 +92,48 @@ namespace UlmUniversityNews.Views.ModeratorViews.Homescreen
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
         }
+
+        #region PushNotificationManagerEvents
+        /// <summary>
+        /// Abonniere für die HomescreenModeratorView relevante Events, die vom PushNotificationManager bereitgestellt werden.
+        /// Beim Empfangen dieser Events wird die HomescreenModerator View ihren Zustand aktualisieren.
+        /// </summary>
+        private void subscribeToPushManagerEvents()
+        {
+            // Registriere PushNotification Events, die für die HomescreenModerator View von Interesse sind.
+            PushNotificationManager pushManager = PushNotificationManager.GetInstance();
+            pushManager.ChannelDeleted += pushManager_ChannelDeleted;
+        }
+
+        /// <summary>
+        /// Deabonniere alle Events des PushNotificationManager, für die sich die View registriert hat.
+        /// </summary>
+        private void unsubscribeFromPushManagerEvents()
+        {
+            // Deregistriere PushNotification Events, die für die HomescreenModerator View von Interesse sind.
+            PushNotificationManager pushManager = PushNotificationManager.GetInstance();
+            pushManager.ChannelDeleted -= pushManager_ChannelDeleted;
+        }
+
+        /// <summary>
+        /// Event-Handler, der ausgeführt wird, wenn vom PushNotificationManager ein 
+        /// ChannelDeleted-Event verschickt wird.
+        /// </summary>
+        /// <param name="sender">Der Sender des Events, d.h. hier der PushNotificationManager.</param>
+        /// <param name="e">Eventparameter.</param>
+        async void pushManager_ChannelDeleted(object sender, PushNotifications.EventArgClasses.ChannelDeletedEventArgs e)
+        {
+            if (moderatorHomescreenViewModel != null)
+            {
+                // Ausführung auf UI-Thread abbilden.
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                    {
+                        moderatorHomescreenViewModel.PerformViewUpdateOnChannelDeletedEvent(e.ChannelId);
+                    });
+            }
+        }
+        #endregion PushNotificationManagerEvents
 
         #region NavigationHelper-Registrierung
 

@@ -51,13 +51,15 @@ namespace DataHandlingLayer.Controller
             switch (pushType)
             {
                 case PushType.ANNOUNCEMENT_NEW:
-                    handledSuccessfully = await handleAnnouncementNewPushMsg(receivedNotificationMessage);
+                    handledSuccessfully = await handleAnnouncementNewPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.ANNOUNCEMENT_DELETED:
                     break;
                 case PushType.CHANNEL_CHANGED:
+                    handledSuccessfully = await handleChannelChangedPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.CHANNEL_DELETED:
+                    handledSuccessfully = handleChannelDeletedPushMsg(receivedNotificationMessage);
                     break;
                 case PushType.MODERATOR_ADDED:
                     break;
@@ -128,17 +130,8 @@ namespace DataHandlingLayer.Controller
         {
             // Parse JSON Inhalt der Notification. 
             string notificationJsonContent = receivedNotification.Content;
-            PushMessage pushMessage = null;
-            try
-            {
-                pushMessage = JsonConvert.DeserializeObject<PushMessage>(notificationJsonContent);
-            }
-            catch (JsonException ex)
-            {
-                Debug.WriteLine("Handling of received push notification not successful. Json parser error occurred. " +
-                    "Message is {0}.", ex.Message);
-            }
-
+            PushMessage pushMessage = jsonParser.ParsePushMessageFromJson(notificationJsonContent);
+            
             return pushMessage;
         }
 
@@ -238,7 +231,7 @@ namespace DataHandlingLayer.Controller
         /// </summary>
         /// <param name="msg">Die empfangende Push Nachricht.</param>
         /// <returns>Liefert true, wenn die PushNachricht erfolgreich behandelt wurde, ansonsten false.</returns>
-        private async Task<bool> handleAnnouncementNewPushMsg(PushMessage msg)
+        private async Task<bool> handleAnnouncementNewPushMsgAsync(PushMessage msg)
         {
             // Lese die Kanal-Id des betroffenen Kanals aus.
             int channelId = msg.Id1;
@@ -273,7 +266,59 @@ namespace DataHandlingLayer.Controller
          
             return true;
         }
-               
 
+        /// <summary>
+        /// Behandelt eine eingehende Push Nachricht vom Typ CHANNEL_CHANGED. Ruft die Kanalinformationen
+        /// des betroffenen Kanals ab und aktualisiert die lokalen Datensätze.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private async Task<bool> handleChannelChangedPushMsgAsync(PushMessage msg)
+        {
+            // Lese die Kanal-Id des betroffenen Kanals aus.
+            int channelId = msg.Id1;
+
+            try
+            {
+                // Rufe die neuesten Informationen zum Kanal ab.
+                Channel newChannel = await channelController.GetChannelInfoAsync(channelId);
+
+                // Speichere die neusten Kanalinformationen lokal ab.
+                channelController.ReplaceLocalChannel(newChannel);
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund sind.
+                Debug.WriteLine("Handling of Channel_Changed push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Push Nachricht vom Typ CHANNEL_DELETED. Markiert den 
+        /// Kanal lokal als gelöscht.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private bool handleChannelDeletedPushMsg(PushMessage msg)
+        {
+            // Lese die Kanal-Id des betroffenen Kanals aus.
+            int channelId = msg.Id1;
+
+            try
+            {
+                channelController.MarkChannelAsDeleted(channelId);
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund sind.
+                Debug.WriteLine("Handling of Channel_Deleted push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
     }
 }

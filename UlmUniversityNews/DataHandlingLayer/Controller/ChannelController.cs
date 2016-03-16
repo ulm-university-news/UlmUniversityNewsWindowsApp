@@ -449,13 +449,20 @@ namespace DataHandlingLayer.Controller
         /// Die lokale Instanz bleibt jedoch zunächst noch erhalten.
         /// </summary>
         /// <param name="channelId">Die Id des Kanals.</param>
-        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn markieren des Kanals
+        /// <exception cref="ClientException">Wirft DatabaseException, wenn markieren des Kanals
         ///     als gelöscht fehlschlägt.</exception>
         public void MarkChannelAsDeleted(int channelId)
         {
             try
             {
                 channelDatabaseManager.MarkChannelAsDeleted(channelId);
+
+                // Setze die Moderatoren des Kanals auf inaktiv.
+                List<Moderator> moderators = GetModeratorsOfChannel(channelId);
+                foreach (Moderator moderator in moderators)
+                {
+                    RemoveModeratorFromChannel(channelId, moderator.Id);
+                }
             }
             catch (DatabaseException ex)
             {
@@ -1233,13 +1240,6 @@ namespace DataHandlingLayer.Controller
 
             // Wenn Löschrequest an Server erfolgreich, dann markiere den Kanal lokal als gelöscht.
             MarkChannelAsDeleted(channelId);
-
-            // Setze die Moderatoren des Kanals auf inaktiv.
-            List<Moderator> moderators = GetModeratorsOfChannel(channelId);
-            foreach (Moderator moderator in moderators)
-            {
-                RemoveModeratorFromChannel(channelId, moderator.Id);
-            }
         }
         #endregion RemoteChannelFunctions
 

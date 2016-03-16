@@ -454,10 +454,32 @@ namespace DataHandlingLayer.JsonManager
         }
         #endregion Reminder
 
+        #region PushMessage
+        /// <summary>
+        /// Extrahiert ein PushMessage Objekten aus dem übergebenen JSON Dokument.
+        /// </summary>
+        /// <param name="jsonString">Das übergebene JSON-Dokument.</param>
+        /// <returns>Eine Instanz der Klasse PushMessage, oder null, wenn Deserialisierung fehlschlägt.</returns>
+        public PushMessage ParsePushMessageFromJson(string jsonString)
+        {
+            PushMessage pushMessage = null;
+            try
+            {
+                pushMessage = JsonConvert.DeserializeObject<PushMessage>(jsonString);
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine("ParsePushMessageFromJson: Json parser error occurred. " +
+                    "Message is {0}.", ex.Message);
+            }
+            return pushMessage;
+        }
+        #endregion PushMessage
+
         /// <summary>
         /// Eine Hilfsmethode, die ein DateTimeOffset Objekt in das Format der koordinierten Weltzeit umwandelt und
         /// als String zurückliefert. Diese Methode kann verwendet werden, um DateTimeOffset Objekte in ein
-        /// Format zu bringen, die vom Server verstanden werden. 
+        /// Format zu bringen, welches vom Server verstanden wird. 
         /// </summary>
         /// <param name="datetime">Das umzuwandelnde DateTimeOffset Objekt.</param>
         /// <returns>Die Datums- und Uhrzeitangabe im UTC Format.</returns>

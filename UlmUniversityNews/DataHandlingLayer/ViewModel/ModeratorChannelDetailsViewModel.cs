@@ -458,6 +458,20 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Aktualisiere die Anzeige, wenn ein ChannelDeleted Event empfangen wurde,
+        /// welches den gerade angezeigten Kanal betrifft.
+        /// </summary>
+        public void PerformViewUpdateOnChannelDeletedEvent()
+        {
+            if (Channel == null)
+                return;
+
+            // Setze Kanal auf gelöscht und prüfe Befehlsausführungen.
+            Channel.Deleted = true;
+            checkCommandExecution();
+        }
+
+        /// <summary>
         /// Sortiert die Liste von Remindern Objekten. Aktuell werden die Reminder alphabetisch
         /// nach ihrem Titel sortiert.
         /// </summary>

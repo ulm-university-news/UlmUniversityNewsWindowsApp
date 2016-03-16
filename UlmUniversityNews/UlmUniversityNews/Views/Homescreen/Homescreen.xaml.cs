@@ -106,8 +106,6 @@ namespace UlmUniversityNews.Views.Homescreen
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            Debug.WriteLine("LoadState Homescreen. Resolution scale is: {0}.",
-                DisplayInformation.GetForCurrentView().ResolutionScale);
             // Erforderlich wegen Caching. Falls Seite aus Cache geladen wird und Drawer war offen
             // bleibt er sonst offen.
             if (DrawerLayout.IsDrawerOpen)
@@ -146,6 +144,7 @@ namespace UlmUniversityNews.Views.Homescreen
             // Registriere PushNotification Events, die für die Homescreen View von Interesse sind.
             PushNotificationManager pushManager = PushNotificationManager.GetInstance();
             pushManager.ReceivedAnnouncement += pushManager_ReceivedAnnouncement;
+            pushManager.ChannelDeleted += pushManager_ChannelDeleted;
         }
 
         /// <summary>
@@ -156,6 +155,7 @@ namespace UlmUniversityNews.Views.Homescreen
             // Deregistriere PushNotification Events, die für die Homescreen View von Interesse sind.
             PushNotificationManager pushManager = PushNotificationManager.GetInstance();
             pushManager.ReceivedAnnouncement -= pushManager_ReceivedAnnouncement;
+            pushManager.ChannelDeleted -= pushManager_ChannelDeleted;
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace UlmUniversityNews.Views.Homescreen
         /// ReceivedAnnouncement-Event verschickt wird.
         /// </summary>
         /// <param name="sender">Der Sender des Events, d.h. hier der PushNotificationManager.</param>
-        /// <param name="e">Eventparameter</param>
+        /// <param name="e">Eventparameter.</param>
         async void pushManager_ReceivedAnnouncement(object sender, EventArgs e)
         {
             if (homescreenViewModel != null)
@@ -173,6 +173,25 @@ namespace UlmUniversityNews.Views.Homescreen
                     Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                     {
                         await homescreenViewModel.UpdateNumberOfUnreadAnnouncements();
+                    });
+            }
+        }
+
+        /// <summary>
+        /// Event-Handler, der ausgeführt wird, wenn vom PushNotificationManager ein 
+        /// ChannelDeleted-Event verschickt wird.
+        /// </summary>
+        /// <param name="sender">Der Sender des Events, d.h. hier der PushNotificationManager.</param>
+        /// <param name="e">Eventparameter.</param>
+        async void pushManager_ChannelDeleted(object sender, PushNotifications.EventArgClasses.ChannelDeletedEventArgs e)
+        {
+            if (homescreenViewModel != null)
+            {
+                // Ausführung auf UI-Thread abbilden.
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                    {
+                        homescreenViewModel.PerformViewUpdateOnChannelDeletedEvent(e.ChannelId);
                     });
             }
         }

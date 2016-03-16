@@ -154,6 +154,27 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Aktualisiert den Zustand der View im Falle eines eingehenden Events, welches
+        /// über die Löschung eines Kanals informiert. Schaut, ob der betroffene Kanal in der 
+        /// Auflistung ist und löst eine Aktualisierung der Anzeige aus.
+        /// </summary>
+        /// <param name="channelId">Die Id des betroffenen Kanals.</param>
+        public void PerformViewUpdateOnChannelDeletedEvent(int channelId)
+        {
+            // Redraw herbeiführen durch Löschen und Wiedereinfügen. TODO: Gibt es hier nichts besseres?
+            Channel affectedChannel = ManagedChannels.Where(channel => channel.Id == channelId).FirstOrDefault();
+            if (affectedChannel != null)
+            {
+                int index = ManagedChannels.IndexOf(affectedChannel);
+                Debug.WriteLine("It seems that the channel with id {0} is deleted on the server.", affectedChannel.Id);
+
+                ManagedChannels.RemoveAt(index);
+                affectedChannel.Deleted = true;
+                ManagedChannels.Insert(index, affectedChannel);
+            }
+        }
+
+        /// <summary>
         /// Stößt die Aktualisierung der Kanal-Moderatoren Beziehungen an.
         /// Fragt dabei die aktuellste Liste an verantwortlichen Kanälen vom Server ab
         /// und stößt die Aktualisierung der lokalen Datenbankeinträge an. Aktualisiert
@@ -229,9 +250,8 @@ namespace DataHandlingLayer.ViewModel
                         // Prüfe, ob Kanal als gelöscht markiert wurde.
                         if (localChannelList[i].Deleted && !currentChannel.Deleted)
                         {
-                            // Nehme Eintrag aus Liste raus und speichere ihn wieder rein, um Icon zu aktualisieren.
-                            ManagedChannels.RemoveAt(i);
-                            ManagedChannels.Insert(i, localChannelList[i]);
+                            // Aktualisiere View.
+                            PerformViewUpdateOnChannelDeletedEvent(currentChannel.Id);
                         }
                     }
                 }

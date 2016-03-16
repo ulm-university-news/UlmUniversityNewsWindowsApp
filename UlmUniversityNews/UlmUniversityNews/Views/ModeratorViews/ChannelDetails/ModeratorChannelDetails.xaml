@@ -303,6 +303,7 @@
               Background="{Binding Channel, Converter={StaticResource ChannelToDrawerMenuBackgroundConverter}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
@@ -317,6 +318,12 @@
 						   x:Uid="ModeratorChannelDetailsTitle"
 						   Style="{StaticResource DrawerTextStyle}"
 						   Text="{Binding Channel.Name, TargetNullValue='ChannelDetails', FallbackValue='ChannelDetails'}" />
+
+            <!-- Gelöscht Markierung -->
+            <TextBlock Grid.Column="2"
+                       x:Uid="ChannelDetailsChannelMarkedAsDeletedText"
+                       Style="{StaticResource DrawerTextStyle}"
+                       Visibility="{Binding Channel.Deleted, TargetNullValue='false', FallbackValue='false', Converter={StaticResource BooleanToVisibilityConverter}}" />
         </Grid>
 
         <!--Inhalt der Seite und Inhalt des Drawer Menü-->

@@ -220,6 +220,27 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Aktualisiert den Zustand der View im Falle eines eingehenden Events, welches
+        /// über die Löschung eines Kanals informiert. Schaut, ob der betroffene Kanal in der 
+        /// Auflistung ist und löst eine Aktualisierung der Anzeige aus.
+        /// </summary>
+        /// <param name="channelId">Die Id des betroffenen Kanals.</param>
+        public void PerformViewUpdateOnChannelDeletedEvent(int channelId)
+        {
+            // Redraw herbeiführen durch Löschen und Wiedereinfügen. TODO: Gibt es hier nichts besseres?
+            Channel affectedChannel = MyChannels.Where(channel => channel.Id ==channelId).FirstOrDefault();
+            if (affectedChannel != null)
+            {
+                int index = MyChannels.IndexOf(affectedChannel);
+                Debug.WriteLine("It seems that the channel with id {0} is deleted on the server.", affectedChannel.Id);
+
+                MyChannels.RemoveAt(index);
+                affectedChannel.Deleted = true;
+                MyChannels.Insert(index, affectedChannel);
+            }
+        }
+
+        /// <summary>
         /// Führt eine Synchronisation der im ViewModel aktuell gehaltenen "abonnierten" Kanalressourcen
         /// und der von der Anwendung gehaltenen "abonnierten" Kanalressourcen durch. Prüft, ob durch Änderungen
         /// neue Kanäle hinzugekommen (abonniert) oder entfernt wurden (deabonniert). Prüft
@@ -256,17 +277,8 @@ namespace DataHandlingLayer.ViewModel
                     // Prüfe, ob Kanal als gelöscht markiert wurde.
                     if (localChannel.Deleted && !currentChannel.Deleted)
                     {
-                        currentChannel.Deleted = true;
-                        // Redraw herbeiführen durch Löschen und Wiedereinfügen. TODO: Gibt es hier nichts besseres?
-                        Channel affectedChannel = MyChannels.Where(channel => channel.Id == localChannel.Id).FirstOrDefault();
-                        if (affectedChannel != null)
-                        {
-                            Debug.WriteLine("It seems that the channel with id {0} is deleted on the server.", affectedChannel.Id);
-                            affectedChannel.Deleted = true;
-                            int index = MyChannels.IndexOf(affectedChannel);
-                            MyChannels.RemoveAt(index);
-                            MyChannels.Insert(index, affectedChannel);
-                        }
+                        // Aktualisiere View bei gelöschtem Kanal.
+                        PerformViewUpdateOnChannelDeletedEvent(currentChannel.Id);
                     }
                 }
             }

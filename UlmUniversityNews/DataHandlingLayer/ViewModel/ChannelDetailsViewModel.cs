@@ -503,6 +503,23 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Aktualisiere die Anzeige, wenn ein ChannelDeleted Event empfangen wurde,
+        /// welches den gerade angezeigten Kanal betrifft.
+        /// </summary>
+        public void PerformViewUpdateOnChannelDeletedEvent()
+        {
+            if (Channel == null)
+                return;
+
+            // Setze Kanal auf gelöscht und prüfe Befehlsausführungen.
+            Channel.Deleted = true;
+            checkCommandExecution();
+
+            // Zeige Warnhinweis an.
+            IsDeletionNotificationOpen = true;
+        }
+
+        /// <summary>
         /// Zeigt, soweit für den Kanal aktiviert, eine Benachrichtigung über die Löschung
         /// des Kanals für den Nutzer an.
         /// </summary>

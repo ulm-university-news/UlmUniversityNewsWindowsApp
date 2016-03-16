@@ -38,7 +38,6 @@
     <!-- CommandBar -->
     <Page.BottomAppBar>
         <CommandBar x:Name="HomescreenCommandBar"
-                    RequestedTheme="Dark"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
             <AppBarButton x:Name="SearchChannels"
                           x:Uid="HomescreenSearchChannelsButton"

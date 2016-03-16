@@ -45,6 +45,7 @@ namespace UlmUniversityNews.PushNotifications
 
         #region Events
         public event EventHandler<AnnouncementReceivedEventArgs> ReceivedAnnouncement;
+        public event EventHandler<ChannelDeletedEventArgs> ChannelDeleted;
         #endregion Events
 
         /// <summary>
@@ -185,17 +186,24 @@ namespace UlmUniversityNews.PushNotifications
 
                 if (handledSuccessfully)
                 {
-                    // TODO - Benachrichtige View, so dass diese sich aktualisieren können.
+                    // Benachrichtige View, so dass diese sich aktualisieren können.
                     if (pushMsg != null)
                     {
                         switch (pushMsg.PushType)
                         {
-                            case DataHandlingLayer.DataModel.Enums.PushType.ANNOUNCEMENT_NEW:
+                            case PushType.ANNOUNCEMENT_NEW:
                                 // Sende Event an Listener.
                                 if (ReceivedAnnouncement != null)
                                 {
                                     // Sende ReceivedAnnouncement Event mit Kanal-Id des betroffenen Kanals.
                                     ReceivedAnnouncement(this, new AnnouncementReceivedEventArgs(pushMsg.Id1));
+                                }
+                                break;
+                            case PushType.CHANNEL_DELETED:
+                                if (ChannelDeleted != null)
+                                {
+                                    // Sende ChannelDeleted Event mit Kanal-Id des betroffenen Kanals.
+                                    ChannelDeleted(this, new ChannelDeletedEventArgs(pushMsg.Id1));
                                 }
                                 break;
                             default:
