@@ -248,7 +248,8 @@ namespace DataHandlingLayer.ViewModel
             DeleteChannelCommand = new AsyncRelayCommand(
                 param => executeDeleteChannelCommand());
             SynchronizeWithServerCommand = new AsyncRelayCommand(
-                param => executeSynchronizeWithServerCommand());
+                param => executeSynchronizeWithServerCommand(),
+                param => canPerformSynchronizationWithServer());
 
             // Lade Anwendungseinstellungen und passe View Parameter entsprechend an.
             AppSettings appSettings = channelController.GetApplicationSettings();
@@ -313,6 +314,9 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         public async Task PerformAnnouncementUpdate()
         {
+            if (Channel == null)
+                return;
+
             try
             {
                 displayIndeterminateProgressIndicator();
@@ -629,16 +633,60 @@ namespace DataHandlingLayer.ViewModel
             await LoadModeratorsOfChannel();
 
             // Synchronisiere Kanalinformationen.
-            Channel channel = await Task.Run(() => channelController.GetChannelInfoAsync(Channel.Id));
-            if (channel != null)
+            Channel referenceChannel = await Task.Run(() => channelController.GetChannelInfoAsync(Channel.Id));
+            if (referenceChannel != null)
             {
-                if (DateTimeOffset.Compare(Channel.ModificationDate, channel.ModificationDate) < 0)
+                if (DateTimeOffset.Compare(Channel.ModificationDate, referenceChannel.ModificationDate) < 0)
                 {
                     // Aktualisierung erforderlich.
-                    channelController.ReplaceLocalChannel(channel);
-                    // Lade View neu.
-                    LoadSelectedChannel(Channel.Id);
+                    channelController.ReplaceLocalChannel(referenceChannel);
+                    // Ändere für View relevante Properties, so dass View aktualisiert wird.
+                    updateViewRelatedChannelProperties(Channel, referenceChannel);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Aktualisiert die für die View relevanten Properties eines aktuell vom ViewModel gehaltenen
+        /// Kanal-Objekts.
+        /// </summary>
+        /// <param name="currentChannel">Das aktuell vom ViewModel gehaltene Channel-Objekt.</param>
+        /// <param name="newChannel">Das Channel-Objekt mit den aktualisierten Daten.</param>
+        private void updateViewRelatedChannelProperties(Channel currentChannel, Channel newChannel)
+        {
+            currentChannel.Name = newChannel.Name;
+            currentChannel.Description = newChannel.Description;
+            currentChannel.Term = newChannel.Term;
+            currentChannel.CreationDate = newChannel.CreationDate;
+            currentChannel.ModificationDate = newChannel.ModificationDate;
+            currentChannel.Locations = newChannel.Locations;
+            currentChannel.Dates = newChannel.Dates;
+            currentChannel.Contacts = newChannel.Contacts;
+            currentChannel.Website = newChannel.Website;
+
+            switch (currentChannel.Type)
+            {
+
+                case ChannelType.LECTURE:
+                    Lecture currentLecture = currentChannel as Lecture;
+                    Lecture newLecture = newChannel as Lecture;
+                    currentLecture.StartDate = newLecture.StartDate;
+                    currentLecture.EndDate = newLecture.EndDate;
+                    currentLecture.Lecturer = newLecture.Lecturer;
+                    currentLecture.Assistant = newLecture.Assistant;
+                    break;
+                case ChannelType.EVENT:
+                    Event currentEvent = currentChannel as Event;
+                    Event newEvent = newChannel as Event;
+                    currentEvent.Cost = newEvent.Cost;
+                    currentEvent.Organizer = newEvent.Organizer;
+                    break;
+                case ChannelType.SPORTS:
+                    Sports currentSportsObj = currentChannel as Sports;
+                    Sports newSportsObj = newChannel as Sports;
+                    currentSportsObj.Cost = newSportsObj.Cost;
+                    currentSportsObj.NumberOfParticipants = newSportsObj.NumberOfParticipants;
+                    break;
             }
         }
 
@@ -654,7 +702,7 @@ namespace DataHandlingLayer.ViewModel
             SwitchToEditChannelDialogCommand.RaiseCanExecuteChanged();
             SwitchToAddReminderDialogCommand.RaiseCanExecuteChanged();
             
-            if (SelectedPivotItemIndex == 2)    // Channel-Details Pivotitem gewählt.
+            if (SelectedPivotItemIndex == 2 && Channel != null)    // Channel-Details Pivotitem gewählt.
             {
                 CanDeleteChannel = true;
             }
@@ -672,7 +720,7 @@ namespace DataHandlingLayer.ViewModel
         private bool canSwitchToAddAnnouncementDialog()
         {
             // Pivot Index 0 ist der Announcement-Tab 
-            if (SelectedPivotItemIndex == 0)
+            if (SelectedPivotItemIndex == 0 && Channel != null)
             {
                 return true;
             }
@@ -699,7 +747,7 @@ namespace DataHandlingLayer.ViewModel
         private bool canSwitchToEditChannelDialog()
         {
             // Pivot Index 2 ist der Kanalinformationen-Tab.
-            if (SelectedPivotItemIndex == 2)
+            if (SelectedPivotItemIndex == 2 && Channel != null)
             {
                 return true;
             }
@@ -726,7 +774,7 @@ namespace DataHandlingLayer.ViewModel
         private bool canSwitchToAddReminderDialog()
         {
             // Pivot Index 1 ist der Reminder-Tab
-            if (SelectedPivotItemIndex == 1)
+            if (SelectedPivotItemIndex == 1 && Channel != null)
             {
                 return true;
             }
@@ -806,6 +854,19 @@ namespace DataHandlingLayer.ViewModel
             {
                 hideIndeterminateProgressIndicator();
             }
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl SynchronizeWithServerCommand unter Berücksichtigung des
+        /// aktuellen Zustands im ViewModel zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canPerformSynchronizationWithServer()
+        {
+            if (Channel != null)
+                return true;
+
+            return false;
         }
 
         /// <summary>

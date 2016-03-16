@@ -45,7 +45,7 @@ namespace DataHandlingLayer.DataModel
         public string Description
         {
             get { return description; }
-            set { description = value; }
+            set { this.setProperty(ref this.description, value); }
         }
 
         private ChannelType type;
@@ -67,7 +67,7 @@ namespace DataHandlingLayer.DataModel
         public DateTimeOffset CreationDate
         {
             get { return creationDate; }
-            set { creationDate = value; }
+            set { this.setProperty(ref this.creationDate, value); }
         }
 
         private DateTimeOffset modificationDate;
@@ -78,7 +78,7 @@ namespace DataHandlingLayer.DataModel
         public DateTimeOffset ModificationDate
         {
             get { return modificationDate; }
-            set { modificationDate = value; }
+            set { this.setProperty(ref this.modificationDate, value); }
         }
 
         private string term;
@@ -100,7 +100,7 @@ namespace DataHandlingLayer.DataModel
         public string Locations
         {
             get { return locations; }
-            set { locations = value; }
+            set { this.setProperty(ref this.locations, value); }
         }
 
         private string dates;
@@ -111,7 +111,7 @@ namespace DataHandlingLayer.DataModel
         public string Dates
         {
             get { return dates; }
-            set { dates = value; }
+            set { this.setProperty(ref this.dates, value); }
         }
 
         private string contacts;
@@ -122,7 +122,7 @@ namespace DataHandlingLayer.DataModel
         public string Contacts
         {
             get { return contacts; }
-            set { contacts = value; }
+            set { this.setProperty(ref this.contacts, value); }
         }
 
         private string website;
@@ -133,7 +133,7 @@ namespace DataHandlingLayer.DataModel
         public string Website
         {
             get { return website; }
-            set { website = value; }
+            set { this.setProperty(ref this.website, value); }
         }
 
         private bool deleted;

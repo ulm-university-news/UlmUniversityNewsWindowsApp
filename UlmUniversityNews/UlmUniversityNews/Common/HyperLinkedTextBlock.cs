@@ -74,12 +74,23 @@ namespace UlmUniversityNews.Common
             // Iteriere über alle Teilstrings.
             foreach(string text in splittedText)
             {
-                if(text.ToLower().StartsWith("http:") || text.ToLower().StartsWith("https:")
-                    || text.ToLower().StartsWith("www."))
+                string refText = text.ToLower();
+                if (refText.StartsWith("http:") || refText.StartsWith("https:")
+                    || refText.StartsWith("www.") || refText.EndsWith(".de")
+                    || refText.EndsWith(".com"))
                 {
                     // Füge Hyperlink hinzu.
                     Hyperlink link = GetHyperLink(text);
-                    textBlock.Inlines.Add(link);
+                    if (link != null)
+                    {
+                        textBlock.Inlines.Add(link);
+                    }
+                    else
+                    {
+                        // Füge Run Element hinzu.
+                        Run runElement = GetRunControl(text);
+                        textBlock.Inlines.Add(runElement);
+                    }
                 }
                 else
                 {
@@ -110,18 +121,43 @@ namespace UlmUniversityNews.Common
         /// Block in den TextBlock geladen werden.
         /// </summary>
         /// <param name="uri">Der Text, der als Hyperlink interpretiert werden soll.</param>
-        /// <returns>Eine Instanz der Klasse Hyperlink.</returns>
+        /// <returns>Eine Instanz der Klasse Hyperlink, oder null, falls String nicht in
+        ///     Hyperlink umgewandelt werden konnte.</returns>
         private static Hyperlink GetHyperLink(string uri)
         {
-            if(uri.ToLower().StartsWith("www."))
+            if(!uri.ToLower().StartsWith("http://") && !uri.ToLower().StartsWith("https://"))
             {
                 uri = "http://" + uri;
             }
 
+            bool isValid = true;
+
+            // Prüfe, ob String eine valide URL darstellt.
+            if (!Uri.IsWellFormedUriString(uri, UriKind.Absolute))
+            {
+                // Prüfe, ob hinten ein Zeichen angehängt ist, z.B. ein ',', welches
+                // die Uri ungültig macht.
+                if (Uri.IsWellFormedUriString(uri.Substring(0, uri.Length - 1), UriKind.Absolute))
+                {
+                    uri = uri.Substring(0, uri.Length - 1);
+                }
+                else
+                {
+                    isValid = false;
+                }
+            }
+
             // Erstelle Instanz von Hyperlink.
-            Hyperlink hyper = new Hyperlink();
-            hyper.NavigateUri = new Uri(uri);
-            hyper.Inlines.Add(GetRunControl(uri));
+            Hyperlink hyper = null;
+            if (isValid)
+            {
+                hyper = new Hyperlink();
+                Uri hyperlinkUri = null;
+                Uri.TryCreate(uri, UriKind.RelativeOrAbsolute, out hyperlinkUri);
+                hyper.NavigateUri = hyperlinkUri;
+                hyper.Inlines.Add(GetRunControl(uri));
+            }
+
             return hyper;
         }
 

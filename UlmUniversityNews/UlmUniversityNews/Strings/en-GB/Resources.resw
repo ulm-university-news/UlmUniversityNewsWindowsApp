@@ -364,7 +364,7 @@
     <value>Notifications</value>
   </data>
   <data name="ApplicationSettingsNotificationSettingsDescription.Text" xml:space="preserve">
-    <value>The behaviour of the application regarding the announcement of incoming messages can be adjusted here.  The settings apply generally for the whole application. However, it is possible to set specific notification settings for individual channels or groups which overwrite these settings for the specific resource.</value>
+    <value>The behaviour of the application regarding the announcement of incoming messages can be adjusted here.  The settings apply generally for the whole application. However, it is possible to set specific notification settings for individual channels or groups which override these settings for the specific resource.</value>
   </data>
   <data name="ApplicationSettingsNotificationSettingsOptionAll.Content" xml:space="preserve">
     <value>Announce all messages</value>
@@ -996,5 +996,8 @@ date: </value>
   </data>
   <data name="ChannelDetailsNoReminderInChannelInfo.Text" xml:space="preserve">
     <value>There are no reminder for this channel so far.</value>
+  </data>
+  <data name="ChannelDetailsSynchronizeChannelInformationButton.Label" xml:space="preserve">
+    <value>update</value>
   </data>
 </root>

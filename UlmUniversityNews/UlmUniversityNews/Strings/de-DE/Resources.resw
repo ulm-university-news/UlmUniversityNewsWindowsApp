@@ -998,4 +998,7 @@ Nachricht am: </value>
   <data name="ChannelDetailsNoReminderInChannelInfo.Text" xml:space="preserve">
     <value>Für diesen Kanal wurden noch keine Reminder definiert.</value>
   </data>
+  <data name="ChannelDetailsSynchronizeChannelInformationButton.Label" xml:space="preserve">
+    <value>aktuali-sieren</value>
+  </data>
 </root>

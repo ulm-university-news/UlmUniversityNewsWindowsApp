@@ -160,7 +160,18 @@ namespace DataHandlingLayer.ViewModel
             get { return isUpdateAnnouncementsPossible; }
             set { this.setProperty(ref this.isUpdateAnnouncementsPossible, value); }
         }
-        
+
+        private bool isChannelInfoSynchronisationPossible;
+        /// <summary>
+        /// Gibt an, ob mit dem aktuellen Zustand der View eine Synchronisation der Kanal- und
+        /// Moderatoreninformationen des Kanals mit den Serverdaten möglich ist.
+        /// </summary>
+        public bool IsChannelInfoSynchronisationPossible
+        {
+            get { return isChannelInfoSynchronisationPossible; }
+            set { this.setProperty(ref this.isChannelInfoSynchronisationPossible, value); }
+        }
+                
         private bool isDeleteChannelWarningFlyoutOpen;
         /// <summary>
         /// Gibt an, ob aktuell das Flyout zur Anzeige des Warnhinweises bezüglich der Löschoperation
@@ -215,6 +226,17 @@ namespace DataHandlingLayer.ViewModel
             set { updateAnnouncementsCommand = value; }
         }
 
+        private AsyncRelayCommand synchronizeChannelInformationCommand;
+        /// <summary>
+        /// Der Befehl löst die Synchronisation der Kanal- und Moderatoreninformationen des Kanals
+        /// mit den Serverdaten aus.
+        /// </summary>
+        public AsyncRelayCommand SynchronizeChannelInformationCommand
+        {
+            get { return synchronizeChannelInformationCommand; }
+            set { synchronizeChannelInformationCommand = value; }
+        }
+        
         private RelayCommand switchToChannelSettingsCommand;
         /// <summary>
         /// Befehl zum Wechseln auf die ChannelSettings View.
@@ -258,12 +280,26 @@ namespace DataHandlingLayer.ViewModel
             channelController = new ChannelController();
 
             // Initialisiere Befehle.
-            SubscribeChannelCommand = new AsyncRelayCommand(param => executeSubscribeChannel(), param => canSubscribeChannel());
-            UnsubscribeChannelCommand = new AsyncRelayCommand(param => executeUnsubscribeChannel());
-            UpdateAnnouncementsCommand = new AsyncRelayCommand(param => executeUpdateAnnouncementsCommand(), param => canUpdateAnnouncements());
-            SwitchToChannelSettingsCommand = new RelayCommand(param => executeSwitchToChannelSettingsCommand(), param => canSwitchToChannelSettings());
-            OpenDeleteChannelLocallyFlyoutCommand = new RelayCommand(param => executeOpenDeleteChannelLocallyFlyoutCommand(), param => canOpenDeleteChannelLocallyFlyout());
-            DeleteChannelLocallyFlyoutCommand = new RelayCommand(param => executeDeleteChannelLocallyCommand(), param => canDeleteChannelLocally());
+            SubscribeChannelCommand = new AsyncRelayCommand(
+                param => executeSubscribeChannel(),
+                param => canSubscribeChannel());
+            UnsubscribeChannelCommand = new AsyncRelayCommand(
+                param => executeUnsubscribeChannel());
+            UpdateAnnouncementsCommand = new AsyncRelayCommand(
+                param => executeUpdateAnnouncementsCommand(),
+                param => canUpdateAnnouncements());
+            SynchronizeChannelInformationCommand = new AsyncRelayCommand(
+                param => executeSynchronizeChannelInformationCommand(),
+                param => canSynchronizeChannelInformation());
+            SwitchToChannelSettingsCommand = new RelayCommand(
+                param => executeSwitchToChannelSettingsCommand(),
+                param => canSwitchToChannelSettings());
+            OpenDeleteChannelLocallyFlyoutCommand = new RelayCommand(
+                param => executeOpenDeleteChannelLocallyFlyoutCommand(),
+                param => canOpenDeleteChannelLocallyFlyout());
+            DeleteChannelLocallyFlyoutCommand = new RelayCommand(
+                param => executeDeleteChannelLocallyCommand(),
+                param => canDeleteChannelLocally());
 
             // Führe Online Aktualisierung am Anfang durch, d.h. wenn das ViewModel geladen wurde.
             performOnlineAnnouncementUpdate = true;
@@ -485,6 +521,108 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
+        /// <summary>
+        /// Eine Hilfsmethode, die die Aktualisierung der Announcements des aktuellen Kanals ausführt.
+        /// </summary>
+        /// <param name="withCaching">Gibt an, ob der Request bei mehrfachen gleichen Requests innerhalb eines Zeitraums erneut ausgeführt werden soll,
+        ///     oder ob der Eintrag aus dem Cache verwendet werden soll.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn die Aktualisierung der Announcements fehlschlägt.</exception>
+        private async Task updateAnnouncements(bool withCaching)
+        {
+            // Extrahiere als erstes die aktuell höchste MessageNr einer Announcement in diesem Kanal.
+            int maxMsgNr = 0;
+            maxMsgNr = channelController.GetHighestMsgNrForChannel(Channel.Id);
+            Debug.WriteLine("Perform update announcement operation with max messageNumber of {0}.", maxMsgNr);
+
+            // Frage die Announcements ab.
+            List<Announcement> receivedAnnouncements = await channelController.GetAnnouncementsOfChannelAsync(Channel.Id, maxMsgNr, withCaching);
+
+            if (receivedAnnouncements != null && receivedAnnouncements.Count > 0)
+            {
+                await Task.Run(() => channelController.StoreReceivedAnnouncementsAsync(receivedAnnouncements));
+
+                // Trage die empfangenen Announcements in die Liste aktueller Announcements ein.
+                foreach (Announcement announcement in receivedAnnouncements)
+                {
+                    Announcements.Insert(0, announcement);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Stößt eine Synchronisation der Kanal- und Moderatoreninformationen
+        /// des gewählten Kanals an. Fragt entsprechende Informationen vom Server ab
+        /// und stößt die Aktualisierung der lokalen Datensätze an.
+        /// </summary>
+        private async Task synchroniseChannelInformation()
+        {
+            if (Channel == null)
+                return;
+
+            // Synchronisiere verantwortliche Moderatoren.
+            List<Moderator> responsibleModerators = await Task.Run(() => channelController.GetResponsibleModeratorsAsync(Channel.Id));
+
+            // Stoße lokale Synchronisation an.
+            await Task.Run(() => channelController.SynchronizeResponsibleModerators(Channel.Id, responsibleModerators));
+
+            // Synchronisiere Kanalinformationen.
+            Channel referenceChannel = await Task.Run(() => channelController.GetChannelInfoAsync(Channel.Id));
+            if (referenceChannel != null)
+            {
+                if (DateTimeOffset.Compare(Channel.ModificationDate, referenceChannel.ModificationDate) < 0)
+                {
+                    // Aktualisierung erforderlich.
+                    channelController.ReplaceLocalChannel(referenceChannel);
+                    // Ändere für View relevante Properties, so dass View aktualisiert wird.
+                    updateViewRelatedChannelProperties(Channel, referenceChannel);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Aktualisiert die für die View relevanten Properties eines aktuell vom ViewModel gehaltenen
+        /// Kanal-Objekts.
+        /// </summary>
+        /// <param name="currentChannel">Das aktuell vom ViewModel gehaltene Channel-Objekt.</param>
+        /// <param name="newChannel">Das Channel-Objekt mit den aktualisierten Daten.</param>
+        private void updateViewRelatedChannelProperties(Channel currentChannel, Channel newChannel)
+        {
+            currentChannel.Name = newChannel.Name;
+            currentChannel.Description = newChannel.Description;
+            currentChannel.Term = newChannel.Term;
+            currentChannel.CreationDate = newChannel.CreationDate;
+            currentChannel.ModificationDate = newChannel.ModificationDate;
+            currentChannel.Locations = newChannel.Locations;
+            currentChannel.Dates = newChannel.Dates;
+            currentChannel.Contacts = newChannel.Contacts;
+            currentChannel.Website = newChannel.Website;
+
+            switch (currentChannel.Type)
+            {
+
+                case ChannelType.LECTURE:
+                    Lecture currentLecture = currentChannel as Lecture;
+                    Lecture newLecture = newChannel as Lecture;
+                    currentLecture.StartDate = newLecture.StartDate;
+                    currentLecture.EndDate = newLecture.EndDate;
+                    currentLecture.Lecturer = newLecture.Lecturer;
+                    currentLecture.Assistant = newLecture.Assistant;
+                    break;
+                case ChannelType.EVENT:
+                    Event currentEvent = currentChannel as Event;
+                    Event newEvent = newChannel as Event;
+                    currentEvent.Cost = newEvent.Cost;
+                    currentEvent.Organizer = newEvent.Organizer;
+                    break;
+                case ChannelType.SPORTS:
+                    Sports currentSportsObj = currentChannel as Sports;
+                    Sports newSportsObj = newChannel as Sports;
+                    currentSportsObj.Cost = newSportsObj.Cost;
+                    currentSportsObj.NumberOfParticipants = newSportsObj.NumberOfParticipants;
+                    break;
+            }
+        }
+
         #region CommandFunctionality
         /// <summary>
         /// Eine Hilfsmethode, die nach einer Statusänderung des Pivot Elements prüft,
@@ -496,6 +634,7 @@ namespace DataHandlingLayer.ViewModel
             SubscribeChannelCommand.OnCanExecuteChanged();
             UpdateAnnouncementsCommand.OnCanExecuteChanged();
             OpenDeleteChannelLocallyFlyoutCommand.RaiseCanExecuteChanged();
+            SynchronizeChannelInformationCommand.OnCanExecuteChanged();
         }
 
         /// <summary>
@@ -591,7 +730,7 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
-        /// Gibt an, ob das Kommando UpdateAnnouncements ausgeführt werden kann.
+        /// Gibt an, ob der Befehl UpdateAnnouncements ausgeführt werden kann.
         /// </summary>
         /// <returns>Liefert true zurück, wenn das Kommando ausgeführt werden kann, ansonsten false.</returns>
         private bool canUpdateAnnouncements()
@@ -632,31 +771,43 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
-        /// <summary>
-        /// Eine Hilfsmethode, die die Aktualisierung der Announcements des aktuellen Kanals ausführt.
+        /// <summary>    
+        /// Gibt an, ob der Befehl SynchronizeChannelInformation ausgeführt werden kann.
         /// </summary>
-        /// <param name="withCaching">Gibt an, ob der Request bei mehrfachen gleichen Requests innerhalb eines Zeitraums erneut ausgeführt werden soll,
-        ///     oder ob der Eintrag aus dem Cache verwendet werden soll.</param>
-        /// <exception cref="ClientException">Wirft ClientException, wenn die Aktualisierung der Announcements fehlschlägt.</exception>
-        private async Task updateAnnouncements(bool withCaching)
+        /// <returns>Liefert true, wenn der Befehl ausgeführt werden kann, ansonsten false.</returns>
+        private bool canSynchronizeChannelInformation()
         {
-            // Extrahiere als erstes die aktuell höchste MessageNr einer Announcement in diesem Kanal.
-            int maxMsgNr = 0;
-            maxMsgNr = channelController.GetHighestMsgNrForChannel(Channel.Id);
-            Debug.WriteLine("Perform update announcement operation with max messageNumber of {0}.", maxMsgNr);
-
-            // Frage die Announcements ab.
-            List<Announcement> receivedAnnouncements = await channelController.GetAnnouncementsOfChannelAsync(Channel.Id, maxMsgNr, withCaching);
-
-            if (receivedAnnouncements != null && receivedAnnouncements.Count > 0)
+            if (Channel != null && 
+                SelectedPivotItemIndex == 1 &&
+                Channel.Deleted == false)
             {
-                await Task.Run(() => channelController.StoreReceivedAnnouncementsAsync(receivedAnnouncements));
+                IsChannelInfoSynchronisationPossible = true;
+                return true;
+            }
+            IsChannelInfoSynchronisationPossible = false;
+            return false;
+        }
 
-                // Trage die empfangenen Announcements in die Liste aktueller Announcements ein.
-                foreach (Announcement announcement in receivedAnnouncements)
-                {
-                    Announcements.Insert(0, announcement);
-                }
+        /// <summary>
+        /// Führt den Befehl SynchronizeChannelInformationCommand aus. Stößt die Synchronisation
+        /// der Kanal- und Moderatoreninformationen des gewählten Kanals an.
+        /// </summary>
+        private async Task executeSynchronizeChannelInformationCommand()
+        {
+            try
+            {
+                displayIndeterminateProgressIndicator();
+                await synchroniseChannelInformation();
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("executeSynchronizeChannelInformationCommand: Something went wrong during execution. " + 
+                    "The message is: {0}", ex.Message);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
             }
         }
 

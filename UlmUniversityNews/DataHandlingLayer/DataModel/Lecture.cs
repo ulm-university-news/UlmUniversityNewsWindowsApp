@@ -34,7 +34,7 @@ namespace DataHandlingLayer.DataModel
         public string StartDate
         {
             get { return startDate; }
-            set { startDate = value; }
+            set { this.setProperty(ref this.startDate, value); }
         }
 
         private string endDate;
@@ -45,7 +45,7 @@ namespace DataHandlingLayer.DataModel
         public string EndDate
         {
             get { return endDate; }
-            set { endDate = value; }
+            set { this.setProperty(ref this.endDate, value); }
         }
 
         private string lecturer;
@@ -56,7 +56,7 @@ namespace DataHandlingLayer.DataModel
         public string Lecturer
         {
             get { return lecturer; }
-            set { lecturer = value; }
+            set { this.setProperty(ref this.lecturer, value); }
         }
 
         private string assistant;
@@ -67,7 +67,7 @@ namespace DataHandlingLayer.DataModel
         public string Assistant
         {
             get { return assistant; }
-            set { assistant = value; }
+            set { this.setProperty(ref this.assistant, value); }
         }    
         #endregion Properties
 

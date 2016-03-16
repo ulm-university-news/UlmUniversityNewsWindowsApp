@@ -181,6 +181,14 @@
                 Command="{Binding UpdateAnnouncementsCommand}"
                 />
             
+            <AppBarButton 
+                x:Name="SynchronizeChannelInformationButton"
+                x:Uid="ChannelDetailsSynchronizeChannelInformationButton"
+                Icon="Sync"
+                Label="update"
+                Visibility="{Binding IsChannelInfoSynchronisationPossible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding SynchronizeChannelInformationCommand}"/>
+            
             <AppBarButton
                 x:Name="NotificationSettingsButton"
                 x:Uid="ChannelDetailsChannelSettingsButton"

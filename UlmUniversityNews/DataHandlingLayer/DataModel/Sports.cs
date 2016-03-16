@@ -22,7 +22,7 @@ namespace DataHandlingLayer.DataModel
         public string Cost
         {
             get { return cost; }
-            set { cost = value; }
+            set { this.setProperty(ref this.cost, value); }
         }
 
         private string numberOfParticipants;
@@ -33,7 +33,7 @@ namespace DataHandlingLayer.DataModel
         public string NumberOfParticipants
         {
             get { return numberOfParticipants; }
-            set { numberOfParticipants = value; }
+            set { this.setProperty(ref this.numberOfParticipants, value); }
         }
         #endregion Properties
 
