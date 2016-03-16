@@ -42,12 +42,17 @@ namespace UlmUniversityNews.Common
 
             // Hole den neuen Wert des Properties.
             string text = e.NewValue as string;
+            if (text == null)
+                return;
+
             // Lösche die aktuellen Inline Textelemente des TextBlocks.
             textBlock.Inlines.Clear();
 
             // Prüfe, ob der neue Text mindestens einen Hyperlink enthält.
-            if(text.ToLower().Contains("http:") || text.ToLower().Contains("https:")
-                || text.ToLower().Contains("www."))
+            string refText = text.ToLower();
+            if (refText.Contains("http:") || refText.Contains("https:")
+                || refText.Contains("www.") || refText.Contains(".de") 
+                || refText.Contains(".com"))
             {
                 // Splitte Text an Leerzeichen auf.
                 string[] splittedText = text.Split(new string[] { " " }, StringSplitOptions.None);

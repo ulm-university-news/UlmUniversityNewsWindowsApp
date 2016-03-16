@@ -99,7 +99,7 @@
                     Grid.Row="1"
                     x:Name="AnnouncementContent"
                     Style="{StaticResource TextInAnnouncementList}"
-                    Text="{Binding Text}" />
+                    common:HyperLinkedTextBlock.Text="{Binding Text}" />
                 </Grid>
 
                 <!-- 3. Zeile Sepeartor-->
