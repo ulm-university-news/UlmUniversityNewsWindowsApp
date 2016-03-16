@@ -1002,6 +1002,9 @@ Nachricht am: </value>
     <value>Damit die Einstellungen bezüglich der bevorzugten Sprache wirksam werden, starten Sie die Anwendung bitte neu.</value>
   </data>
   <data name="ChannelDetailsSynchronizeChannelInformationButton.Label" xml:space="preserve">
+    <value>aktuali-siere info</value>
+  </data>
+  <data name="ChannelSearchSynchronizeChannelsButton.Label" xml:space="preserve">
     <value>aktuali-sieren</value>
   </data>
 </root>

@@ -73,7 +73,7 @@ namespace DataHandlingLayer.ViewModel
         #region Commands
         private AsyncRelayCommand startChannelSearchCommand;
         /// <summary>
-        /// Kommando, zum Starten der Kanalsuche.
+        /// Befehl, zum Starten der Kanalsuche.
         /// </summary>
         public AsyncRelayCommand StartChannelSearchCommand
         {
@@ -83,7 +83,7 @@ namespace DataHandlingLayer.ViewModel
 
         private AsyncRelayCommand reorderChannelsCommand;
         /// <summary>
-        /// Kommando, um die Anordnung der Kanalressourcen in der Liste zu beeinflussen.
+        /// Befehl, um die Anordnung der Kanalressourcen in der Liste zu beeinflussen.
         /// </summary>
         public AsyncRelayCommand ReorderChannelsCommand
         {
@@ -91,9 +91,20 @@ namespace DataHandlingLayer.ViewModel
             set { reorderChannelsCommand = value; }
         }
 
+        private AsyncRelayCommand synchronizeChannelsCommand;
+        /// <summary>
+        /// Befehl, der eine Synchronisation der Kanaldaten mit den 
+        /// neusten Daten des Servers anstößt.
+        /// </summary>
+        public AsyncRelayCommand SynchronizeChannelsCommand
+        {
+            get { return synchronizeChannelsCommand; }
+            set { synchronizeChannelsCommand = value; }
+        }
+        
         private RelayCommand channelSelectedCommand;
         /// <summary>
-        /// Kommando, das den Klick auf ein Kanal in der Auflistung behandelt.
+        /// Befehl, welcher den Klick auf ein Kanal in der Auflistung behandelt.
         /// </summary>
         public RelayCommand ChannelSelectedCommand
         {
@@ -116,17 +127,27 @@ namespace DataHandlingLayer.ViewModel
             // Führe Online Update bei nächster Aktualisierung aus.
             performOnlineUpdate = true;
 
-            // Initialisiere Kommandos.
-            StartChannelSearchCommand = new AsyncRelayCommand(param => executeChannelSearchAsync(), param => canExecuteSearch());
-            ReorderChannelsCommand = new AsyncRelayCommand(param => executeReorderChannelsCommandAsync());
-            ChannelSelectedCommand = new RelayCommand(param => executeChannelSelected(param), param => canSelectChannel());
+            // Initialisiere Befehle.
+            StartChannelSearchCommand = new AsyncRelayCommand(
+                param => executeChannelSearchAsync(),
+                param => canExecuteSearch());
+            ReorderChannelsCommand = new AsyncRelayCommand(
+                param => executeReorderChannelsCommandAsync());
+            ChannelSelectedCommand = new RelayCommand(
+                param => executeChannelSelected(param),
+                param => canSelectChannel());
+            SynchronizeChannelsCommand = new AsyncRelayCommand(
+                param => executeSynchronizeChannelsCommand(),
+                param => canSynchronizeChannels());
         }
 
         /// <summary>
         /// Stößt einen Abruf von aktualisierten Kanal-Ressourcen an und aktualisiert
         /// die Kanaldaten, falls notwendig.
         /// </summary>
-        public async Task UpdateLocalChannelList()
+        /// <param name="displayErrors">Gibt an, ob ein Fehler, der während der Ausführung auftreten könnte,
+        ///     dem Nutzer angezeigt werden soll, oder nicht.</param>
+        public async Task UpdateLocalChannelList(bool displayErrors)
         {
             List<Channel> updatedChannels = null;
             if (performOnlineUpdate)
@@ -148,8 +169,12 @@ namespace DataHandlingLayer.ViewModel
                 }
                 catch (ClientException ex)
                 {
-                    // Fehler wird nicht an View weitergereicht.
                     Debug.WriteLine("ClientException occurred. The message is {0} and the error code is: {1}.", ex.Message, ex.ErrorCode);
+                    // Fehler anzeigen.
+                    if (displayErrors)
+                    {
+                        displayError(ex.ErrorCode);
+                    }
                     return;
                 }
                 finally
@@ -385,6 +410,32 @@ namespace DataHandlingLayer.ViewModel
                 select item
                 );
             return results;
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl SynchronizeChannelsCommand zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canSynchronizeChannels()
+        {
+            if (allChannels != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl SynchronizeChannelsCommand aus. Stößt den Abruf der Informationen
+        /// über geänderte Kanäle vom Server an.
+        /// </summary>
+        private async Task executeSynchronizeChannelsCommand()
+        {
+            // Setze Wert für Online-Aktualisierung wieder auf true.
+            performOnlineUpdate = true;
+
+            // Stoße Aktualisierung der Kanaldaten an.
+            await UpdateLocalChannelList(true);
         }
 
         /// <summary>

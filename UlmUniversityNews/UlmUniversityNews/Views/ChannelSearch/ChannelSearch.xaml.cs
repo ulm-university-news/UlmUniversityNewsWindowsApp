@@ -87,7 +87,7 @@ namespace UlmUniversityNews.Views.ChannelSearch
             // Lade die Kanaldaten für die Anzeige.
             await searchChannelsViewModel.LoadChannelsAsync();
             // Starte Aktualisierungsprozess von Kanaldaten.
-            await searchChannelsViewModel.UpdateLocalChannelList();
+            await searchChannelsViewModel.UpdateLocalChannelList(false);
         }
 
         /// <summary>
