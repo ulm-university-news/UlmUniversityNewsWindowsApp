@@ -42,6 +42,7 @@
     <!-- CommandBar -->
     <Page.BottomAppBar>
         <CommandBar x:Name="ReminderDetailsCommandBar"
+                    Foreground="{StaticResource UNUCommandBarButtonColor}"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
             <AppBarButton
                 x:Name="ReminderDetailsRemoveReminderButton"

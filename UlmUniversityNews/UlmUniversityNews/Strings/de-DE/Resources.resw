@@ -533,7 +533,7 @@
 Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
   </data>
   <data name="HomescreenModeratorMyChannelsPivotItem.Header" xml:space="preserve">
-    <value>Meine Kanäle</value>
+    <value>Verwaltete Kanäle</value>
   </data>
   <data name="ModeratorChannelDetailsAnnouncementPivotItem.Header" xml:space="preserve">
     <value>Nachrichten</value>
@@ -978,7 +978,7 @@ Nachricht am: </value>
     <value>Moderatoren</value>
   </data>
   <data name="ModeratorChannelDetailsSynchonizeButton.Label" xml:space="preserve">
-    <value>aktuali-sieren</value>
+    <value>synchro-nisieren</value>
   </data>
   <data name="ChannelDetailsChannelMarkedAsDeletedText.Text" xml:space="preserve">
     <value>(gelöscht)</value>
@@ -1006,6 +1006,9 @@ Nachricht am: </value>
   </data>
   <data name="ApplicationErrorChannelInvalidAssistantError" xml:space="preserve">
     <value>Die Angaben bezüglich des Übungsleiters sind invalide und wurden vom Server abgelehnt.</value>
+  </data>
+  <data name="ApplicationErrorChannelInvalidContacts" xml:space="preserve">
+    <value>Die angegebenen Kontaktinformationen sind invalide und wurden vom Server abgelehnt.</value>
   </data>
   <data name="ApplicationErrorChannelInvalidCostError" xml:space="preserve">
     <value>Die Beschreibung hinsichtlich der Kosten ist invalide und wurde vom Server abgelehnt.</value>
@@ -1063,5 +1066,11 @@ Nachricht am: </value>
   </data>
   <data name="ChannelSearchSynchronizeChannelsButton.Label" xml:space="preserve">
     <value>aktuali-sieren</value>
+  </data>
+  <data name="HomescreenModeratorNoManagedChannelsInfo.Text" xml:space="preserve">
+    <value>Es gibt noch keinen von Ihnen verwalteten Kanal. Sie können einen neuen Kanal anlegen, indem Sie auf den Button am unteren Ende der Seite klicken.</value>
+  </data>
+  <data name="HomescreenModeratorSynchronizeManagedChannelsButton.Label" xml:space="preserve">
+    <value>synchro-nisieren</value>
   </data>
 </root>

@@ -37,7 +37,9 @@
 
     <!-- Command Bar -->
     <Page.BottomAppBar>
-        <CommandBar Background="{StaticResource UniUlmMainBackgroundColor}">
+        <CommandBar 
+            Foreground="{StaticResource UNUCommandBarButtonColor}"
+            Background="{StaticResource UniUlmMainBackgroundColor}">
             <AppBarButton 
                 x:Name="CreateAccount"
                 x:Uid="StartPageCreateAccountButton"

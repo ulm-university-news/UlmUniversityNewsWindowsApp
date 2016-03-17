@@ -16,6 +16,8 @@
     <Page.Resources>
         <!-- Konvertierung eines ItemClickEventArgs auf das geklickte Objekt. -->
         <valueconverter:ItemClickedConverter x:Key="ItemClickedConverter" />
+        <!-- Konverter, der Menge der Listeneinträge auf Sichtbarkeit abbildet. Visible bei mehr als 1 Eintrag. -->
+        <valueconverter:ListCountToVisibilityConverter x:Key="ListCountToVisibilityConverter" />
     </Page.Resources>
 
     <!-- StatusBar -->
@@ -33,12 +35,18 @@
     <!-- CommandBar -->
     <Page.BottomAppBar>
         <CommandBar x:Name="HomescreenModeratorCommandBar"
+                    Foreground="{StaticResource UNUCommandBarButtonColor}"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
+            <AppBarButton x:Name="HomescreenModeratorSynchronizeManagedChannelsButton"
+                          x:Uid="HomescreenModeratorSynchronizeManagedChannelsButton"
+                          Label="sync"
+                          Icon="Sync"
+                          Command="{Binding SynchronizeManagedChannelsCommand}" />
             <AppBarButton x:Name="HomescreenModeratorAddChannelButton"
                           x:Uid="HomescreenModeratorAddChannelButton"
                           Label="add channel"
                           Icon="Add"
-                          Command="{Binding SwitchToAddChannelDialogCommand}"/> 
+                          Command="{Binding SwitchToAddChannelDialogCommand}" /> 
         </CommandBar>
     </Page.BottomAppBar>
 
@@ -100,8 +108,8 @@
                                 x:Uid="HomescreenModeratorNoManagedChannelsInfo"
                                 Style="{StaticResource UniversityNewsUlmStandardText}"
                                 Text=""
-                                Visibility="Collapsed"
-                                />  <!-- TODO - Bind visiblity, so that the text will be visible if the list is empty. Use ListCountToVisibilityConverter.-->
+                                Visibility="{Binding ManagedChannels.Count, Converter={StaticResource ListCountToVisibilityConverter}}"
+                                />  <!-- Bind visiblity, so that the text will be visible if the list is empty. Use ListCountToVisibilityConverter.-->
 
                             <!-- Definiere Liste für verwaltete Kanäle. -->
                             <!-- Beachte, IsItemClickEnabled muss explizit aktiviert werden, sonst funktioniert das Binding auf das Command über das Behaviour nicht.-->

@@ -66,7 +66,18 @@ namespace DataHandlingLayer.ViewModel
         {
             get { return switchToAddChannelDialogCommand; }
             set { switchToAddChannelDialogCommand = value; }
-        }     
+        }
+
+        private AsyncRelayCommand synchronizeManagedChannelsCommand;
+        /// <summary>
+        /// Befehl, um die Synchronisation der lokalen Daten bezüglich der verwalteten
+        /// Kanäle mit den Serverdaten zu synchronisieren.
+        /// </summary>
+        public AsyncRelayCommand SynchronizeManagedChannelsCommand
+        {
+            get { return synchronizeManagedChannelsCommand; }
+            set { synchronizeManagedChannelsCommand = value; }
+        }
         #endregion Commands
 
         /// <summary>
@@ -83,6 +94,7 @@ namespace DataHandlingLayer.ViewModel
             // Erzeuge Befehle.
             ChannelSelected = new RelayCommand(param => executeChannelSelected(param));
             SwitchToAddChannelDialogCommand = new RelayCommand(param => executeSwitchToChannelAddDialogCommand());
+            SynchronizeManagedChannelsCommand = new AsyncRelayCommand(param => executeSynchronizeManagedChannelsCommand());
         }
 
         /// <summary>
@@ -123,7 +135,7 @@ namespace DataHandlingLayer.ViewModel
                     }
 
                     // Führe noch Aktualisierung mit Daten des REST Servers aus, so dass der lokale Datensatz auf den neuesten Stand kommt. 
-                    await updateChannelModeratorRelationships();
+                    await updateChannelModeratorRelationships(false);
                 }
                 else
                 {
@@ -206,10 +218,13 @@ namespace DataHandlingLayer.ViewModel
         /// und stößt die Aktualisierung der lokalen Datenbankeinträge an. Aktualisiert
         /// anschließend die ManagedChannelsListe.
         /// </summary>
-        private async Task updateChannelModeratorRelationships()
+        /// <param name="displayErrors">Gibt an, ob ein möglicherweise auftretender Fehler dem Nutzer 
+        ///     angezeigt werden soll.</param>
+        private async Task updateChannelModeratorRelationships(bool displayErrors)
         {
             Moderator activeModerator = channelController.GetLocalModerator();
 
+            displayIndeterminateProgressIndicator();
             try
             {
                 Debug.WriteLine("Start the updating process of channel moderator relationships.");
@@ -231,6 +246,15 @@ namespace DataHandlingLayer.ViewModel
             {
                 Debug.WriteLine("Error occurred during updating of channel and moderator relationships.");
                 Debug.WriteLine("Message is: {0}, Error Code is: {1}.", ex.Message, ex.ErrorCode);
+
+                if (displayErrors)
+                {
+                    displayError(ex.ErrorCode);
+                }
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
             }
         }
 
@@ -426,6 +450,7 @@ namespace DataHandlingLayer.ViewModel
             return channels;
         }
 
+        #region CommandFunctions
         /// <summary>
         /// Führt den Befehl ChannelSelected aus. Es wird auf die Detailseite des gewählten Kanals navigiert.
         /// </summary>
@@ -446,5 +471,17 @@ namespace DataHandlingLayer.ViewModel
         {
             _navService.Navigate("AddAndEditChannel");
         }
+
+        /// <summary>
+        /// Führt den Befehl SynchronizeManagedChannelsCommand aus. Stößt die Synchronisation
+        /// der lokalen Daten bezüglich der verwalteten Kanäle eines Moderators mit den Serverdaten
+        /// an.
+        /// </summary>
+        private async Task executeSynchronizeManagedChannelsCommand()
+        {
+            // Stoße die Synchronisation an.
+            await updateChannelModeratorRelationships(true);
+        }
+        #endregion CommandFunctions
     }
 }

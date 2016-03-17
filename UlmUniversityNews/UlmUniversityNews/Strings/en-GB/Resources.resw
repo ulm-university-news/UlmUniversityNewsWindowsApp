@@ -532,7 +532,7 @@
     <value>There is no subscribed channel. The button at the bottom of the page takes you to the channel search where channels can be subscribed.</value>
   </data>
   <data name="HomescreenModeratorMyChannelsPivotItem.Header" xml:space="preserve">
-    <value>My channels</value>
+    <value>Managed channels</value>
   </data>
   <data name="ModeratorChannelDetailsAnnouncementPivotItem.Header" xml:space="preserve">
     <value>Messages</value>
@@ -977,7 +977,7 @@ date: </value>
     <value>Moderators</value>
   </data>
   <data name="ModeratorChannelDetailsSynchonizeButton.Label" xml:space="preserve">
-    <value>update</value>
+    <value>snyc</value>
   </data>
   <data name="ChannelDetailsChannelMarkedAsDeletedText.Text" xml:space="preserve">
     <value>(deleted)</value>
@@ -1065,5 +1065,11 @@ date: </value>
   </data>
   <data name="ChannelSearchSynchronizeChannelsButton.Label" xml:space="preserve">
     <value>update</value>
+  </data>
+  <data name="HomescreenModeratorNoManagedChannelsInfo.Text" xml:space="preserve">
+    <value>There are no managed channels. You can create a new channel by clicking on the button at the bottom of the page.</value>
+  </data>
+  <data name="HomescreenModeratorSynchronizeManagedChannelsButton.Label" xml:space="preserve">
+    <value>sync</value>
   </data>
 </root>

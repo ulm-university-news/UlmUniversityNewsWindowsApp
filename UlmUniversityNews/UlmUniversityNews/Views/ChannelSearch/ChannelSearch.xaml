@@ -33,6 +33,7 @@
     <!-- CommandBar -->
     <Page.BottomAppBar>
         <CommandBar x:Name="ChannelSearchCommandBar"
+                    Foreground="{StaticResource UNUCommandBarButtonColor}"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
             <AppBarButton
                 x:Name="ChannelSearchSynchronizeChannelsButton"

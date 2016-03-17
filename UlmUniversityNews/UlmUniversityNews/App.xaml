@@ -31,6 +31,7 @@
         <SolidColorBrush x:Key="MainFragmentBackgroundColor" Color="White" />
         <SolidColorBrush x:Key="UnreadMessageBackgroundColor" Color="Gray" Opacity="0.3" />
         <SolidColorBrush x:Key="DrawerMenuContentPanelBackgroundColor" Color="White" />
+        <SolidColorBrush x:Key="UNUCommandBarButtonColor" Color="White" />
         
         <!-- Style für Schriften in Listen und Aufzählungen. -->
         <Style 
@@ -295,7 +296,7 @@
             <Setter Property="HorizontalAlignment" Value="Right" />
             <Setter Property="VerticalAlignment" Value="Bottom" />
         </Style>
-        
+               
         <!-- ************************************************************************************************************************************ -->
         <!-- Layout eines Eintrages einer Kanal-Ressource in der Übersichtliste von Kanälen.-->
         <DataTemplate x:Key="ChannelListItemStyle">
@@ -400,6 +401,17 @@
             x:Key="CommandBarStyle"
             TargetType="CommandBar">
             <Setter Property="Background" Value="#7D9AAA" />
+        </Style>-->
+
+        <!-- ************************************************************************************************************************************ -->
+        <!-- Style für AppBarButtons. -->
+        <!--
+        <Style x:Key="UniversityNewsAppBarButtonStyle"
+               TargetType="AppBarButton">
+            -->
+        <!--<Setter Property="RequestedTheme" Value="Dark" />-->
+        <!--<Setter Property="Foreground" Value="White" />-->
+        <!--
         </Style>-->
     </Application.Resources>
 
