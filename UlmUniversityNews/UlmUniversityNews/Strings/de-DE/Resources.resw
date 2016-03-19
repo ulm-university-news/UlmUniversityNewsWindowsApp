@@ -174,13 +174,13 @@
   <data name="StartPageCreateAccountButton.Label" xml:space="preserve">
     <value>erstelle account</value>
   </data>
-  <data name="StartPageUsernameDescription" xml:space="preserve">
-    <value>Um diese Anwendung zu nutzen, müssen sie einen Nutzernamen angeben. Der Nutzername wird verwendet, um von Ihnen erstellte Nachrichten für andere Nutzer identifzierbar zu machen.</value>
+  <data name="StartPageUsernameDescription.Text" xml:space="preserve">
+    <value>Um diese App benutzen zu könnnen, müssen Sie ein Nutzerkonto anlegen. Dazu müssen Sie unten einen Nutzername angeben und die Nutzungsbedingungen akzeptieren. Diese können Sie unter folgendem Link abrufen: </value>
   </data>
   <data name="StartPageUsernameTextBox.Header" xml:space="preserve">
     <value>Nutzername</value>
   </data>
-  <data name="StartPageWelcomeText" xml:space="preserve">
+  <data name="StartPageWelcomeText.Text" xml:space="preserve">
     <value>Willkommen bei University News.</value>
   </data>
   <data name="HomescreenSearchChannelsButton.Label" xml:space="preserve">
@@ -193,7 +193,7 @@
     <value>Vorlesung</value>
   </data>
   <data name="ListItemChannelTypeOtherString" xml:space="preserve">
-    <value>Sonstiges</value>
+    <value>Anderes</value>
   </data>
   <data name="ListItemChannelTypeSportsString" xml:space="preserve">
     <value>Sportgruppe</value>
@@ -217,7 +217,7 @@
     <value>Kanalinformationen</value>
   </data>
   <data name="ChannelDetailsMessagesPivotItem.Header" xml:space="preserve">
-    <value>Nachrichten</value>
+    <value>Bechanrichtigungen</value>
   </data>
   <data name="ChannelSearchPageTitle.Text" xml:space="preserve">
     <value>Kanalsuche</value>
@@ -247,7 +247,7 @@
     <value>Beschreibung</value>
   </data>
   <data name="ChannelDetailsChannelLocationsField.Text" xml:space="preserve">
-    <value>Ort</value>
+    <value>Orte</value>
   </data>
   <data name="ChannelDetailsChannelModificationDateField.Text" xml:space="preserve">
     <value>Änderungsdatum</value>
@@ -268,10 +268,10 @@
     <value>Eintritt</value>
   </data>
   <data name="ChannelDetailsEventOrganizerField.Text" xml:space="preserve">
-    <value>Organisator</value>
+    <value>Veranstalter</value>
   </data>
   <data name="ChannelDetailsLectureAssistantField.Text" xml:space="preserve">
-    <value>Übungsleiter/Assistent</value>
+    <value>Übungsleiter/Assistenten</value>
   </data>
   <data name="ChannelDetailsLectureEndDateField.Text" xml:space="preserve">
     <value>Vorlesungsende</value>
@@ -289,7 +289,7 @@
     <value>Kosten</value>
   </data>
   <data name="ChannelDetailsSportNumberOfParticipantsField.Text" xml:space="preserve">
-    <value>Teilnehmerplätze</value>
+    <value>Teilnehmerzahl</value>
   </data>
   <data name="ChannelSearchOrderByChannelTypeButton.Label" xml:space="preserve">
     <value>ordne nach typ</value>
@@ -490,7 +490,7 @@
     <value>speichern</value>
   </data>
   <data name="LoginPageDescription.Text" xml:space="preserve">
-    <value>Um zur Moderatorenansicht der Anwendung zu gelangen, geben Sie hier bitte Ihre Login Daten an.</value>
+    <value>Um zur Moderatorenansicht der Anwendung zu gelangen, geben Sie hier bitte Ihre Login Daten an. Wenn Sie keinen Moderatorenaccount haben, Ihr Passwort vergessen haben, oder andere Probleme auftreten, besuchen Sie bitte www.google.de.</value>
   </data>
   <data name="LoginPageLoginButton.Label" xml:space="preserve">
     <value>anmelden</value>
@@ -517,7 +517,7 @@
     <value>Passwort</value>
   </data>
   <data name="LoginPageTitle.Text" xml:space="preserve">
-    <value>Login</value>
+    <value>Moderatoren-Login</value>
   </data>
   <data name="LoginPageUsernameTextBox.Header" xml:space="preserve">
     <value>Nutzername</value>
@@ -545,7 +545,7 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
     <value>Reminder</value>
   </data>
   <data name="AddAnnouncementDialogContentTextBox.Header" xml:space="preserve">
-    <value>Nachrichteninhalt *</value>
+    <value>Nachricht *</value>
   </data>
   <data name="AddAnnouncementDialogDescription.Text" xml:space="preserve">
     <value>Füllen Sie die unten aufgeführten Felder aus und klicken Sie anschließend auf senden, um die Nachricht an die Abonnenten des Kanals zu senden. Die mit * gekennzeichneten Felder sind Pflichtfelder.</value>
@@ -596,7 +596,7 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
     <value>Die Informationen zum Übungsleiter dürfen nicht mehr als 120 Zeichen umfassen.</value>
   </data>
   <data name="AddAndEditChannelAssistantTextBox.Header" xml:space="preserve">
-    <value>Übungsleiter</value>
+    <value>Übungsleiter/Assistenten</value>
   </data>
   <data name="AddAndEditChannelContactsInfoTooLongValidationError" xml:space="preserve">
     <value>Die Kontaktinformationen dürfen nicht mehr als 120 Zeichen umfassen.</value>
@@ -647,7 +647,7 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
     <value>Die Informationen über den Organisator der Veranstaltung dürfen nicht mehr als 120 Zeichen umfassen.</value>
   </data>
   <data name="AddAndEditChannelEventOrganizerTextBox.Header" xml:space="preserve">
-    <value>Organisator</value>
+    <value>Veranstalter</value>
   </data>
   <data name="AddAndEditChannelLectureFacultyComboBox.Header" xml:space="preserve">
     <value>Fakultät *</value>
@@ -761,19 +761,19 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
     <value>Bitte geben Sie einen Nutzernamen an.</value>
   </data>
   <data name="AddAndEditReminderEndDateInPastValidationError" xml:space="preserve">
-    <value>Das Ende-Datum darf nicht in der Vergangenheit sein.</value>
+    <value>Das Enddatum darf nicht in der Vergangenheit sein.</value>
   </data>
   <data name="AddAndEditReminderInvalidIntervalValidationError" xml:space="preserve">
     <value>Das Intervall ist nicht gültig. Bitte prüfen Sie ihre Eingabe.</value>
   </data>
   <data name="AddAndEditReminderStartAndEndDateEqualIntervalInvalidValidationError" xml:space="preserve">
-    <value>Wenn Start-Datum und Ende-Datum gleich sind, dann kann der Reminder nur als ein Reminder konfiguriert werden, der genau einmal feuert.</value>
+    <value>Wenn Startdatum und Enddatum gleich sind, dann kann der Reminder nur als ein Reminder konfiguriert werden, der genau einmal feuert.</value>
   </data>
   <data name="AddAndEditReminderStartDateAfterEndDateValidationError" xml:space="preserve">
-    <value>Das Start-Datum darf nicht nach dem Ende-Datum sein.</value>
+    <value>Das Startdatum darf nicht nach dem Enddatum sein.</value>
   </data>
   <data name="AddAndEditReminderStartOrEndDateNotSetValidatonError" xml:space="preserve">
-    <value>Bitte geben Sie ein gültiges Start-Datum und ein gültiges Ende-Datum an.</value>
+    <value>Bitte geben Sie ein gültiges Startdatum und ein gültiges Enddatum an.</value>
   </data>
   <data name="NextReminderDateDescription.Text" xml:space="preserve">
     <value>Nächste Reminder 
@@ -804,7 +804,7 @@ Nachricht am: </value>
     <value>Reminder bearbeiten</value>
   </data>
   <data name="AddAndEditReminderEndDatePicker.Header" xml:space="preserve">
-    <value>Ende-Datum</value>
+    <value>Enddatum</value>
   </data>
   <data name="AddAndEditReminderIntervalBlockHeadline.Text" xml:space="preserve">
     <value>Bitte geben Sie das Intervall für den Reminder an:</value>
@@ -852,7 +852,7 @@ Nachricht am: </value>
     <value>Überspringe nächsten Termin</value>
   </data>
   <data name="AddAndEditReminderStartDatePicker.Header" xml:space="preserve">
-    <value>Start-Datum</value>
+    <value>Startdatum</value>
   </data>
   <data name="AddAndEditReminderTimePicker.Header" xml:space="preserve">
     <value>Uhrzeit</value>
@@ -900,7 +900,7 @@ Nachricht am: </value>
     <value>Reminderinformationen</value>
   </data>
   <data name="ReminderDetailsReminderEndDateField.Text" xml:space="preserve">
-    <value>Ende-Datum</value>
+    <value>Enddatum</value>
   </data>
   <data name="ReminderDetailsReminderIntervalField.Text" xml:space="preserve">
     <value>Intervall</value>
@@ -918,10 +918,10 @@ Nachricht am: </value>
     <value>Überspringe nächsten Reminder-Termin</value>
   </data>
   <data name="ReminderDetailsReminderStartDateField.Text" xml:space="preserve">
-    <value>Start-Datum</value>
+    <value>Startdatum</value>
   </data>
   <data name="ReminderDetailsReminderTextField.Text" xml:space="preserve">
-    <value>Nachrichteninhalt</value>
+    <value>Nachricht</value>
   </data>
   <data name="ReminderDetailsReminderTimeField.Text" xml:space="preserve">
     <value>Uhrzeit</value>
@@ -972,7 +972,7 @@ Nachricht am: </value>
     <value>Löschen</value>
   </data>
   <data name="ReminderDetailsDeleteReminderWarning.Text" xml:space="preserve">
-    <value>Wollen Sie den Reminder wirklich löschen?</value>
+    <value>Dieser Reminder wird gelöscht. Danach werden keine weiteren Remindernachrichten gesendet. Wollen Sie den Reminder wirklich löschen?</value>
   </data>
   <data name="ChannelDetailsModeratorField.Text" xml:space="preserve">
     <value>Moderatoren</value>
@@ -1072,5 +1072,14 @@ Nachricht am: </value>
   </data>
   <data name="HomescreenModeratorSynchronizeManagedChannelsButton.Label" xml:space="preserve">
     <value>synchro-nisieren</value>
+  </data>
+  <data name="StartPageAcceptTermsAndConditionsCheckBox.Content" xml:space="preserve">
+    <value>Ich akzeptiere die Nutzungsbedingungen</value>
+  </data>
+  <data name="StartPageTermsAndConditionsLink.Text" xml:space="preserve">
+    <value>www.google.de</value>
+  </data>
+  <data name="StartPageTitle.Text" xml:space="preserve">
+    <value>Startseite</value>
   </data>
 </root>

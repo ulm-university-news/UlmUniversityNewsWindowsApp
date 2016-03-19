@@ -2037,7 +2037,7 @@ namespace DataHandlingLayer.Controller
                 {
                     serverResponse = await channelApi.SendGetChannelsAssignedToModeratorRequestAsync(
                         activeModerator.ServerAccessToken,
-                        activeModerator.Id);
+                        moderatorId);
                 }
             }
             catch (APIException ex)

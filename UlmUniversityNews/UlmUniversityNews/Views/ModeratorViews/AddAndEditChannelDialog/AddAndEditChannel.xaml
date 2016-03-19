@@ -44,7 +44,7 @@
     <Page.BottomAppBar>
         <CommandBar x:Name="AddAndEditChannelCommandBar"
                     Foreground="{StaticResource UNUCommandBarButtonColor}"
-                    Background="{StaticResource UniUlmMainBackgroundColor}">
+                    Background="{Binding EditableChannel, Converter={StaticResource ChannelToDrawerMenuBackgroundConverter}}">
             <AppBarButton
                 x:Name="AddAndEditChannelAddChannelButton"
                 x:Uid="AddAndEditChannelAddChannelButton"

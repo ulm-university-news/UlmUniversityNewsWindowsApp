@@ -266,6 +266,22 @@
     <Content Include="Assets\AppIcons\UUNLogoInfoanzeige-33-33.png" />
     <Content Include="Assets\AppIcons\UUNLogoInfoanzeige-58-58.png" />
     <Content Include="Assets\AppIcons\welcome_screen.png" />
+    <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5.scale-100.png" />
+    <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5.scale-140.png" />
+    <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5.scale-240.png" />
+    <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5_quadr_150_150.scale-100.png" />
+    <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5_quadr_150_150.scale-140.png" />
+    <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5_quadr_150_150.scale-240.png" />
+    <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5_quadr_150_150_logo.scale-100.png" />
+    <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5_quadr_71_71.scale-100.png" />
+    <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5_quadr_71_71.scale-140.png" />
+    <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5_quadr_71_71.scale-240.png" />
+    <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5_store_logo.scale-100.png" />
+    <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5_store_logo.scale-140.png" />
+    <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5_store_logo.scale-240.png" />
+    <Content Include="Assets\app_logo_breit.scale-100.png" />
+    <Content Include="Assets\app_logo_breit.scale-140.png" />
+    <Content Include="Assets\app_logo_breit.scale-240.png" />
     <Content Include="Assets\ButtonIcons\feature.search.png" />
     <Content Include="Assets\channelIcons\de-DE\ic_deleted.scale-100.png" />
     <Content Include="Assets\channelIcons\de-DE\ic_deleted.scale-140.png" />
@@ -509,10 +525,14 @@
     <Content Include="Assets\ResourceDetails\ic_update_black_36dp.scale-140.png" />
     <Content Include="Assets\ResourceDetails\ic_update_black_36dp.scale-180.png" />
     <Content Include="Assets\ResourceDetails\ic_update_black_36dp.scale-240.png" />
+    <Content Include="Assets\SmallLogo.scale-100.png" />
+    <Content Include="Assets\SmallLogo.scale-140.png" />
     <Content Include="Assets\SmallLogo.scale-240.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-140.png" />
     <Content Include="Assets\SplashScreen.scale-240.png" />
+    <Content Include="Assets\Square71x71Logo.scale-100.png" />
+    <Content Include="Assets\Square71x71Logo.scale-140.png" />
     <Content Include="Assets\Square71x71Logo.scale-240.png" />
     <Content Include="Assets\StoreLogo.scale-100.png" />
     <Content Include="Assets\StoreLogo.scale-140.png" />
@@ -520,6 +540,8 @@
     <Content Include="Assets\universityNewsSplashScreen.scale-100.png" />
     <Content Include="Assets\universityNewsSplashScreen.scale-140.png" />
     <Content Include="Assets\universityNewsSplashScreen.scale-240.png" />
+    <Content Include="Assets\WideLogo.scale-100.png" />
+    <Content Include="Assets\WideLogo.scale-140.png" />
     <Content Include="Assets\WideLogo.scale-240.png" />
     <Content Include="Common\ReadMe.txt" />
   </ItemGroup>
@@ -550,6 +572,7 @@
     <None Include="Assets\channelIcons\en-GB\Thumbs.db" />
     <None Include="DataModel\SampleChannelData.json" />
     <None Include="packages.config" />
+    <None Include="UUNClassDiagram.cd" />
     <PRIResource Include="Strings\en-GB\Resources.resw" />
   </ItemGroup>
   <ItemGroup>

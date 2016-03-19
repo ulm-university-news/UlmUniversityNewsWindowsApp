@@ -174,13 +174,13 @@
   <data name="StartPageCreateAccountButton.Label" xml:space="preserve">
     <value>create account</value>
   </data>
-  <data name="StartPageUsernameDescription" xml:space="preserve">
-    <value>To use this app, you need to provide a username. The username enables other users of the app to identify your messages.</value>
+  <data name="StartPageUsernameDescription.Text" xml:space="preserve">
+    <value>To use this app you need to create an user account. To do that you just have to enter a user name below and accept the terms of user. You can find them on </value>
   </data>
   <data name="StartPageUsernameTextBox.Header" xml:space="preserve">
-    <value>username</value>
+    <value>Username</value>
   </data>
-  <data name="StartPageWelcomeText" xml:space="preserve">
+  <data name="StartPageWelcomeText.Text" xml:space="preserve">
     <value>Welcome to University News.</value>
   </data>
   <data name="HomescreenSearchChannelsButton.Label" xml:space="preserve">
@@ -208,19 +208,19 @@
     <value>search groups</value>
   </data>
   <data name="HomescreenMyChannelsPivotItem.Header" xml:space="preserve">
-    <value>My Channels</value>
+    <value>My channels</value>
   </data>
   <data name="HomescreenMyGroupsPivotItem.Header" xml:space="preserve">
-    <value>My Groups</value>
+    <value>My groups</value>
   </data>
   <data name="ChannelDetailsChannelInformationPivotItem.Header" xml:space="preserve">
     <value>Channel information</value>
   </data>
   <data name="ChannelDetailsMessagesPivotItem.Header" xml:space="preserve">
-    <value>Messages</value>
+    <value>Announcements</value>
   </data>
   <data name="ChannelSearchPageTitle.Text" xml:space="preserve">
-    <value>Search Channels</value>
+    <value>Search channels</value>
   </data>
   <data name="ListItemFacultyEngineeringAndComputerScienceString" xml:space="preserve">
     <value>Faculty of Engineering, Computer Science and Psychology</value>
@@ -238,7 +238,7 @@
     <value>Contact</value>
   </data>
   <data name="ChannelDetailsChannelCreationDateField.Text" xml:space="preserve">
-    <value>Creation Date</value>
+    <value>Creation date</value>
   </data>
   <data name="ChannelDetailsChannelDatesField.Text" xml:space="preserve">
     <value>Dates</value>
@@ -250,7 +250,7 @@
     <value>Locations</value>
   </data>
   <data name="ChannelDetailsChannelModificationDateField.Text" xml:space="preserve">
-    <value>Modification Date</value>
+    <value>Modification date</value>
   </data>
   <data name="ChannelDetailsChannelNameField.Text" xml:space="preserve">
     <value>Name</value>
@@ -265,16 +265,16 @@
     <value>Website</value>
   </data>
   <data name="ChannelDetailsEventCostField.Text" xml:space="preserve">
-    <value>Entrance Fee</value>
+    <value>Cost</value>
   </data>
   <data name="ChannelDetailsEventOrganizerField.Text" xml:space="preserve">
     <value>Organizer</value>
   </data>
   <data name="ChannelDetailsLectureAssistantField.Text" xml:space="preserve">
-    <value>Assistant</value>
+    <value>Assistants</value>
   </data>
   <data name="ChannelDetailsLectureEndDateField.Text" xml:space="preserve">
-    <value>End Date of Lecture</value>
+    <value>End date of lecture</value>
   </data>
   <data name="ChannelDetailsLectureFacultyField.Text" xml:space="preserve">
     <value>Faculty</value>
@@ -283,13 +283,13 @@
     <value>Lecturer</value>
   </data>
   <data name="ChannelDetailsLectureStartDateField.Text" xml:space="preserve">
-    <value>Start Date of Lecture</value>
+    <value>Start date of lecture</value>
   </data>
   <data name="ChannelDetailsSportCostField.Text" xml:space="preserve">
     <value>Cost</value>
   </data>
   <data name="ChannelDetailsSportNumberOfParticipantsField.Text" xml:space="preserve">
-    <value>Number of Participants</value>
+    <value>Number of participants</value>
   </data>
   <data name="ChannelSearchOrderByChannelTypeButton.Label" xml:space="preserve">
     <value>order by type</value>
@@ -313,7 +313,7 @@
     <value>update messages</value>
   </data>
   <data name="DrawerMenuEntryApplicationSettings" xml:space="preserve">
-    <value>Application Settings</value>
+    <value>Application settings</value>
   </data>
   <data name="DrawerMenuEntryHomescreen" xml:space="preserve">
     <value>Homescreen</value>
@@ -352,10 +352,10 @@
     <value>save</value>
   </data>
   <data name="ApplicationSettingsTitle.Text" xml:space="preserve">
-    <value>Application Settings</value>
+    <value>Application settings</value>
   </data>
   <data name="ApplicationSettingsUserAndLanguageSettings.Header" xml:space="preserve">
-    <value>User Settings</value>
+    <value>User settings</value>
   </data>
   <data name="ApplicationSettingsUsernameTextBox.Header" xml:space="preserve">
     <value>username</value>
@@ -442,22 +442,22 @@
     <value>By group type</value>
   </data>
   <data name="ApplicationSettingsHeaderAnnouncementOrderSettings.Text" xml:space="preserve">
-    <value>Message Order Settings</value>
+    <value>Message order settings</value>
   </data>
   <data name="ApplicationSettingsHeaderBallotListSettings.Text" xml:space="preserve">
-    <value>Ballot Order Settings</value>
+    <value>Ballot order settings</value>
   </data>
   <data name="ApplicationSettingsHeaderChannelListSettings.Text" xml:space="preserve">
-    <value>Channel Order Settings</value>
+    <value>Channel order settings</value>
   </data>
   <data name="ApplicationSettingsHeaderConversationListSettings.Text" xml:space="preserve">
-    <value>Conversation Order Settings</value>
+    <value>Conversation order settings</value>
   </data>
   <data name="ApplicationSettingsHeaderGeneralListSettings.Text" xml:space="preserve">
-    <value>General List Settings</value>
+    <value>General list settings</value>
   </data>
   <data name="ApplicationSettingsHeaderGroupListSettings.Text" xml:space="preserve">
-    <value>Group Order Settings</value>
+    <value>Group order settings</value>
   </data>
   <data name="ApplicationErrorErrorServerDatabaseFailure" xml:space="preserve">
     <value>The server could not handle the request successfully. There was a problem with the internal database of the server. Please try again.</value>
@@ -466,7 +466,7 @@
     <value>settings</value>
   </data>
   <data name="ChannelSettingsHeadline.Text" xml:space="preserve">
-    <value>Channel Settings</value>
+    <value>Channel settings</value>
   </data>
   <data name="ChannelSettingsNotificationSettingsDescription.Text" xml:space="preserve">
     <value>The settings defined here override the global notification settings for this specific channel. If the default option is chosen, the globally defined notification settings will be applied for this channel.</value>
@@ -517,7 +517,7 @@
     <value>Password</value>
   </data>
   <data name="LoginPageTitle.Text" xml:space="preserve">
-    <value>Login</value>
+    <value>Moderator login</value>
   </data>
   <data name="LoginPageUsernameTextBox.Header" xml:space="preserve">
     <value>Username</value>
@@ -562,7 +562,7 @@
     <value>send</value>
   </data>
   <data name="AddAnnouncementDialogTitle.Text" xml:space="preserve">
-    <value>Add Message</value>
+    <value>Add message</value>
   </data>
   <data name="AddAnnouncementDialogTitleTextBox.Header" xml:space="preserve">
     <value>Title *</value>
@@ -595,7 +595,7 @@
     <value>The assistant information must not exceed 120 characters.</value>
   </data>
   <data name="AddAndEditChannelAssistantTextBox.Header" xml:space="preserve">
-    <value>Assistant</value>
+    <value>Assistants</value>
   </data>
   <data name="AddAndEditChannelContactsInfoTooLongValidationError" xml:space="preserve">
     <value>The contacts information must not exceed 120 characters.</value>
@@ -920,7 +920,7 @@ date: </value>
     <value>Start date</value>
   </data>
   <data name="ReminderDetailsReminderTextField.Text" xml:space="preserve">
-    <value>Message content</value>
+    <value>Message</value>
   </data>
   <data name="ReminderDetailsReminderTimeField.Text" xml:space="preserve">
     <value>Time</value>
@@ -971,7 +971,7 @@ date: </value>
     <value>Delete</value>
   </data>
   <data name="ReminderDetailsDeleteReminderWarning.Text" xml:space="preserve">
-    <value>Do you really want to delete the reminder?</value>
+    <value>This reminder will be delted. No more reminder messages will be sent afterwards. Do you really want to delete the reminder?</value>
   </data>
   <data name="ChannelDetailsModeratorField.Text" xml:space="preserve">
     <value>Moderators</value>
@@ -1071,5 +1071,14 @@ date: </value>
   </data>
   <data name="HomescreenModeratorSynchronizeManagedChannelsButton.Label" xml:space="preserve">
     <value>sync</value>
+  </data>
+  <data name="StartPageAcceptTermsAndConditionsCheckBox.Content" xml:space="preserve">
+    <value>I accept the terms and conditions</value>
+  </data>
+  <data name="StartPageTermsAndConditionsLink.Text" xml:space="preserve">
+    <value>www.google.de</value>
+  </data>
+  <data name="StartPageTitle.Text" xml:space="preserve">
+    <value>Start page</value>
   </data>
 </root>

@@ -19,12 +19,28 @@ namespace DataHandlingLayer.ViewModel
 
         #region Properties
         private string userName;
-
+        /// <summary>
+        /// Der vom Nutzer eingegebene Nutzername.
+        /// </summary>
         public string Name
         {
             get { return userName; }
             set { this.setProperty(ref this.userName, value); }
-        }  
+        }
+
+        private bool areTermsAndConditionsAccepted;
+        /// <summary>
+        /// Gibt an, ob die Nutzungsbedingungen aktuell als akzeptiert markiert sind.
+        /// </summary>
+        public bool AreTermsAndConditionsAccepted
+        {
+            get { return areTermsAndConditionsAccepted; }
+            set 
+            { 
+                this.setProperty(ref this.areTermsAndConditionsAccepted, value);
+                checkCommandExecution();
+            }
+        }
         #endregion Properties
 
         #region Commands
@@ -46,23 +62,35 @@ namespace DataHandlingLayer.ViewModel
             : base(navService, errorMapper)
         {
             localUserController = new LocalUserController(this);    // Liefere Referenz auf IValidationErrorReport mit.
-            // Erstelle Commands
+
+            // Erstelle Befehle.
             CreateUserCommand = new AsyncRelayCommand(param => createLocalUser(), param => canCreateLocalUser());
         }
 
         /// <summary>
-        /// Determines if a local user account can be created.
+        /// Hilfsmethode, welche die Ausführbarkeit von den angebotenen Befehlen prüft.
         /// </summary>
-        /// <returns>Returns true if the local user account can be created.</returns>
-        private bool canCreateLocalUser()
+        private void checkCommandExecution()
         {
-            return true;
+            CreateUserCommand.OnCanExecuteChanged();
         }
 
         /// <summary>
-        /// Creates a local user account.
+        /// Gibt an, ob der Befehl zum Anlegen eines neuen Nutzerkontos aktuell zur Verfügung steht.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht.</returns>
+        private bool canCreateLocalUser()
+        {
+            if (AreTermsAndConditionsAccepted)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Erzeugt einen lokalen Nutzeraccount.
+        /// </summary>
         private async Task createLocalUser()
         {
             try

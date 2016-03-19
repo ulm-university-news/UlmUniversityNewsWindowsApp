@@ -77,16 +77,14 @@ namespace DataHandlingLayer.Controller
             localUser.Platform = DataHandlingLayer.DataModel.Enums.Platform.WINDOWS;
 
             // Führe Datenvalidierung auf Property Name aus.
+            localUser.ClearValidationErrors();  
+            clearValidationErrorForProperty("Name");
+
             localUser.ValidateNameProperty();
             if(localUser.HasValidationError("Name"))
             {
                 reportValidationErrors(localUser.GetValidationErrors());
                 return false;
-            }
-            else
-            {
-                localUser.ClearValidationErrors();  // propably useless here - TODO check this
-                clearValidationErrorForProperty("Name");
             }
 
             // Generiere Json String aus dem Objekt.

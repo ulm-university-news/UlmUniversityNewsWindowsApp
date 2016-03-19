@@ -48,7 +48,7 @@
     <Page.BottomAppBar>
         <CommandBar x:Name="AddAndEditReminderCommandBar"
                     Foreground="{StaticResource UNUCommandBarButtonColor}"
-                    Background="{StaticResource UniUlmMainBackgroundColor}">
+                    Background="{Binding SelectedChannel, Converter={StaticResource ChannelToDrawerMenuBackgroundConverter}}">
             <AppBarButton 
                 x:Name="AddAndEditReminderAddReminderButton"
                 x:Uid="AddAndEditReminderAddReminderButton"

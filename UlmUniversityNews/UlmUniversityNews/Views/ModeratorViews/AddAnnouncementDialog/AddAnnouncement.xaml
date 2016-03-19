@@ -37,7 +37,7 @@
     <Page.BottomAppBar>
         <CommandBar x:Name="AddAnnouncementDialogCommandBar"
                     Foreground="{StaticResource UNUCommandBarButtonColor}"
-                    Background="{StaticResource UniUlmMainBackgroundColor}">
+                    Background="{Binding SelectedChannel, Converter={StaticResource ChannelToDrawerMenuBackgroundConverter}}">
             <AppBarButton
                 x:Name="AddAnnouncementDialogSendMessageButton"
                 x:Uid="AddAnnouncementDialogSendMessageButton"

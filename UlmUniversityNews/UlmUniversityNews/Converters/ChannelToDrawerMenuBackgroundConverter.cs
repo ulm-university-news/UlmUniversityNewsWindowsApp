@@ -22,8 +22,14 @@ namespace UlmUniversityNews.Converters
             Channel channel = value as Channel;
             if(channel != null)
             {
+                // Sonderbehandlung, wenn Kanal als gelöscht markiert wurde.
+                if (channel.Deleted)
+                {
+                    return App.Current.Resources["UUNChannelMarkedAsDeletedColor"];
+                }
+
                 // Sonderbehandlung, wenn Kanal den Typ "Lecture" hat.
-                if(channel.Type == ChannelType.LECTURE)
+                if (channel.Type == ChannelType.LECTURE)
                 {
                     // Wandle Objekt um in ein Objekt vom Typ Lecture.
                     Lecture lecture = channel as Lecture;

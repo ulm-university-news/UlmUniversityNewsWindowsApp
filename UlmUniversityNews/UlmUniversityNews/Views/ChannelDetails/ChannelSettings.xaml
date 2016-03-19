@@ -40,7 +40,7 @@
     <Page.BottomAppBar>
         <CommandBar x:Name="ChannelSettingsCommandBar"
                     Foreground="{StaticResource UNUCommandBarButtonColor}"
-                    Background="{StaticResource UniUlmMainBackgroundColor}">
+                    Background="{Binding SelectedChannel, Converter={StaticResource ChannelToDrawerMenuBackgroundConverter}}">
             <AppBarButton
                 x:Name="ChannelSettingsSaveButton"
                 x:Uid="ChannelSettingsSaveButton"

@@ -128,7 +128,7 @@
     <Page.BottomAppBar>
         <CommandBar x:Name="ChannelDetailsCommandBar"
                     Foreground="{StaticResource UNUCommandBarButtonColor}"
-                    Background="{StaticResource UniUlmMainBackgroundColor}">
+                    Background="{Binding Channel, Converter={StaticResource ChannelToDrawerMenuBackgroundConverter}}">
             <AppBarButton
                 x:Name="ChannelDetailsDeleteChannelLocallyButton"
                 x:Uid="ChannelDetailsDeleteChannelLocallyButton"
