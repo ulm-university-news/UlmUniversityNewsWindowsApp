@@ -73,6 +73,7 @@ namespace UlmUniversityNews.Views.ChannelDetails
                 // Prüfe, ob der Kanal gelöscht wurde und zeige falls notwendig eine Benachrichtigung an.
                 channelDetailsViewModel.CheckWhetherChannelIsDeleted();
             }
+            await channelDetailsViewModel.LoadModeratorsOfChannel();
         }
 
         /// <summary>

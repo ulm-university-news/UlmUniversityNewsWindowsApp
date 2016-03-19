@@ -170,6 +170,56 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Gibt die Überschrift für die Nachricht zurück, mittels der dem Nutzer
+        /// die eingetroffene Push Nachricht angekündigt wird.
+        /// </summary>
+        /// <param name="msg">Die eingegangene Push Nachricht als PushMessage Instanz.</param>
+        /// <returns>Die Überschrift für die Nutzerbenachrichtigung.</returns>
+        public string GetUserNotificationHeadline(PushMessage msg)
+        {
+            string headline = string.Empty;
+
+            switch (msg.PushType)
+            {
+                case PushType.ANNOUNCEMENT_NEW:
+                    // Id1 ist die Kanal-Id in diesem Kontext.
+                    headline = getChannelName(msg.Id1);
+                    break;
+                case PushType.CHANNEL_DELETED:
+                    // Id1 ist die Kanal-Id in diesem Kontext.
+                    headline = getChannelName(msg.Id1);
+                    break;
+            }
+
+            return headline;
+        }
+
+        /// <summary>
+        /// Liefert den Schlüssel mittels dem der Inhalt der Nutzerbenachrichtigung über die
+        /// eingegangene Push Nachricht aus den Resource Dateien extrahiert werden kann. Mittels
+        /// diesem Schlüssel kann man also den anzuzeigenden Inhalt der Nutzerbenachrichtigung in der
+        /// vom Nutzer bevorzugten Sprache ermitteln.
+        /// </summary>
+        /// <param name="msg">Die eingegangene Push Nachricht in Form einer PushMessage Instanz.</param>
+        /// <returns>Den Schlüssel mittels dem der Inhalt der Nutzerbenachrichtigung extrahiert werden kann.</returns>
+        public string GetUserNotificationContentLocalizationKey(PushMessage msg)
+        {
+            string localizationKey = string.Empty;
+
+            switch (msg.PushType)
+            {
+                case PushType.ANNOUNCEMENT_NEW:
+                    localizationKey = "PushNotificationReceivedAnnouncementNew";
+                    break;
+                case PushType.CHANNEL_DELETED:
+                    localizationKey = "PushNotificationReceivedChannelDeleted";
+                    break;
+            }
+
+            return localizationKey;
+        }
+
+        /// <summary>
         /// Prüft im Falle einer eingegangenen Announcement, ob der Nutzer benachrichtigt werden soll.
         /// Die Entscheidung wird abhängig von den Anwendungseinstellungen, oder falls definiert, abhängig
         /// von den kanalspezifischen Einstellungen getroffen.
@@ -225,6 +275,28 @@ namespace DataHandlingLayer.Controller
 
             Debug.WriteLine("The result of whether the user will be notified is {0}.", notificationRequired);
             return notificationRequired;
+        }
+
+        /// <summary>
+        /// Gibt den Namen des Kanals zurück, der die angegebene Id besitzt.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals.</param>
+        /// <returns>Den Namen des Kanals.</returns>
+        private string getChannelName(int channelId)
+        {
+            string channelName = string.Empty;
+            try
+            {
+                Channel affectedChannel = channelController.GetChannel(channelId);
+                channelName = affectedChannel.Name;
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("getChannelName: Couldn't extract channel name.");
+                Debug.WriteLine("Msg is: {0}.", ex.Message);
+            }
+
+            return channelName;
         }
 
         /// <summary>

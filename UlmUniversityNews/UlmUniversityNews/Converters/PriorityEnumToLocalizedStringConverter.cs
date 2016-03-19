@@ -16,7 +16,7 @@ namespace UlmUniversityNews.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+            var loader = Windows.ApplicationModel.Resources.ResourceLoader.GetForViewIndependentUse("Resources");
             string localizedString = string.Empty; 
             Priority priority = (Priority)value;
             

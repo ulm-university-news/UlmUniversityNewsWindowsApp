@@ -19,7 +19,7 @@ namespace UlmUniversityNews.Converters
             Faculty faculty = (Faculty)value;
             string facultyString = string.Empty;
 
-            var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+            var loader = Windows.ApplicationModel.Resources.ResourceLoader.GetForViewIndependentUse("Resources");
             switch(faculty)
             {
                 case Faculty.ENGINEERING_COMPUTER_SCIENCE_PSYCHOLOGY:

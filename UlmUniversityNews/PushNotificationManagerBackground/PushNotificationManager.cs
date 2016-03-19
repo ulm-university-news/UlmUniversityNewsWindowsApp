@@ -40,21 +40,13 @@ namespace PushNotificationManagerBackground
             // Soll der Nutzer benachrichtigt werden?
             if(handledSuccessfully && pushController.IsUserNotificationRequired(pm))
             {
-                // Frage bevorzugte Sprache ab.
-                CultureInfo ci = new CultureInfo(Windows.System.UserProfile.GlobalizationPreferences.Languages[0]);
-
                 // Benachrichtige abhängig vom Typ der Push-Nachricht.
                 switch(pm.PushType)
                 {
                     case PushType.ANNOUNCEMENT_NEW:
-                        if(ci.TwoLetterISOLanguageName == "de")
-                        {
-                            showToastNotification("Neue Kanalnachricht empfangen");
-                        }
-                        else
-                        {
-                            showToastNotification("Received a new channel announcement");
-                        }
+                        string headline = pushController.GetUserNotificationHeadline(pm);
+                        string resourceKey = pushController.GetUserNotificationContentLocalizationKey(pm);
+                        showToastNotification(headline, resourceKey);
                         break;
                 }
             }
@@ -63,31 +55,55 @@ namespace PushNotificationManagerBackground
             // Task als abgeschlossen kennzeichnen.
             deferral.Complete();
         }
-
+        
         /// <summary>
         /// Zeige den Text in einer ToastNotification an, um den Nutzer über ein Ereignis zu informieren.
         /// </summary>
-        /// <param name="text">Der anzuzeigende Text.</param>
-        private void showToastNotification(string text)
+        /// <param name="headline">Die anzuzeigende Überschrift.</param>
+        /// <param name="resourceKey">Der Ressourcenschlüssel für den Inhalt der Benachrichtigung.</param>
+        private void showToastNotification(string headline, string resourceKey)
         {
             // Für den Anfang, sende nur eine ToastNotification mit dem Typ der PushNachricht und mache weiter nichts.
-            var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);
+            var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText02);
 
-            // Setze das Icon.
-            // var toastImageAttributes = toastDescriptor.GetElementsByTagName("image");
-            //toastImageAttributes[0].Attributes[1].NodeValue = "ms-appx:///PushNotificationManagerBackground/ToastIcon/AppLogoUni-106-106.png";
-
-            // ((XmlElement)toastImageAttributes[0]).SetAttribute("src", "ms-appdata:///local/AppLogoUni-50-50.scale-100.png");
-            // ((XmlElement)toastImageAttributes[0]).SetAttribute("alt", "UUNLogo");
-
-            // Setze den Text.
+            // Setze den Text - Headline.
             var txtNodes = toastDescriptor.GetElementsByTagName("text");
-            txtNodes[0].AppendChild(toastDescriptor.CreateTextNode(text));
+            txtNodes[0].AppendChild(toastDescriptor.CreateTextNode(headline));
+
+            // Setze den Text - Inhalt.
+            var loader = Windows.ApplicationModel.Resources.ResourceLoader.GetForViewIndependentUse("Resources");
+            string content = loader.GetString(resourceKey);
+            txtNodes[1].AppendChild(toastDescriptor.CreateTextNode(content));
 
             var toast = new ToastNotification(toastDescriptor);
             var toastNotifier = ToastNotificationManager.CreateToastNotifier();
             toastNotifier.Show(toast);
         }
+
+        ///// <summary>
+        ///// Zeige den Text in einer ToastNotification an, um den Nutzer über ein Ereignis zu informieren.
+        ///// </summary>
+        ///// <param name="text">Der anzuzeigende Text.</param>
+        //private void showToastNotification(string text)
+        //{
+        //    // Für den Anfang, sende nur eine ToastNotification mit dem Typ der PushNachricht und mache weiter nichts.
+        //    var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);
+
+        //    // Setze das Icon.
+        //    // var toastImageAttributes = toastDescriptor.GetElementsByTagName("image");
+        //    //toastImageAttributes[0].Attributes[1].NodeValue = "ms-appx:///PushNotificationManagerBackground/ToastIcon/AppLogoUni-106-106.png";
+
+        //    // ((XmlElement)toastImageAttributes[0]).SetAttribute("src", "ms-appdata:///local/AppLogoUni-50-50.scale-100.png");
+        //    // ((XmlElement)toastImageAttributes[0]).SetAttribute("alt", "UUNLogo");
+
+        //    // Setze den Text.
+        //    var txtNodes = toastDescriptor.GetElementsByTagName("text");
+        //    txtNodes[0].AppendChild(toastDescriptor.CreateTextNode(text));
+
+        //    var toast = new ToastNotification(toastDescriptor);
+        //    var toastNotifier = ToastNotificationManager.CreateToastNotifier();
+        //    toastNotifier.Show(toast);
+        //}
 
         /// <summary>
         /// Behandelt den Abbruch der Hintergrundaufgabe.

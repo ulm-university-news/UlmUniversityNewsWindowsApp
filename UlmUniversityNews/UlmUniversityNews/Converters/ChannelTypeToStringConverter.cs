@@ -18,7 +18,7 @@ namespace UlmUniversityNews.Converters
             ChannelType type = (ChannelType)value;
             string typeString = string.Empty;
 
-            var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+            var loader = Windows.ApplicationModel.Resources.ResourceLoader.GetForViewIndependentUse("Resources");
             switch(type)
             {
                 case ChannelType.LECTURE:

@@ -35,6 +35,9 @@
         <!-- Konvertierung eines ItemClickEventArgs auf das geklickte Objekt. -->
         <converter:ItemClickedConverter x:Key="ItemClickedConverter" />
 
+        <!-- Konvertierung des Semester-Strings. -->
+        <converter:ChannelTermToLocalizedStringConverter x:Key="ChannelTermToLocalizedStringConverter" />
+        
         <!-- Data Template eines Eintrags einer Announcement-Ressource in der Detailansicht eines Kanals. -->
         <DataTemplate
             x:Key="AnnouncementListItemStyle">
@@ -389,9 +392,9 @@
                             <!-- Elemente mit Kanalinformationen einschließlich Subklasseninformationen. -->
                             <Grid
                             x:Name="GridWithChannelInformation"
-                            Margin="0,0,0,0"
                             HorizontalAlignment="Stretch">
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
@@ -575,7 +578,7 @@
                                             Grid.Row="1"
                                             x:Name="ChannelTermContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
-                                            Text="{Binding Term, TargetNullValue='', FallbackValue=''}" />
+                                            Text="{Binding Term, TargetNullValue='', FallbackValue='', Converter={StaticResource ChannelTermToLocalizedStringConverter}}" />
                                         <!--{Binding Term, TargetNullValue='', FallbackValue=''}-->
 
                                         <Line Grid.Row="2"
@@ -1236,6 +1239,46 @@
                                     </Grid>
 
                                 </Grid>   <!-- Ende Grid für Eventdaten. -->
+
+                                <!-- Moderatoren des Kanals. -->
+                                <Grid 
+                                Grid.Row="4"
+                                Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Icon und Title für Moderatoren. -->
+                                    <Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetails/ic_group_black_36dp.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                        <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="ChannelDetailsModeratorField"
+                                                x:Name="Moderators"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Moderatoren" />
+                                    </Grid>
+
+                                    <TextBlock
+                                            Grid.Row="1"
+                                            x:Name="ModeratorContent"
+                                            Style="{StaticResource TextInPropertyDescriptions}"
+                                            Text="{Binding Moderators, TargetNullValue='', FallbackValue=''}" />
+
+                                    <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
+                                </Grid>
 
                             </Grid>    <!-- Ende Grid für Elemente mit Kanalinformationen einschließlich Subklasseninformationen--> 
 

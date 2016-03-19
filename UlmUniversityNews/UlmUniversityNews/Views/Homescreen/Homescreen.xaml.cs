@@ -284,7 +284,7 @@ namespace UlmUniversityNews.Views.Homescreen
         /// </summary>
         private async Task showLockScreenAccessDeniedWarningAsync()
         {
-            var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+            var loader = Windows.ApplicationModel.Resources.ResourceLoader.GetForCurrentView("Resources");
             try
             {
                 // Generiere den Inhalt des ContentDialog.

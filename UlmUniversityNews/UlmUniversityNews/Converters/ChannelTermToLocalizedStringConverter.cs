@@ -8,31 +8,31 @@ using Windows.UI.Xaml.Data;
 namespace UlmUniversityNews.Converters
 {
     /// <summary>
-    /// Konverter-Klasse, welche einen Boolean-Wert auf einen String abbildet. Es wird true - "Ja",
-    /// false - "Nein" zurückgegeben, abhängig jedoch von der bevorzugten Sprache. Der Konverter ist relevant
-    /// für die Anzeige von Boolean Feldern wie "Überspringe nächsten Reminder Termin".
+    /// Konverter-Klasse, welches den Semester-String eines Kanals auf ein neues String Format konvertiert.
+    /// Der zurückgegebene String hängt von der aktuell als bevorzugt eingestellten Sprache ab.
     /// </summary>
-    public class BooleanValueToLocalizedStringConverter : IValueConverter
+    public class ChannelTermToLocalizedStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            string localizedString = string.Empty;
+            string term = value as string;
             var loader = Windows.ApplicationModel.Resources.ResourceLoader.GetForViewIndependentUse("Resources");
 
-            if (value != null)
+            if (term != null)
             {
-                bool input = (bool)value;
-                if (input)
+                if (term.StartsWith("S"))
                 {
-                    localizedString = loader.GetString("BooleanValueTrueString");
+                    term = term.Remove(0, 1);
+                    term = loader.GetString("ChannelTermStringConverterSummer") + " " + term;
                 }
-                else
+                else if (term.StartsWith("W"))
                 {
-                    localizedString = loader.GetString("BooleanValueFalseString");
+                    term = term.Remove(0, 1);
+                    term = loader.GetString("ChannelTermStringConverterWinter") + " " + term;
                 }
             }
 
-            return localizedString;
+            return term;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

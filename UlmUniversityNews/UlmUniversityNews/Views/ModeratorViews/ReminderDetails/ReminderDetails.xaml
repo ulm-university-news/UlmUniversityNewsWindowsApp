@@ -165,6 +165,8 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
                                 <!-- Reminder-Titel -->
@@ -550,9 +552,91 @@
                                       Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                 </Grid>
 
-                                <!-- Reminder - Zuletzt geändert von -->
+                                <!-- Reminder - Erstellungsdatum -->
                                 <Grid
                                   Grid.Row="9"
+                                  Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Icon und Title für das Erstellungsdatum Feld. -->
+                                    <Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Image Grid.Column="0"
+                                           Source="/Assets/ResourceDetails/ic_today_black_36dp.png"
+                                           Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                           />
+
+                                        <TextBlock
+                                           Grid.Column="1"
+                                           x:Uid="ReminderDetailsReminderCreationDateField"
+                                           x:Name="ReminderDetailsReminderCreationDateField"
+                                           Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                           Text="Erstellungsdatum"
+                                     />
+                                    </Grid>
+
+                                    <TextBlock
+                                    Grid.Row="1"
+                                    x:Name="ReminderCreationDateContent"
+                                    Style="{StaticResource TextInPropertyDescriptions}"
+                                    Text="{Binding CreationDate, TargetNullValue='', FallbackValue=''}" />
+
+                                    <Line Grid.Row="2"
+                                      Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
+                                </Grid>
+
+                                <!-- Reminder - Änderungsdatum -->
+                                <Grid
+                                  Grid.Row="10"
+                                  Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Icon und Title für das Änderungsdatum Feld. -->
+                                    <Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Image Grid.Column="0"
+                                           Source="/Assets/ResourceDetails/ic_event_black_36dp.png"
+                                           Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                           />
+
+                                        <TextBlock
+                                           Grid.Column="1"
+                                           x:Uid="ReminderDetailsReminderModificationDateField"
+                                           x:Name="ReminderDetailsReminderModificationDateField"
+                                           Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                           Text="Änderungsdatum"
+                                     />
+                                    </Grid>
+
+                                    <TextBlock
+                                    Grid.Row="1"
+                                    x:Name="ReminderModificationDateContent"
+                                    Style="{StaticResource TextInPropertyDescriptions}"
+                                    Text="{Binding ModificationDate, TargetNullValue='', FallbackValue=''}" />
+
+                                    <Line Grid.Row="2"
+                                      Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
+                                </Grid>
+
+                                <!-- Reminder - Zuletzt geändert von -->
+                                <Grid
+                                  Grid.Row="11"
                                   Style="{StaticResource EnumerationOfPropertiesGridStyle}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />

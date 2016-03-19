@@ -14,7 +14,7 @@ namespace UlmUniversityNews.Converters
             string localizedString = string.Empty;
             if(value != null)
             {
-                var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+                var loader = Windows.ApplicationModel.Resources.ResourceLoader.GetForViewIndependentUse("Resources");
                 string valueString = value as string;
                 localizedString = loader.GetString(valueString);
             }

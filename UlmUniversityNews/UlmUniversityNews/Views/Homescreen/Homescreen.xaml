@@ -118,7 +118,7 @@
                                 Grid.Row="0"
                                 x:Uid="HomescreenNoChannelSubscribedInfoText"
                                 Style="{StaticResource UniversityNewsUlmStandardText}"
-                                Visibility="{Binding MyChannels.Count, Converter={StaticResource ListCountToVisibilityConverter}}">
+                                Visibility="{Binding MyChannels.Count, TargetNullValue='0', FallbackValue='0', Converter={StaticResource ListCountToVisibilityConverter}}">
                                     Es wurde noch kein Kanal abonniert.
                                     <LineBreak/>
                                     Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.
@@ -156,7 +156,26 @@
                     <PivotItem x:Uid="HomescreenMyGroupsPivotItem"
                            Style="{StaticResource PivotItemStyle}"
                            Header="Meine Gruppen">
-                        <!-- TODO -->
+                        
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock 
+                                Grid.Row="0"
+                                x:Uid="HomescreenNoGroupInfoText"
+                                Style="{StaticResource UniversityNewsUlmStandardText}"
+                                Visibility="{Binding GroupCollection.Count, TargetNullValue='0', FallbackValue='0', Converter={StaticResource ListCountToVisibilityConverter}}">
+                                    Sie sind aktuell in keiner Gruppe eingetragen.
+                                    <LineBreak/>
+                                    Gehen Sie auf die Gruppensuche, um Teilnehmer einer Gruppe zu werden.
+                            </TextBlock>
+
+                            <!-- TODO -->
+                            
+                        </Grid>
                     </PivotItem>
                 </Pivot>
             </Grid>

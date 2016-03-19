@@ -32,6 +32,8 @@
         <valueconverter:ChannelToDrawerMenuBackgroundConverter x:Key="ChannelToDrawerMenuBackgroundConverter" />
         <!-- Datumsstring Konverter für Reminder. -->
         <valueconverter:ReminderDateTimeToStringConverter x:Key="ReminderDateTimeToStringConverter" />
+        <!-- Konverter für den Semester-String. -->
+        <valueconverter:ChannelTermToLocalizedStringConverter x:Key="ChannelTermToLocalizedStringConverter" />
         
         <!-- Data Template eines Eintrags einer Announcement-Ressource in der Detailansicht eines Kanals. -->
         <DataTemplate
@@ -635,7 +637,7 @@
                                             Grid.Row="1"
                                             x:Name="ChannelTermContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
-                                            Text="{Binding Term, TargetNullValue='', FallbackValue=''}" />
+                                            Text="{Binding Term, TargetNullValue='', FallbackValue='', Converter={StaticResource ChannelTermToLocalizedStringConverter}}" />
                                         <!--{Binding Term, TargetNullValue='', FallbackValue=''}-->
 
                                         <Line Grid.Row="2"

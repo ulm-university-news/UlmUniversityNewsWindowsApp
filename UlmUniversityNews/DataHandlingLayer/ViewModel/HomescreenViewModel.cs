@@ -63,6 +63,15 @@ namespace DataHandlingLayer.ViewModel
             set { this.setProperty(ref this.myChannels, value); }
         }
 
+        private ObservableCollection<Channel> groupCollection;
+        /// <summary>
+        /// Liste von Gruppenobjekten, in denen der lokale Nutzer Teilnehmer ist.
+        /// </summary>
+        public ObservableCollection<Channel> GroupCollection
+        {
+            get { return groupCollection; }
+            set { this.setProperty(ref this.groupCollection, value); }
+        }    
         #endregion Properties
 
         #region Commands

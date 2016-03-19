@@ -187,50 +187,77 @@ namespace UlmUniversityNews.PushNotifications
 
                 if (handledSuccessfully)
                 {
-                    // Benachrichtige View, so dass diese sich aktualisieren können.
-                    if (pushMsg != null)
-                    {
-                        switch (pushMsg.PushType)
-                        {
-                            case PushType.ANNOUNCEMENT_NEW:
-                                // Sende Event an Listener.
-                                if (ReceivedAnnouncement != null)
-                                {
-                                    // Sende ReceivedAnnouncement Event mit Kanal-Id des betroffenen Kanals.
-                                    ReceivedAnnouncement(this, new AnnouncementReceivedEventArgs(pushMsg.Id1));
-                                }
-                                break;
-                            case PushType.CHANNEL_DELETED:
-                                if (ChannelDeleted != null)
-                                {
-                                    // Sende ChannelDeleted Event mit Kanal-Id des betroffenen Kanals.
-                                    ChannelDeleted(this, new ChannelDeletedEventArgs(pushMsg.Id1));
-                                }
-                                break;
-                            case PushType.CHANNEL_CHANGED:
-                                if (ChannelChanged != null)
-                                {
-                                    // Sende ChannelDeleted Event mit Kanal-Id des betroffenen Kanals.
-                                    ChannelChanged(this, new ChannelChangedEventArgs(pushMsg.Id1));
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-                    }
+                    // Benachrichtige Views über durchgeführte Änderung.
+                    sendViewUpdateEvent(pushMsg);
 
                     // Benachrichtigung des Nutzers
                     if(pushController.IsUserNotificationRequired(pushMsg))
                     {
-                        // Benachrichtige abhängig vom Typ der Push-Nachricht.
-                        switch (pushMsg.PushType)
-                        {
-                            case PushType.ANNOUNCEMENT_NEW:
-                                alertUser();
-                                break;
-                        }
+                        performUserNotification(pushMsg);
                     }
-                }   // Ende if handledSuccessfully.
+                }  
+            }
+        }
+
+        /// <summary>
+        /// Sendet ein Event an alle interessierten Abonnenten des Events. Die Abonnenten
+        /// sind Views, welche über Änderungen informiert werden wollen, so dass die Views
+        /// ihren Zustand aktualisieren können. 
+        /// </summary>
+        /// <param name="pushMsg">Die eingegangene Push Nachricht aufgrund derer 
+        ///     das zu versendende Event bestimmt wird.</param>
+        private void sendViewUpdateEvent(PushMessage pushMsg)
+        {
+            // Benachrichtige View, so dass diese sich aktualisieren können.
+            if (pushMsg != null)
+            {
+                switch (pushMsg.PushType)
+                {
+                    case PushType.ANNOUNCEMENT_NEW:
+                        // Sende Event an Listener.
+                        if (ReceivedAnnouncement != null)
+                        {
+                            // Sende ReceivedAnnouncement Event mit Kanal-Id des betroffenen Kanals.
+                            ReceivedAnnouncement(this, new AnnouncementReceivedEventArgs(pushMsg.Id1));
+                        }
+                        break;
+                    case PushType.CHANNEL_DELETED:
+                        if (ChannelDeleted != null)
+                        {
+                            // Sende ChannelDeleted Event mit Kanal-Id des betroffenen Kanals.
+                            ChannelDeleted(this, new ChannelDeletedEventArgs(pushMsg.Id1));
+                        }
+                        break;
+                    case PushType.CHANNEL_CHANGED:
+                        if (ChannelChanged != null)
+                        {
+                            // Sende ChannelDeleted Event mit Kanal-Id des betroffenen Kanals.
+                            ChannelChanged(this, new ChannelChangedEventArgs(pushMsg.Id1));
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Führt die Nutzerbenachrichtigung über eine eingegangene Push Nachricht und die 
+        /// damit verbundene Aktion durch. 
+        /// </summary>
+        /// <param name="pushMsg">Die eingegangene Push-Nachricht, für die
+        ///     die Benutzerbenachrichtigung durchgeführt wird.</param>
+        private void performUserNotification(PushMessage pushMsg)
+        {
+            // Benachrichtige abhängig vom Typ der Push-Nachricht.
+            switch (pushMsg.PushType)
+            {
+                case PushType.ANNOUNCEMENT_NEW:
+                    // Ermittle Überschrift und Ressourcen-Schlüssel für Nachrichteninhalt.
+                    string headline = pushController.GetUserNotificationHeadline(pushMsg);
+                    string resourceKey = pushController.GetUserNotificationContentLocalizationKey(pushMsg);
+                    showToastNotification(headline, resourceKey);
+                    break;
             }
         }
 
@@ -243,29 +270,28 @@ namespace UlmUniversityNews.PushNotifications
             vibrationDevice.Vibrate(TimeSpan.FromSeconds(0.5f));
         }
 
-        ///// <summary>
-        ///// Zeige den Text in einer ToastNotification an, um den Nutzer über ein Ereignis zu informieren.
-        ///// </summary>
-        ///// <param name="text">Der anzuzeigende Text.</param>
-        //private void showToastNotification(string text)
-        //{
-        //    // Für den Anfang, sende nur eine ToastNotification mit dem Typ der PushNachricht und mache weiter nichts.
-        //    var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);
+        /// <summary>
+        /// Zeige den Text in einer ToastNotification an, um den Nutzer über ein Ereignis zu informieren.
+        /// </summary>
+        /// <param name="headline">Die anzuzeigende Überschrift.</param>
+        /// <param name="resourceKey">Der Ressourcenschlüssel für den Inhalt der Benachrichtigung.</param>
+        private void showToastNotification(string headline, string resourceKey)
+        {
+            // Für den Anfang, sende nur eine ToastNotification mit dem Typ der PushNachricht und mache weiter nichts.
+            var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText02);
 
-        //    // Setze das Icon.
-        //    // var toastImageAttributes = toastDescriptor.GetElementsByTagName("image");
-        //    //toastImageAttributes[0].Attributes[1].NodeValue = "ms-appx:///UlmUniversityNews/Assets/AppIcons/AppLogoUni.png";
+            // Setze den Text - Headline.
+            var txtNodes = toastDescriptor.GetElementsByTagName("text");
+            txtNodes[0].AppendChild(toastDescriptor.CreateTextNode(headline));
 
-        //    // ((XmlElement)toastImageAttributes[0]).SetAttribute("src", "ms-appx:///UlmUniversityNews/Assets/AppIcons/AppLogoUni-50-50.png");
-        //    //((XmlElement)toastImageAttributes[0]).SetAttribute("alt", "UUNLogo");
+            // Setze den Text - Inhalt.
+            var loader = Windows.ApplicationModel.Resources.ResourceLoader.GetForViewIndependentUse("Resources");
+            string content = loader.GetString(resourceKey);
+            txtNodes[1].AppendChild(toastDescriptor.CreateTextNode(content));
 
-        //    // Setze den Text.
-        //    var txtNodes = toastDescriptor.GetElementsByTagName("text");
-        //    txtNodes[0].AppendChild(toastDescriptor.CreateTextNode(text));
-
-        //    var toast = new ToastNotification(toastDescriptor);
-        //    var toastNotifier = ToastNotificationManager.CreateToastNotifier();
-        //    toastNotifier.Show(toast);
-        //}
+            var toast = new ToastNotification(toastDescriptor);
+            var toastNotifier = ToastNotificationManager.CreateToastNotifier();
+            toastNotifier.Show(toast);
+        }
     }
 }

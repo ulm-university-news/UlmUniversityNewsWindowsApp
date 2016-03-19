@@ -74,7 +74,7 @@
             <Image x:Name="DrawerIcon" 
                    Grid.Column="0"
                    Style="{StaticResource DrawerIconStyle}"
-                   Source="/Assets/AppIcons/Logo-Uni.png" />
+                   Source="/Assets/AppLogoNeu/AppLogoIcon_v5.png" />
 
             <!-- Drawer Text -->
             <TextBlock x:Uid="StartPageTitle"

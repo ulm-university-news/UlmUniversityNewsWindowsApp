@@ -22,7 +22,7 @@ namespace UlmUniversityNews.Converters
             
             if(menuEntryName != null)
             {
-                var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+                var loader = Windows.ApplicationModel.Resources.ResourceLoader.GetForViewIndependentUse("Resources");
                 localizedString = loader.GetString(menuEntryName);
             }
 

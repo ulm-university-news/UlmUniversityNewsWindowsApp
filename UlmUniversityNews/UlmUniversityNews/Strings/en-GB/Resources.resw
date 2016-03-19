@@ -583,7 +583,7 @@
     <value>Leave dialog</value>
   </data>
   <data name="FlyoutWarningDialogCloseDescription.Text" xml:space="preserve">
-    <value>Warning! If you leave this dialog the entered data will be lost.</value>
+    <value>Warning! If you leave this dialog the entered data will be discarded.</value>
   </data>
   <data name="AddAndEditChannelAddChannelButton.Label" xml:space="preserve">
     <value>create channel</value>
@@ -1071,6 +1071,27 @@ date: </value>
   </data>
   <data name="HomescreenModeratorSynchronizeManagedChannelsButton.Label" xml:space="preserve">
     <value>sync</value>
+  </data>
+  <data name="ChannelTermStringConverterSummer" xml:space="preserve">
+    <value>Summer </value>
+  </data>
+  <data name="ChannelTermStringConverterWinter" xml:space="preserve">
+    <value>Winter</value>
+  </data>
+  <data name="HomescreenNoGroupInfoText.Text" xml:space="preserve">
+    <value>You aren't a member of any group. Search for groups and join or create a new one.</value>
+  </data>
+  <data name="PushNotificationReceivedAnnouncementNew" xml:space="preserve">
+    <value>Received a new announcement</value>
+  </data>
+  <data name="PushNotificationReceivedChannelDeleted" xml:space="preserve">
+    <value>The channel has been deleted</value>
+  </data>
+  <data name="ReminderDetailsReminderCreationDateField.Text" xml:space="preserve">
+    <value>Creation date</value>
+  </data>
+  <data name="ReminderDetailsReminderModificationDateField.Text" xml:space="preserve">
+    <value>Modification date</value>
   </data>
   <data name="StartPageAcceptTermsAndConditionsCheckBox.Content" xml:space="preserve">
     <value>I accept the terms and conditions</value>

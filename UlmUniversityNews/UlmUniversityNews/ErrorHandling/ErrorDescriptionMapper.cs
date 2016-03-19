@@ -37,7 +37,7 @@ namespace UlmUniversityNews.ErrorHandling
         /// <returns>Eine Fehlerbeschreibung.</returns>
         private string getErrorDescription(int errorCode)
         {
-            var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+            var loader = Windows.ApplicationModel.Resources.ResourceLoader.GetForViewIndependentUse("Resources");
             string errorDescription = string.Empty;
             switch (errorCode)
             {
@@ -151,7 +151,7 @@ namespace UlmUniversityNews.ErrorHandling
         /// <param name="content">Der Inhalt des MessageDialog Elements, d.h. die Beschreibung des Fehlers.</param>
         private async void showErrorMessageDialogAsync(string content)
         {
-            var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+            var loader = Windows.ApplicationModel.Resources.ResourceLoader.GetForViewIndependentUse("Resources");
             string title = loader.GetString("ErrorDialogBoxTitle");
 
             var dialog = new Windows.UI.Popups.MessageDialog(content, title);

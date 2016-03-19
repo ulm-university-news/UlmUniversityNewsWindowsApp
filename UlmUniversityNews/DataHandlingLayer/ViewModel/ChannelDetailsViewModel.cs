@@ -77,7 +77,17 @@ namespace DataHandlingLayer.ViewModel
             get { return eventObj; }
             set { this.setProperty(ref this.eventObj, value); }
         }
-        
+
+        private string moderators;
+        /// <summary>
+        /// Die Namen der für den Kanal verantwortlichen Moderatoren.
+        /// </summary>
+        public string Moderators
+        {
+            get { return moderators; }
+            set { this.setProperty(ref this.moderators, value); }
+        }
+
         private bool channelSubscribedStatus;
         /// <summary>
         /// Gibt an, ob der Kanal vom lokalen Nutzer abonniert ist oder nicht.
@@ -503,6 +513,32 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Lädt die Moderatoren des gewählten Kanals.
+        /// </summary>
+        public async Task LoadModeratorsOfChannel()
+        {
+            if (Channel == null)
+                return;
+
+            string moderatorString = string.Empty;
+            try
+            {
+                List<Moderator> moderators = await Task.Run(() => channelController.GetModeratorsOfChannel(Channel.Id));
+
+                foreach (Moderator moderator in moderators)
+                {
+                    moderatorString += moderator.FirstName + " " + moderator.LastName + "\n";
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("Error during loading of moderators. Error code is: {0}.", ex.ErrorCode);
+            }
+
+            Moderators = moderatorString;
+        }
+
+        /// <summary>
         /// Aktualisiere die Anzeige, wenn ein ChannelDeleted Event empfangen wurde,
         /// welches den gerade angezeigten Kanal betrifft.
         /// </summary>
@@ -605,6 +641,9 @@ namespace DataHandlingLayer.ViewModel
 
             // Stoße lokale Synchronisation an.
             await Task.Run(() => channelController.SynchronizeResponsibleModerators(Channel.Id, responsibleModerators));
+
+            // Lade Moderatoren View Property neu.
+            await LoadModeratorsOfChannel();
 
             // Synchronisiere Kanalinformationen.
             Channel referenceChannel = await Task.Run(() => channelController.GetChannelInfoAsync(Channel.Id));
@@ -717,6 +756,9 @@ namespace DataHandlingLayer.ViewModel
                 {
                     CanUnsubscribeChannel = false;
                 }
+
+                // Lade Moderatoren-Info.
+                await LoadModeratorsOfChannel();
 
                 // Bleibe auf der Seite, aber lade die Nachrichten nach.
                 List<Announcement> announcements = await Task.Run(() => channelController.GetAllAnnouncementsOfChannel(Channel.Id));

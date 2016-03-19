@@ -166,6 +166,7 @@
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\BooleanValueToLocalizedStringConverter.cs" />
+    <Compile Include="Converters\ChannelTermToLocalizedStringConverter.cs" />
     <Compile Include="Converters\ChannelToIconPathConverter.cs" />
     <Compile Include="Converters\ChannelToDrawerMenuBackgroundConverter.cs" />
     <Compile Include="Converters\ChannelTypeEnumToComboBoxItemIndexConverter.cs" />

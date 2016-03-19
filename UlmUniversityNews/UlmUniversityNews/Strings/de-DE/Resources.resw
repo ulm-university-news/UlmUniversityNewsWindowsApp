@@ -217,7 +217,7 @@
     <value>Kanalinformationen</value>
   </data>
   <data name="ChannelDetailsMessagesPivotItem.Header" xml:space="preserve">
-    <value>Bechanrichtigungen</value>
+    <value>Benachrichtigungen</value>
   </data>
   <data name="ChannelSearchPageTitle.Text" xml:space="preserve">
     <value>Kanalsuche</value>
@@ -584,7 +584,7 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
     <value>Dialog verlassen</value>
   </data>
   <data name="FlyoutWarningDialogCloseDescription.Text" xml:space="preserve">
-    <value>Achtung! Wenn Sie den Dialog verlassen werden die von Ihnen eingetragenen Daten gelöscht.</value>
+    <value>Achtung! Wenn Sie den Dialog verlassen werden die von Ihnen eingetragenen Daten verworfen.</value>
   </data>
   <data name="AddAndEditChannelAddChannelButton.Label" xml:space="preserve">
     <value>kanal anlegen</value>
@@ -1072,6 +1072,27 @@ Nachricht am: </value>
   </data>
   <data name="HomescreenModeratorSynchronizeManagedChannelsButton.Label" xml:space="preserve">
     <value>synchro-nisieren</value>
+  </data>
+  <data name="ChannelTermStringConverterSummer" xml:space="preserve">
+    <value>Sommer</value>
+  </data>
+  <data name="ChannelTermStringConverterWinter" xml:space="preserve">
+    <value>Winter</value>
+  </data>
+  <data name="HomescreenNoGroupInfoText.Text" xml:space="preserve">
+    <value>Sie sind noch kein Mitglied einer Gruppe. Suchen Sie nach Gruppen und treten Sie bei oder erstellen Sie eine neue.</value>
+  </data>
+  <data name="PushNotificationReceivedAnnouncementNew" xml:space="preserve">
+    <value>Neue Benachrichtigung erhalten</value>
+  </data>
+  <data name="PushNotificationReceivedChannelDeleted" xml:space="preserve">
+    <value>Der Kanal wurde gelöscht</value>
+  </data>
+  <data name="ReminderDetailsReminderCreationDateField.Text" xml:space="preserve">
+    <value>Erstellungsdatum</value>
+  </data>
+  <data name="ReminderDetailsReminderModificationDateField.Text" xml:space="preserve">
+    <value>Änderungsdatum</value>
   </data>
   <data name="StartPageAcceptTermsAndConditionsCheckBox.Content" xml:space="preserve">
     <value>Ich akzeptiere die Nutzungsbedingungen</value>
