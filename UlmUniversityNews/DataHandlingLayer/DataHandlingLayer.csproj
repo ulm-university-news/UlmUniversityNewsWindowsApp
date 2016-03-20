@@ -141,6 +141,7 @@
     <Compile Include="JsonManager\JsonParsingManager.cs" />
     <Compile Include="NavigationService\INavigationService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel\AboutUniversityNewsViewModel.cs" />
     <Compile Include="ViewModel\AddAndEditChannelViewModel.cs" />
     <Compile Include="ViewModel\AddAndEditReminderViewModel.cs" />
     <Compile Include="ViewModel\AddAnnouncementViewModel.cs" />

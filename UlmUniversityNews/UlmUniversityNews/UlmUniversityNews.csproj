@@ -94,6 +94,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\About\AboutUniversityNews.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ApplicationSettings\ApplicationSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -177,6 +181,7 @@
     <Compile Include="Converters\DrawerMenuEntryNameToLocalizedStringConverter.cs" />
     <Compile Include="Converters\FacultyEnumToComboBoxItemIndexConverter.cs" />
     <Compile Include="Converters\FacultyToLocalizedStringConverter.cs" />
+    <Compile Include="Converters\HyperlinkStringToNavigationUriConverter.cs" />
     <Compile Include="Converters\ItemClickedConverter.cs" />
     <Compile Include="Converters\ListCountToVisibilityConverter.cs" />
     <Compile Include="Converters\MessageReadPropertyToBackgroundColorConverter.cs" />
@@ -204,6 +209,9 @@
     <Compile Include="PushNotifications\EventArgClasses\ChannelChangedEventArgs.cs" />
     <Compile Include="PushNotifications\EventArgClasses\ChannelDeletedEventArgs.cs" />
     <Compile Include="PushNotifications\PushNotificationManager.cs" />
+    <Compile Include="Views\About\AboutUniversityNews.xaml.cs">
+      <DependentUpon>AboutUniversityNews.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ApplicationSettings\ApplicationSettings.xaml.cs">
       <DependentUpon>ApplicationSettings.xaml</DependentUpon>
     </Compile>
@@ -280,6 +288,10 @@
     <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5_store_logo.scale-100.png" />
     <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5_store_logo.scale-140.png" />
     <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5_store_logo.scale-240.png" />
+    <Content Include="Assets\AppLogoNeu\MainLogo.scale-100.png" />
+    <Content Include="Assets\AppLogoNeu\MainLogo.scale-140.png" />
+    <Content Include="Assets\AppLogoNeu\MainLogo.scale-180.png" />
+    <Content Include="Assets\AppLogoNeu\MainLogo.scale-240.png" />
     <Content Include="Assets\app_logo_breit.scale-100.png" />
     <Content Include="Assets\app_logo_breit.scale-140.png" />
     <Content Include="Assets\app_logo_breit.scale-240.png" />
@@ -368,6 +380,7 @@
     <Content Include="Assets\extIcons\appbar.door.enter.png" />
     <Content Include="Assets\extIcons\appbar.door.leave.png" />
     <Content Include="Assets\extIcons\appbar.home.empty.png" />
+    <Content Include="Assets\extIcons\appbar.information.png" />
     <Content Include="Assets\extIcons\license.txt" />
     <Content Include="Assets\ResourceDetailsIcons\ContactsInfo.png" />
     <Content Include="Assets\ResourceDetailsIcons\FacultyInfo.png" />

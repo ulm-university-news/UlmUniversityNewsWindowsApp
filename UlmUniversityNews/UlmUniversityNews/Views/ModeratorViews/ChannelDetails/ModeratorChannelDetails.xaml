@@ -1310,7 +1310,6 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
                                     <!-- Icon und Title für Moderatoren. -->
@@ -1339,8 +1338,6 @@
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             Text="{Binding Moderators, TargetNullValue='', FallbackValue=''}" />
 
-                                    <Line Grid.Row="2"
-                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
                                 </Grid>
 
                             </Grid>

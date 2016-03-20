@@ -490,7 +490,7 @@
     <value>speichern</value>
   </data>
   <data name="LoginPageDescription.Text" xml:space="preserve">
-    <value>Um zur Moderatorenansicht der Anwendung zu gelangen, geben Sie hier bitte Ihre Login Daten an. Wenn Sie keinen Moderatorenaccount haben, Ihr Passwort vergessen haben, oder andere Probleme auftreten, besuchen Sie bitte www.google.de.</value>
+    <value>Um zur Moderatorenansicht der Anwendung zu gelangen, geben Sie hier bitte Ihre Login Daten an. Wenn Sie keinen Moderatorenaccount haben, Ihr Passwort vergessen haben, oder andere Probleme auftreten, besuchen Sie bitte: </value>
   </data>
   <data name="LoginPageLoginButton.Label" xml:space="preserve">
     <value>anmelden</value>
@@ -1073,6 +1073,33 @@ Nachricht am: </value>
   <data name="HomescreenModeratorSynchronizeManagedChannelsButton.Label" xml:space="preserve">
     <value>synchro-nisieren</value>
   </data>
+  <data name="AboutUniversityNewsContentEmailAddress.Text" xml:space="preserve">
+    <value>ulm.university.news@gmail.com</value>
+  </data>
+  <data name="AboutUniversityNewsContentPart1.Text" xml:space="preserve">
+    <value>Diese App wurde im Rahmen des Anwendungsfachs Advanced Mobile Application Engineering am Institut für Datenbanken und Informationssysteme an der Universität Ulm erstellt.</value>
+  </data>
+  <data name="AboutUniversityNewsContentPart2.Text" xml:space="preserve">
+    <value>Diese App und zugehörige Komponenten wurden von Matthias Mak und Philipp Speidel entwickelt. Betreuer des Projekts ist Marc Schickler.</value>
+  </data>
+  <data name="AboutUniversityNewsContentPart3.Text" xml:space="preserve">
+    <value>Diese Software wird ohne jegliche spezielle oder implizierte Garantien zur Verfügung gestellt. Weitere Informationen erhalten Sie unter: </value>
+  </data>
+  <data name="AboutUniversityNewsContentPart4.Text" xml:space="preserve">
+    <value>Bei Fragen oder Verbesserungsvorschlägen wenden Sie sich bitte an: </value>
+  </data>
+  <data name="AboutUniversityNewsContentWebClientHyperlink.Text" xml:space="preserve">
+    <value>www.google.de</value>
+  </data>
+  <data name="AboutUniversityNewsDrawerTitle.Text" xml:space="preserve">
+    <value>Über diese App</value>
+  </data>
+  <data name="AboutUniversityNewsEmailSubject" xml:space="preserve">
+    <value>Ulm University News: Fragen oder Verbesserungsvorschläge</value>
+  </data>
+  <data name="AboutUniversityNewsHeadline.Text" xml:space="preserve">
+    <value>Über University News</value>
+  </data>
   <data name="AddAndEditChannelNameInvalidFormatValidationError" xml:space="preserve">
     <value>Der Kanalname entspricht nicht dem gültigen Format. Prüfen Sie, ob Sie irgendwelche nicht unterstützten Sonderzeichen verwendet haben. Erlaubte Sonderzeichen sind ! , ? , _ , - .</value>
   </data>
@@ -1082,8 +1109,14 @@ Nachricht am: </value>
   <data name="ChannelTermStringConverterWinter" xml:space="preserve">
     <value>Winter</value>
   </data>
+  <data name="DrawerMenuEntryAbout" xml:space="preserve">
+    <value>Über diese App</value>
+  </data>
   <data name="HomescreenNoGroupInfoText.Text" xml:space="preserve">
     <value>Sie sind noch kein Mitglied einer Gruppe. Suchen Sie nach Gruppen und treten Sie bei oder erstellen Sie eine neue.</value>
+  </data>
+  <data name="LoginPageDescriptionLoginInfoHyperlink.Text" xml:space="preserve">
+    <value>www.google.de</value>
   </data>
   <data name="PushNotificationReceivedAnnouncementNew" xml:space="preserve">
     <value>Neue Benachrichtigung erhalten</value>

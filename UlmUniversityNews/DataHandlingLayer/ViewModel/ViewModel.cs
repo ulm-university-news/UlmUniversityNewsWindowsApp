@@ -291,7 +291,7 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private void createDrawerMenuEntries()
         {
-            // Homescreen
+            // Homescreen:
             DrawerMenuEntry homescreenEntry = new DrawerMenuEntry()
             {
                 MenuEntryName = "Homescreen",
@@ -300,6 +300,7 @@ namespace DataHandlingLayer.ViewModel
                 IconPath = "/Assets/extIcons/appbar.home.empty.png"
             };
 
+            // Moderator Homescreen:
             DrawerMenuEntry moderatorHomescreenEntry = new DrawerMenuEntry()
             {
                 MenuEntryName = "Homescreen",
@@ -308,7 +309,7 @@ namespace DataHandlingLayer.ViewModel
                 IconPath = "/Assets/extIcons/appbar.home.empty.png"
             };
 
-            // Login Seite
+            // Login Seite:
             DrawerMenuEntry loginEntry = new DrawerMenuEntry()
             {
                 MenuEntryName = "Login",
@@ -326,23 +327,34 @@ namespace DataHandlingLayer.ViewModel
                 IconPath = "/Assets/extIcons/appbar.door.leave.png"
             };
 
-            // Anwendungseinstellung
+            // Anwendungseinstellung:
             DrawerMenuEntry applicationSettingsEntry = new DrawerMenuEntry()
             {
-                MenuEntryName = "Anwendungseinstellungen",
+                MenuEntryName = "ApplicationSettings",
                 DisplayableNameResourceKey = "DrawerMenuEntryApplicationSettings",
                 ReferencedPageKey = "ApplicationSettings",
                 IconPath = "/Assets/Drawer/feature.settings.png"
             };
 
+            // About University News:
+            DrawerMenuEntry aboutUniversityNews = new DrawerMenuEntry()
+            {
+                MenuEntryName = "About",
+                DisplayableNameResourceKey = "DrawerMenuEntryAbout",
+                ReferencedPageKey = "AboutUniversityNews",
+                IconPath = "/Assets/extIcons/appbar.information.png"
+            };
+
             // Füge Einträge der Liste hinzu, die den nicht eingeloggten Zustand repräsentiert.
             drawerMenuEntriesStatusNoLogin.Add(homescreenEntry);
             drawerMenuEntriesStatusNoLogin.Add(applicationSettingsEntry);
+            drawerMenuEntriesStatusNoLogin.Add(aboutUniversityNews);
             drawerMenuEntriesStatusNoLogin.Add(loginEntry);
 
             // Füge Einträge der Liste hinzu, die den eingeloggten Zustand repräsentiert.            
             drawerMenuEntriesStatusLoggedIn.Add(moderatorHomescreenEntry);
             drawerMenuEntriesStatusLoggedIn.Add(applicationSettingsEntry);
+            drawerMenuEntriesStatusLoggedIn.Add(aboutUniversityNews);
             drawerMenuEntriesStatusLoggedIn.Add(logoutEntry);
         }
 

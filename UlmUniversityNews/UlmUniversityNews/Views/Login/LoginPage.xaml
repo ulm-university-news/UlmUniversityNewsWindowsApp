@@ -19,6 +19,9 @@
 
         <!-- Konvertierung eines Validations-Msg Schlüssel auf einen von der bevorzugten Sprache abhängigen Schlüssel. -->
         <valueconverter:ValidationMessageOnLocalizedStringConverter x:Key="ValidationMessageOnLocalizedStringConverter" />
+
+        <!-- Konverter für Umwandlung von String auf Uri. -->
+        <valueconverter:HyperlinkStringToNavigationUriConverter x:Key="HyperlinkStringToNavigationUriConverter" />
     </Page.Resources>
 
     <!-- StatusBar -->
@@ -35,7 +38,7 @@
 
     <!-- CommandBar -->
     <Page.BottomAppBar>
-        <CommandBar x:Name="ChannelSettingsCommandBar"
+        <CommandBar x:Name="LoginPageCommandBar"
                     Foreground="{StaticResource UNUCommandBarButtonColor}"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
             <AppBarButton
@@ -98,10 +101,16 @@
                         <TextBlock
                             Grid.Row="0"
                             x:Name="LoginPageDescription"
-                            x:Uid="LoginPageDescription"
                             Margin="0, 14.5, 0, 0"
-                            Style="{StaticResource UniversityNewsUlmStandardText}"
-                            Text="Um zur Moderatorenansicht der Anwendung zu gelangen, geben Sie hier bitte Ihre Login Daten an."/>
+                            Style="{StaticResource UniversityNewsUlmStandardText}">
+                            <Run x:Uid="LoginPageDescription" Text="Um zur Moderatorenansicht der Anwendung zu gelangen, geben Sie hier bitte Ihre Login Daten an. Infos auf: " />
+                            <Hyperlink NavigateUri="{Binding ElementName=LoginPageDescriptionLoginInfoHyperlink, Path=Text, Converter={StaticResource HyperlinkStringToNavigationUriConverter}}">
+                                <Run x:Name="LoginPageDescriptionLoginInfoHyperlink"
+                                     x:Uid="LoginPageDescriptionLoginInfoHyperlink" 
+                                     Text="www.ecosia.de" />
+                            </Hyperlink>
+                            <Run Text="." />
+                        </TextBlock>
 
                         <TextBox
                             Grid.Row="1"
@@ -147,7 +156,7 @@
                     </ListView.ItemContainerStyle>
 
                     
-            <!-- Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet. -->     
+                    <!--Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->      
                     <i:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
                             <core:InvokeCommandAction Command="{Binding DrawerButtonCommand}"

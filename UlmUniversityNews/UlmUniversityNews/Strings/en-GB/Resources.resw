@@ -490,7 +490,7 @@
     <value>save</value>
   </data>
   <data name="LoginPageDescription.Text" xml:space="preserve">
-    <value>Please enter your login credentials in order to access the moderator view of the application.</value>
+    <value>Please enter your login credentials in order to access the moderator view of the application. If you have no account, have forgotten your password or have any other problem, please visit: </value>
   </data>
   <data name="LoginPageLoginButton.Label" xml:space="preserve">
     <value>login</value>
@@ -1072,6 +1072,33 @@ date: </value>
   <data name="HomescreenModeratorSynchronizeManagedChannelsButton.Label" xml:space="preserve">
     <value>sync</value>
   </data>
+  <data name="AboutUniversityNewsContentEmailAddress.Text" xml:space="preserve">
+    <value>ulm.university.news@gmail.com</value>
+  </data>
+  <data name="AboutUniversityNewsContentPart1.Text" xml:space="preserve">
+    <value>This app has been created in 2016 in the focus project Advanced Mobile Application Engineering at the Institute of Databases and Information Systems at the University of Ulm.</value>
+  </data>
+  <data name="AboutUniversityNewsContentPart2.Text" xml:space="preserve">
+    <value>This app and associated components were developed by Matthias Mak and Philipp Speidel. Manager of the project is Marc Schickler.</value>
+  </data>
+  <data name="AboutUniversityNewsContentPart3.Text" xml:space="preserve">
+    <value>This software is provided without any specific or implied warranties. For more information, please visit: </value>
+  </data>
+  <data name="AboutUniversityNewsContentPart4.Text" xml:space="preserve">
+    <value>For questions or suggestions, please contact: </value>
+  </data>
+  <data name="AboutUniversityNewsContentWebClientHyperlink.Text" xml:space="preserve">
+    <value>www.google.de</value>
+  </data>
+  <data name="AboutUniversityNewsDrawerTitle.Text" xml:space="preserve">
+    <value>About this app</value>
+  </data>
+  <data name="AboutUniversityNewsEmailSubject" xml:space="preserve">
+    <value>Ulm University News: Questions or suggestions</value>
+  </data>
+  <data name="AboutUniversityNewsHeadline.Text" xml:space="preserve">
+    <value>About University News</value>
+  </data>
   <data name="AddAndEditChannelNameInvalidFormatValidationError" xml:space="preserve">
     <value>The channel name seems to be of an invalid format. Please make sure you the name doesn't contain any special characters that are not supported. Special characters like ! , ? , _ , - are allowed in the channel name.</value>
   </data>
@@ -1081,8 +1108,14 @@ date: </value>
   <data name="ChannelTermStringConverterWinter" xml:space="preserve">
     <value>Winter</value>
   </data>
+  <data name="DrawerMenuEntryAbout" xml:space="preserve">
+    <value>About</value>
+  </data>
   <data name="HomescreenNoGroupInfoText.Text" xml:space="preserve">
     <value>You aren't a member of any group. Search for groups and join or create a new one.</value>
+  </data>
+  <data name="LoginPageDescriptionLoginInfoHyperlink.Text" xml:space="preserve">
+    <value>www.google.de</value>
   </data>
   <data name="PushNotificationReceivedAnnouncementNew" xml:space="preserve">
     <value>Received a new announcement</value>
