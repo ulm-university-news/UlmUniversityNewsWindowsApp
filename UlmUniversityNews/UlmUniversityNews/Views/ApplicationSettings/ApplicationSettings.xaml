@@ -144,7 +144,7 @@
                                         <Run
                                             x:Uid="ApplicationSettingsCurrentUsername"
                                             Text="Ihr aktueller Nutzername ist: " />
-                                        <Run Text="{Binding LocalUsername}" />       
+                                        <Run Text="{Binding LocalUser.Name, FallbackValue='',TargetNullValue=''}" />       
                                     
                                         <LineBreak />
                                     

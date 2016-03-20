@@ -401,20 +401,51 @@ namespace DataHandlingLayer.ViewModel
                     }
                     break;
                 case OrderOption.BY_TYPE:
+                    // Extrahiere nur die Vorlesungen.
+                    IEnumerable<Lecture> lectures = channels.Where(channel => channel.Type == ChannelType.LECTURE).Cast<Lecture>();
+                    // Extrahiere die Kanäle anderer Kanaltypen.
+                    IEnumerable<Channel> otherChannels = channels.Where(channel => channel.Type != ChannelType.LECTURE);
+
                     if (appSettings.GeneralListOrderSetting == OrderOption.ASCENDING)
                     {
-                        channels = new List<Channel>(
-                            from item in channels
-                            orderby item.Type ascending, item.Name ascending
-                            select item);
+                        // Sortiere die Vorlesungen.
+                        lectures =
+                            from lecture in lectures
+                            orderby lecture.Faculty ascending, lecture.Name ascending
+                            select lecture;
+
+                        // Sortiere die anderen Kanaltypen.
+                        otherChannels =
+                            from channel in otherChannels
+                            orderby channel.Type ascending, channel.Name ascending
+                            select channel;                      
                     }
                     else
                     {
-                        channels = new List<Channel>(
-                            from item in channels
-                            orderby item.Type descending, item.Name descending
-                            select item);
+                        // Sortiere die Vorlesungen.
+                        lectures =
+                            from lecture in lectures
+                            orderby lecture.Faculty descending, lecture.Name descending
+                            select lecture;
+
+                        // Sortiere die anderen Kanaltypen.
+                        otherChannels =
+                            from channel in otherChannels
+                            orderby channel.Type descending, channel.Name descending
+                            select channel;
                     }
+
+                    // Füge die beiden Listen zusammen.
+                    channels = new List<Channel>();
+                    foreach (Lecture lecture in lectures)
+                    {
+                        channels.Add(lecture);
+                    }
+                    foreach (Channel channel in otherChannels)
+                    {
+                        channels.Add(channel);
+                    }
+
                     break;
                 case OrderOption.BY_NEW_MESSAGES_AMOUNT:
                     if (appSettings.GeneralListOrderSetting == OrderOption.ASCENDING)

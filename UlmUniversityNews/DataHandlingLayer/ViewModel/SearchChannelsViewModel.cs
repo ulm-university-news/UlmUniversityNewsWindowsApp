@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataHandlingLayer.CommandRelays;
+using DataHandlingLayer.DataModel.Enums;
 
 namespace DataHandlingLayer.ViewModel
 {
@@ -20,13 +21,14 @@ namespace DataHandlingLayer.ViewModel
     /// </summary>
     public class SearchChannelsViewModel : ViewModel
     {
+        #region Fields
         /// <summary>
         /// Eine Referenz auf eine Instanz des ChannelController.
         /// </summary>
         private ChannelController channelController;
 
         /// <summary>
-        /// Verzeichnis aller Channel Objekte, die aktuell in der Anwendung verwaltet werden.
+        /// Verzeichnis aller Channel Objekte, die aktuell im ViewModel gehalten werden.
         /// Die Kanäle werden im Verzeichnis mittels ihrere Id referenziert.
         /// </summary>
         private Dictionary<int, Channel> allChannels;
@@ -36,6 +38,7 @@ namespace DataHandlingLayer.ViewModel
         /// werden soll.
         /// </summary>
         private bool performOnlineUpdate;
+        #endregion Fields
 
         #region Properties
         private ObservableCollection<Channel> channels;
@@ -149,6 +152,7 @@ namespace DataHandlingLayer.ViewModel
         ///     dem Nutzer angezeigt werden soll, oder nicht.</param>
         public async Task UpdateLocalChannelList(bool displayErrors)
         {
+            bool channelRemoved = false;
             List<Channel> updatedChannels = null;
             if (performOnlineUpdate)
             {
@@ -187,12 +191,13 @@ namespace DataHandlingLayer.ViewModel
             }
             else
             {
-                // Führe Offline Aktualisierung durch.
-                updatedChannels = await checkForLocallyUpdatedChannels();
+                // Führe Offline Aktualisierung durch. Gebe Ausführung an Hintergrundthread.
+                updatedChannels = await Task.Run(() => checkForLocallyUpdatedChannelsAsync());
+                channelRemoved = await Task.Run(() => removeLocallyDeletedChannelsAsync());
             }
 
             // Aktualisiere Liste im ViewController.
-            if(updatedChannels != null && updatedChannels.Count > 0)
+            if(updatedChannels != null && (updatedChannels.Count > 0 || channelRemoved))
             {
                 foreach(Channel channel in updatedChannels)
                 {
@@ -258,7 +263,7 @@ namespace DataHandlingLayer.ViewModel
         /// Datensätze hinzugekommen sind, werden diese in Form einer Liste zurückgegeben.
         /// </summary>
         /// <returns>Eine Liste von neu hinzugekommenen Kanalressourcen.</returns>
-        private async Task<List<Channel>> checkForLocallyUpdatedChannels()
+        private async Task<List<Channel>> checkForLocallyUpdatedChannelsAsync()
         {
             List<Channel> updatableChannels = new List<Channel>();
             List<Channel> localChannels = await Task.Run(() => channelController.GetAllChannels());
@@ -289,6 +294,41 @@ namespace DataHandlingLayer.ViewModel
             }
 
             return updatableChannels;
+        }
+
+        /// <summary>
+        /// Prüft, ob es Kanäle in der aktuellen Auflistung gibt, die in der Zwischenzeit
+        /// lokal gelöscht wurden. Diese Kanäle werden aus der Auflistung genommen. Liefert zudem zurück,
+        /// ob ein Kanal aus der Auflistung genommen wurde, oder nicht.
+        /// </summary>
+        /// <returns>Liefert true, wenn ein Kanal aus der Auflistung genommen wurde, ansonsten false.</returns>
+        private async Task<bool> removeLocallyDeletedChannelsAsync()
+        {
+            bool channelRemoved = false;
+            List<Channel> localChannels = await Task.Run(() => channelController.GetAllChannels());
+
+            List<Channel> currentChannels = allChannels.Values.ToList<Channel>();
+            foreach (Channel currentChannel in currentChannels)
+            {
+                bool isContained = false;
+
+                foreach (Channel localChannel in localChannels)
+                {
+                    if (localChannel.Id == currentChannel.Id)
+                    {
+                        isContained = true;
+                    }
+                }
+
+                if (!isContained)
+                {
+                    // Entferne aus der Auflistung aller Kanäle.
+                    allChannels.Remove(currentChannel.Id);
+                    channelRemoved = true;
+                }
+            }
+
+            return channelRemoved;
         }
 
         /// <summary>
@@ -372,11 +412,34 @@ namespace DataHandlingLayer.ViewModel
             if(OrderByTypeChecked)
             {
                 // Ändere Anordnung, so dass Kanäle nach Typ sortiert werden.
-                channelList = new List<Channel>(
-                    from item in channelList
-                    orderby item.Type, item.Name
-                    select item
-                    );
+                // Extrahiere nur die Vorlesungen.
+                IEnumerable<Lecture> lectures = channelList.Where(channel => channel.Type == ChannelType.LECTURE).Cast<Lecture>();
+                // Extrahiere die Kanäle anderer Kanaltypen.
+                IEnumerable<Channel> otherChannels = channelList.Where(channel => channel.Type != ChannelType.LECTURE);
+
+                // Sortiere die Vorlesungen.
+                lectures =
+                    from lecture in lectures
+                    orderby lecture.Faculty ascending, lecture.Name ascending
+                    select lecture;
+
+                // Sortiere die anderen Kanaltypen.
+                otherChannels =
+                    from channel in otherChannels
+                    orderby channel.Type ascending, channel.Name ascending
+                    select channel;  
+
+                
+                channelList = new List<Channel>();
+                // Füge die beiden Listen zusammen.
+                foreach (Lecture lecture in lectures)
+                {
+                    channelList.Add(lecture);
+                }
+                foreach (Channel channel in otherChannels)
+                {
+                    channelList.Add(channel);
+                }
             }
             else
             {

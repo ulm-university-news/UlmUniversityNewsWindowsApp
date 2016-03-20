@@ -15,8 +15,7 @@ namespace DataHandlingLayer.Constants
         public const string ShowLockScreenMessageKey = "showLockScreenMsg";
         public const string ShowLockScreenMessageYes = "yes";
         public const string ShowLockScreenMessageNo = "no";
-
-
+        
         // Local Settings Keys und Values bezüglich Login Status. Das ist relevant für die Wiederherstellung
         // des App Zustand bei einer durch das System verursachten Terminierung der Anwendung.
         // Die App soll nicht wieder in den Zustand wechseln, wenn ein Moderator zum Zeitpunkt der Terminierung eingeloggt war.
@@ -26,6 +25,7 @@ namespace DataHandlingLayer.Constants
 
         // Längenbeschränkungen:
         public const int MaxChannelNameLength = 45;
+        public const int MinChannelNameLength = 3;
         public const int MaxChannelDescriptionLength = 500;
         public const int MaxChannelLocationsInfoLength = 120;
         public const int MaxChannelDatesInfoLength = 150;
@@ -49,5 +49,6 @@ namespace DataHandlingLayer.Constants
         // Patterns
         public const string TermPattern = @"^[W,S][0-9]{4}$";
         public const string UserNamePattern = @"^[-_a-zA-Z0-9]+$";
+        public const string ChannelNamePattern = @"^[-!?_-öÖäÄüÜßa-zA-Z0-9\s]+$";
     }
 }

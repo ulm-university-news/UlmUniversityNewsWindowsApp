@@ -311,9 +311,13 @@ namespace DataHandlingLayer.DataModel
                 SetValidationError("Name", "AddAndEditChannelNameIsNullValidationError");
                 return;
             }
-            if (!checkStringRange(0, Constants.Constants.MaxChannelNameLength, Name))
+            if (!checkStringRange(Constants.Constants.MinChannelNameLength, Constants.Constants.MaxChannelNameLength, Name))
             {
                 SetValidationError("Name", "AddAndEditChannelNameTooLongValidationError");
+            }
+            if (!checkStringFormat(Constants.Constants.ChannelNamePattern, Name))
+            {
+                SetValidationError("Name", "AddAndEditChannelNameInvalidFormatValidationError");
             }
         }
         

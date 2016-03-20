@@ -681,8 +681,8 @@ namespace DataHandlingLayer.Controller
                 // Wenn der Kanal auf Serverseite gar nicht mehr existiert.
                 if(ex.ErrorCode == ErrorCodes.ChannelNotFound)
                 {
-                    Debug.WriteLine("User tried to subscribe to a channel that doesn't exist anymore. Mark the channel as deleted.");
-                    MarkChannelAsDeleted(channelId);
+                    Debug.WriteLine("User tried to subscribe to a channel that doesn't exist anymore. Delete the channel from local db.");
+                    DeleteLocalChannel(channelId);
                 }
 
                 Debug.WriteLine("Couldn't subscribe channel. Server returned status code {0} and error code {1}.", ex.ResponseStatusCode, ex.ErrorCode);

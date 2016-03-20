@@ -644,7 +644,7 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
     <value>Eintrittskosten</value>
   </data>
   <data name="AddAndEditChannelEventOrganizerInfoTooLongValidationError" xml:space="preserve">
-    <value>Die Informationen über den Organisator der Veranstaltung dürfen nicht mehr als 120 Zeichen umfassen.</value>
+    <value>Die Informationen über den Veranstalter der Veranstaltung dürfen nicht mehr als 120 Zeichen umfassen.</value>
   </data>
   <data name="AddAndEditChannelEventOrganizerTextBox.Header" xml:space="preserve">
     <value>Veranstalter</value>
@@ -686,7 +686,7 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
     <value>Name *</value>
   </data>
   <data name="AddAndEditChannelNameTooLongValidationError" xml:space="preserve">
-    <value>Der Kanalname darf die Länge von 45 Zeichen nicht überschreiten.</value>
+    <value>Der Kanalname darf die Länge von 45 Zeichen nicht überschreiten und sollte mindestens 3 Zeichen umfassen.</value>
   </data>
   <data name="AddAndEditChannelSportsAmountOfParticipantsTextBox.Header" xml:space="preserve">
     <value>Anzahl Teilnehmer</value>
@@ -1072,6 +1072,9 @@ Nachricht am: </value>
   </data>
   <data name="HomescreenModeratorSynchronizeManagedChannelsButton.Label" xml:space="preserve">
     <value>synchro-nisieren</value>
+  </data>
+  <data name="AddAndEditChannelNameInvalidFormatValidationError" xml:space="preserve">
+    <value>Der Kanalname entspricht nicht dem gültigen Format. Prüfen Sie, ob Sie irgendwelche nicht unterstützten Sonderzeichen verwendet haben. Erlaubte Sonderzeichen sind ! , ? , _ , - .</value>
   </data>
   <data name="ChannelTermStringConverterSummer" xml:space="preserve">
     <value>Sommer</value>

@@ -67,6 +67,16 @@ namespace DataHandlingLayer.ViewModel
             set { this.setProperty(ref this.localUsername, value); }
         }
 
+        private User localUser;
+        /// <summary>
+        /// Das Nutzerobjekt des aktuellen lokalen Nutzers.
+        /// </summary>
+        public User LocalUser
+        {
+            get { return localUser; }
+            set { this.setProperty(ref this.localUser, value); }
+        }
+        
         #region NotificationSettings
         private bool isNotificationOptionPrioHighSelected;
         /// <summary>
@@ -327,8 +337,9 @@ namespace DataHandlingLayer.ViewModel
         /// <returns></returns>
         public void LoadCurrentSettings()
         {
-            User localUser = applicationSettingsController.GetCurrentLocalUser();
-            LocalUsername = localUser.Name;
+            User localUserTmp = applicationSettingsController.GetCurrentLocalUser();
+            LocalUsername = localUserTmp.Name;
+            LocalUser = localUserTmp;
 
             AppSettings appSettings = applicationSettingsController.GetApplicationSettings();
             if(appSettings != null)
@@ -562,7 +573,14 @@ namespace DataHandlingLayer.ViewModel
 
                         hideIndeterminateProgressIndicator();
                         if (successful)
+                        {
                             displayStatusBarText("Data Saved", 2.5f);
+                            
+                            // Werfe aktuelles Nutzerobjekt aus dem Cache, so dass es neu aus der Datenbank geladen werden muss.
+                            DataModel.LocalUser.GetInstance().CacheLocalUserObject(null);
+                            // Hole lokalen Nutzer und setze lokales Property neu.
+                            LocalUser = applicationSettingsController.GetCurrentLocalUser();
+                        }                          
                     }
                     catch(ClientException ex)
                     {
