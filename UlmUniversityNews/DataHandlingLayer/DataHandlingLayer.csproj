@@ -147,6 +147,7 @@
     <Compile Include="ViewModel\AddAnnouncementViewModel.cs" />
     <Compile Include="ViewModel\ApplicationSettingsViewModel.cs" />
     <Compile Include="ViewModel\ChannelDetailsViewModel.cs" />
+    <Compile Include="ViewModel\ChannelEnumerationBaseViewModel.cs" />
     <Compile Include="ViewModel\ChannelSettingsViewModel.cs" />
     <Compile Include="ViewModel\DialogBaseViewModel.cs" />
     <Compile Include="ViewModel\HomescreenViewModel.cs" />

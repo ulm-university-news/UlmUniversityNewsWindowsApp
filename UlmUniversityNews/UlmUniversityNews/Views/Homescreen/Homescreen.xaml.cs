@@ -164,7 +164,7 @@ namespace UlmUniversityNews.Views.Homescreen
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                     Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                     {
-                        await homescreenViewModel.UpdateNumberOfUnreadAnnouncements();
+                        await homescreenViewModel.UpdateNumberOfUnreadAnnouncementsAsync();
                     });
             }
         }
@@ -202,7 +202,7 @@ namespace UlmUniversityNews.Views.Homescreen
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                     Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                     {
-                        await homescreenViewModel.PerformViewUpdateOnChannelChangedEvent(e.ChannelId);
+                        await homescreenViewModel.PerformViewUpdateOnChannelChangedEventAsync(e.ChannelId);
                     });
             }
         }

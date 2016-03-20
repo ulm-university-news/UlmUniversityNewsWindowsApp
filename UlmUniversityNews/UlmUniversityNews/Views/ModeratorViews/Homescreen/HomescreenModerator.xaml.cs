@@ -78,7 +78,7 @@ namespace UlmUniversityNews.Views.ModeratorViews.Homescreen
                 DrawerLayout.CloseDrawer();
             }
 
-            await moderatorHomescreenViewModel.LoadManagedChannels();
+            await moderatorHomescreenViewModel.LoadManagedChannelsAsync();
             subscribeToPushManagerEvents();
         }
 
@@ -152,7 +152,7 @@ namespace UlmUniversityNews.Views.ModeratorViews.Homescreen
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                     Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                     {
-                        await moderatorHomescreenViewModel.PerformViewUpdateOnChannelChangedEvent(e.ChannelId);
+                        await moderatorHomescreenViewModel.PerformViewUpdateOnChannelChangedEventAsync(e.ChannelId);
                     });
             }
         }

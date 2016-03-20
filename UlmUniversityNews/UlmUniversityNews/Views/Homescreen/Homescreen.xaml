@@ -118,7 +118,7 @@
                                 Grid.Row="0"
                                 x:Uid="HomescreenNoChannelSubscribedInfoText"
                                 Style="{StaticResource UniversityNewsUlmStandardText}"
-                                Visibility="{Binding MyChannels.Count, TargetNullValue='0', FallbackValue='0', Converter={StaticResource ListCountToVisibilityConverter}}">
+                                Visibility="{Binding ChannelCollection.Count, TargetNullValue='0', FallbackValue='0', Converter={StaticResource ListCountToVisibilityConverter}}">
                                     Es wurde noch kein Kanal abonniert.
                                     <LineBreak/>
                                     Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.
@@ -129,7 +129,7 @@
                             <ListView
                                 Grid.Row="1"
                                 ItemTemplate="{StaticResource ChannelListItemStyle}"
-                                ItemsSource="{Binding MyChannels}"
+                                ItemsSource="{Binding ChannelCollection}"
                                 IsItemClickEnabled="True"
                                 HorizontalContentAlignment="Stretch"
                                 HorizontalAlignment="Stretch">

@@ -108,7 +108,7 @@
                                 x:Uid="HomescreenModeratorNoManagedChannelsInfo"
                                 Style="{StaticResource UniversityNewsUlmStandardText}"
                                 Text=""
-                                Visibility="{Binding ManagedChannels.Count, Converter={StaticResource ListCountToVisibilityConverter}}"
+                                Visibility="{Binding ChannelCollection.Count, Converter={StaticResource ListCountToVisibilityConverter}}"
                                 />  <!-- Bind visiblity, so that the text will be visible if the list is empty. Use ListCountToVisibilityConverter.-->
 
                             <!-- Definiere Liste für verwaltete Kanäle. -->
@@ -116,7 +116,7 @@
                             <ListView
                                 Grid.Row="1"
                                 ItemTemplate="{StaticResource ChannelListItemStyle}"
-                                ItemsSource="{Binding ManagedChannels}"
+                                ItemsSource="{Binding ChannelCollection}"
                                 IsItemClickEnabled="True"
                                 HorizontalContentAlignment="Stretch"
                                 HorizontalAlignment="Stretch">

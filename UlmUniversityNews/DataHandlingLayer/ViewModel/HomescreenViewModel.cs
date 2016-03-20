@@ -16,19 +16,9 @@ using DataHandlingLayer.Common;
 
 namespace DataHandlingLayer.ViewModel
 {
-    public class HomescreenViewModel : ViewModel
+    public class HomescreenViewModel : ChannelEnumerationBaseViewModel
     {
         #region Fields
-        /// <summary>
-        /// Eine Referenz auf eine Instanz des ChannelController.
-        /// </summary>
-        private ChannelController channelController;
-
-        /// <summary>
-        /// Speichert die aktuell im ViewModel gehaltenen Kanäle in einem Lookup Verzeichnis.
-        /// </summary>
-        private Dictionary<int, Channel> currentChannels;
-
         // Speichert die AppSettings, die zum Zeitpunkt des Ladens der Kanäle aktuell gültig sind.
         // Wird benötigt, um zu prüfen, ob bei geänderten Einstellungen die Liste der Kanäle neu 
         // sortiert werden muss.
@@ -51,16 +41,6 @@ namespace DataHandlingLayer.ViewModel
                 selectedPivotItemIndex = value;
                 checkCommandExecution();
             }
-        }
-
-        private ObservableCollection<Channel> myChannels;
-        /// <summary>
-        /// Liste von Kanalobjekten, die der lokale Nutzer abonniert hat.
-        /// </summary>
-        public ObservableCollection<Channel> MyChannels
-        {
-            get { return myChannels; }
-            set { this.setProperty(ref this.myChannels, value); }
         }
 
         private ObservableCollection<Channel> groupCollection;
@@ -124,12 +104,7 @@ namespace DataHandlingLayer.ViewModel
         public HomescreenViewModel(INavigationService navService, IErrorMapper errorMapper)
             : base(navService, errorMapper)
         {
-            // Erzeuge Controller Objekt.
-            channelController = new ChannelController(this);
-
-            currentChannels = new Dictionary<int, Channel>();
-
-            // Initialisiere die Kommandos.
+            // Initialisiere die Befehle.
             searchChannelsCommand = new RelayCommand(param => executeSearchChannelsCommand(), param => canSearchChannels());
             addGroupCommand = new RelayCommand(param => executeAddGroupCommand(), param => canAddGroup());
             searchGroupsCommand = new RelayCommand(param => executeSearchGroupsCommand(), param => canSearchGroups());
@@ -144,16 +119,18 @@ namespace DataHandlingLayer.ViewModel
             List<Channel> channels;
             try
             {
-                if (MyChannels == null || MyChannels.Count == 0)
+                if (ChannelCollection == null || ChannelCollection.Count == 0)
                 {
                     Debug.WriteLine("Loading subscribed channels from DB.");
 
+                    // Frage abonnierte Kanäle ab.
                     channels = await Task.Run(() => channelController.GetMyChannels());
-                    // Sortiere Liste.
-                    channels = sortChannelsByApplicationSetting(channels);
+
+                    // Sortiere Liste nach aktuellen Anwendungseinstellungen.
+                    channels = await Task.Run(() => sortChannelsByApplicationSetting(channels));
 
                     // Mache Kanäle über Property abrufbar.
-                    MyChannels = new ObservableCollection<Channel>(channels);
+                    ChannelCollection = new ObservableCollection<Channel>(channels);
 
                     // Speichere die aktuell gültigen Anwendungseinstellungen zwischen.
                     AppSettings currentSettings = channelController.GetApplicationSettings();
@@ -175,41 +152,47 @@ namespace DataHandlingLayer.ViewModel
                     if (currentAppSettings.GeneralListOrderSetting != cachedGeneralListSettings ||
                         currentAppSettings.ChannelOderSetting != cachedChannelOrderSettings)
                     {
-                        // Restrukturierung der MyChannels Liste.
-                        await updateViewModelChannelListOnSettingsChange(currentAppSettings);
+                        // Restrukturierung der Liste abonnierter Kanäle durch neu laden.
+                        channels = await Task.Run(() => channelController.GetMyChannels());
+                        await reloadChannelCollectionCompletelyAsync(channels);
+
+                        // Aktualisiere die nun für die View geltenden Einstellungen.
+                        cachedGeneralListSettings = currentAppSettings.GeneralListOrderSetting;
+                        cachedChannelOrderSettings = currentAppSettings.ChannelOderSetting;
                     }
                     else
                     {
                         // Führe nur lokale Synchronisation durch.
-                        await updateViewModelChannelList();
+                        channels = await Task.Run(() => channelController.GetMyChannels());
+                        await updateViewModelChannelCollectionAsync(channels);
                     }             
 
                     // Führe Aktualisierung von Anzahl ungelesener Nachrichten Properties der Kanäle aus.
-                    await UpdateNumberOfUnreadAnnouncements();
+                    await UpdateNumberOfUnreadAnnouncementsAsync();
                 }
-            }catch(ClientException e)
+            }
+            catch(ClientException e)
             {
+                Debug.WriteLine("Error during loading process of subscribed channels.");
                 displayError(e.ErrorCode);
             }
         }
 
         /// <summary>
         /// Aktualisiere die Werte für die noch ungelesenen Announcements in jedem Kanal aus 
-        /// der "MyChannels" Liste.
+        /// der "ChannelCollection" Liste.
         /// </summary>
-        public async Task UpdateNumberOfUnreadAnnouncements()
+        public async Task UpdateNumberOfUnreadAnnouncementsAsync()
         {
             // Delegiere an Hintergrundthread.
             Dictionary<int, int> numberOfUnreadAnnouncements =
                 await Task.Run(() => channelController.GetAmountOfUnreadAnnouncementsForMyChannels());
 
-            //Debug.WriteLine("Im on thread with id {0}. ", Environment.CurrentManagedThreadId);
-            //Debug.WriteLine("NumberOfUnreadAnnouncements dictionary is {0}.", numberOfUnreadAnnouncements);
             if (numberOfUnreadAnnouncements != null)
             {
                 Debug.WriteLine("NumberOfUnreadAnnouncements contains {0} entries.", numberOfUnreadAnnouncements.Count);
 
-                foreach (Channel channel in MyChannels)
+                foreach (Channel channel in ChannelCollection)
                 {
                     if (numberOfUnreadAnnouncements.ContainsKey(channel.Id))
                     {
@@ -221,269 +204,15 @@ namespace DataHandlingLayer.ViewModel
                     }
                     else
                     {
-                        // Debug.WriteLine("Channel with id {0} did not appear in NumberOfUnreadAnnouncements, set nrOfUnreadMsg to 0.", channel.Id);
+                        // Debug.WriteLine("Channel with id {0} did not appear in NumberOfUnreadAnnouncements, set nrOfUnreadMsg to 0.",
+                        // channel.Id);
                         channel.NumberOfUnreadAnnouncements = 0;
                     }
                 }
             }
         }
 
-        /// <summary>
-        /// Aktualisiert den Zustand der View im Falle eines eingehenden Events, welches
-        /// über die Löschung eines Kanals informiert. Schaut, ob der betroffene Kanal in der 
-        /// Auflistung ist und löst eine Aktualisierung der Anzeige aus.
-        /// </summary>
-        /// <param name="channelId">Die Id des betroffenen Kanals.</param>
-        public void PerformViewUpdateOnChannelDeletedEvent(int channelId)
-        {
-            // Redraw herbeiführen durch Löschen und Wiedereinfügen. TODO: Gibt es hier nichts besseres?
-            Channel affectedChannel = MyChannels.Where(channel => channel.Id ==channelId).FirstOrDefault();
-            if (affectedChannel != null)
-            {
-                int index = MyChannels.IndexOf(affectedChannel);
-                Debug.WriteLine("It seems that the channel with id {0} is deleted on the server.", affectedChannel.Id);
-
-                MyChannels.RemoveAt(index);
-                affectedChannel.Deleted = true;
-                MyChannels.Insert(index, affectedChannel);
-            }
-        }
-
-        /// <summary>
-        /// Aktualisiert den Zustand der View im Falle eines eingehenden Events, welches über die
-        /// Änderung eines Kanals informiert. Schaut, ob der betroffene Kanal in der Auflistung ist und löst
-        /// eine Aktualisierung der Anzeige aus.
-        /// </summary>
-        /// <param name="channelId">Die Id des betroffenen Kanals.</param>
-        public async Task PerformViewUpdateOnChannelChangedEvent(int channelId)
-        {
-            // Aktualisiere die für die View relevanten Properties.
-            Channel affectedChannel = MyChannels.Where(channel => channel.Id == channelId).FirstOrDefault();
-            if (affectedChannel != null)
-            {
-                try
-                {
-                    Channel latestLocalChannel = await Task.Run(() => channelController.GetChannel(channelId));
-                    updateViewRelatedChannelProperties(affectedChannel, latestLocalChannel);
-                }
-                catch (ClientException ex)
-                {
-                    // Gebe Fehler nicht weiter.
-                    Debug.WriteLine("PerformViewUpdateOnChannelChangedEvent: Error occurred." +
-                        "Message is: {0}.", ex.Message);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Führt eine Synchronisation der im ViewModel aktuell gehaltenen "abonnierten" Kanalressourcen
-        /// und der von der Anwendung gehaltenen "abonnierten" Kanalressourcen durch. Prüft, ob durch Änderungen
-        /// neue Kanäle hinzugekommen (abonniert) oder entfernt wurden (deabonniert). Prüft
-        /// zudem, ob aktualisierte Daten für die bereits verwalteten Kanalressourcen vorliegen.
-        /// </summary>
-        private async Task updateViewModelChannelList()
-        {
-            // Hole die aktuelleste Liste der abonnierten Kanäle aus der Datenbank.
-            List<Channel> channels = await Task.Run(() => channelController.GetMyChannels());
-            // Sortiere Liste.
-            channels = sortChannelsByApplicationSetting(channels);
-
-            // Prüfe, ob inzwischen ein neuer Kanal abonniert wurde.
-            // Füge fehlende Kanäle der Liste hinzu, an der Position, an der sie laut Sortierung stehen sollten.
-            foreach (Channel localChannel in channels)
-            {
-                if (!currentChannels.ContainsKey(localChannel.Id))
-                {
-                    Debug.WriteLine("Need to insert channel with id {0} into MyChannels.", localChannel.Id);
-                    MyChannels.Insert(channels.IndexOf(localChannel), localChannel);
-                    currentChannels.Add(localChannel.Id, localChannel);
-                }
-                else
-                {
-                    // Prüfe, ob die Kanaldaten aktualisiert werden müssen.
-                    Channel currentChannel = currentChannels[localChannel.Id];
-                    if (currentChannel.ModificationDate.CompareTo(localChannel.ModificationDate) < 0)
-                    {
-                        // Aktualisiere Objektinstanz.
-                        Debug.WriteLine("Need to update local properties of channel object with id {0}.", localChannel.Id);
-                        updateViewRelatedChannelProperties(currentChannel, localChannel);
-                    }
-
-                    // Prüfe, ob Kanal als gelöscht markiert wurde.
-                    if (localChannel.Deleted && !currentChannel.Deleted)
-                    {
-                        // Aktualisiere View bei gelöschtem Kanal.
-                        PerformViewUpdateOnChannelDeletedEvent(currentChannel.Id);
-                    }
-                }
-            }
-
-            // Prüfe andererseits, ob ein Kanal aus MyChannels nicht mehr in der Liste der abonnierten Kanäle steht.
-            for (int i = 0; i < MyChannels.Count; i++)
-            {
-                Channel channel = MyChannels[i];
-                bool isContained = false;
-
-                foreach (Channel loadedChannel in channels)
-                {
-                    if (loadedChannel.Id == channel.Id)
-                    {
-                        isContained = true;
-                        break;
-                    }
-                }
-
-                if (!isContained)
-                {
-                    Debug.WriteLine("Need to remove channel with id {0} from MyChannels list.", i);
-                    MyChannels.RemoveAt(i);
-                    currentChannels.Remove(channel.Id);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Führt eine Aktualisierung der im ViewModel gehaltenen "abonnierten" Kanalressourcen nach einer
-        /// Änderung der kanalspezifischen oder listenspezifischen Anwendungseinstellungen. Die Einträge der Liste
-        /// müssen entsprechend der neuen Einstellungen neu angeordnet werden. In diesem Fall werden die Einträge neu
-        /// geladen und die Liste neu initialisiert.
-        /// </summary>
-        /// <param name="currentAppSettings">Die aktuellen Anwendungseinstellungen, die nach der Änderung gelten.</param>
-        private async Task updateViewModelChannelListOnSettingsChange(AppSettings currentAppSettings)
-        {
-            // Hole die aktuelleste Liste der abonnierten Kanäle aus der Datenbank.
-            List<Channel> channels = await Task.Run(() => channelController.GetMyChannels());
-            // Sortiere Liste.
-            channels = sortChannelsByApplicationSetting(channels);
-
-            // Wenn Einstellungen geändert wurden, lade Liste einfach komplett neu.
-            // Mache Kanäle über Property abrufbar.
-            MyChannels = new ObservableCollection<Channel>(channels);
-
-            // Speichere die aktuell gültigen Anwendungseinstellungen zwischen.
-            cachedGeneralListSettings = currentAppSettings.GeneralListOrderSetting;
-            cachedChannelOrderSettings = currentAppSettings.ChannelOderSetting;
-
-            // Speichere die Kanäle im Lookup-Verzeichnis.
-            currentChannels.Clear();
-            foreach (Channel channel in channels)
-            {
-                currentChannels.Add(channel.Id, channel);
-            }
-        }
-
-        /// <summary>
-        /// Sortiert die Liste der Kanäle nach dem aktuell in den Anwendungseinstellungen festgelegten Kriterium.
-        /// </summary>
-        /// <param name="channels">Die Liste an zu sortierenden Kanälen.</param>
-        /// <returns>Eine sortierte Liste der Kanäle.</returns>
-        private List<Channel> sortChannelsByApplicationSetting(List<Channel> channels)
-        {
-            // Hole die Anwendungseinstellungen.
-            AppSettings appSettings = channelController.GetApplicationSettings();
-
-            switch (appSettings.ChannelOderSetting)
-            {
-                case OrderOption.ALPHABETICAL:
-                    if (appSettings.GeneralListOrderSetting == OrderOption.ASCENDING)
-                    {
-                        channels = new List<Channel>(
-                            from item in channels
-                            orderby item.Name ascending
-                            select item);
-                    }
-                    else
-                    {
-                        channels = new List<Channel>(
-                            from item in channels
-                            orderby item.Name descending
-                            select item);
-                    }
-                    break;
-                case OrderOption.BY_TYPE:
-                    // Extrahiere nur die Vorlesungen.
-                    IEnumerable<Lecture> lectures = channels.Where(channel => channel.Type == ChannelType.LECTURE).Cast<Lecture>();
-                    // Extrahiere die Kanäle anderer Kanaltypen.
-                    IEnumerable<Channel> otherChannels = channels.Where(channel => channel.Type != ChannelType.LECTURE);
-
-                    if (appSettings.GeneralListOrderSetting == OrderOption.ASCENDING)
-                    {
-                        // Sortiere die Vorlesungen.
-                        lectures =
-                            from lecture in lectures
-                            orderby lecture.Faculty ascending, lecture.Name ascending
-                            select lecture;
-
-                        // Sortiere die anderen Kanaltypen.
-                        otherChannels =
-                            from channel in otherChannels
-                            orderby channel.Type ascending, channel.Name ascending
-                            select channel;                      
-                    }
-                    else
-                    {
-                        // Sortiere die Vorlesungen.
-                        lectures =
-                            from lecture in lectures
-                            orderby lecture.Faculty descending, lecture.Name descending
-                            select lecture;
-
-                        // Sortiere die anderen Kanaltypen.
-                        otherChannels =
-                            from channel in otherChannels
-                            orderby channel.Type descending, channel.Name descending
-                            select channel;
-                    }
-
-                    // Füge die beiden Listen zusammen.
-                    channels = new List<Channel>();
-                    foreach (Lecture lecture in lectures)
-                    {
-                        channels.Add(lecture);
-                    }
-                    foreach (Channel channel in otherChannels)
-                    {
-                        channels.Add(channel);
-                    }
-
-                    break;
-                case OrderOption.BY_NEW_MESSAGES_AMOUNT:
-                    if (appSettings.GeneralListOrderSetting == OrderOption.ASCENDING)
-                    {
-                        channels = new List<Channel>(
-                            from item in channels
-                            orderby item.NumberOfUnreadAnnouncements ascending, item.Name ascending
-                            select item);
-                    }
-                    else
-                    {
-                        channels = new List<Channel>(
-                            from item in channels
-                            orderby item.NumberOfUnreadAnnouncements descending, item.Name descending
-                            select item);
-                    }
-                    break;
-                default:
-                    channels = new List<Channel>(
-                        from item in channels
-                        orderby item.Name ascending
-                        select item);
-                    break;
-            }
-            return channels;
-        }
-
-        /// <summary>
-        /// Aktualisiert für einen Kanal die Properties, die für die Anzeige relvant sind.
-        /// <param name="oldChannel">Das Channel Objekt vor der Aktualisierung.</param>
-        /// <param name="updatedChannel">Das Channel Objekt nach der Aktualisierung.</param>
-        /// </summary>
-        private void updateViewRelatedChannelProperties(Channel oldChannel, Channel updatedChannel)
-        {
-            oldChannel.Name = updatedChannel.Name;
-            oldChannel.Term = updatedChannel.Term;
-        }
-
+        #region CommandFunctionality
         /// <summary>
         /// Eine Hilfsmethode, die nach einer Statusänderung des Pivot Elements prüft,
         /// ob noch alle Kommandos ausgeführt werden können.
@@ -586,7 +315,8 @@ namespace DataHandlingLayer.ViewModel
             if (selectedChannel != null)
             {
                 _navService.Navigate("ChannelDetails", selectedChannel.Id);
-            }   
+            }
         }
+        #endregion CommandFunctionality
     }
 }
