@@ -7,23 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataHandlingLayer.DataModel;
-using DataHandlingLayer.Common;
 using DataHandlingLayer.Controller;
 using DataHandlingLayer.DataModel.Enums;
 using DataHandlingLayer.Exceptions;
 using System.Diagnostics;
 using DataHandlingLayer.CommandRelays;
+using DataHandlingLayer.Common;
 
 namespace DataHandlingLayer.ViewModel
 {
-    public class ModeratorChannelDetailsViewModel : ViewModel
+    public class ModeratorChannelDetailsViewModel : ChannelDetailsBaseViewModel
     {
         #region Fields
-        /// <summary>
-        /// Eine Referenz auf eine Instanz der Klasse ChannelController.
-        /// </summary>
-        private ChannelController channelController;
-
         /// <summary>
         /// Eine Datenstruktur, die eine schnelle Überprüfung der aktuell im ViewModel 
         /// verwalteten Reminder ermöglicht.
@@ -31,64 +26,7 @@ namespace DataHandlingLayer.ViewModel
         private Dictionary<int, Reminder> reminderLookup;
         #endregion Fields
 
-        #region Properties
-        private Channel channel;
-        /// <summary>
-        /// Der Kanal, dessen Details angezeigt werden sollen.
-        /// </summary>
-        public Channel Channel
-        {
-            get { return channel; }
-            set
-            {
-                this.setProperty(ref this.channel, value);
-                checkCommandExecution();
-            }
-        }
-
-        private Lecture lecture;
-        /// <summary>
-        /// Eine Instanz der Klasse Lecture, die gesetzt wird, falls Details zu einem Kanal angezeigt werden sollen,
-        /// der den Typ Lecture hat. 
-        /// </summary>
-        public Lecture Lecture
-        {
-            get { return lecture; }
-            set { this.setProperty(ref this.lecture, value); }
-        }
-
-        private Sports sports;
-        /// <summary>
-        /// Eine Instanz der Klasse Sports, die gesetzt wird, falls Details zu einem Kanal angezeigt werden sollen,
-        /// der den Typ Sports hat.
-        /// </summary>
-        public Sports Sports
-        {
-            get { return sports; }
-            set { this.setProperty(ref this.sports, value); }
-        }
-
-        private Event eventObj;
-        /// <summary>
-        /// Eine Instanz der Klasse Sports, die gesetzt wird, falls Details zu einem Kanal angezeigt werden sollen,
-        /// der den Typ Event hat.
-        /// </summary>
-        public Event EventObj
-        {
-            get { return eventObj; }
-            set { this.setProperty(ref this.eventObj, value); }
-        }
-
-        private string moderators;
-        /// <summary>
-        /// Die Namen der für den Kanal verantwortlichen Moderatoren.
-        /// </summary>
-        public string Moderators
-        {
-            get { return moderators; }
-            set { this.setProperty(ref this.moderators, value); }
-        }
-        
+        #region Properties        
         private int selectedPivotItemIndex;
         /// <summary>
         /// Gibt den Index des aktuell ausgewählten PivotItems an.
@@ -104,28 +42,6 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
-        private int listRotationAngle;
-        /// <summary>
-        /// Der Winkel, um den die Liste mit den Announcements gedreht wird.
-        /// Der Winkel wird verwendet, um die Anordnung der Announcements (von oben nach untern, von unten nach oben)
-        /// zu realisieren.
-        /// </summary>
-        public int ListRotationAngle
-        {
-            get { return listRotationAngle; }
-            set { this.setProperty(ref this.listRotationAngle, value); }
-        }
-
-        private bool showScrollBar;
-        /// <summary>
-        /// Gibt an, ob die ScrollBar Leiste eingeblendet werden soll, oder ob sie ausgeblendet werden soll.
-        /// </summary>
-        public bool ShowScrollBar
-        {
-            get { return showScrollBar; }
-            set { showScrollBar = value; }
-        }
-
         private bool canDeleteChannel;
         /// <summary>
         /// Gibt an, ob aktuell der Befehl zum Löschen des Kanals zur Vefügung steht.
@@ -136,17 +52,6 @@ namespace DataHandlingLayer.ViewModel
             set { this.setProperty(ref this.canDeleteChannel, value); }
         }
         
-        private IncrementalLoadingCollection<IncrementalAnnouncementLoaderController, Announcement> announcements = null;
-        /// <summary>
-        /// Die zum Kanal gehörenden Announcements in einer Collection. Hierbei handelt es sich um eine Collection,
-        /// die dynamisches Laden von Announcements ermöglicht.
-        /// </summary>
-        public IncrementalLoadingCollection<IncrementalAnnouncementLoaderController, Announcement> Announcements
-        {
-            get { return announcements; }
-            set { this.setProperty(ref this.announcements, value); }
-        }
-
         private ObservableCollection<Reminder> reminders;
         /// <summary>
         /// Die zu dem Kanal gehörenden Reminder.
@@ -228,8 +133,6 @@ namespace DataHandlingLayer.ViewModel
         public ModeratorChannelDetailsViewModel(INavigationService navService, IErrorMapper errorMapper)
             : base(navService, errorMapper)
         {
-            channelController = new ChannelController();
-
             Reminders = new ObservableCollection<Reminder>();
             reminderLookup = new Dictionary<int, Reminder>();
 
@@ -250,19 +153,6 @@ namespace DataHandlingLayer.ViewModel
             SynchronizeWithServerCommand = new AsyncRelayCommand(
                 param => executeSynchronizeWithServerCommand(),
                 param => canPerformSynchronizationWithServer());
-
-            // Lade Anwendungseinstellungen und passe View Parameter entsprechend an.
-            AppSettings appSettings = channelController.GetApplicationSettings();
-            if (appSettings.AnnouncementOrderSetting == OrderOption.ASCENDING)
-            {
-                ListRotationAngle = 0;
-                ShowScrollBar = true;
-            }
-            else if (appSettings.AnnouncementOrderSetting == OrderOption.DESCENDING)
-            {
-                ListRotationAngle = 180;
-                ShowScrollBar = false;
-            }
         }
 
         /// <summary>
@@ -306,31 +196,8 @@ namespace DataHandlingLayer.ViewModel
 
             // Initialisiere asynchrones Announcement Laden.
             Announcements = new IncrementalLoadingCollection<IncrementalAnnouncementLoaderController, Announcement>(selectedChannelId, 20);
-        }
 
-        /// <summary>
-        /// Führe eine Aktualisierung der Announcements durch. Es wird beim
-        /// Server nach neuen Announcements für den Kanal angefragt.
-        /// </summary>
-        public async Task PerformAnnouncementUpdate()
-        {
-            if (Channel == null)
-                return;
-
-            try
-            {
-                displayIndeterminateProgressIndicator();
-                await this.updateAnnouncements(true);
-            }
-            catch (ClientException ex)
-            {
-                // bei Fehler keine Nachricht an Nutzer, da Operation im Hintergrund ausgeführt wird.
-                Debug.WriteLine("ClientException occurred during updateAnnouncements. Error code is: {0}.", ex.ErrorCode);
-            }
-            finally
-            {
-                hideIndeterminateProgressIndicator();
-            }
+            checkCommandExecution();
         }
 
         /// <summary>
@@ -366,32 +233,6 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
-        /// Lädt die Moderatoren des gewählten Kanals.
-        /// </summary>
-        public async Task LoadModeratorsOfChannel()
-        {
-            if (Channel == null)
-                return;
-
-            string moderatorString = string.Empty;
-            try
-            {
-                List<Moderator> moderators = await Task.Run(() => channelController.GetModeratorsOfChannel(Channel.Id));
-
-                foreach (Moderator moderator in moderators)
-                {
-                    moderatorString += moderator.FirstName + " " + moderator.LastName + "\n";
-                }
-            }
-            catch (ClientException ex)
-            {
-                Debug.WriteLine("Error during loading of moderators. Error code is: {0}.", ex.ErrorCode);
-            }
-
-            Moderators = moderatorString;
-        }
-
-        /// <summary>
         /// Ruft die neueste Liste von Reminder für den gegebenen Kanal vom Server ab
         /// und prüft, ob lokal entsprechend Reminder hinzugefügt oder aktualisiert werden müssen.
         /// </summary>
@@ -411,7 +252,7 @@ namespace DataHandlingLayer.ViewModel
                 await Task.Run(() => channelController.AddOrUpdateLocalReminders(reminderListServer, Channel.Id));
 
                 // Aktualisiere die im ViewModel gehaltene Liste von Reminders.
-                await updateRemindersList();
+                await updateRemindersListAsync();
             }
             catch (ClientException ex)
             {
@@ -421,39 +262,6 @@ namespace DataHandlingLayer.ViewModel
             finally
             {
                 hideIndeterminateProgressIndicator();
-            }
-        }
-
-        /// <summary>
-        /// Aktualisiert den View Zustand, wenn eine neue Announcement per PushNachricht empfangen wurde.
-        /// </summary>
-        public async Task UpdateAnnouncementsOnAnnouncementReceived()
-        {
-            Debug.WriteLine("Update announcements on ReceivedAnnouncement event.");
-            if (Channel != null)
-            {
-                Announcement receivedAnnouncement = await Task.Run(() => channelController.GetLastReceivedAnnouncement(Channel.Id));
-                if (Announcements != null && receivedAnnouncement != null
-                    && Announcements.Count > 0)
-                {
-                    // Prüfe, ob die Announcement schon in der Liste ist.
-                    // Prüfe hier nur die ersten paar Einträge (die neusten).
-                    int maxIndex = 5;
-                    if (Announcements.Count < 5)
-                        maxIndex = Announcements.Count;
-
-                    for (int i = 0; i < maxIndex; i++)
-                    {
-                        if (receivedAnnouncement.Id == Announcements[i].Id)
-                        {
-                            // Beende die Methode. Einfügen nicht notwendig.
-                            return;
-                        }
-                    }
-
-                    // Füge die Announcement der Liste hinzu.
-                    Announcements.Insert(0, receivedAnnouncement);
-                }
             }
         }
 
@@ -471,30 +279,6 @@ namespace DataHandlingLayer.ViewModel
             checkCommandExecution();
         }
         
-        /// <summary>
-        /// Aktualisiere den View-Zustand. Es wurd ein ChannelChanged
-        /// Event empfangen, d.h. die Daten des im ViewModel gehaltenen 
-        /// Kanals werden aktualisiert.
-        /// </summary>
-        public async Task PerformViewUpdateOnChannelChangedEvent()
-        {
-            if (Channel == null)
-                return;
-
-            try
-            {
-                // Rufe neusten lokalen Datensatz ab und aktualisiere.
-                Channel latestChannelObj = await Task.Run(() => channelController.GetChannel(Channel.Id));
-                updateViewRelatedChannelProperties(Channel, latestChannelObj);
-            }
-            catch (ClientException ex)
-            {
-                // Keine Fehlermeldung anzeigen.
-                Debug.WriteLine("Failed to perform view update on channel changed event." +
-                    "Message is: {0}.", ex.Message);
-            }
-        }
-
         /// <summary>
         /// Sortiert die Liste von Remindern Objekten. Aktuell werden die Reminder alphabetisch
         /// nach ihrem Titel sortiert.
@@ -516,7 +300,7 @@ namespace DataHandlingLayer.ViewModel
         /// Aktualisiert die im ViewModel gehaltene Liste von Reminder-Objekten. Synchronisiert die
         /// Liste mit den lokal in der Anwendung für den gegebenen Kanal verwalteten Reminder Objekten.
         /// </summary>
-        private async Task updateRemindersList()
+        private async Task updateRemindersListAsync()
         {
             try
             {
@@ -601,41 +385,11 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
-        /// Eine Hilfsmethode, die die Aktualisierung der Announcements des aktuellen Kanals ausführt.
-        /// </summary>
-        /// <param name="withCaching">Gibt an, ob der Request bei mehrfachen gleichen Requests innerhalb eines Zeitraums erneut ausgeführt werden soll,
-        ///     oder ob der Eintrag aus dem Cache verwendet werden soll.</param>
-        /// <exception cref="ClientException">Wirft ClientException, wenn die Aktualisierung der Announcements fehlschlägt.</exception>
-        private async Task updateAnnouncements(bool withCaching)
-        {
-            if (Channel == null)
-                return;
-
-            // Extrahiere als erstes die aktuell höchste MessageNr einer Announcement in diesem Kanal.
-            int maxMsgNr = 0;
-            maxMsgNr = channelController.GetHighestMsgNrForChannel(Channel.Id);
-            Debug.WriteLine("Perform update announcement operation with max messageNumber of {0}.", maxMsgNr);
-
-            // Frage die Announcements ab.
-            List<Announcement> receivedAnnouncements = await channelController.GetAnnouncementsOfChannelAsync(Channel.Id, maxMsgNr, withCaching);
-
-            if (receivedAnnouncements != null && receivedAnnouncements.Count > 0)
-            {
-                await Task.Run(() => channelController.StoreReceivedAnnouncementsAsync(receivedAnnouncements));
-
-                foreach (Announcement announcement in receivedAnnouncements)
-                {
-                    Announcements.Insert(0, announcement);
-                }
-            }
-        }
-
-        /// <summary>
         /// Führe eine Synchronisation der lokalen Datensätze mit den Datensätzen auf dem
         /// Server aus. Aktualisiere lokale Datensätze falls notwendig.
         /// </summary>
         /// <exception cref="ClientException">Wirft ClientException, wenn Synchronisation fehlschlägt.</exception>
-        private async Task synchroniseRemindersWithServer()
+        private async Task synchroniseRemindersWithServerAsync()
         {
             if (Channel == null)
                 return;
@@ -648,84 +402,7 @@ namespace DataHandlingLayer.ViewModel
             await Task.Run(() => channelController.SynchronizeLocalReminders(reminderListServer, Channel.Id));
 
             // Aktualisiere die im ViewModel gehaltene Liste von Reminders.
-            await updateRemindersList();
-        }
-
-        /// <summary>
-        /// Stößt eine Synchronisation der Kanal- und Moderatoreninformationen
-        /// des gewählten Kanals an. Fragt entsprechende Informationen vom Server ab
-        /// und stößt die Aktualisierung der lokalen Datensätze an.
-        /// </summary>
-        private async Task synchroniseChannelInformation()
-        {
-            if (Channel == null)
-                return;
-
-            // Synchronisiere verantwortliche Moderatoren.
-            List<Moderator> responsibleModerators = await Task.Run(() => channelController.GetResponsibleModeratorsAsync(Channel.Id));
-
-            // Stoße lokale Synchronisation an.
-            await Task.Run(() => channelController.SynchronizeResponsibleModerators(Channel.Id, responsibleModerators));
-
-            // Lade Moderatoren View Property neu.
-            await LoadModeratorsOfChannel();
-
-            // Synchronisiere Kanalinformationen.
-            Channel referenceChannel = await Task.Run(() => channelController.GetChannelInfoAsync(Channel.Id));
-            if (referenceChannel != null)
-            {
-                if (DateTimeOffset.Compare(Channel.ModificationDate, referenceChannel.ModificationDate) < 0)
-                {
-                    // Aktualisierung erforderlich.
-                    channelController.ReplaceLocalChannel(referenceChannel);
-                    // Ändere für View relevante Properties, so dass View aktualisiert wird.
-                    updateViewRelatedChannelProperties(Channel, referenceChannel);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Aktualisiert die für die View relevanten Properties eines aktuell vom ViewModel gehaltenen
-        /// Kanal-Objekts.
-        /// </summary>
-        /// <param name="currentChannel">Das aktuell vom ViewModel gehaltene Channel-Objekt.</param>
-        /// <param name="newChannel">Das Channel-Objekt mit den aktualisierten Daten.</param>
-        private void updateViewRelatedChannelProperties(Channel currentChannel, Channel newChannel)
-        {
-            currentChannel.Name = newChannel.Name;
-            currentChannel.Description = newChannel.Description;
-            currentChannel.Term = newChannel.Term;
-            currentChannel.CreationDate = newChannel.CreationDate;
-            currentChannel.ModificationDate = newChannel.ModificationDate;
-            currentChannel.Locations = newChannel.Locations;
-            currentChannel.Dates = newChannel.Dates;
-            currentChannel.Contacts = newChannel.Contacts;
-            currentChannel.Website = newChannel.Website;
-
-            switch (currentChannel.Type)
-            {
-
-                case ChannelType.LECTURE:
-                    Lecture currentLecture = currentChannel as Lecture;
-                    Lecture newLecture = newChannel as Lecture;
-                    currentLecture.StartDate = newLecture.StartDate;
-                    currentLecture.EndDate = newLecture.EndDate;
-                    currentLecture.Lecturer = newLecture.Lecturer;
-                    currentLecture.Assistant = newLecture.Assistant;
-                    break;
-                case ChannelType.EVENT:
-                    Event currentEvent = currentChannel as Event;
-                    Event newEvent = newChannel as Event;
-                    currentEvent.Cost = newEvent.Cost;
-                    currentEvent.Organizer = newEvent.Organizer;
-                    break;
-                case ChannelType.SPORTS:
-                    Sports currentSportsObj = currentChannel as Sports;
-                    Sports newSportsObj = newChannel as Sports;
-                    currentSportsObj.Cost = newSportsObj.Cost;
-                    currentSportsObj.NumberOfParticipants = newSportsObj.NumberOfParticipants;
-                    break;
-            }
+            await updateRemindersListAsync();
         }
 
         #region CommandFunctions
@@ -924,19 +601,19 @@ namespace DataHandlingLayer.ViewModel
                         displayIndeterminateProgressIndicator("Synchronize messages");
                         // Abfrage, ob neue Announcement Nachrichten vorliegen.
                         Debug.WriteLine("executeSynchronizeWithServerCommand: Start to update announcements.");
-                        await updateAnnouncements(false);
+                        await updateAnnouncementsAsync(false);
                         break;
                     case 1:
                         displayIndeterminateProgressIndicator("Synchronize reminders");
                         // Synchronisiere Reminder-Informationen mit dem Server.
                         Debug.WriteLine("executeSynchronizeWithServerCommand: Start to update reminders.");
-                        await synchroniseRemindersWithServer();
+                        await synchroniseRemindersWithServerAsync();
                         break;
                     case 2:
                         displayIndeterminateProgressIndicator("Synchronize channel information");
                         // Frage Informationen zu diesem Kanal ab.
                         Debug.WriteLine("executeSynchronizeWithServerCommand: Start to update channel and moderator info.");
-                        await synchroniseChannelInformation();
+                        await synchroniseChannelInformationAsync();
                         break;
                     default:
                         // Mache nichts.

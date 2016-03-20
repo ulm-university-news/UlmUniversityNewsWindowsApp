@@ -72,10 +72,10 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
             {
                 int channelId = Convert.ToInt32(e.NavigationParameter);
                 moderatorChannelDetailsViewModel.LoadSelectedChannel(channelId);
-                await moderatorChannelDetailsViewModel.PerformAnnouncementUpdate();
+                await moderatorChannelDetailsViewModel.PerformAnnouncementUpdateAsync();
                 await moderatorChannelDetailsViewModel.LoadRemindersOfChannel();
                 await moderatorChannelDetailsViewModel.CheckForMissingReminders();
-                await moderatorChannelDetailsViewModel.LoadModeratorsOfChannel();
+                await moderatorChannelDetailsViewModel.LoadModeratorsOfChannelAsync();
             }
 
             subscribeToPushManagerEvents();
@@ -163,7 +163,7 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
                         if (moderatorChannelDetailsViewModel.Channel != null
                             && moderatorChannelDetailsViewModel.Channel.Id == e.ChannelId)
                         {
-                            await moderatorChannelDetailsViewModel.UpdateAnnouncementsOnAnnouncementReceived();
+                            await moderatorChannelDetailsViewModel.UpdateAnnouncementsOnAnnouncementReceivedAsync();
                         }
                     });
             }
@@ -211,7 +211,7 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
                         if (moderatorChannelDetailsViewModel.Channel != null
                             && moderatorChannelDetailsViewModel.Channel.Id == e.ChannelId)
                         {
-                            await moderatorChannelDetailsViewModel.PerformViewUpdateOnChannelChangedEvent();
+                            await moderatorChannelDetailsViewModel.PerformViewUpdateOnChannelChangedEventAsync();
                         }
                     });
             }

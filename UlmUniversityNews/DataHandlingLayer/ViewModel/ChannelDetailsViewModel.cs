@@ -15,79 +15,12 @@ using DataHandlingLayer.Common;
 
 namespace DataHandlingLayer.ViewModel
 {
-    public class ChannelDetailsViewModel : ViewModel
+    public class ChannelDetailsViewModel : ChannelDetailsBaseViewModel
     {
         #region Fields
-        /// <summary>
-        /// Eine Referenz auf eine Instanz des ChannelController.
-        /// </summary>
-        private ChannelController channelController;
-
-        /// <summary>
-        /// Gibt an, ob ein automatischer, vom System ausgelöster Aktualisierungsrequest für die Announcements
-        /// des Kanals verschickt werden soll.
-        /// </summary>
-        private bool performOnlineAnnouncementUpdate;
         #endregion Fields
 
         #region Properties
-        private Channel channel;
-        /// <summary>
-        /// Der Kanal, dessen Details angezeigt werden sollen.
-        /// </summary>
-        public Channel Channel
-        {
-            get { return channel; }
-            set 
-            { 
-                this.setProperty(ref this.channel, value);
-                checkCommandExecution();
-            }
-        }
-
-        private Lecture lecture;
-        /// <summary>
-        /// Eine Instanz der Klasse Lecture, die gesetzt wird, falls Details zu einem Kanal angezeigt werden sollen,
-        /// der den Typ Lecture hat. 
-        /// </summary>
-        public Lecture Lecture
-        {
-            get { return lecture; }
-            set { this.setProperty(ref this.lecture, value); }
-        }
-
-        private Sports sports;
-        /// <summary>
-        /// Eine Instanz der Klasse Sports, die gesetzt wird, falls Details zu einem Kanal angezeigt werden sollen,
-        /// der den Typ Sports hat.
-        /// </summary>
-        public Sports Sports
-        {
-            get { return sports; }
-            set { this.setProperty(ref this.sports, value); }
-        }
-
-        private Event eventObj;
-        /// <summary>
-        /// Eine Instanz der Klasse Sports, die gesetzt wird, falls Details zu einem Kanal angezeigt werden sollen,
-        /// der den Typ Event hat.
-        /// </summary>
-        public Event EventObj
-        {
-            get { return eventObj; }
-            set { this.setProperty(ref this.eventObj, value); }
-        }
-
-        private string moderators;
-        /// <summary>
-        /// Die Namen der für den Kanal verantwortlichen Moderatoren.
-        /// </summary>
-        public string Moderators
-        {
-            get { return moderators; }
-            set { this.setProperty(ref this.moderators, value); }
-        }
-
         private bool channelSubscribedStatus;
         /// <summary>
         /// Gibt an, ob der Kanal vom lokalen Nutzer abonniert ist oder nicht.
@@ -125,28 +58,6 @@ namespace DataHandlingLayer.ViewModel
                 selectedPivotItemIndex = value;
                 checkCommandExecution();
             }
-        }
-
-        private int listRotationAngle;
-        /// <summary>
-        /// Der Winkel, um den die Liste mit den Announcements gedreht wird.
-        /// Der Winkel wird verwendet, um die Anordnung der Announcements (von oben nach untern, von unten nach oben)
-        /// zu realisieren.
-        /// </summary>
-        public int ListRotationAngle
-        {
-            get { return listRotationAngle; }
-            set { this.setProperty(ref this.listRotationAngle, value); }
-        }  
-
-        private bool showScrollBar;
-        /// <summary>
-        /// Gibt an, ob die ScrollBar Leiste eingeblendet werden soll, oder ob sie ausgeblendet werden soll.
-        /// </summary>
-        public bool ShowScrollBar
-        {
-            get { return showScrollBar; }
-            set { showScrollBar = value; }
         }
 
         private bool isDeletionNotificationOpen;
@@ -191,18 +102,7 @@ namespace DataHandlingLayer.ViewModel
         {
             get { return isDeleteChannelWarningFlyoutOpen; }
             set { this.setProperty(ref this.isDeleteChannelWarningFlyoutOpen, value); }
-        }
-        
-        private IncrementalLoadingCollection<IncrementalAnnouncementLoaderController, Announcement> announcements = null;
-        /// <summary>
-        /// Die zum Kanal gehörenden Announcements in einer Collection. Hierbei handelt es sich um eine Collection,
-        /// die dynamisches Laden von Announcements ermöglicht.
-        /// </summary>
-        public IncrementalLoadingCollection<IncrementalAnnouncementLoaderController, Announcement> Announcements
-        {
-            get { return announcements; }
-            set { this.setProperty(ref this.announcements, value); }
-        }       
+        } 
         #endregion Properties
 
         #region Commands
@@ -287,8 +187,6 @@ namespace DataHandlingLayer.ViewModel
         public ChannelDetailsViewModel(INavigationService navService, IErrorMapper errorReporter)
             : base(navService, errorReporter)
         {
-            channelController = new ChannelController();
-
             // Initialisiere Befehle.
             SubscribeChannelCommand = new AsyncRelayCommand(
                 param => executeSubscribeChannel(),
@@ -310,57 +208,41 @@ namespace DataHandlingLayer.ViewModel
             DeleteChannelLocallyFlyoutCommand = new RelayCommand(
                 param => executeDeleteChannelLocallyCommand(),
                 param => canDeleteChannelLocally());
-
-            // Führe Online Aktualisierung am Anfang durch, d.h. wenn das ViewModel geladen wurde.
-            performOnlineAnnouncementUpdate = true;
-
-            // Lade Anwendungseinstellungen und passe View Parameter entsprechend an.
-            AppSettings appSettings = channelController.GetApplicationSettings();
-            if (appSettings.AnnouncementOrderSetting == OrderOption.ASCENDING)
-            {
-                ListRotationAngle = 0;
-                ShowScrollBar = true;
-            }
-            else if(appSettings.AnnouncementOrderSetting == OrderOption.DESCENDING)
-            {
-                ListRotationAngle = 180;
-                ShowScrollBar = false;
-            }
         }
 
-        /// <summary>
-        /// Lädt die Daten des gewählten Kanals in die Properties der ViewModel Instanz.
-        /// </summary>
-        /// <param name="selectedChannel">Der gewählte Kanal als Objekt.</param>
-        public void LoadSelectedChannel(object selectedChannel)
-        {
-            if (selectedChannel != null)
-            {
-                Channel = selectedChannel as Channel;
+        ///// <summary>
+        ///// Lädt die Daten des gewählten Kanals in die Properties der ViewModel Instanz.
+        ///// </summary>
+        ///// <param name="selectedChannel">Der gewählte Kanal als Objekt.</param>
+        //public void LoadSelectedChannel(object selectedChannel)
+        //{
+        //    if (selectedChannel != null)
+        //    {
+        //        Channel = selectedChannel as Channel;
 
-                if(Channel != null)
-                {
-                    switch (Channel.Type)
-                    {
-                        case ChannelType.LECTURE:
-                            Lecture = selectedChannel as Lecture;
-                            break;
-                        case ChannelType.EVENT:
-                            EventObj = selectedChannel as Event;
-                            break;
-                        case ChannelType.SPORTS:
-                            Sports = selectedChannel as Sports;
-                            break;
-                        default:
-                            Debug.WriteLine("It is a channel of type Student_Group or Other with no special properties.");
-                            break;
-                    }
+        //        if(Channel != null)
+        //        {
+        //            switch (Channel.Type)
+        //            {
+        //                case ChannelType.LECTURE:
+        //                    Lecture = selectedChannel as Lecture;
+        //                    break;
+        //                case ChannelType.EVENT:
+        //                    EventObj = selectedChannel as Event;
+        //                    break;
+        //                case ChannelType.SPORTS:
+        //                    Sports = selectedChannel as Sports;
+        //                    break;
+        //                default:
+        //                    Debug.WriteLine("It is a channel of type Student_Group or Other with no special properties.");
+        //                    break;
+        //            }
 
-                    // Prüfe, ob Kanal bereits abonniert wurde.
-                    ChannelSubscribedStatus = channelController.IsChannelSubscribed(Channel.Id);
-                }
-            }
-        }
+        //            // Prüfe, ob Kanal bereits abonniert wurde.
+        //            ChannelSubscribedStatus = channelController.IsChannelSubscribed(Channel.Id);
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Lädt die Daten des Kanals mit der übergebenen Id in das ViewModel
@@ -425,47 +307,8 @@ namespace DataHandlingLayer.ViewModel
                     Debug.WriteLine("Call constructor of IncrementalLoadingCollection. Selected channel id is {0}.", selectedChannelId);
                     Announcements = new IncrementalLoadingCollection<IncrementalAnnouncementLoaderController, Announcement>(selectedChannelId, numberOfItems);
                 }
-            }
-        }
 
-        /// <summary>
-        /// Aktualisiert die Announcements des Kanals. Führt Online
-        /// Aktualisierung der Announcements durch, wenn entsprechendes Boolean Feld
-        /// auf true gesetzt ist.
-        /// Setzt nach Online Aktualisierung das Boolean Feld performOnlinceAnnouncementUpdate auf false,
-        /// so dass keine weiteren Online Aktualisierungen mehr vorgenommen werden, es sei denn sie sind
-        /// explizit durch eine Nutzeraktion ausgelöst.
-        /// </summary>
-        public async Task PerformAnnouncementUpdate()
-        {
-            Debug.WriteLine("PerformAnnouncementUpdate called.");
-            // Prüfe, ob eine Online-Aktualisierung vorgenommen werden soll.
-            if(performOnlineAnnouncementUpdate && 
-                Channel == null &&
-                !Channel.Deleted)
-            {
-                try
-                {
-                    displayIndeterminateProgressIndicator();
-                    // Führe Online Aktualisierung durch. Caching hier erlaubt, d.h. wurde die Abfrage innerhalb eines Zeitraums bereits ausgeführt,
-                    // so kann das System entscheiden den Request an den Server nicht abzusetzen.
-                    await updateAnnouncements(true);
-                }
-                catch(ClientException ex)
-                {
-                    // bei Fehler keine Nachricht an Nutzer, da Operation im Hintergrund ausgeführt wird.
-                    Debug.WriteLine("ClientException occurred during updateAnnouncements. Error code is: {0}.", ex.ErrorCode);
-                }
-                finally
-                {
-                    hideIndeterminateProgressIndicator();
-                }
-               
-                performOnlineAnnouncementUpdate = false;
-            }
-            else
-            {
-                Debug.WriteLine("No online update for announcements. The announcements should already be up to date.");
+                checkCommandExecution();
             }
         }
 
@@ -476,24 +319,6 @@ namespace DataHandlingLayer.ViewModel
         {
             // Markiere ungelesene Nachrichten nun als gelesen.
             channelController.MarkAnnouncementsAsRead(Channel.Id);
-        }
-
-        /// <summary>
-        /// Aktualisiert den View Zustand, wenn eine neue Announcement per PushNachricht empfangen wurde.
-        /// </summary>
-        public async Task UpdateAnnouncementsOnAnnouncementReceived()
-        {
-            Debug.WriteLine("Update announcements on ReceivedAnnouncement event.");
-            if(Channel != null)
-            {
-                Announcement receivedAnnouncement = await Task.Run(() => channelController.GetLastReceivedAnnouncement(Channel.Id));
-                if(Announcements != null && receivedAnnouncement != null
-                    && !Announcements.Contains(receivedAnnouncement))
-                {
-                    // Füge die Announcement der Liste hinzu.
-                    Announcements.Insert(0, receivedAnnouncement);
-                }
-            }
         }
 
         /// <summary>
@@ -513,32 +338,6 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
-        /// Lädt die Moderatoren des gewählten Kanals.
-        /// </summary>
-        public async Task LoadModeratorsOfChannel()
-        {
-            if (Channel == null)
-                return;
-
-            string moderatorString = string.Empty;
-            try
-            {
-                List<Moderator> moderators = await Task.Run(() => channelController.GetModeratorsOfChannel(Channel.Id));
-
-                foreach (Moderator moderator in moderators)
-                {
-                    moderatorString += moderator.FirstName + " " + moderator.LastName + "\n";
-                }
-            }
-            catch (ClientException ex)
-            {
-                Debug.WriteLine("Error during loading of moderators. Error code is: {0}.", ex.ErrorCode);
-            }
-
-            Moderators = moderatorString;
-        }
-
-        /// <summary>
         /// Aktualisiere die Anzeige, wenn ein ChannelDeleted Event empfangen wurde,
         /// welches den gerade angezeigten Kanal betrifft.
         /// </summary>
@@ -554,31 +353,6 @@ namespace DataHandlingLayer.ViewModel
             // Zeige Warnhinweis an.
             IsDeletionNotificationOpen = true;
         }
-
-        /// <summary>
-        /// Aktualisiere den View-Zustand. Es wurd ein ChannelChanged
-        /// Event empfangen, d.h. die Daten des im ViewModel gehaltenen 
-        /// Kanals werden aktualisiert.
-        /// </summary>
-        public async Task PerformViewUpdateOnChannelChangedEvent()
-        {
-            if (Channel == null)
-                return;
-
-            try
-            {
-                // Rufe neusten lokalen Datensatz ab und aktualisiere.
-                Channel latestChannelObj = await Task.Run(() => channelController.GetChannel(Channel.Id));
-                updateViewRelatedChannelProperties(Channel, latestChannelObj);
-            }
-            catch (ClientException ex)
-            {
-                // Keine Fehlermeldung anzeigen.
-                Debug.WriteLine("Failed to perform view update on channel changed event." + 
-                    "Message is: {0}.", ex.Message);
-            }
-        }
-
         /// <summary>
         /// Zeigt, soweit für den Kanal aktiviert, eine Benachrichtigung über die Löschung
         /// des Kanals für den Nutzer an.
@@ -595,111 +369,6 @@ namespace DataHandlingLayer.ViewModel
 
                 // Deaktiviere zukünftige Benachrichtigungen.
                 channelController.DisableNotificationAboutDeletion(Channel.Id);
-            }
-        }
-
-        /// <summary>
-        /// Eine Hilfsmethode, die die Aktualisierung der Announcements des aktuellen Kanals ausführt.
-        /// </summary>
-        /// <param name="withCaching">Gibt an, ob der Request bei mehrfachen gleichen Requests innerhalb eines Zeitraums erneut ausgeführt werden soll,
-        ///     oder ob der Eintrag aus dem Cache verwendet werden soll.</param>
-        /// <exception cref="ClientException">Wirft ClientException, wenn die Aktualisierung der Announcements fehlschlägt.</exception>
-        private async Task updateAnnouncements(bool withCaching)
-        {
-            // Extrahiere als erstes die aktuell höchste MessageNr einer Announcement in diesem Kanal.
-            int maxMsgNr = 0;
-            maxMsgNr = channelController.GetHighestMsgNrForChannel(Channel.Id);
-            Debug.WriteLine("Perform update announcement operation with max messageNumber of {0}.", maxMsgNr);
-
-            // Frage die Announcements ab.
-            List<Announcement> receivedAnnouncements = await channelController.GetAnnouncementsOfChannelAsync(Channel.Id, maxMsgNr, withCaching);
-
-            if (receivedAnnouncements != null && receivedAnnouncements.Count > 0)
-            {
-                await Task.Run(() => channelController.StoreReceivedAnnouncementsAsync(receivedAnnouncements));
-
-                // Trage die empfangenen Announcements in die Liste aktueller Announcements ein.
-                foreach (Announcement announcement in receivedAnnouncements)
-                {
-                    Announcements.Insert(0, announcement);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Stößt eine Synchronisation der Kanal- und Moderatoreninformationen
-        /// des gewählten Kanals an. Fragt entsprechende Informationen vom Server ab
-        /// und stößt die Aktualisierung der lokalen Datensätze an.
-        /// </summary>
-        private async Task synchroniseChannelInformation()
-        {
-            if (Channel == null)
-                return;
-
-            // Synchronisiere verantwortliche Moderatoren.
-            List<Moderator> responsibleModerators = await Task.Run(() => channelController.GetResponsibleModeratorsAsync(Channel.Id));
-
-            // Stoße lokale Synchronisation an.
-            await Task.Run(() => channelController.SynchronizeResponsibleModerators(Channel.Id, responsibleModerators));
-
-            // Lade Moderatoren View Property neu.
-            await LoadModeratorsOfChannel();
-
-            // Synchronisiere Kanalinformationen.
-            Channel referenceChannel = await Task.Run(() => channelController.GetChannelInfoAsync(Channel.Id));
-            if (referenceChannel != null)
-            {
-                if (DateTimeOffset.Compare(Channel.ModificationDate, referenceChannel.ModificationDate) < 0)
-                {
-                    // Aktualisierung erforderlich.
-                    channelController.ReplaceLocalChannel(referenceChannel);
-                    // Ändere für View relevante Properties, so dass View aktualisiert wird.
-                    updateViewRelatedChannelProperties(Channel, referenceChannel);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Aktualisiert die für die View relevanten Properties eines aktuell vom ViewModel gehaltenen
-        /// Kanal-Objekts.
-        /// </summary>
-        /// <param name="currentChannel">Das aktuell vom ViewModel gehaltene Channel-Objekt.</param>
-        /// <param name="newChannel">Das Channel-Objekt mit den aktualisierten Daten.</param>
-        private void updateViewRelatedChannelProperties(Channel currentChannel, Channel newChannel)
-        {
-            currentChannel.Name = newChannel.Name;
-            currentChannel.Description = newChannel.Description;
-            currentChannel.Term = newChannel.Term;
-            currentChannel.CreationDate = newChannel.CreationDate;
-            currentChannel.ModificationDate = newChannel.ModificationDate;
-            currentChannel.Locations = newChannel.Locations;
-            currentChannel.Dates = newChannel.Dates;
-            currentChannel.Contacts = newChannel.Contacts;
-            currentChannel.Website = newChannel.Website;
-
-            switch (currentChannel.Type)
-            {
-
-                case ChannelType.LECTURE:
-                    Lecture currentLecture = currentChannel as Lecture;
-                    Lecture newLecture = newChannel as Lecture;
-                    currentLecture.StartDate = newLecture.StartDate;
-                    currentLecture.EndDate = newLecture.EndDate;
-                    currentLecture.Lecturer = newLecture.Lecturer;
-                    currentLecture.Assistant = newLecture.Assistant;
-                    break;
-                case ChannelType.EVENT:
-                    Event currentEvent = currentChannel as Event;
-                    Event newEvent = newChannel as Event;
-                    currentEvent.Cost = newEvent.Cost;
-                    currentEvent.Organizer = newEvent.Organizer;
-                    break;
-                case ChannelType.SPORTS:
-                    Sports currentSportsObj = currentChannel as Sports;
-                    Sports newSportsObj = newChannel as Sports;
-                    currentSportsObj.Cost = newSportsObj.Cost;
-                    currentSportsObj.NumberOfParticipants = newSportsObj.NumberOfParticipants;
-                    break;
             }
         }
 
@@ -758,7 +427,7 @@ namespace DataHandlingLayer.ViewModel
                 }
 
                 // Lade Moderatoren-Info.
-                await LoadModeratorsOfChannel();
+                await LoadModeratorsOfChannelAsync();
 
                 // Bleibe auf der Seite, aber lade die Nachrichten nach.
                 List<Announcement> announcements = await Task.Run(() => channelController.GetAllAnnouncementsOfChannel(Channel.Id));
@@ -841,7 +510,7 @@ namespace DataHandlingLayer.ViewModel
             {
                 displayIndeterminateProgressIndicator();
                 // Kein caching hier. Der Request soll jedes mal auch tatsächlich abgesetzt werden, wenn der Benutzer es will.
-                await updateAnnouncements(false);   
+                await updateAnnouncementsAsync(false);   
             }
             catch (ClientException ex)
             {
@@ -880,7 +549,7 @@ namespace DataHandlingLayer.ViewModel
             try
             {
                 displayIndeterminateProgressIndicator();
-                await synchroniseChannelInformation();
+                await synchroniseChannelInformationAsync();
             }
             catch (ClientException ex)
             {

@@ -68,12 +68,12 @@ namespace UlmUniversityNews.Views.ChannelDetails
         {
             if(channelDetailsViewModel != null && channelDetailsViewModel.ChannelSubscribedStatus == true)
             {
-                await channelDetailsViewModel.PerformAnnouncementUpdate();
+                await channelDetailsViewModel.PerformAnnouncementUpdateAsync();
 
                 // Prüfe, ob der Kanal gelöscht wurde und zeige falls notwendig eine Benachrichtigung an.
                 channelDetailsViewModel.CheckWhetherChannelIsDeleted();
             }
-            await channelDetailsViewModel.LoadModeratorsOfChannel();
+            await channelDetailsViewModel.LoadModeratorsOfChannelAsync();
         }
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace UlmUniversityNews.Views.ChannelDetails
                         if(channelDetailsViewModel.Channel != null 
                             && channelDetailsViewModel.Channel.Id == e.ChannelId)
                         {
-                            await channelDetailsViewModel.UpdateAnnouncementsOnAnnouncementReceived();
+                            await channelDetailsViewModel.UpdateAnnouncementsOnAnnouncementReceivedAsync();
                         }
                     });
             }
@@ -258,7 +258,7 @@ namespace UlmUniversityNews.Views.ChannelDetails
                         if(channelDetailsViewModel.Channel != null 
                             && channelDetailsViewModel.Channel.Id == e.ChannelId)
                         {
-                            await channelDetailsViewModel.PerformViewUpdateOnChannelChangedEvent();
+                            await channelDetailsViewModel.PerformViewUpdateOnChannelChangedEventAsync();
                         }
                     });
             }
