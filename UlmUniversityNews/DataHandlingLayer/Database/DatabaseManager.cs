@@ -661,6 +661,7 @@ namespace DataHandlingLayer.Database
                                         Text                TEXT NOT NULL,
                                         Priority            INTEGER NOT NULL,
                                         Author_Moderator_Id INTEGER NOT NULL,
+                                        Active              INTEGER,
                                         PRIMARY KEY(Id),
                                         FOREIGN KEY(Channel_Id) REFERENCES Channel(Id) ON DELETE CASCADE,
                                         FOREIGN KEY(Author_Moderator_Id) REFERENCES Moderator(Id)                                        

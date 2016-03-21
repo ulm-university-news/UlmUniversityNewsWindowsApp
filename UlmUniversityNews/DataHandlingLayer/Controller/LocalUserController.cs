@@ -3,7 +3,6 @@ using DataHandlingLayer.Controller.ValidationErrorReportInterface;
 using DataHandlingLayer.Database;
 using DataHandlingLayer.DataModel;
 using DataHandlingLayer.Exceptions;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

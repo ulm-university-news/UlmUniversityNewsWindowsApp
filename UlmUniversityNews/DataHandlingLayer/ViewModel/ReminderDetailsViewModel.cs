@@ -57,6 +57,26 @@ namespace DataHandlingLayer.ViewModel
             get { return lastModifiedBy; }
             set { this.setProperty(ref this.lastModifiedBy, value); }
         }
+
+        private bool isActivateReminderFlyoutOpen;
+        /// <summary>
+        /// Gibt an, ob das Flyout bezüglich der Aktivierung eines Reminders aktuell offen ist oder nicht.
+        /// </summary>
+        public bool IsActivateReminderFlyoutOpen
+        {
+            get { return isActivateReminderFlyoutOpen; }
+            set { this.setProperty(ref this.isActivateReminderFlyoutOpen, value); }
+        }
+
+        private bool isDeactivateReminderFlyoutOpen;
+        /// <summary>
+        /// Gibt an, ob das Flyout bezüglich der Deaktivierung eines Reminders aktuell offen ist oder nicht.
+        /// </summary>
+        public bool IsDeactivateReminderFlyoutOpen 
+        {
+            get { return isDeactivateReminderFlyoutOpen; }
+            set { this.setProperty(ref this.isDeactivateReminderFlyoutOpen, value); }
+        }   
         #endregion Properties
 
         #region Commands
@@ -79,6 +99,26 @@ namespace DataHandlingLayer.ViewModel
             get { return deleteReminderCommand; }
             set { deleteReminderCommand = value; }
         }
+
+        private AsyncRelayCommand activateReminderCommand;
+        /// <summary>
+        /// Befehl zum Aktivieren eines aktuell deaktivierten Reminders.
+        /// </summary>
+        public AsyncRelayCommand ActivateReminderCommand
+        {
+            get { return activateReminderCommand; }
+            set { activateReminderCommand = value; }
+        }
+
+        private AsyncRelayCommand deactivateReminderCommand;
+        /// <summary>
+        /// Befehl zum Deaktivieren eines aktuell aktivierten Reminders.
+        /// </summary>
+        public AsyncRelayCommand DeactivateReminderCommand
+        {
+            get { return deactivateReminderCommand; }
+            set { deactivateReminderCommand = value; }
+        }
         #endregion Commands
 
         /// <summary>
@@ -94,9 +134,16 @@ namespace DataHandlingLayer.ViewModel
 
             // Befehle anlegen.
             SwitchToEditReminderDialogCommand = new RelayCommand(
-                param => executeSwitchToEditReminderCommand());
+                param => executeSwitchToEditReminderCommand(),
+                param => canSwitchToEditReminderCommand());
             DeleteReminderCommand = new AsyncRelayCommand(
                 param => executeDeleteReminderCommand());
+            ActivateReminderCommand = new AsyncRelayCommand(
+                param => executeActivateReminderCommand(),
+                param => canActivateReminder());
+            DeactivateReminderCommand = new AsyncRelayCommand(
+                param => executeDeactivateReminderCommand(),
+                param => canDeactivateReminder());
         }
 
         /// <summary>
@@ -134,6 +181,40 @@ namespace DataHandlingLayer.ViewModel
                     " Message is: {0}.", ex.Message);
                 displayError(ex.ErrorCode);
             }
+
+            checkCommandExecution();
+        }
+
+        #region CommandFunctionality
+        /// <summary>
+        /// Hilfsmethode, welche die Ausführbarkeit von Befehlen abhängig vom aktuellen
+        /// View Zustand evaluiert.
+        /// </summary>
+        private void checkCommandExecution()
+        {
+            SwitchToEditReminderDialogCommand.RaiseCanExecuteChanged();
+            DeleteReminderCommand.OnCanExecuteChanged();
+            ActivateReminderCommand.OnCanExecuteChanged();
+            DeactivateReminderCommand.OnCanExecuteChanged();
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl SwitchToEditReminderCommand abhängig vom aktuellen
+        /// Zustand der View zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canSwitchToEditReminderCommand()
+        {
+            if (SelectedChannel != null && SelectedReminder != null
+                && !SelectedChannel.Deleted)
+            {
+                if (SelectedReminder.IsActive != null 
+                    && SelectedReminder.IsActive == true)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -148,6 +229,21 @@ namespace DataHandlingLayer.ViewModel
                     "navParam?channelId=" + SelectedChannel.Id + "?reminderId=" + SelectedReminder.Id;
                 _navService.Navigate("AddAndEditReminder", navigationParameter);
             }
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zum Löschen des Reminders abhängig vom aktuellen
+        /// View Zustand ausgeführt werden kann.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canDeleteReminder()
+        {
+            if (SelectedChannel != null && SelectedReminder != null
+                && !SelectedChannel.Deleted)
+            {
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -179,5 +275,120 @@ namespace DataHandlingLayer.ViewModel
                 hideIndeterminateProgressIndicator();
             }
         }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl ActivateReminderCommand ausgeführt werden kann 
+        /// basierend auf dem aktuellen Zustand der View.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canActivateReminder()
+        {
+            if (SelectedChannel != null && SelectedReminder != null
+                && !SelectedChannel.Deleted)
+            {
+                if (SelectedReminder.IsActive != null
+                    && SelectedReminder.IsActive == false)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl ActivateReminderCommand aus. Aktiviert den aktuell
+        /// gewählten Reminder.
+        /// </summary>
+        private async Task executeActivateReminderCommand()
+        {
+            if (SelectedChannel == null || SelectedReminder == null)
+                return;
+
+            displayIndeterminateProgressIndicator("Activating");
+            try
+            {
+                IsActivateReminderFlyoutOpen = true;        // Änderung von true auf false, sonst wird Änderung nicht bekanntgegeben.
+                IsActivateReminderFlyoutOpen = false;
+
+                bool successful = await channelController.ChangeReminderActiveStatusAsync(
+                    SelectedChannel.Id,
+                    SelectedReminder.Id,
+                    true);
+
+                if (successful)
+                {
+                    SelectedReminder.IsActive = true;
+                    checkCommandExecution();
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("Failed to execute ActivateReminderCommand." + 
+                    " Error code is: {0}.", ex.ErrorCode);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl DeactivateReminderCommand ausgeführt werden kann 
+        /// basierend auf dem aktuellen Zustand der View.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canDeactivateReminder()
+        {
+            if (SelectedChannel != null && SelectedReminder != null
+                && !SelectedChannel.Deleted)
+            {
+                if (SelectedReminder.IsActive != null
+                    && SelectedReminder.IsActive == true)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl DeactivateReminderCommand aus. Deaktiviert den aktuell
+        /// gewählten Reminder.
+        /// </summary>
+        private async Task executeDeactivateReminderCommand()
+        {
+            if (SelectedChannel == null || SelectedReminder == null)
+                return;
+
+            displayIndeterminateProgressIndicator("Deactivating");
+            try
+            {
+                IsDeactivateReminderFlyoutOpen = true;  // Änderung von true auf false, sonst wird Änderung nicht bekanntgegeben.
+                IsDeactivateReminderFlyoutOpen = false;
+
+                bool successful = await channelController.ChangeReminderActiveStatusAsync(
+                    SelectedChannel.Id,
+                    SelectedReminder.Id,
+                    false);
+
+                if (successful)
+                {
+                    SelectedReminder.IsActive = false;
+                    checkCommandExecution();
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("Failed to execute DeactivateReminderCommand." +
+                    " Error code is: {0}.", ex.ErrorCode);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
+        }
+        #endregion CommandFunctionality
     }
 }

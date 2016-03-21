@@ -171,25 +171,39 @@
                             Style="{StaticResource TextInAnnouncementList}"
                             FontWeight="SemiBold" />
                         
-                        <TextBlock
-                            Grid.Column="1"
-                            x:Name="NextReminderDate"
-                            VerticalAlignment="Bottom"
-                            TextWrapping="WrapWholeWords"
-                            FontSize="16"
-                            Style="{StaticResource TextInAnnouncementList}"
-                            Visibility="{Binding IsExpired, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='inverse'}"
-                            Text="{Binding NextDate, Converter={StaticResource ReminderDateTimeToStringConverter}}" />
-                        
-                        <TextBlock
-                            Grid.Column="1"
-                            x:Name="ReminderIsExpiredText"
-                            x:Uid="ReminderIsExpiredText"
-                            TextWrapping="WrapWholeWords"
-                            FontSize="16"
-                            Style="{StaticResource TextInAnnouncementList}"
-                            Visibility="{Binding IsExpired, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        <!-- Wird angezeigt, wenn Reminder aktiv ist. -->
+                        <Grid Grid.Column="1"
+                              Visibility="{Binding IsActive, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock
+                                Grid.Row="0"
+                                x:Name="NextReminderDate"
+                                VerticalAlignment="Bottom"
+                                TextWrapping="WrapWholeWords"
+                                FontSize="16"
+                                Style="{StaticResource TextInAnnouncementList}"
+                                Visibility="{Binding IsExpired, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='inverse'}"
+                                Text="{Binding NextDate, Converter={StaticResource ReminderDateTimeToStringConverter}}" />
+
+                            <TextBlock
+                                Grid.Row="0"
+                                x:Name="ReminderIsExpiredText"
+                                x:Uid="ReminderIsExpiredText"
+                                TextWrapping="WrapWholeWords"
+                                FontSize="16"
+                                Style="{StaticResource TextInAnnouncementList}"
+                                Visibility="{Binding IsExpired, Converter={StaticResource BooleanToVisibilityConverter}}"
                             />
+                        </Grid>
+
+                        <!-- Wird angezeigt, wenn Reminder inaktiv ist. -->
+                        <TextBlock
+                                Grid.Column="1"
+                                x:Name="ReminderIsInactiveText"
+                                x:Uid="ReminderIsInactiveText"
+                                TextWrapping="WrapWholeWords"
+                                FontSize="16"
+                                Style="{StaticResource TextInAnnouncementList}"
+                                Visibility="{Binding IsActive, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='inverse'}" />
                     </Grid>
                 </Grid>
 

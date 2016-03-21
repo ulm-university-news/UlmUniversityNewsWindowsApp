@@ -2098,8 +2098,8 @@ namespace DataHandlingLayer.Database
                     try
                     {
                         string sql = @"INSERT INTO Reminder (Id, Channel_Id, StartDate, EndDate, CreationDate, 
-                            ModificationDate, ""Interval"", ""Ignore"", Title, Text, Priority, Author_Moderator_Id) 
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                            ModificationDate, ""Interval"", ""Ignore"", Title, Text, Priority, Author_Moderator_Id, Active) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
                         using (var insertStmt = conn.Prepare(sql))
                         {
@@ -2115,6 +2115,15 @@ namespace DataHandlingLayer.Database
                             insertStmt.Bind(10, reminder.Text);
                             insertStmt.Bind(11, (int)reminder.MessagePriority);
                             insertStmt.Bind(12, reminder.AuthorId);
+
+                            if (reminder.IsActive == null)
+                            {
+                                insertStmt.Bind(13, reminder.IsActive);
+                            }
+                            else
+                            {
+                                insertStmt.Bind(13, (reminder.IsActive == true) ? 1 : 0);
+                            }
 
                             insertStmt.Step();
 
@@ -2166,8 +2175,8 @@ namespace DataHandlingLayer.Database
                     try
                     {
                         string sql = @"INSERT INTO Reminder (Id, Channel_Id, StartDate, EndDate, CreationDate, 
-                            ModificationDate, ""Interval"", ""Ignore"", Title, Text, Priority, Author_Moderator_Id) 
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                            ModificationDate, ""Interval"", ""Ignore"", Title, Text, Priority, Author_Moderator_Id, Active) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
                         using (var insertStmt = conn.Prepare(sql))
                         {
@@ -2187,6 +2196,15 @@ namespace DataHandlingLayer.Database
                                 insertStmt.Bind(11, (int)reminder.MessagePriority);
                                 insertStmt.Bind(12, reminder.AuthorId);
 
+                                if (reminder.IsActive == null)
+                                {
+                                    insertStmt.Bind(13, reminder.IsActive);
+                                }
+                                else
+                                {
+                                    insertStmt.Bind(13, (reminder.IsActive == true) ? 1 : 0);
+                                }
+                                
                                 if (insertStmt.Step() != SQLiteResult.DONE)
                                 {
                                     Debug.WriteLine("Failed to insert reminder with id {0}.", reminder.Id);
@@ -2248,7 +2266,7 @@ namespace DataHandlingLayer.Database
                     {
                         string sql = @"UPDATE Reminder 
                             SET Channel_Id=?, StartDate=?, EndDate=?, CreationDate=?, ModificationDate=?, 
-                            ""Interval""=?, ""Ignore""=?, Title=?, Text=?, Priority=?, Author_Moderator_Id=? 
+                            ""Interval""=?, ""Ignore""=?, Title=?, Text=?, Priority=?, Author_Moderator_Id=?, Active=?  
                             WHERE Id=?;";
 
                         using (var updateStmt = conn.Prepare(sql))
@@ -2264,8 +2282,9 @@ namespace DataHandlingLayer.Database
                             updateStmt.Bind(9, updatedReminder.Text);
                             updateStmt.Bind(10, (int)updatedReminder.MessagePriority);
                             updateStmt.Bind(11, updatedReminder.AuthorId);
+                            updateStmt.Bind(12, (updatedReminder.IsActive == true) ? 1 : 0);
 
-                            updateStmt.Bind(12, updatedReminder.Id);
+                            updateStmt.Bind(13, updatedReminder.Id);
 
                             if (updateStmt.Step() != SQLiteResult.DONE)
                                 Debug.WriteLine("Update for reminder with id {0} has failed.", updatedReminder.Id);
@@ -2300,6 +2319,79 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Ermöglicht die Änderung des Aktivitätszustandes des Reminders. Der Reminder
+        /// kann deaktiviert oder aktiviert werden. Den neuen Zustand übergibt man als Parameter.
+        /// </summary>
+        /// <param name="reminderId">Die Id des Reminders, dessen Aktivitätszustand geändert werden soll.</param>
+        /// <param name="isActive">Der neue Zustand.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Änderung fehlschlägt.</exception>
+        public void ChangeReminderActiveStatus(int reminderId, bool? isActive)
+        {
+             // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string sql = @"UPDATE Reminder 
+                            SET Active=?  
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(sql))
+                        {
+                            if (isActive == null)
+                            {
+                                stmt.Bind(1, isActive);
+                            }
+                            else
+                            {
+                                stmt.Bind(1, (isActive == true) ? 1 : 0);
+                            }
+                            
+                            stmt.Bind(2, reminderId);
+
+                            if (stmt.Step() != SQLiteResult.DONE)
+                            {
+                                Debug.WriteLine("Failed to change active status of reminder with id {0}.", reminderId);
+                            }
+                            else
+                            {
+                                Debug.WriteLine("Successfully changed active status of reminder with id {0}.", reminderId);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("Change active status of reminder with id {0} has failed. Msg is: {1}.",
+                            reminderId,
+                            sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Change active status of reminder has failed. The message is: {0} and stack trace is {1}.",
+                            ex.Message, ex.StackTrace);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+
+        }
+
+        /// <summary>
         /// Liefert eine Liste von Reminder Objekten, die in der lokalen Datenbank für den
         /// Kanal mit der angegebenen Id gespeichert sind.
         /// </summary>
@@ -2327,6 +2419,7 @@ namespace DataHandlingLayer.Database
                         int id, interval, authorId;
                         string title, text;
                         bool ignore;
+                        bool? isActive;
                         Priority priority;
                         DateTimeOffset startDate, endDate, creationDate, modificationDate;
 
@@ -2347,9 +2440,19 @@ namespace DataHandlingLayer.Database
                                 text = (string)stmt["Text"];
                                 authorId = Convert.ToInt32(stmt["Author_Moderator_Id"]);
                                 priority = (Priority)Enum.ToObject(typeof(Priority), stmt["Priority"]);
-
+                                
+                                if (stmt["Active"] == null)
+                                {
+                                    isActive = null;
+                                }
+                                else
+                                {
+                                    isActive = ((long)stmt["Active"] == 1) ? true : false;
+                                }
+                                
                                 Reminder reminderTmp = new Reminder(id, creationDate, modificationDate, startDate, endDate, interval,
                                     ignore, channelId, authorId, title, text, priority);
+                                reminderTmp.IsActive = isActive;    // Setze IsActive Property.
                                 reminders.Add(reminderTmp);
                             }
                         }
@@ -2410,6 +2513,7 @@ namespace DataHandlingLayer.Database
                         int channelId, interval, authorId;
                         string title, text;
                         bool ignore;
+                        bool? isActive = null;
                         Priority priority;
                         DateTimeOffset startDate, endDate, creationDate, modificationDate;
 
@@ -2431,8 +2535,14 @@ namespace DataHandlingLayer.Database
                                 authorId = Convert.ToInt32(stmt["Author_Moderator_Id"]);
                                 priority = (Priority)Enum.ToObject(typeof(Priority), stmt["Priority"]);
 
+                                if (stmt["Active"] != null)
+                                {
+                                    isActive = ((long)stmt["Active"] == 1) ? true : false;
+                                }
+
                                 reminder = new Reminder(reminderId, creationDate, modificationDate, startDate, endDate, interval,
                                     ignore, channelId, authorId, title, text, priority);
+                                reminder.IsActive = isActive;       // Setze IsActive Property.
                             }
                         }
                     }

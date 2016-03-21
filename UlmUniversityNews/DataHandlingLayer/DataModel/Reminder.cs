@@ -107,7 +107,7 @@ namespace DataHandlingLayer.DataModel
         public bool Ignore
         {
             get { return ignore; }
-            set { ignore = value; }
+            set { this.setProperty(ref this.ignore, value); }
         }
 
         private int channelId;
@@ -165,6 +165,17 @@ namespace DataHandlingLayer.DataModel
             set { messagePriority = value; }
         }
 
+        private bool? isActive;
+        /// <summary>
+        /// Gibt an, ob der Reminder aktiv ist, oder ob er deaktiviert wurde.
+        /// </summary>
+        [JsonProperty("active", NullValueHandling=NullValueHandling.Ignore)]
+        public bool? IsActive
+        {
+            get { return isActive; }
+            set { this.setProperty(ref this.isActive, value); }
+        }
+        
         private bool isExpired;
         /// <summary>
         /// Gibt an, ob der Reminder abgelaufen ist.
@@ -423,7 +434,7 @@ namespace DataHandlingLayer.DataModel
             string resultString = string.Empty;
             resultString = string.Format("StartDate: {0}, EndDate: {1}, Interval: {2}, CreationDate: {3}, " + 
                 "ModificationDate: {4}, Ignore: {5}, Channel_Id: {6}, Author_Id: {7}, Title: {8}, Text: {9}, " + 
-                "MessagePriority: {10}, IsExpired: {11}",
+                "MessagePriority: {10}, IsActive: {11}, IsExpired: {12}",
                 StartDate,
                 EndDate,
                 Interval,
@@ -435,6 +446,7 @@ namespace DataHandlingLayer.DataModel
                 Title,
                 Text,
                 MessagePriority,
+                IsActive,
                 IsExpired);
             return resultString;
         }

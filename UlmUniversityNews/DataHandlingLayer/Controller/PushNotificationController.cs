@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Networking.PushNotifications;
-using Newtonsoft.Json;
 using DataHandlingLayer.DataModel;
 using System.Diagnostics;
 using DataHandlingLayer.DataModel.Enums;

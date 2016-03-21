@@ -84,6 +84,13 @@ namespace UlmUniversityNews.Views.ChannelSearch
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            // Erforderlich wegen Caching. Falls Seite aus Cache geladen wird und Drawer war offen
+            // bleibt er sonst offen.
+            if (DrawerLayout.IsDrawerOpen)
+            {
+                DrawerLayout.CloseDrawer();
+            }
+
             // Lade die Kanaldaten für die Anzeige.
             await searchChannelsViewModel.LoadChannelsAsync();
             // Starte Aktualisierungsprozess von Kanaldaten.

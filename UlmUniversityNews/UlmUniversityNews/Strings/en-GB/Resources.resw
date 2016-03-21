@@ -175,13 +175,15 @@
     <value>create account</value>
   </data>
   <data name="StartPageUsernameDescription.Text" xml:space="preserve">
-    <value>To use this app you need to create an user account. To do that you just have to enter a user name below and accept the terms of user. You can find them on </value>
+    <value>To use this app you need to create an user account. 
+To do that you just have to enter a user name below and accept the terms of user. You can find them on </value>
   </data>
   <data name="StartPageUsernameTextBox.Header" xml:space="preserve">
     <value>Username</value>
   </data>
   <data name="StartPageWelcomeText.Text" xml:space="preserve">
-    <value>Welcome to University News.</value>
+    <value>Welcome to University News.
+</value>
   </data>
   <data name="HomescreenSearchChannelsButton.Label" xml:space="preserve">
     <value>search channel</value>
@@ -1129,7 +1131,7 @@ date: </value>
   <data name="ReminderDetailsReminderModificationDateField.Text" xml:space="preserve">
     <value>Modification date</value>
   </data>
-  <data name="StartPageAcceptTermsAndConditionsCheckBox.Content" xml:space="preserve">
+  <data name="StartPageAcceptTermsAndConditionsCheckBoxText.Text" xml:space="preserve">
     <value>I accept the terms and conditions</value>
   </data>
   <data name="StartPageTermsAndConditionsLink.Text" xml:space="preserve">
@@ -1137,5 +1139,26 @@ date: </value>
   </data>
   <data name="StartPageTitle.Text" xml:space="preserve">
     <value>Start page</value>
+  </data>
+  <data name="ReminderDetailsActivateeReminderWarning.Text" xml:space="preserve">
+    <value>Do you want to activate the reminder? If the reminder is not expired, it will continue to send announcements at the specified interval.</value>
+  </data>
+  <data name="ReminderDetailsActivateReminderButton.Label" xml:space="preserve">
+    <value>activate reminder</value>
+  </data>
+  <data name="ReminderDetailsActivateReminderFlyoutButton.Content" xml:space="preserve">
+    <value>Activate</value>
+  </data>
+  <data name="ReminderDetailsDeactivateeReminderWarning.Text" xml:space="preserve">
+    <value>Do you want to deactivate the reminder? The reminder will stop sending announcements in the deactivated state.</value>
+  </data>
+  <data name="ReminderDetailsDeactivateReminderButton.Label" xml:space="preserve">
+    <value>deactivate reminder</value>
+  </data>
+  <data name="ReminderDetailsDeactivateReminderFlyoutButton.Content" xml:space="preserve">
+    <value>Deactivate</value>
+  </data>
+  <data name="ReminderIsInactiveText.Text" xml:space="preserve">
+    <value>The reminder is deactivated.</value>
   </data>
 </root>

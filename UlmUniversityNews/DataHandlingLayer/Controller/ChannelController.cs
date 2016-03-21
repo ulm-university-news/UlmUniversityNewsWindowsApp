@@ -2262,6 +2262,26 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Setzt den Aktivitätszustand des Reminders mit der angegebenen Id in den lokalen
+        /// Datensätzen neu.
+        /// </summary>
+        /// <param name="reminderId">Die Id des Reminders, dessen Aktivitätszustand geändert werden soll.</param>
+        /// <param name="isActive">Der neue Zustand.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Änderung fehlschlägt.</exception>
+        public void ChangeReminderActiveStatus(int reminderId, bool? isActive)
+        {
+            try
+            {
+                channelDatabaseManager.ChangeReminderActiveStatus(reminderId, isActive);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("ChangeReminderActiveStatus: Update of active status failed.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Vergleicht die übergebene Referenzliste von Reminder Objekten gegen die aktuell von 
         /// der Anwendung gehaltene Liste von Reminder Objekten und fügt den lokalen Datensätzen
         /// Reminder Objekte hinzu, die in der Referenzliste stehen, lokal jedoch noch fehlen. Zudem wird
@@ -2301,6 +2321,15 @@ namespace DataHandlingLayer.Controller
                                 localReminderList[i].Ignore = referenceReminder.Ignore;
                                 channelDatabaseManager.UpdateReminder(localReminderList[i]);
                             }
+
+                            // Kommentiere den Fall mal aus: Müsste durch Prüfen des Änderungsdatums abgedeckt sein.
+
+                            //else if (localReminderList[i].IsActive != referenceReminder.IsActive)
+                            //{
+                            //    Debug.WriteLine("Need to update the active status of the reminder with id {0}.", referenceReminder.Id);
+                            //    localReminderList[i].IsActive = referenceReminder.IsActive;
+                            //    ChangeReminderActiveStatus(localReminderList[i].Id, localReminderList[i].IsActive);
+                            //}
                         }
                     }
 
@@ -2478,6 +2507,7 @@ namespace DataHandlingLayer.Controller
             Reminder createdReminder = jsonParser.ParseReminderFromJson(serverResponse);
             if (createdReminder != null)
             {
+                createdReminder.IsActive = true;    // Ist aktiv, wenn er gerade erstellt wurde.
                 // Speichere Reminder lokal ab.
                 StoreReminder(createdReminder);
             }
@@ -2643,6 +2673,79 @@ namespace DataHandlingLayer.Controller
             }
 
             return updatableReminder;
+        }
+
+        /// <summary>
+        /// Sende Request zum Ändern des Aktivitätszustandes des Reminders mit der angegebenen Id
+        /// zum Server. Die Aktualisierung wird auf dem Server vorgenommen.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals zu dem der Reminder gehört.</param>
+        /// <param name="reminderId">Die Id des Reminder, dessen Aktivitätszustand geändert werden soll.</param>
+        /// <param name="isActive">Der neue Zustand.</param>
+        /// <returns>Liefert true, wenn Aktualisierung erfolgreich, ansonsten false.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Aktualisierungsrequest nicht erfolgreich,
+        ///     oder ein anderes Problem aufgetreten ist.</exception>
+        public async Task<bool> ChangeReminderActiveStatusAsync(int channelId, int reminderId, bool? isActive)
+        {
+            Moderator activeModerator = GetLocalModerator();
+            if (activeModerator == null)
+                return false;
+
+            // Erstelle Reminder-Objekt für Aktualisierungsrequest.
+            Reminder updatableReminder = new Reminder()
+            {
+                Id = reminderId,
+                ChannelId = channelId,
+                IsActive = isActive
+            };
+
+            // Generiere Json-Dokument.
+            string jsonContent = jsonParser.ParseReminderToJson(updatableReminder);
+            if (jsonContent == null)
+                return false;
+
+            string serverResponse = null;
+            try
+            {
+                // Sende Request an den Server.
+                serverResponse = await channelApi.SendUpdateReminderRequestAsync(
+                    activeModerator.ServerAccessToken,
+                    channelId,
+                    reminderId,
+                    jsonContent);
+            }
+            catch (APIException ex)
+            {
+                if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
+                {
+                    Debug.WriteLine("Channel not found on server. Channel probably deleted.");
+                    // Behandlung Not Found. Kanal wahrscheinlich gelöscht.
+                    MarkChannelAsDeleted(channelId);
+                }
+
+                if (ex.ErrorCode == ErrorCodes.ReminderNotFound)
+                {
+                    Debug.WriteLine("Reminder not found on server. Reminder probably deleted.");
+                    // Behandlung von Not Found. Reminder wahrscheinlich gelöscht.
+                    DeleteLocalReminder(reminderId);
+                }
+
+                Debug.WriteLine("Update request for reminder with id {0} has failed.", reminderId);
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            // Parse Server Antwort.
+            if (serverResponse != null)
+            {
+                Reminder updatedReminder = jsonParser.ParseReminderFromJson(serverResponse);
+                if (updatableReminder != null)
+                {
+                    // Aktualisiere lokalen Datensatz.
+                    ReplaceLocalReminder(updatedReminder);
+                }
+            }
+
+            return true;
         }
 
         /// <summary>

@@ -13,6 +13,13 @@
     <Page.Resources>
         <!-- Konvertierung von Ressourcenschlüssel in sprachenabhängige Nachricht.-->
         <valueconverter:ValidationMessageOnLocalizedStringConverter x:Key="ValidationMessageOnLocalizedStringConverter" />
+
+        <!-- Konverter für Umwandlung von Hyperlink String auf Instanz von Uri. -->
+        <valueconverter:HyperlinkStringToNavigationUriConverter x:Key="HyperlinkStringToNavigationUriConverter" />
+
+        <!-- Konverter, um Textfelder auszublenden, wenn der zugewiesene String leer ist. -->
+        <valueconverter:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        
         <!-- Style für die Texte auf der Startseite. -->
         <Style
             x:Key="StartPageTextStyle"
@@ -85,6 +92,7 @@
 
         <!-- Inhalte innerhalb des folgenden Rasters platziert. -->
         <Grid Grid.Row="1" x:Name="ContentRoot">
+            <ScrollViewer>
             <Grid Style="{StaticResource PivotLikeGridStyle}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -111,8 +119,11 @@
                            Style="{StaticResource UniversityNewsUlmStandardText}">
                     <Run x:Uid="StartPageUsernameDescription"
                            Text="Um diese Anwendung zu nutzen, müssen sie einen Nutzernamen angeben. Der Nutzername wird verwendet, um von Ihnen erstellte Nachrichten für andere Nutzer identifzierbar zu machen. Sie müssen die Nutzungsbedingungen akzeptieren, diese finden Sie hier: " />
-                    <Hyperlink NavigateUri="">
-                        <Run x:Uid="StartPageTermsAndConditionsLink" Text="www.ecosia.de" />
+                    <Hyperlink NavigateUri="{Binding ElementName=StartPageTermsAndConditionsLink, Path=Text, Converter={StaticResource HyperlinkStringToNavigationUriConverter}}">
+                        <Run
+                            x:Name="StartPageTermsAndConditionsLink"
+                            x:Uid="StartPageTermsAndConditionsLink" 
+                            Text="www.ecosia.de" />
                     </Hyperlink>
                     <Run Text="." />
                 </TextBlock>
@@ -130,18 +141,37 @@
                            Grid.Row="4"
                            x:Name="ErrorText" 
                            Style="{StaticResource UniversityNewsUlmStandardErrorText}"
+                           Visibility="{Binding ElementName=ErrorText, Path=Text, Converter={StaticResource StringToVisibilityConverter}}"
                            Text="{Binding ValidationMessages[Name], FallbackValue={x:Null} , Converter={StaticResource ValidationMessageOnLocalizedStringConverter}}"/>
 
                 <!-- Akzeptieren der Nutzungsbedingungen. -->
-                    <CheckBox 
-                          Grid.Row="5"
-                          Content="Ich akzeptiere die Nutzungsbedingungen"
+                    <Grid Grid.Row="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="9*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <CheckBox 
+                          Grid.Column="0"
                           x:Name="StartPageAcceptTermsAndConditionsCheckBox"
-                          x:Uid="StartPageAcceptTermsAndConditionsCheckBox"
                           IsChecked="{Binding AreTermsAndConditionsAccepted, Mode=TwoWay}"
                           />
+                        
+                        <TextBlock
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            x:Name="StartPageAcceptTermsAndConditionsCheckBoxText"
+                            x:Uid="StartPageAcceptTermsAndConditionsCheckBoxText"
+                            Style="{StaticResource UniversityNewsUlmStandardText}"
+                            TextWrapping="Wrap"
+                            Text="I accept the terms and conditions"
+                            />
+
+                    </Grid>
+
 
             </Grid>
+            </ScrollViewer>
         </Grid>
     </Grid>
 </Page>

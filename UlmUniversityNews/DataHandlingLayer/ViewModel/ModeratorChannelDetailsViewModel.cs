@@ -379,6 +379,7 @@ namespace DataHandlingLayer.ViewModel
             currentReminder.EndDate = newReminder.EndDate;
             currentReminder.Interval = newReminder.Interval;
             currentReminder.Ignore = newReminder.Ignore;
+            currentReminder.IsActive = newReminder.IsActive;
 
             currentReminder.ComputeFirstNextDate();
             currentReminder.EvaluateIsExpired();

@@ -80,6 +80,89 @@
                     </Flyout>
                 </AppBarButton.Flyout>
             </AppBarButton>
+            
+            <AppBarButton
+                x:Name="ReminderDetailsActivateReminderButton"
+                x:Uid="ReminderDetailsActivateReminderButton"
+                Label="activate reminder"
+                Icon="Refresh"
+                Visibility="{Binding SelectedReminder.IsActive, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='inverse'}">
+                <!-- Flyout ? -->
+                <AppBarButton.Flyout>
+                    <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}"
+                            common:FlyoutHelper.IsOpen="{Binding IsActivateReminderFlyoutOpen, Mode=TwoWay}"
+                            common:FlyoutHelper.Parent="{Binding ElementName=ReminderDetailsActivateReminderButton}"> 
+                        <Grid
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Warnhinweis bezüglich Aktivierung. -->
+                            <TextBlock 
+                                Grid.Row="0"
+                                x:Name="ActivateReminderWarning"
+                                x:Uid="ReminderDetailsActivateeReminderWarning"
+                                Style="{StaticResource TextInFlyoutsStyle}" >
+                                Wollen Sie den Reminder aktivieren? Sofern der Reminder nicht abgelaufen ist, werden wieder Benachrichtigungen von diesem Reminder im angegebenen Intervall versandt.
+                            </TextBlock>
+
+                            <!-- Aktiviere Button-->
+                            <Button
+                                Grid.Row="1"
+                                x:Name="ActivateReminderFlyoutButton"
+                                x:Uid="ReminderDetailsActivateReminderFlyoutButton"
+                                Style="{StaticResource FlyoutSingleButtonStyle}"
+                                Content="Activate"
+                                Command="{Binding ActivateReminderCommand}"/>
+                        </Grid>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+            
+            <AppBarButton
+                x:Name="ReminderDetailsDeactivateReminderButton"
+                x:Uid="ReminderDetailsDeactivateReminderButton"
+                Label="deactivate reminder"
+                Icon="DisableUpdates"
+                Visibility="{Binding SelectedReminder.IsActive, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <!-- Flyout ? -->
+                <AppBarButton.Flyout>
+                    <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}" Placement="Full"
+                            common:FlyoutHelper.IsOpen="{Binding IsDeactivateReminderFlyoutOpen, Mode=TwoWay}"
+                            common:FlyoutHelper.Parent="{Binding ElementName=ReminderDetailsDeactivateReminderButton}">
+                        <Grid
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Warnhinweis bezüglich Deaktivierung. -->
+                            <TextBlock 
+                                Grid.Row="0"
+                                x:Name="DeactivateReminderWarning"
+                                x:Uid="ReminderDetailsDeactivateeReminderWarning"
+                                Style="{StaticResource TextInFlyoutsStyle}" >
+                                Wollen Sie den Reminder deaktivieren? Im deaktivierten Zustand werden keine Benachrichtigungen von diesem Reminder versandt.
+                            </TextBlock>
+
+                            <!-- Deaktiviere Button-->
+                            <Button
+                                Grid.Row="1"
+                                x:Name="DeactivateReminderFlyoutButton"
+                                x:Uid="ReminderDetailsDeactivateReminderFlyoutButton"
+                                Style="{StaticResource FlyoutSingleButtonStyle}"
+                                Content="Deactivate"
+                                Command="{Binding DeactivateReminderCommand}"/>
+                        </Grid>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+            
             <AppBarButton
                 x:Name="ReminderDetailsEditReminderButton"
                 x:Uid="ReminderDetailsEditReminderButton"
@@ -487,22 +570,36 @@
                                             />
                                     </Grid>
 
-                                    <TextBlock
-                                        Grid.Row="1"
-                                        x:Name="ReminderNextReminderDateContent"
-                                        Style="{StaticResource TextInPropertyDescriptions}"
-                                        Visibility="{Binding IsExpired, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='inverse'}"
-                                        Text="{Binding NextDate, TargetNullValue='', FallbackValue='', Converter={StaticResource ReminderDateTimeToStringConverter}}" />
+                                    <!-- Einblenden, wenn Reminder aktiv ist. -->
+                                    <Grid Grid.Row="1"
+                                          Visibility="{Binding IsActive, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <!-- Einblenden, wenn Reminder noch nicht abgelaufen ist. -->
+                                        <TextBlock
+                                            Grid.Row="0"
+                                            x:Name="ReminderNextReminderDateContent"
+                                            Style="{StaticResource TextInPropertyDescriptions}"
+                                            Visibility="{Binding IsExpired, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='inverse'}"
+                                            Text="{Binding NextDate, TargetNullValue='', FallbackValue='', Converter={StaticResource ReminderDateTimeToStringConverter}}" />
 
-                                    <!-- Einblenden von Text, wenn Reminder abgelaufen ist.-->
-                                    <!-- Ressourcen Text ist der vom AddAndEditReminder Dialog. -->
-                                    <TextBlock
-                                            Grid.Row="1"
+                                        <!-- Einblenden von Text, wenn Reminder abgelaufen ist.-->
+                                        <!-- Ressourcen Text ist der vom AddAndEditReminder Dialog. -->
+                                        <TextBlock
+                                            Grid.Row="0"
                                             x:Name="AddAndEditReminderReminderIsExpiredText"
                                             x:Uid="AddAndEditReminderReminderIsExpiredText"
                                             Visibility="{Binding IsExpired, Converter={StaticResource BooleanToVisibilityConverter}}"
                                             Style="{StaticResource TextInPropertyDescriptions}"
                                             />
+                                    </Grid>
+
+                                    <!-- Einblenden, wenn Reminder deaktiviert ist. -->
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        x:Name="ReminderDetailsReminderIsInactiveText"
+                                        x:Uid="ReminderIsInactiveText"
+                                        Style="{StaticResource TextInPropertyDescriptions}"
+                                        Visibility="{Binding IsActive, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='inverse'}"
+                                        /> <!-- gleicher Text wie in ModeratorChannelDetails - Reminder Tab -->
 
                                     <Line Grid.Row="2"
                                       Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />

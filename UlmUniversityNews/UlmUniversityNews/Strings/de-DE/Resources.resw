@@ -175,13 +175,15 @@
     <value>erstelle account</value>
   </data>
   <data name="StartPageUsernameDescription.Text" xml:space="preserve">
-    <value>Um diese App benutzen zu könnnen, müssen Sie ein Nutzerkonto anlegen. Dazu müssen Sie unten einen Nutzername angeben und die Nutzungsbedingungen akzeptieren. Diese können Sie unter folgendem Link abrufen: </value>
+    <value>Um diese App benutzen zu könnnen, müssen Sie ein Nutzerkonto anlegen. 
+Dazu müssen Sie unten einen Nutzername angeben und die Nutzungsbedingungen akzeptieren. Diese können Sie unter folgendem Link abrufen: </value>
   </data>
   <data name="StartPageUsernameTextBox.Header" xml:space="preserve">
     <value>Nutzername</value>
   </data>
   <data name="StartPageWelcomeText.Text" xml:space="preserve">
-    <value>Willkommen bei University News.</value>
+    <value>Willkommen bei University News.
+</value>
   </data>
   <data name="HomescreenSearchChannelsButton.Label" xml:space="preserve">
     <value>suche kanal</value>
@@ -536,7 +538,7 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
     <value>Verwaltete Kanäle</value>
   </data>
   <data name="ModeratorChannelDetailsAnnouncementPivotItem.Header" xml:space="preserve">
-    <value>Nachrichten</value>
+    <value>Benachrichtigungen</value>
   </data>
   <data name="ModeratorChannelDetailsChannelInfoPivotItem.Header" xml:space="preserve">
     <value>Kanalinformationen</value>
@@ -1130,7 +1132,7 @@ Nachricht am: </value>
   <data name="ReminderDetailsReminderModificationDateField.Text" xml:space="preserve">
     <value>Änderungsdatum</value>
   </data>
-  <data name="StartPageAcceptTermsAndConditionsCheckBox.Content" xml:space="preserve">
+  <data name="StartPageAcceptTermsAndConditionsCheckBoxText.Text" xml:space="preserve">
     <value>Ich akzeptiere die Nutzungsbedingungen</value>
   </data>
   <data name="StartPageTermsAndConditionsLink.Text" xml:space="preserve">
@@ -1138,5 +1140,26 @@ Nachricht am: </value>
   </data>
   <data name="StartPageTitle.Text" xml:space="preserve">
     <value>Startseite</value>
+  </data>
+  <data name="ReminderDetailsActivateeReminderWarning.Text" xml:space="preserve">
+    <value>Wollen Sie den Reminder aktivieren? Sofern der Reminder nicht abgelaufen ist werden wieder Benachrichtigungen von diesem Reminder im angegebenen Intervall versandt.</value>
+  </data>
+  <data name="ReminderDetailsActivateReminderButton.Label" xml:space="preserve">
+    <value>aktiviere reminder</value>
+  </data>
+  <data name="ReminderDetailsActivateReminderFlyoutButton.Content" xml:space="preserve">
+    <value>Aktivieren</value>
+  </data>
+  <data name="ReminderDetailsDeactivateeReminderWarning.Text" xml:space="preserve">
+    <value>Wollen Sie den Reminder deaktivieren? Im deaktivierten Zustand werden keine Benachrichtigungen von diesem Reminder versandt.</value>
+  </data>
+  <data name="ReminderDetailsDeactivateReminderButton.Label" xml:space="preserve">
+    <value>deaktiviere reminder</value>
+  </data>
+  <data name="ReminderDetailsDeactivateReminderFlyoutButton.Content" xml:space="preserve">
+    <value>Deaktivieren</value>
+  </data>
+  <data name="ReminderIsInactiveText.Text" xml:space="preserve">
+    <value>Der Reminder ist deaktiviert.</value>
   </data>
 </root>

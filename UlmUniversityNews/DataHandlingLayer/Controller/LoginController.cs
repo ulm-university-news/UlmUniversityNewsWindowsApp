@@ -1,7 +1,6 @@
 ﻿using DataHandlingLayer.Controller.ValidationErrorReportInterface;
 using DataHandlingLayer.DataModel;
 using DataHandlingLayer.Exceptions;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -164,7 +163,7 @@ namespace DataHandlingLayer.Controller
         /// <returns>Einen Hash über das übergebene Passwort als String.</returns>
         private string hashPassword(string password)
         {
-            Debug.WriteLine("The cleartext password is: {0}.", password);
+            // Debug.WriteLine("The cleartext password is: {0}.", password);
             IBuffer bufferedPassword = CryptographicBuffer.ConvertStringToBinary(password, BinaryStringEncoding.Utf8);
 
             // Apply SHA-256 Hash function.
@@ -172,7 +171,7 @@ namespace DataHandlingLayer.Controller
             IBuffer hashedPassword = hashFunction.HashData(bufferedPassword);
 
             string passwordHash = CryptographicBuffer.EncodeToHexString(hashedPassword);
-            Debug.WriteLine("The hashed password is: {0}.", passwordHash);
+            // Debug.WriteLine("The hashed password is: {0}.", passwordHash);
 
             return passwordHash;
         }
