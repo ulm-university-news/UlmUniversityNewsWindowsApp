@@ -1159,6 +1159,9 @@ Nachricht am: </value>
   <data name="ReminderDetailsDeactivateReminderFlyoutButton.Content" xml:space="preserve">
     <value>Deaktivieren</value>
   </data>
+  <data name="ReminderDetailsSynchronizeReminderButton.Label" xml:space="preserve">
+    <value>synchro-nisieren</value>
+  </data>
   <data name="ReminderIsInactiveText.Text" xml:space="preserve">
     <value>Der Reminder ist deaktiviert.</value>
   </data>

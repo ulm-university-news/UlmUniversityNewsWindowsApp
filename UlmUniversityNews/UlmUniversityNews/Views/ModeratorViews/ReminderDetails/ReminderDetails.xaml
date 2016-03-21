@@ -81,6 +81,13 @@
                 </AppBarButton.Flyout>
             </AppBarButton>
             
+            <AppBarButton 
+                x:Name="ReminderDetailsSynchronizeReminderButton"
+                x:Uid="ReminderDetailsSynchronizeReminderButton"
+                Label="sync"
+                Icon="Sync"
+                Command="{Binding SynchronizeReminderCommand}"/>
+
             <AppBarButton
                 x:Name="ReminderDetailsActivateReminderButton"
                 x:Uid="ReminderDetailsActivateReminderButton"

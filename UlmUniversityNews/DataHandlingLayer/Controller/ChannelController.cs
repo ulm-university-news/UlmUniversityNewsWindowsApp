@@ -2441,6 +2441,59 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Frage die Informationen zum Reminder mit der angegebenen Id vom Server ab.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, zu dem der Reminder mit der Id gehört.</param>
+        /// <param name="reminderId">Die Id des Reminders, dessen Informationen abgefragt werden sollen.</param>
+        /// <returns>Eine Instanz der Klasse Reminder.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn der Request vom Server abgelehnt wurde,
+        ///     oder aus einem anderen Grund fehlgeschlagen ist.</exception>
+        public async Task<Reminder> GetReminderAsync(int channelId, int reminderId)
+        {
+            Reminder reminder = null;
+
+            Moderator activeModerator = GetLocalModerator();
+            if (activeModerator == null)
+                return null;
+
+            string serverResponse = null;
+            try
+            {
+                // Sende Get Request an Server.
+                serverResponse = await channelApi.SendGetReminderRequestAsync(
+                    activeModerator.ServerAccessToken,
+                    channelId,
+                    reminderId);
+            }
+            catch (APIException ex)
+            {
+                if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
+                {
+                    Debug.WriteLine("GetReminderAsync: Channel with id {0} seems to be deleted on the server.",
+                        channelId);
+                    MarkChannelAsDeleted(channelId);
+                }
+
+                if (ex.ErrorCode == ErrorCodes.ReminderNotFound)
+                {
+                    Debug.WriteLine("Reminder not found on server. Reminder probably deleted.");
+                    // Behandlung von Not Found. Reminder wahrscheinlich gelöscht.
+                    DeleteLocalReminder(reminderId);
+                }
+
+                Debug.WriteLine("Get request for reminder with id {0} has failed.", reminderId);
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            if (serverResponse != null)
+            {
+                reminder = jsonParser.ParseReminderFromJson(serverResponse);
+            }
+
+            return reminder;
+        }
+
+        /// <summary>
         /// Erzeugt einen neuen Reminder. Führt die
         /// Validierung der Daten durch. Überträgt die Reminder-Daten an den Server und
         /// speichert die Daten lokal ab, wenn die Bestätigung vom Server kommt.

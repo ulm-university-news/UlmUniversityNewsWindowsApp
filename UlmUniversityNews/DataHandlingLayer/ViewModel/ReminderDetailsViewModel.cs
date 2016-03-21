@@ -119,6 +119,17 @@ namespace DataHandlingLayer.ViewModel
             get { return deactivateReminderCommand; }
             set { deactivateReminderCommand = value; }
         }
+
+        private AsyncRelayCommand synchronizeReminderCommand;
+        /// <summary>
+        /// Befehl zur Synchronisation der Daten des aktuell betrachteten Reminders
+        /// mit den Serverdaten.
+        /// </summary>
+        public AsyncRelayCommand SynchronizeReminderCommand
+        {
+            get { return synchronizeReminderCommand; }
+            set { synchronizeReminderCommand = value; }
+        }
         #endregion Commands
 
         /// <summary>
@@ -144,6 +155,9 @@ namespace DataHandlingLayer.ViewModel
             DeactivateReminderCommand = new AsyncRelayCommand(
                 param => executeDeactivateReminderCommand(),
                 param => canDeactivateReminder());
+            SynchronizeReminderCommand = new AsyncRelayCommand(
+                param => executeSynchronizeReminderCommand(),
+                param => canSynchronizeReminder());
         }
 
         /// <summary>
@@ -185,6 +199,71 @@ namespace DataHandlingLayer.ViewModel
             checkCommandExecution();
         }
 
+        /// <summary>
+        /// Stößt eine Synchronisation der lokal gehaltenen Reminder-Instanz des Reminders
+        /// mit der angegebenen Id an. Die neuesten Daten des Reminder werden vom Server
+        /// abgerufen und der lokale Datensatz falls notwendig aktualisiert.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, zu dem der Reminder gehört.</param>
+        /// <param name="reminderId">Die Id des Reminders, der synchronisiert werden soll.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Synchronisation fehlschlägt.</exception>
+        private async Task synchronizeReminderAsync(int channelId, int reminderId)
+        {
+            // Frage aktuellste Version des Reminders vom Server ab.
+            Reminder referenceReminder = await channelController.GetReminderAsync(channelId, reminderId);
+
+            // Vergleiche mit lokal gehaltener Version, ob Aktualisierung erforderlich.
+            Reminder currentReminder = SelectedReminder;
+
+            if (DateTimeOffset.Compare(currentReminder.ModificationDate, referenceReminder.ModificationDate) < 0)
+            {
+                Debug.WriteLine("synchronizeReminderAsync: Need to update.");
+                channelController.ReplaceLocalReminder(referenceReminder);
+                updateViewRelatedPropertiesOfReminder(currentReminder, referenceReminder);
+            }
+            else if (currentReminder.Ignore != referenceReminder.Ignore)
+            {
+                Debug.WriteLine("synchronizeReminderAsync: Need to update due to ignore field.");
+                currentReminder.Ignore = referenceReminder.Ignore;
+                channelController.ReplaceLocalReminder(currentReminder);
+                updateViewRelatedPropertiesOfReminder(currentReminder, referenceReminder);
+            }
+            else if (currentReminder.IsActive != referenceReminder.IsActive)
+            {
+                Debug.WriteLine("synchronizeReminderAsync: Need to update to due isActive field.");
+                currentReminder.IsActive = referenceReminder.IsActive;  // Aktualisere nur IsActive.
+                channelController.ChangeReminderActiveStatus(
+                    currentReminder.Id, 
+                    currentReminder.IsActive);
+
+                // Aktualisiere Befehlsausführbarkeiten.
+                checkCommandExecution();
+            }
+        }
+
+        /// <summary>
+        /// Aktualisiert die für die View relevanten Parameter eines Reminder Objekts, welches aktuell
+        /// vom ViewModel gehalten wird.
+        /// </summary>
+        /// <param name="currentReminder">Die aktuell gehaltene Reminder-Instanz.</param>
+        /// <param name="newReminder">Die Reminder-Instanz mit den neuen Daten.</param>
+        private void updateViewRelatedPropertiesOfReminder(Reminder currentReminder, Reminder newReminder)
+        {
+            currentReminder.StartDate = newReminder.StartDate;
+            currentReminder.EndDate = newReminder.EndDate;
+            currentReminder.Interval = newReminder.Interval;
+            currentReminder.Ignore = newReminder.Ignore;
+            currentReminder.IsActive = newReminder.IsActive;
+            currentReminder.Text = newReminder.Text;
+            currentReminder.Title = newReminder.Title;
+            currentReminder.MessagePriority = newReminder.MessagePriority;
+            currentReminder.ModificationDate = newReminder.ModificationDate;
+            currentReminder.AuthorId = newReminder.AuthorId;
+
+            currentReminder.ComputeFirstNextDate();
+            currentReminder.EvaluateIsExpired();
+        }
+
         #region CommandFunctionality
         /// <summary>
         /// Hilfsmethode, welche die Ausführbarkeit von Befehlen abhängig vom aktuellen
@@ -196,6 +275,7 @@ namespace DataHandlingLayer.ViewModel
             DeleteReminderCommand.OnCanExecuteChanged();
             ActivateReminderCommand.OnCanExecuteChanged();
             DeactivateReminderCommand.OnCanExecuteChanged();
+            SynchronizeReminderCommand.OnCanExecuteChanged();
         }
 
         /// <summary>
@@ -382,6 +462,47 @@ namespace DataHandlingLayer.ViewModel
             {
                 Debug.WriteLine("Failed to execute DeactivateReminderCommand." +
                     " Error code is: {0}.", ex.ErrorCode);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zur Synchronisation der Reminderdaten abhängig
+        /// vom aktuellen Zustand der View zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canSynchronizeReminder()
+        {
+            if (SelectedChannel != null && SelectedReminder != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl SynchronizeReminderCommand aus. Stößt eine Synchronisation
+        /// der Reminderdaten mit den Serverdaten an.
+        /// </summary>
+        private async Task executeSynchronizeReminderCommand()
+        {
+            if (SelectedChannel == null || SelectedReminder == null)
+                return;
+
+            try
+            {
+                displayIndeterminateProgressIndicator();
+
+                await synchronizeReminderAsync(SelectedChannel.Id, SelectedReminder.Id);
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("executeSynchronizeReminderCommand: Error occurred. Error code is: {0}.",
+                    ex.ErrorCode);
                 displayError(ex.ErrorCode);
             }
             finally

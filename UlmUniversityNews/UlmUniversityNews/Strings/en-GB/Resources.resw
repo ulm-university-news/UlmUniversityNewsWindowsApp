@@ -1158,6 +1158,9 @@ date: </value>
   <data name="ReminderDetailsDeactivateReminderFlyoutButton.Content" xml:space="preserve">
     <value>Deactivate</value>
   </data>
+  <data name="ReminderDetailsSynchronizeReminderButton.Label" xml:space="preserve">
+    <value>sync</value>
+  </data>
   <data name="ReminderIsInactiveText.Text" xml:space="preserve">
     <value>The reminder is deactivated.</value>
   </data>
