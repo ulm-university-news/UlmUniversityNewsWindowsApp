@@ -420,7 +420,8 @@ namespace DataHandlingLayer.Controller
                         {
                             isContained = true;
 
-                            // TODO - Aktualisierung der Moderator-Ressource ?
+                            // Aktualisierung der Moderator-Ressource
+                            moderatorDatabaseManager.UpdateModerator(referenceModerator);
                         }
                     }
 

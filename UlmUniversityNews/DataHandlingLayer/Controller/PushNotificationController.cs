@@ -164,6 +164,10 @@ namespace DataHandlingLayer.Controller
                     break;
                 case PushType.CONVERSATION_MESSAGE_NEW:
                     break;
+                case PushType.CHANNEL_DELETED:
+                    // Informieren bei Kanal-Löschung.
+                    notificationRequired = true;
+                    break;
             }
 
             return notificationRequired;

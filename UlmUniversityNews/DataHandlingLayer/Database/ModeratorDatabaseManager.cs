@@ -176,7 +176,7 @@ namespace DataHandlingLayer.Database
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine("Exception occurred in IsModeratorStored. The message is: {0} and the stack trace is {1}.",
+                        Debug.WriteLine("Exception occurred in GetModerator. The message is: {0} and the stack trace is {1}.",
                             ex.Message,
                             ex.StackTrace);
                         throw new DatabaseException("Could not retrieve Moderator.");
@@ -194,6 +194,67 @@ namespace DataHandlingLayer.Database
             }
 
             return moderator;
+        }
+
+        /// <summary>
+        /// Aktualisiert den Datensatz des Moderators, der durch das übergebene Moderatorenobjekt
+        /// identifiziert wird. Das übergebene Moderatorenobjekt enthält die neuen Daten des Moderators.
+        /// </summary>
+        /// <param name="newModerator">Das Moderator Objekt mit den neuen Daten.</param>
+        /// <exception cref="DatabaseException">Wirft eine DatabaseException, wenn die Aktualisierung fehlschlägt.</exception>
+        public void UpdateModerator(Moderator newModerator)
+        {
+            if (newModerator == null)
+                return;
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string sql = @"UPDATE Moderator 
+                            SET FirstName=?, LastName=?, Email=? 
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(sql))
+                        {
+                            stmt.Bind(1, newModerator.FirstName);
+                            stmt.Bind(2, newModerator.LastName);
+                            stmt.Bind(3, newModerator.Email);
+                            stmt.Bind(4, newModerator.Id);
+
+                            if (stmt.Step() == SQLiteResult.DONE)
+                                Debug.WriteLine("Updated moderator with id {0}.", newModerator.Id);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException occurred in UpdateModerator. The message is: {0}.", sqlEx.Message);
+                        throw new DatabaseException("Could not update Moderator. Msg is: " + sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Exception occurred in UpdateModerator. The message is: {0} and the stack trace is {1}.",
+                            ex.Message,
+                            ex.StackTrace);
+                        throw new DatabaseException("Could not update Moderator. Msg is: " + ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
         }
     }
 }
