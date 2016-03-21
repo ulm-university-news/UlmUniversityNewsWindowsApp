@@ -380,6 +380,11 @@ namespace DataHandlingLayer.ViewModel
             currentReminder.Interval = newReminder.Interval;
             currentReminder.Ignore = newReminder.Ignore;
             currentReminder.IsActive = newReminder.IsActive;
+            currentReminder.Text = newReminder.Text;
+            currentReminder.Title = newReminder.Title;
+            currentReminder.MessagePriority = newReminder.MessagePriority;
+            currentReminder.ModificationDate = newReminder.ModificationDate;
+            currentReminder.AuthorId = newReminder.AuthorId;
 
             currentReminder.ComputeFirstNextDate();
             currentReminder.EvaluateIsExpired();

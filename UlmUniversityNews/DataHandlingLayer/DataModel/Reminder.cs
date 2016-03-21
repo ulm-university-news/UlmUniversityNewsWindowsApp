@@ -49,7 +49,7 @@ namespace DataHandlingLayer.DataModel
         public DateTimeOffset ModificationDate
         {
             get { return modificationDate; }
-            set { modificationDate = value; }
+            set { this.setProperty(ref this.modificationDate, value); }
         }
 
         private DateTimeOffset startDate;
@@ -60,7 +60,7 @@ namespace DataHandlingLayer.DataModel
         public DateTimeOffset StartDate
         {
             get { return startDate; }
-            set { startDate = value; }
+            set { this.setProperty(ref this.startDate, value); }
         }
 
         private DateTimeOffset nextDate;
@@ -82,7 +82,7 @@ namespace DataHandlingLayer.DataModel
         public DateTimeOffset EndDate
         {
             get { return endDate; }
-            set { endDate = value; }
+            set { this.setProperty(ref this.endDate, value); }
         }
 
         private int interval = -1;
@@ -96,7 +96,7 @@ namespace DataHandlingLayer.DataModel
         public int Interval
         {
             get { return interval; }
-            set { interval = value; }
+            set { this.setProperty(ref this.interval, value); }
         }
 
         private bool ignore;
@@ -129,7 +129,7 @@ namespace DataHandlingLayer.DataModel
         public int AuthorId
         {
             get { return authorModerator; }
-            set { authorModerator = value; }
+            set { this.setProperty(ref this.authorModerator, value); }
         }
 
         private string title;
@@ -140,7 +140,7 @@ namespace DataHandlingLayer.DataModel
         public string Title
         {
             get { return title; }
-            set { title = value; }
+            set { this.setProperty(ref this.title, value); }
         }
 
         private string text;
@@ -151,7 +151,7 @@ namespace DataHandlingLayer.DataModel
         public string Text
         {
             get { return text; }
-            set { text = value; }
+            set { this.setProperty(ref this.text, value); }
         }
 
         private Priority messagePriority;
@@ -162,7 +162,7 @@ namespace DataHandlingLayer.DataModel
         public Priority MessagePriority
         {
             get { return messagePriority; }
-            set { messagePriority = value; }
+            set { this.setProperty(ref this.messagePriority, value); }
         }
 
         private bool? isActive;

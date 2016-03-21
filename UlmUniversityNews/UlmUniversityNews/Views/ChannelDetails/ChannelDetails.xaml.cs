@@ -131,7 +131,19 @@ namespace UlmUniversityNews.Views.ChannelDetails
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            Debug.WriteLine("In LoadState of ChannelDetails page. NavigationParameter is: {0}.", e.NavigationParameter);
+            //Debug.WriteLine("In LoadState of ChannelDetails page. NavigationParameter is: {0}.", e.NavigationParameter);
+
+            // Prüfe, ob ein Index gespeichert ist, der angibt, auf welchem PivotItem der Nutzer zuletzt war.
+            if (e.PageState != null && e.PageState["PivotIndex"] != null)
+            {
+                int selectedIndex = 0;
+                bool successful = int.TryParse(e.PageState["PivotIndex"].ToString(), out selectedIndex);
+
+                // Falls es einen gespeicherten PivotIndex gibt, setze ihn wieder aktiv.
+                if (successful && ChannelDetailsPivot != null)
+                    ChannelDetailsPivot.SelectedIndex = selectedIndex;
+            }
+
             if(e.NavigationParameter != null)
             {
                 // Lade den Zustand im ViewModel mit dem übergebenen Parameterwert.
@@ -163,6 +175,10 @@ namespace UlmUniversityNews.Views.ChannelDetails
                 // Markiere die Nachrichten dieses Kanals nun als gelsen.
                 channelDetailsViewModel.MarkAnnouncementsAsRead();
             }
+
+            // Speichere Pivot-Index zwischen, so dass man ihn beim nächsten Aufruf der Seite wieder aktiv setzen kann.
+            if (e.PageState != null && ChannelDetailsPivot != null)
+                e.PageState["PivotIndex"] = ChannelDetailsPivot.SelectedIndex;
 
             // Deregistriere View von PushNotificationManager Events.
             unsubscribeFromPushManagerEvents();

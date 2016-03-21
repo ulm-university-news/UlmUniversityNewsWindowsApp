@@ -279,7 +279,7 @@ namespace DataHandlingLayer.ViewModel
                 if (DateTimeOffset.Compare(Channel.ModificationDate, referenceChannel.ModificationDate) < 0)
                 {
                     // Aktualisierung erforderlich.
-                    channelController.ReplaceLocalChannel(referenceChannel);
+                    channelController.ReplaceLocalChannelWhileKeepingNotificationSettings(referenceChannel);
                     // Ändere für View relevante Properties, so dass View aktualisiert wird.
                     updateViewRelatedChannelProperties(Channel, referenceChannel);
                 }

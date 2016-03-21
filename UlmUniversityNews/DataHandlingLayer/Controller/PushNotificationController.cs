@@ -359,11 +359,22 @@ namespace DataHandlingLayer.Controller
             {
                 // Rufe die neuesten Informationen zum Kanal ab.
                 Channel newChannel = await channelController.GetChannelInfoAsync(channelId);
+                // Rufe aktuelle Instanz ab.
+                Channel currentChannel = channelController.GetChannel(channelId);
 
-                if (newChannel != null)
+                // Prüfe, ob Aktualisierung erforderlich. Es könnte sein der Nutzer dieser App selbst hat die
+                // Aktualisierung ausgelöst, dann wäre der lokale Datensatz schon auf dem aktuellsten Stand.
+                if (newChannel != null &&
+                    DateTimeOffset.Compare(currentChannel.ModificationDate, newChannel.ModificationDate) < 0)
                 {
+                    Debug.WriteLine("handleChannelChangedPushMsgAsync: Update required.");
                     // Speichere die neusten Kanalinformationen lokal ab.
-                    channelController.ReplaceLocalChannel(newChannel);
+                    channelController.ReplaceLocalChannelWhileKeepingNotificationSettings(newChannel);
+                }
+                else
+                {
+                    Debug.WriteLine("handleChannelChangedPushMsgAsync: No update required.");
+                    return false;
                 }
             }
             catch (ClientException ex)
