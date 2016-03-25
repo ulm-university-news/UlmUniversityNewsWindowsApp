@@ -203,7 +203,7 @@ namespace DataHandlingLayer.ViewModel
         /// <summary>
         /// Lädt die Reminder für den gewählten Kanal aus der lokalen Datenbank.
         /// </summary>
-        public async Task LoadRemindersOfChannel()
+        public async Task LoadRemindersOfChannelAsync()
         {
             if (Channel == null)
                 return;

@@ -171,6 +171,173 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Füge mehrere Kanalobjekte per Bulk-Insert in die Datenbank ein.
+        /// </summary>
+        /// <param name="channels">Liste von Kanalobjekten, die eingefügt werden sollen.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn die Kanaldaten nicht in der DB gespeichert werden konnten.</exception>
+        public void BulkInsertChannels(List<Channel> channels)
+        {
+            if (channels == null || channels.Count == 0)
+                return;
+
+             // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(4000))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        // Starte eine Transaktion.
+                        using (var statement = conn.Prepare("BEGIN TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+
+                        string channelInsertQuery = @"INSERT INTO Channel (Id, Name, Description, 
+                                CreationDate, ModificationDate, Type, Term, Location, Dates, Contact, 
+                                Website, Deleted, NotificationSettings_NotifierId)  
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                        string insertLectureQuery = @"INSERT INTO Lecture (Channel_Id, 
+                                    Faculty, StartDate, EndDate, Lecturer, Assistant) 
+                                    VALUES (?, ?, ?, ?, ?, ?);";
+                        string insertEventQuery = @"INSERT INTO Event (Channel_Id, Cost, Organizer) 
+                                    VALUES (?, ?, ?);";
+                        string insertSportsQuery = @"INSERT INTO Sports (Channel_Id, Cost, NumberOfParticipants) " +
+                                "VALUES (?, ?, ?);";
+
+                        var insertStmt = conn.Prepare(channelInsertQuery);
+                        var insertLectureStmt = conn.Prepare(insertLectureQuery);
+                        var insertEventStmt = conn.Prepare(insertEventQuery);
+                        var insertSportsStmt = conn.Prepare(insertSportsQuery);
+
+                        using (insertStmt)
+                        using (insertLectureStmt)
+                        using (insertEventStmt)
+                        using (insertSportsStmt)
+                        {
+                            // Führe Insert für jeden Kanal aus.
+                            foreach (Channel channel in channels)
+                            {
+                                insertStmt.Bind(1, channel.Id);
+                                insertStmt.Bind(2, channel.Name);
+                                insertStmt.Bind(3, channel.Description);
+                                insertStmt.Bind(4, DatabaseManager.DateTimeToSQLite(channel.CreationDate));
+                                insertStmt.Bind(5, DatabaseManager.DateTimeToSQLite(channel.ModificationDate));
+                                insertStmt.Bind(6, (int)channel.Type);
+                                insertStmt.Bind(7, channel.Term);
+                                insertStmt.Bind(8, channel.Locations);
+                                insertStmt.Bind(9, channel.Dates);
+                                insertStmt.Bind(10, channel.Contacts);
+                                insertStmt.Bind(11, channel.Website);
+                                insertStmt.Bind(12, (channel.Deleted) ? 1 : 0);
+
+                                // Channel hat zu Begin immer Default Benachrichtigungseinstellungen.
+                                channel.AnnouncementNotificationSetting = NotificationSetting.APPLICATION_DEFAULT;
+                                insertStmt.Bind(13, (int)channel.AnnouncementNotificationSetting);
+
+                                insertStmt.Step();
+
+                                // Speichere Subklassen Parameter abhängig vom Typ des Kanals.
+                                switch (channel.Type)
+                                {
+                                    case DataModel.Enums.ChannelType.LECTURE:
+                                        Lecture lecture = (Lecture)channel;
+
+                                        // Speichere Vorlesungsdaten.         
+                                        insertLectureStmt.Bind(1, channel.Id);
+                                        insertLectureStmt.Bind(2, (int)lecture.Faculty);
+                                        insertLectureStmt.Bind(3, lecture.StartDate);
+                                        insertLectureStmt.Bind(4, lecture.EndDate);
+                                        insertLectureStmt.Bind(5, lecture.Lecturer);
+                                        insertLectureStmt.Bind(6, lecture.Assistant);
+
+                                        if (insertLectureStmt.Step() == SQLiteResult.DONE)
+                                            Debug.WriteLine("Stored lecture channel.");
+                                        break;
+                                    case DataModel.Enums.ChannelType.EVENT:
+                                        Event eventChannel = (Event)channel;
+
+                                        // Speichere Eventdaten.
+                                        insertEventStmt.Bind(1, channel.Id);
+                                        insertEventStmt.Bind(2, eventChannel.Cost);
+                                        insertEventStmt.Bind(3, eventChannel.Organizer);
+                                        
+                                        if (insertEventStmt.Step() == SQLiteResult.DONE)                                    
+                                            Debug.WriteLine("Stored event channel.");
+                                        break;
+                                    case DataModel.Enums.ChannelType.SPORTS:
+                                        Sports sportsChannel = (Sports)channel;
+
+                                        // Speichere Sportgruppendaten.
+                                        insertSportsStmt.Bind(1, channel.Id);
+                                        insertSportsStmt.Bind(2, sportsChannel.Cost);
+                                        insertSportsStmt.Bind(3, sportsChannel.NumberOfParticipants);
+
+                                        if (insertSportsStmt.Step() == SQLiteResult.DONE)
+                                           Debug.WriteLine("Stored sports channel.");
+                                        break;
+                                    default:
+                                        Debug.WriteLine("There is no subclass for channel type OTHER and STUDENT_GROUP, so storing is already complete.");
+                                        break;
+                                }
+
+                                // Bereite nächste Iteration vor.
+                                insertStmt.Reset();
+                                insertLectureStmt.Reset();
+                                insertSportsStmt.Reset();
+                                insertEventStmt.Reset();
+                            }
+                        }
+                        
+                        // Commit der Transaktion.
+                        using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                        {
+                            if (statement.Step() == SQLiteResult.DONE)
+                            {
+                                Debug.WriteLine("Stored {0} channels per Bulk Insert.", channels.Count);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLiteException has occurred in BulkInsertChannels. Exception message is: {0}.", sqlEx.Message);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+
+                        throw new DatabaseException("Bulk inserting channel data in database has failed.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Exception has occurred in BulkInsertChannels. " +
+                            "Exception message is: {0}, and stack trace is {1}.", ex.Message, ex.StackTrace);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+
+                        throw new DatabaseException("Bulk inserting channel data in database has failed.");
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }   
+        }
+
+        /// <summary>
         /// Aktualisiere den Kanal. Bei dieser Methode werden nur die Kanalattribute in der Datenbank
         /// aktualisiert. Mögliche Attribute von Subklassen der Kanal Klasse werden ignoriert.
         /// </summary>

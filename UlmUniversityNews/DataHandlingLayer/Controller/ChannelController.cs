@@ -127,6 +127,7 @@ namespace DataHandlingLayer.Controller
         public void AddOrReplaceLocalChannels(List<Channel> updatedChannelList)
         {
             Channel currentChannel;
+            List<Channel> channelsToInsert = new List<Channel>();
 
             // Iteriere über Liste:
             for (int i = 0; i < updatedChannelList.Count; i++)
@@ -144,8 +145,8 @@ namespace DataHandlingLayer.Controller
                     }
                     else
                     {
-                        // Führe Einfügeoperation durch.
-                        channelDatabaseManager.StoreChannel(currentChannel);
+                        // Füge Kanals der Einfügeliste hinzu.
+                        channelsToInsert.Add(currentChannel);
                     }
                 }
                 catch (DatabaseException ex)
@@ -153,6 +154,32 @@ namespace DataHandlingLayer.Controller
                     Debug.WriteLine("DatabaseException with message {0} occurred.", ex.Message);
                     // Abbilden auf ClientException.
                     throw new ClientException(ErrorCodes.LocalDatabaseException, "Local database failure.");
+                }
+            }
+
+            // Führe Einfügeoperation aus für einzufügende Kanäle.
+            try
+            {
+                // Bulk insert.
+                channelDatabaseManager.BulkInsertChannels(channelsToInsert);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("Bulk insert has failed. Message is: {0}.", ex.Message);
+                // Wenn Bulk Insert fehlgeschlagen ist.
+                // Versuche Kanäle nochmals einzeln einzufügen.
+                try
+                {
+                    Debug.WriteLine("Trying to store channels per single store operations.");
+                    foreach (Channel channel in channelsToInsert)
+                    {
+                        channelDatabaseManager.StoreChannel(channel);
+                    }
+                }
+                catch (DatabaseException dbEx)
+                {
+                    Debug.WriteLine("Storing channels has failed.");
+                    throw new ClientException(ErrorCodes.LocalDatabaseException, dbEx.Message);
                 }
             }
         }
@@ -701,7 +728,9 @@ namespace DataHandlingLayer.Controller
                 }
 
                 // Frage die Nachrichten zum Kanal ab und speichere Sie in der Datenbank.
-                List<Announcement> announcements = await GetAnnouncementsOfChannelAsync(channelId, 0, false);
+                int msgNr = GetHighestMsgNrForChannel(channelId);
+                Debug.WriteLine("SubscribeChannelAsync: Perform Announcement Request with msg nr: {0}.", msgNr);
+                List<Announcement> announcements = await GetAnnouncementsOfChannelAsync(channelId, msgNr, false);
                 await StoreReceivedAnnouncementsAsync(announcements);
             }
             catch (ClientException ex)
@@ -1396,6 +1425,11 @@ namespace DataHandlingLayer.Controller
                         // Speichere die Announcement ab.
                         channelDatabaseManager.StoreAnnouncement(announcement);
                     }
+                    catch (DatabaseException dbEx)
+                    {
+                        Debug.WriteLine("Exception occurred: " + dbEx.Message);
+                        //throw new ClientException(ErrorCodes.LocalDatabaseException, "Local database failure.");
+                    }
                 } // Ende Fehlerbehandlung.
             }
             catch (DatabaseException ex)
@@ -1472,6 +1506,7 @@ namespace DataHandlingLayer.Controller
                             if(moderatorDatabaseManager.IsModeratorStored(announcement.AuthorId))
                             {
                                 announcementsToStore.Add(announcement);
+                                moderatorStoredMap[announcement.AuthorId] = true;
                             }
                             else
                             {
@@ -1490,6 +1525,11 @@ namespace DataHandlingLayer.Controller
                                 "dummy moderator.", announcement.Id);
                             announcement.AuthorId = 0;
                             announcementsToStore.Add(announcement);
+                        }
+                        catch (DatabaseException dbEx)
+                        {
+                            Debug.WriteLine("Exception occurred: " + dbEx.Message);
+                            throw new ClientException(ErrorCodes.LocalDatabaseException, "Local database failure.");
                         }
                         // Führe im weiteren Verlauf keine weitere Abfrage an den Server mehr durch. Wenn der Fehler bei der ersten Abfrage nicht behoben wurde,
                         // dann wird er auch bei weiteren Abfragen nicht behoben.

@@ -431,6 +431,7 @@ namespace DataHandlingLayer.ViewModel
 
                 // Bleibe auf der Seite, aber lade die Nachrichten nach.
                 List<Announcement> announcements = await Task.Run(() => channelController.GetAllAnnouncementsOfChannel(Channel.Id));
+                     
                 // Setze PageSize auf 0, d.h. lade keine Elemente nach.
                 Announcements = new IncrementalLoadingCollection<IncrementalAnnouncementLoaderController, Announcement>(Channel.Id, 0);
                 await Announcements.LoadExistingCollectionAsync(announcements);

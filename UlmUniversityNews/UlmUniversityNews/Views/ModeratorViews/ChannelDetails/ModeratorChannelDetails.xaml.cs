@@ -85,7 +85,7 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
                 int channelId = Convert.ToInt32(e.NavigationParameter);
                 moderatorChannelDetailsViewModel.LoadSelectedChannel(channelId);
                 await moderatorChannelDetailsViewModel.PerformAnnouncementUpdateAsync();
-                await moderatorChannelDetailsViewModel.LoadRemindersOfChannel();
+                await moderatorChannelDetailsViewModel.LoadRemindersOfChannelAsync();
                 await moderatorChannelDetailsViewModel.CheckForMissingReminders();
                 await moderatorChannelDetailsViewModel.LoadModeratorsOfChannelAsync();
             }

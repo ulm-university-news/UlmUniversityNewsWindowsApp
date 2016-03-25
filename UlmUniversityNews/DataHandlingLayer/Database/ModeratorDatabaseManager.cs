@@ -122,7 +122,7 @@ namespace DataHandlingLayer.Database
             else
             {
                 Debug.WriteLine("Couldn't get access to database. Time out.");
-                throw new DatabaseException("Could not get access to the database.");
+                return false;
             }
 
             return isStored;
