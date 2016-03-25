@@ -857,8 +857,7 @@
                                             Grid.Row="1"
                                             x:Name="ChannelContactsContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
-                                            Text="{Binding Contacts, TargetNullValue='', FallbackValue=''}" />
-                                        <!--{Binding Contacts, TargetNullValue='', FallbackValue=''}-->
+                                            common:EmailTextBlock.EmailText="{Binding Contacts, TargetNullValue='', FallbackValue=''}" /> <!-- Verwende speziellen um eine AttachedProperty erweiterten TextBlock für Email-Adressen. -->
 
                                         <Line Grid.Row="2"
                                               Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />

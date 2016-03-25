@@ -159,6 +159,7 @@
     <Compile Include="Common\CustomUserControl\IntervalPicker.xaml.cs">
       <DependentUpon>IntervalPicker.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\EmailTextBlock.cs" />
     <Compile Include="Common\FlyoutHelper.cs" />
     <Compile Include="Common\HideablePivotItemBehavior.cs" />
     <Compile Include="Common\HyperLinkedTextBlock.cs" />
