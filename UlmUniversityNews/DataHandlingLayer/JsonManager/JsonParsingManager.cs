@@ -391,13 +391,13 @@ namespace DataHandlingLayer.JsonManager
             string jsonContent = null;
             try
             {
-                // Spezielle Serialisierungssettings für Datum.
+                //// Spezielle Serialisierungssettings für Datum.
                 //JsonSerializerSettings utcDateSettings = new JsonSerializerSettings();
                 //utcDateSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
 
-                //IsoDateTimeConverter dateConverter = new IsoDateTimeConverter
+                //Newtonsoft.Json.Converters.IsoDateTimeConverter dateConverter = new Newtonsoft.Json.Converters.IsoDateTimeConverter
                 //{
-                //    DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'"
+                //    DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffzz"
                 //};
                 //utcDateSettings.Converters.Add(dateConverter);
 
@@ -476,6 +476,31 @@ namespace DataHandlingLayer.JsonManager
         }
         #endregion PushMessage
 
+        ///// <summary>
+        ///// Eine Hilfsmethode, die ein DateTimeOffset Objekt in das Format der koordinierten Weltzeit umwandelt und
+        ///// als String zurückliefert. Diese Methode kann verwendet werden, um DateTimeOffset Objekte in ein
+        ///// Format zu bringen, welches vom Server verstanden wird. 
+        ///// </summary>
+        ///// <param name="datetime">Das umzuwandelnde DateTimeOffset Objekt.</param>
+        ///// <returns>Die Datums- und Uhrzeitangabe im UTC Format.</returns>
+        //private string parseDateTimeToISO8601Format(DateTimeOffset datetime)
+        //{
+        //    TimeSpan currentUTCOffset = TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.Now);
+        //    string datetimeString = datetime.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff"); ;
+
+        //    currentUTCOffset.ToString();
+        //    if (currentUTCOffset.TotalHours == 2.0f)
+        //    {
+        //        datetimeString += "+0200";
+        //    }
+        //    else if (currentUTCOffset.TotalHours == 1.0f)
+        //    {
+        //        datetimeString += "+0100";
+        //    }
+
+        //    return datetimeString;
+        //}
+
         /// <summary>
         /// Eine Hilfsmethode, die ein DateTimeOffset Objekt in das Format der koordinierten Weltzeit umwandelt und
         /// als String zurückliefert. Diese Methode kann verwendet werden, um DateTimeOffset Objekte in ein
@@ -485,18 +510,13 @@ namespace DataHandlingLayer.JsonManager
         /// <returns>Die Datums- und Uhrzeitangabe im UTC Format.</returns>
         private string parseDateTimeToISO8601Format(DateTimeOffset datetime)
         {
-            TimeSpan currentUTCOffset = TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.Now);
-            string datetimeString = datetime.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff"); ;
+            System.Globalization.CultureInfo cultureInfo = new System.Globalization.CultureInfo("de-DE");
 
-            currentUTCOffset.ToString();
-            if (currentUTCOffset.TotalHours == 2.0f)
-            {
-                datetimeString += "+0200";
-            }
-            else if (currentUTCOffset.TotalHours == 1.0f)
-            {
-                datetimeString += "+0100";
-            }
+            string format = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffzzzz";
+            string datetimeString = datetime.ToString(format, cultureInfo);
+
+            // Problem ist ':' in Zeitzone.
+            datetimeString = datetimeString.Substring(0, datetimeString.Length - 3) + datetimeString.Substring(datetimeString.Length - 2, 2);
 
             return datetimeString;
         }

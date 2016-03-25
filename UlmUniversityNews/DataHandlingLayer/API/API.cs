@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Web.Http;
+using Windows.Web.Http.Filters;
 
 namespace DataHandlingLayer.API
 {
@@ -29,6 +30,7 @@ namespace DataHandlingLayer.API
         /// Konstruktor zur Erzeugung einer Instanz der API Klasse.
         /// </summary>
         public API(){
+            //baseURL = "https://134.60.71.137/ulm-university-news";
             baseURL = "http://134.60.71.137/ulm-university-news";
             //baseURL = "http://localhost:8080/";
         }
@@ -159,16 +161,25 @@ namespace DataHandlingLayer.API
         {
             // Erstelle einen HTTP Request.
             HttpClient httpClient = new HttpClient();
-
-            // Definiere HTTP-Request und Http-Request Header.
-            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
+            
             if(!withCaching)
             {
+                // Definiere HttpClient neu.
+                var rootFilter = new HttpBaseProtocolFilter();
+
+                rootFilter.CacheControl.ReadBehavior = Windows.Web.Http.Filters.HttpCacheReadBehavior.MostRecent;
+                rootFilter.CacheControl.WriteBehavior = Windows.Web.Http.Filters.HttpCacheWriteBehavior.NoCache;
+
+                httpClient = new HttpClient(rootFilter);
+
+                // Füge zusätzlich noch If-Modified Since Header hinzu.              
                 httpClient.DefaultRequestHeaders.IfModifiedSince = new DateTimeOffset(DateTime.UtcNow);
                 Debug.WriteLine("Adding header to prevent caching. Added header is: {0}.",
                     httpClient.DefaultRequestHeaders.IfModifiedSince);
-                //httpClient.DefaultRequestHeaders.Add("IfModifiedSince", DateTimeOffset.UtcNow.ToString("r"));     // Prevent caching for get requests.
             }
+
+            // Definiere HTTP-Request und Http-Request Header.
+            httpClient.DefaultRequestHeaders.Add("Authorization", serverAccessToken);
             httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
 
             // Füge URL Parameter an, falls vorhanden.

@@ -2165,6 +2165,25 @@ namespace DataHandlingLayer.Controller
                     "Message is: {0} and error code is {1}.", ex.Message, ex.ErrorCode);
             }
 
+            // Rufe Announcements zu dem Kanal ab.
+            try
+            {
+                int msgNr = GetHighestMsgNrForChannel(channelId);
+                List<Announcement> announcements = await GetAnnouncementsOfChannelAsync(channelId, msgNr, false);
+                channelDatabaseManager.BulkInsertOfAnnouncements(announcements);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("retrieveAndStoreManagedChannelInfoAsync: Storing of the announcements has failed.");
+                Debug.WriteLine("retrieveAndStoreManagedChannelInfoAsync: Message is: {0}.", ex.Message);
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("retrieveAndStoreManagedChannelInfoAsync: Retrieval of the announcements has failed.");
+                Debug.WriteLine("retrieveAndStoreManagedChannelInfoAsync: " +
+                    "Message is: {0} and error code is {1}.", ex.Message, ex.ErrorCode);
+            }
+
             Debug.WriteLine("retrieveAndStoreManagedChannelInfoAsync: Finished method.");
         }
 
