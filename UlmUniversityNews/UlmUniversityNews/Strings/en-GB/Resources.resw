@@ -967,13 +967,13 @@ date: </value>
     <value>Delete channel</value>
   </data>
   <data name="ModeratorChannelDetailsDeleteChannelWarning.Text" xml:space="preserve">
-    <value>Do you really want to delete the channel?</value>
+    <value>Do you really want to delete the channel? This action cannot be reversed.</value>
   </data>
   <data name="ReminderDetailsDeleteReminderFlyoutButton.Content" xml:space="preserve">
     <value>Delete</value>
   </data>
   <data name="ReminderDetailsDeleteReminderWarning.Text" xml:space="preserve">
-    <value>This reminder will be delted. No more reminder messages will be sent afterwards. Do you really want to delete the reminder?</value>
+    <value>Do you really want to delete the reminder? This action cannot be reversed.</value>
   </data>
   <data name="ChannelDetailsModeratorField.Text" xml:space="preserve">
     <value>Moderators</value>
@@ -1141,7 +1141,7 @@ date: </value>
     <value>Start page</value>
   </data>
   <data name="ReminderDetailsActivateeReminderWarning.Text" xml:space="preserve">
-    <value>Do you want to activate the reminder? If the reminder is not expired, it will continue to send announcements at the specified interval.</value>
+    <value>Do you want to activate the reminder? Reminder will continue sending announcements.</value>
   </data>
   <data name="ReminderDetailsActivateReminderButton.Label" xml:space="preserve">
     <value>activate reminder</value>
@@ -1149,8 +1149,8 @@ date: </value>
   <data name="ReminderDetailsActivateReminderFlyoutButton.Content" xml:space="preserve">
     <value>Activate</value>
   </data>
-  <data name="ReminderDetailsDeactivateeReminderWarning.Text" xml:space="preserve">
-    <value>Do you want to deactivate the reminder? The reminder will stop sending announcements in the deactivated state.</value>
+  <data name="ReminderDetailsDeactivateReminderWarning.Text" xml:space="preserve">
+    <value>Do you want to deactivate the reminder? The reminder will stop sending announcements.</value>
   </data>
   <data name="ReminderDetailsDeactivateReminderButton.Label" xml:space="preserve">
     <value>deactivate reminder</value>

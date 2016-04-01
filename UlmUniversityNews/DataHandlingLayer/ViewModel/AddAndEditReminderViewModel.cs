@@ -430,10 +430,21 @@ namespace DataHandlingLayer.ViewModel
             if (SelectedStartDate == DateTimeOffset.MinValue || SelectedEndDate == DateTimeOffset.MinValue)
                 return;
 
-            DateTimeOffset reminderStartDate = new DateTimeOffset(SelectedStartDate.Year, SelectedStartDate.Month, SelectedStartDate.Day,
-                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds, TimeZoneInfo.Local.BaseUtcOffset);
-            DateTimeOffset reminderEndDate = new DateTimeOffset(SelectedEndDate.Year, SelectedEndDate.Month, SelectedEndDate.Day,
-                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds, TimeZoneInfo.Local.BaseUtcOffset);
+            DateTime selectedStartDateTmp = new DateTime(SelectedStartDate.Year, SelectedStartDate.Month, SelectedStartDate.Day,
+                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds);
+            DateTime selectedEndDateTmp = new DateTime(SelectedEndDate.Year, SelectedEndDate.Month, SelectedEndDate.Day,
+                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds);
+
+            selectedStartDateTmp = DateTime.SpecifyKind(selectedStartDateTmp, DateTimeKind.Local);
+            selectedEndDateTmp = DateTime.SpecifyKind(selectedEndDateTmp, DateTimeKind.Local);
+
+            DateTimeOffset reminderStartDate = new DateTimeOffset(selectedStartDateTmp);
+            DateTimeOffset reminderEndDate = new DateTimeOffset(selectedEndDateTmp);
+
+            //DateTimeOffset reminderStartDate = new DateTimeOffset(SelectedStartDate.Year, SelectedStartDate.Month, SelectedStartDate.Day,
+            //    SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds, TimeZoneInfo.Local.BaseUtcOffset);
+            //DateTimeOffset reminderEndDate = new DateTimeOffset(SelectedEndDate.Year, SelectedEndDate.Month, SelectedEndDate.Day,
+            //    SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds, TimeZoneInfo.Local.BaseUtcOffset);
 
             // Erzeuge Reminder Objekt mit aktuellen Daten und lasse den nächsten
             // Reminder Zeitpunkt bestimmen.
@@ -497,12 +508,23 @@ namespace DataHandlingLayer.ViewModel
                 Debug.WriteLine("No active moderator. Cannot continue.");
                 return null;
             }
+
+            DateTime selectedStartDateTmp = new DateTime(SelectedStartDate.Year, SelectedStartDate.Month, SelectedStartDate.Day,
+                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds);
+            DateTime selectedEndDateTmp = new DateTime(SelectedEndDate.Year, SelectedEndDate.Month, SelectedEndDate.Day,
+                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds);
+
+            selectedStartDateTmp = DateTime.SpecifyKind(selectedStartDateTmp, DateTimeKind.Local);
+            selectedEndDateTmp = DateTime.SpecifyKind(selectedEndDateTmp, DateTimeKind.Local);
+
+            DateTimeOffset reminderStartDate = new DateTimeOffset(selectedStartDateTmp);
+            DateTimeOffset reminderEndDate = new DateTimeOffset(selectedEndDateTmp);
             
-            // Start und Ende-Datum
-            DateTimeOffset reminderStartDate = new DateTimeOffset(SelectedStartDate.Year, SelectedStartDate.Month, SelectedStartDate.Day,
-                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds, TimeZoneInfo.Local.BaseUtcOffset);
-            DateTimeOffset reminderEndDate = new DateTimeOffset(SelectedEndDate.Year, SelectedEndDate.Month, SelectedEndDate.Day,
-                SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds, TimeZoneInfo.Local.BaseUtcOffset);
+            //// Start und Ende-Datum
+            //DateTimeOffset reminderStartDate = new DateTimeOffset(SelectedStartDate.Year, SelectedStartDate.Month, SelectedStartDate.Day,
+            //    SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds, TimeZoneInfo.Local.BaseUtcOffset);
+            //DateTimeOffset reminderEndDate = new DateTimeOffset(SelectedEndDate.Year, SelectedEndDate.Month, SelectedEndDate.Day,
+            //    SelectedTime.Hours, SelectedTime.Minutes, SelectedTime.Seconds, TimeZoneInfo.Local.BaseUtcOffset);
 
             int chosenInterval = IntervalValue;
             int channelId = SelectedChannel.Id;

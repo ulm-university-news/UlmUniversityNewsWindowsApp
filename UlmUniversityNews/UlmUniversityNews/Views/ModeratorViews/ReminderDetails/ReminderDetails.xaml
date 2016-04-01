@@ -49,6 +49,7 @@
                 x:Name="ReminderDetailsRemoveReminderButton"
                 x:Uid="ReminderDetailsRemoveReminderButton"
                 Label="delete reminder"
+                IsEnabled="{Binding ValidReminderSelected}"
                 Icon="Delete">
                 <AppBarButton.Flyout>
                     <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}">
@@ -93,6 +94,7 @@
                 x:Name="ReminderDetailsActivateReminderButton"
                 x:Uid="ReminderDetailsActivateReminderButton"
                 Label="activate reminder"
+                IsEnabled="{Binding ValidReminderSelected}"
                 Icon="Refresh"
                 Visibility="{Binding SelectedReminder.IsActive, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='inverse'}">
                 <!-- Flyout ? -->
@@ -134,11 +136,12 @@
                 x:Name="ReminderDetailsDeactivateReminderButton"
                 x:Uid="ReminderDetailsDeactivateReminderButton"
                 Label="deactivate reminder"
+                IsEnabled="{Binding ValidReminderSelected}"
                 Icon="DisableUpdates"
                 Visibility="{Binding SelectedReminder.IsActive, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <!-- Flyout ? -->
                 <AppBarButton.Flyout>
-                    <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}" Placement="Full"
+                    <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}"
                             common:FlyoutHelper.IsOpen="{Binding IsDeactivateReminderFlyoutOpen, Mode=TwoWay}"
                             common:FlyoutHelper.Parent="{Binding ElementName=ReminderDetailsDeactivateReminderButton}">
                         <Grid
@@ -153,7 +156,7 @@
                             <TextBlock 
                                 Grid.Row="0"
                                 x:Name="DeactivateReminderWarning"
-                                x:Uid="ReminderDetailsDeactivateeReminderWarning"
+                                x:Uid="ReminderDetailsDeactivateReminderWarning"
                                 Style="{StaticResource TextInFlyoutsStyle}" >
                                 Wollen Sie den Reminder deaktivieren? Im deaktivierten Zustand werden keine Benachrichtigungen von diesem Reminder versandt.
                             </TextBlock>

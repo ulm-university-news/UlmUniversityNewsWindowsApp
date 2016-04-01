@@ -134,7 +134,9 @@ namespace UlmUniversityNews.Views.ChannelDetails
             //Debug.WriteLine("In LoadState of ChannelDetails page. NavigationParameter is: {0}.", e.NavigationParameter);
 
             // Prüfe, ob ein Index gespeichert ist, der angibt, auf welchem PivotItem der Nutzer zuletzt war.
-            if (e.PageState != null && e.PageState["PivotIndex"] != null)
+            if (e.PageState != null &&
+                e.PageState.Keys.Contains("PivotIndex") &&
+                e.PageState["PivotIndex"] != null)
             {
                 int selectedIndex = 0;
                 bool successful = int.TryParse(e.PageState["PivotIndex"].ToString(), out selectedIndex);

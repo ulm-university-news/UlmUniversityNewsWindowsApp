@@ -423,7 +423,9 @@ namespace DataHandlingLayer.ViewModel
             SwitchToEditChannelDialogCommand.RaiseCanExecuteChanged();
             SwitchToAddReminderDialogCommand.RaiseCanExecuteChanged();
             
-            if (SelectedPivotItemIndex == 2 && Channel != null)    // Channel-Details Pivotitem gewählt.
+            if (SelectedPivotItemIndex == 2 &&
+                Channel != null && 
+                !Channel.Deleted)    // Channel-Details Pivotitem gewählt.
             {
                 CanDeleteChannel = true;
             }
@@ -441,7 +443,9 @@ namespace DataHandlingLayer.ViewModel
         private bool canSwitchToAddAnnouncementDialog()
         {
             // Pivot Index 0 ist der Announcement-Tab 
-            if (SelectedPivotItemIndex == 0 && Channel != null)
+            if (SelectedPivotItemIndex == 0 && 
+                Channel != null &&
+                !Channel.Deleted)
             {
                 return true;
             }
@@ -468,7 +472,9 @@ namespace DataHandlingLayer.ViewModel
         private bool canSwitchToEditChannelDialog()
         {
             // Pivot Index 2 ist der Kanalinformationen-Tab.
-            if (SelectedPivotItemIndex == 2 && Channel != null)
+            if (SelectedPivotItemIndex == 2 &&
+                Channel != null &&
+                !Channel.Deleted)
             {
                 return true;
             }
@@ -495,7 +501,9 @@ namespace DataHandlingLayer.ViewModel
         private bool canSwitchToAddReminderDialog()
         {
             // Pivot Index 1 ist der Reminder-Tab
-            if (SelectedPivotItemIndex == 1 && Channel != null)
+            if (SelectedPivotItemIndex == 1 && 
+                Channel != null &&
+                !Channel.Deleted)
             {
                 return true;
             }
@@ -560,11 +568,10 @@ namespace DataHandlingLayer.ViewModel
                 await channelController.DeleteChannelAsync(Channel.Id);
 
                 // Bei erfolgreicher Löschung, gehe zurück auf den Homescreen.
-                _navService.Navigate("HomescreenModerator");
-
-                // Lösche den letzten Eintrag aus dem BackStack, so dass nicht auf die Detailseite zurück navigiert
-                // werden kann mittels des Back-Keys.
-                _navService.RemoveEntryFromBackStack();
+                if (_navService.CanGoBack())
+                {
+                    _navService.GoBack();
+                }
             }
             catch (ClientException ex)
             {
@@ -584,7 +591,8 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
         private bool canPerformSynchronizationWithServer()
         {
-            if (Channel != null)
+            if (Channel != null &&
+                !Channel.Deleted)
                 return true;
 
             return false;

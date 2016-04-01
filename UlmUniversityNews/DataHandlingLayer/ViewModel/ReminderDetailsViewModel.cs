@@ -48,6 +48,16 @@ namespace DataHandlingLayer.ViewModel
             set { this.setProperty(ref this.selectedChannel, value); }
         }
 
+        private bool validReminderSelected;
+        /// <summary>
+        /// Gibt an, ob ein valider Reminder gewählt wurde.
+        /// </summary>
+        public bool ValidReminderSelected
+        {
+            get { return validReminderSelected; }
+            set { this.setProperty(ref this.validReminderSelected, value); }
+        }
+        
         private string lastModifiedBy;
         /// <summary>
         /// Der Name des Moderators, der den Reminder als letztes geändert hat.
@@ -148,7 +158,8 @@ namespace DataHandlingLayer.ViewModel
                 param => executeSwitchToEditReminderCommand(),
                 param => canSwitchToEditReminderCommand());
             DeleteReminderCommand = new AsyncRelayCommand(
-                param => executeDeleteReminderCommand());
+                param => executeDeleteReminderCommand(),
+                param => canDeleteReminder());
             ActivateReminderCommand = new AsyncRelayCommand(
                 param => executeActivateReminderCommand(),
                 param => canActivateReminder());
@@ -174,6 +185,8 @@ namespace DataHandlingLayer.ViewModel
 
                 if (SelectedReminder != null)
                 {
+                    ValidReminderSelected = true;
+
                     // Berechne nächsten Reminder Termin.
                     SelectedReminder.ComputeFirstNextDate();
                     // Prüfe ob Reminder abgelaufen ist.
@@ -187,6 +200,10 @@ namespace DataHandlingLayer.ViewModel
                     Debug.WriteLine("Author is: {0}.", author);
                     if (author != null)
                         LastModifiedBy = author.FirstName + " " + author.LastName;
+                }
+                else
+                {
+                    ValidReminderSelected = false;
                 }
             }
             catch (ClientException ex)
@@ -341,10 +358,11 @@ namespace DataHandlingLayer.ViewModel
                 await channelController.DeleteReminderAsync(SelectedChannel.Id, SelectedReminder.Id);
 
                 // Bei erfolgreicher Löschung, navigiere zurück zum ModeratorChannelDetails View.
-                _navService.Navigate("ModeratorChannelDetails", SelectedChannel.Id);
-
-                // Lösche den letzten Eintrag aus dem Backstack, so dass nicht auf die Details-Seite zurück navigiert werden kann.
-                _navService.RemoveEntryFromBackStack();
+                if (_navService.CanGoBack())
+                {
+                    _navService.GoBack();
+                }
+                
             }
             catch (ClientException ex)
             {

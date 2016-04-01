@@ -968,13 +968,13 @@ Nachricht am: </value>
     <value>Lösche Kanal</value>
   </data>
   <data name="ModeratorChannelDetailsDeleteChannelWarning.Text" xml:space="preserve">
-    <value>Wollen Sie den Kanal wirklich löschen?</value>
+    <value>Wollen Sie den Kanal wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.</value>
   </data>
   <data name="ReminderDetailsDeleteReminderFlyoutButton.Content" xml:space="preserve">
     <value>Löschen</value>
   </data>
   <data name="ReminderDetailsDeleteReminderWarning.Text" xml:space="preserve">
-    <value>Dieser Reminder wird gelöscht. Danach werden keine weiteren Remindernachrichten gesendet. Wollen Sie den Reminder wirklich löschen?</value>
+    <value>Wollen Sie den Reminder wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.</value>
   </data>
   <data name="ChannelDetailsModeratorField.Text" xml:space="preserve">
     <value>Moderatoren</value>
@@ -1142,7 +1142,7 @@ Nachricht am: </value>
     <value>Startseite</value>
   </data>
   <data name="ReminderDetailsActivateeReminderWarning.Text" xml:space="preserve">
-    <value>Wollen Sie den Reminder aktivieren? Sofern der Reminder nicht abgelaufen ist werden wieder Benachrichtigungen von diesem Reminder im angegebenen Intervall versandt.</value>
+    <value>Wollen Sie den Reminder aktivieren? Der Reminder wird wieder Benachrichtigungen senden.</value>
   </data>
   <data name="ReminderDetailsActivateReminderButton.Label" xml:space="preserve">
     <value>aktiviere reminder</value>
@@ -1150,8 +1150,8 @@ Nachricht am: </value>
   <data name="ReminderDetailsActivateReminderFlyoutButton.Content" xml:space="preserve">
     <value>Aktivieren</value>
   </data>
-  <data name="ReminderDetailsDeactivateeReminderWarning.Text" xml:space="preserve">
-    <value>Wollen Sie den Reminder deaktivieren? Im deaktivierten Zustand werden keine Benachrichtigungen von diesem Reminder versandt.</value>
+  <data name="ReminderDetailsDeactivateReminderWarning.Text" xml:space="preserve">
+    <value>Wollen Sie den Reminder deaktivieren? Der Reminder sendet dann keine Benachrichtigungen mehr.</value>
   </data>
   <data name="ReminderDetailsDeactivateReminderButton.Label" xml:space="preserve">
     <value>deaktiviere reminder</value>

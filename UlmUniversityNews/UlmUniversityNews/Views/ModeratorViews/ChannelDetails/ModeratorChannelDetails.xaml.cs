@@ -69,7 +69,9 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             // Prüfe, ob ein Index gespeichert ist, der angibt, auf welchem PivotItem der Nutzer zuletzt war.
-            if (e.PageState != null && e.PageState["PivotIndex"] != null)
+            if (e.PageState != null &&
+                e.PageState.Keys.Contains("PivotIndex") &&
+                e.PageState["PivotIndex"] != null)
             {
                 int selectedIndex = 0;
                 bool successful = int.TryParse(e.PageState["PivotIndex"].ToString(), out selectedIndex);
@@ -103,6 +105,9 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
         /// serialisierbarer Zustand.</param>
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine("ModeratorChannelDetails: In SaveState method.");
+            System.Diagnostics.Debug.WriteLine("ModeratorChannelDetails: Page state is: " + e.PageState);
+
             // Speichere den aktuellen PivotIndex zwischen, um ihn bei einem erneuten Seitenaufruf aktiv setzen zu können.
             if (e.PageState != null && ModeratorChannelDetailsPivot != null)
                 e.PageState["PivotIndex"] = ModeratorChannelDetailsPivot.SelectedIndex;

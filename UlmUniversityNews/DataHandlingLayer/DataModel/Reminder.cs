@@ -300,21 +300,79 @@ namespace DataHandlingLayer.DataModel
         /// </summary>
         public void ComputeFirstNextDate()
         {
-            // Setze den ersten Termin für den Reminder. Setze zunächst auf den Start-Termin.
-            NextDate = StartDate;
+            //bool daylightSaving = false;
 
+            //// Zwischenspeichern, ob Start-Datum in Sommerzeit liegt.
+            //if (TimeZoneInfo.Local.SupportsDaylightSavingTime)
+            //{
+            //    if (TimeZoneInfo.Local.IsDaylightSavingTime(StartDate))       
+            //    {
+            //        daylightSaving = true;
+            //    }
+            //}
+
+            // Setze den ersten Termin für den Reminder. Setze zunächst auf den Start-Termin.
+            // Rechne mit UTC-Werten.
+            DateTimeOffset nextDateTmp = StartDate.ToUniversalTime();
+            
+            //NextDate = StartDate;
+            //// Der nächste Termin muss in der Zukunft liegen.
+            //while (NextDate.CompareTo(DateTimeOffset.Now) < 0)
+            //{
+            //    NextDate = NextDate.AddSeconds(Interval);
+            //}
+            
             // Bei Intervall gleich 0, d.h. One-Time Reminder, ist der nächste Termin gleich dem Start-Termin.
             if (Interval == 0)
             {
+                NextDate = StartDate;
                 return;
             }
 
             // Der nächste Termin muss in der Zukunft liegen.
-            while (NextDate.CompareTo(DateTimeOffset.Now) < 0)
+            while (nextDateTmp.CompareTo(DateTimeOffset.UtcNow) < 0)
             {
-                NextDate = NextDate.AddSeconds(Interval);
-            }
+                // Passe Zeit eventuell an, abhängig von Sommerzeit.
+                if (TimeZoneInfo.Local.SupportsDaylightSavingTime)
+                {
+                    // Wird mittels des nächsten NextReminder Datums ein Datum erreicht, welches einen Wechsel von 
+                    // Winter auf Sommerzeit nach sich zieht.
+                    if (!TimeZoneInfo.Local.IsDaylightSavingTime(nextDateTmp.ToLocalTime()) && 
+                        TimeZoneInfo.Local.IsDaylightSavingTime(nextDateTmp.AddSeconds(Interval).ToLocalTime()))
+                    {
+                        // Ziehe eine Stunde ab.
+                        nextDateTmp = nextDateTmp.Subtract(new TimeSpan(1, 0, 0));
+                    }
 
+                    // Wird mittels des nächsten NextReminder Datums ein Datum erreicht, welches einen Wechsel von 
+                    // Sommer auf Winterzeit nach sich zieht.
+                    if (TimeZoneInfo.Local.IsDaylightSavingTime(nextDateTmp.ToLocalTime()) &&
+                        !TimeZoneInfo.Local.IsDaylightSavingTime(nextDateTmp.AddSeconds(Interval).ToLocalTime()))
+                    {
+                        // Addiere eine Stunde drauf.
+                        nextDateTmp = nextDateTmp.Add(new TimeSpan(1, 0, 0));
+                    }
+
+                    //// Liegt nächstes Datum in der Sommerzeit, das Start-Datum aber nicht.
+                    //if (!daylightSaving && TimeZoneInfo.Local.IsDaylightSavingTime(nextDateTmp.ToLocalTime()))
+                    //{
+                    //    // Ziehe eine Stunde ab.
+                    //    nextDateTmp = nextDateTmp.Subtract(new TimeSpan(1, 0, 0));
+                    //}
+                    //// Liegt nächstes Datum nicht in der Sommerzeit, das Start-Datum aber schon.
+                    //else if (daylightSaving && !TimeZoneInfo.Local.IsDaylightSavingTime(nextDateTmp.ToLocalTime()))
+                    //{
+                    //    // Addiere eine Stunde drauf.
+                    //    nextDateTmp = nextDateTmp.Add(new TimeSpan(1, 0, 0));
+                    //}
+                }
+
+                nextDateTmp = nextDateTmp.AddSeconds(Interval);
+            }
+           
+            // Konvertiere zurück zu lokaler Zeit und setze das als nächstes Reminder-Datum.
+            NextDate = nextDateTmp.ToLocalTime();
+                    
             // Wenn Reminder für nächsten Termin ausgesetzt ist.
             if (Ignore)
             {
