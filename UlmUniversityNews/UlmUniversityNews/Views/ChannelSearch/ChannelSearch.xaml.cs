@@ -27,7 +27,6 @@ namespace UlmUniversityNews.Views.ChannelSearch
     public sealed partial class ChannelSearch : Page
     {
         private NavigationHelper navigationHelper;
-        private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
         /// <summary>
         /// Eine Referenz auf die zugehörige ViewModel Instanz.
@@ -63,15 +62,6 @@ namespace UlmUniversityNews.Views.ChannelSearch
         }
 
         /// <summary>
-        /// Ruft das Anzeigemodell für diese <see cref="Page"/> ab.
-        /// Dies kann in ein stark typisiertes Anzeigemodell geändert werden.
-        /// </summary>
-        public ObservableDictionary DefaultViewModel
-        {
-            get { return this.defaultViewModel; }
-        }
-
-        /// <summary>
         /// Füllt die Seite mit Inhalt auf, der bei der Navigation übergeben wird.  Gespeicherte Zustände werden ebenfalls
         /// bereitgestellt, wenn eine Seite aus einer vorherigen Sitzung neu erstellt wird.
         /// </summary>
@@ -94,7 +84,7 @@ namespace UlmUniversityNews.Views.ChannelSearch
             // Lade die Kanaldaten für die Anzeige.
             await searchChannelsViewModel.LoadChannelsAsync();
             // Starte Aktualisierungsprozess von Kanaldaten.
-            await searchChannelsViewModel.UpdateLocalChannelList(false);
+            await searchChannelsViewModel.UpdateLocalChannelListAsync(false);
         }
 
         /// <summary>

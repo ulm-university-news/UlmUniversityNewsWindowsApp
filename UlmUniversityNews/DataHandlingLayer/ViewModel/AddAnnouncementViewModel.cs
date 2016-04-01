@@ -111,7 +111,7 @@ namespace DataHandlingLayer.ViewModel
         /// angelegt werden.
         /// </summary>
         /// <param name="channelId">Die Id des gewählten Kanals.</param>
-        public async Task LoadSelectedChannel(int channelId)
+        public async Task LoadSelectedChannelAsync(int channelId)
         {
             try
             {

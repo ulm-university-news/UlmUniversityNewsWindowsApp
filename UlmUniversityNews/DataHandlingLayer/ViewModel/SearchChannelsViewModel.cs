@@ -150,7 +150,7 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         /// <param name="displayErrors">Gibt an, ob ein Fehler, der während der Ausführung auftreten könnte,
         ///     dem Nutzer angezeigt werden soll, oder nicht.</param>
-        public async Task UpdateLocalChannelList(bool displayErrors)
+        public async Task UpdateLocalChannelListAsync(bool displayErrors)
         {
             bool channelRemoved = false;
             List<Channel> updatedChannels = null;
@@ -498,7 +498,7 @@ namespace DataHandlingLayer.ViewModel
             performOnlineUpdate = true;
 
             // Stoße Aktualisierung der Kanaldaten an.
-            await UpdateLocalChannelList(true);
+            await UpdateLocalChannelListAsync(true);
         }
 
         /// <summary>

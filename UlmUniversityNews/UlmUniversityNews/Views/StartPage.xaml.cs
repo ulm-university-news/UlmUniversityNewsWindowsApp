@@ -32,8 +32,6 @@ namespace UlmUniversityNews.Views
     public sealed partial class StartPage : Page
     {
         private NavigationHelper navigationHelper;
-        private ObservableDictionary defaultViewModel = new ObservableDictionary();
-
         private StartPageViewModel startPageViewModel;
 
         public StartPage()
@@ -55,15 +53,6 @@ namespace UlmUniversityNews.Views
         public NavigationHelper NavigationHelper
         {
             get { return this.navigationHelper; }
-        }
-
-        /// <summary>
-        /// Ruft das Anzeigemodell für diese <see cref="Page"/> ab.
-        /// Dies kann in ein stark typisiertes Anzeigemodell geändert werden.
-        /// </summary>
-        public ObservableDictionary DefaultViewModel
-        {
-            get { return this.defaultViewModel; }
         }
 
         /// <summary>

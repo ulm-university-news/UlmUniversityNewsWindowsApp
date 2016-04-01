@@ -236,7 +236,7 @@ namespace DataHandlingLayer.ViewModel
         /// Ruft die neueste Liste von Reminder für den gegebenen Kanal vom Server ab
         /// und prüft, ob lokal entsprechend Reminder hinzugefügt oder aktualisiert werden müssen.
         /// </summary>
-        public async Task CheckForMissingReminders()
+        public async Task CheckForMissingRemindersAsync()
         {
             if (Channel == null)
                 return;

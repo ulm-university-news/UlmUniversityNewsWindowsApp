@@ -28,7 +28,7 @@ namespace DataHandlingLayer.Database
             Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
 
             // Fordere Zugriff auf die Datenbank an.
-            if (mutex.WaitOne(4000))
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
             {
                 using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
@@ -103,7 +103,7 @@ namespace DataHandlingLayer.Database
             Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
 
             // Fordere Zugriff auf die Datenbank an.
-            if (mutex.WaitOne(4000))
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
             {
                 using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {
@@ -166,7 +166,7 @@ namespace DataHandlingLayer.Database
             Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
 
             // Fordere Zugriff auf die Datenbank an.
-            if (mutex.WaitOne(4000))
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
             {
                 using (SQLiteConnection conn = DatabaseManager.GetConnection())
                 {

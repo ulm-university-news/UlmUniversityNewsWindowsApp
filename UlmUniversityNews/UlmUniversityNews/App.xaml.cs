@@ -200,7 +200,7 @@ namespace UlmUniversityNews
                 // Navigiere zum Homescreen, wenn der lokale Nutzeraccount bereits existiert.
                 if (localUserExists) {
                     // Prüfe, ob der Push Notification Manager bereits initialisiert ist und initialisiere falls notwendig.
-                    await initializePushNotificationManager();
+                    await initializePushNotificationManagerAsync();
 
                     // Navigiere zum Homescreen.
                     if (!rootFrame.Navigate(typeof(Views.Homescreen.Homescreen), e.Arguments))
@@ -233,7 +233,7 @@ namespace UlmUniversityNews
         {
             Debug.WriteLine("In AppResuming EventHandler.");
 
-            await initializePushNotificationManager();
+            await initializePushNotificationManagerAsync();
 
             Debug.WriteLine("Finished AppResuming EventHandler.");
         }
@@ -324,7 +324,7 @@ namespace UlmUniversityNews
         /// bereit ist. Falls dies nicht der Fall ist, wird die Initialisierung angestoßen und das PushAccessToken des lokalen 
         /// Nutzers aktualisiert, falls notwendig.
         /// </summary>
-        private async Task initializePushNotificationManager()
+        private async Task initializePushNotificationManagerAsync()
         {
             // Prüfe, ob PushNotificationManager initialisiert ist.
             PushNotifications.PushNotificationManager pushManager = PushNotifications.PushNotificationManager.GetInstance();

@@ -321,7 +321,7 @@ namespace DataHandlingLayer.ViewModel
         /// Lädt den Kanal mit der angegebenen Id.
         /// </summary>
         /// <param name="channelId">Die Id des zu ladenden Kanals.</param>
-        public async Task LoadSelectedChannel(int channelId)
+        public async Task LoadSelectedChannelAsync(int channelId)
         {
             try
             {
@@ -359,7 +359,7 @@ namespace DataHandlingLayer.ViewModel
         /// Lädt den Dialog zur Bearbeitung des Reminders mit der angegebenen Id.
         /// </summary>
         /// <param name="reminderId">Die Id des Reminder, der bearbeitet werden soll.</param>
-        public async Task LoadEditReminderDialog(int reminderId)
+        public async Task LoadEditReminderDialogAsync(int reminderId)
         {
             // Initialisiere ViewModel Parameter. 
             IsAddReminderDialog = false;

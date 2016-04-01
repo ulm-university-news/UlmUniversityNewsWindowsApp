@@ -347,7 +347,7 @@ namespace DataHandlingLayer.ViewModel
         /// Lädt den Dialog zum Bearbeiten des Kanals mit der angegebenen Id.
         /// </summary>
         /// <param name="channelId">Die Id des zu bearbeitenden Kanals.</param>
-        public async Task LoadEditChannelDialog(int channelId)
+        public async Task LoadEditChannelDialogAsync(int channelId)
         {
             // Initialisiere View-Properties.
             IsAddChannelDialog = false;

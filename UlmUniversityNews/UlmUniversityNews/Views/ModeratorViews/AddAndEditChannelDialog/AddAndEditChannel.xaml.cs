@@ -74,7 +74,7 @@ namespace UlmUniversityNews.Views.ModeratorViews.AddAndEditChannelDialog
             {
                 // Lade Dialog zum Bearbeiten des Kanals.
                 int channelId = Convert.ToInt32(e.NavigationParameter);
-                await addAndEditChannelViewModel.LoadEditChannelDialog(channelId);
+                await addAndEditChannelViewModel.LoadEditChannelDialogAsync(channelId);
             }
             else
             {

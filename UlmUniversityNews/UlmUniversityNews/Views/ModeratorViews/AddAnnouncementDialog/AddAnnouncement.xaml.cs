@@ -73,7 +73,7 @@ namespace UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog
             if (e.NavigationParameter != null)
             {
                 int channelId = Convert.ToInt32(e.NavigationParameter);
-                await addAnnouncementViewModel.LoadSelectedChannel(channelId);
+                await addAnnouncementViewModel.LoadSelectedChannelAsync(channelId);
             }
         }
 

@@ -190,6 +190,7 @@
     <Compile Include="Converters\PriorityEnumToLocalizedStringConverter.cs" />
     <Compile Include="Converters\ReminderDateTimeToStringConverter.cs" />
     <Compile Include="Converters\ReminderIntervalToLocalizedStringConverter.cs" />
+    <Compile Include="Converters\ResourceDetailsDateTimeToStringConverter.cs" />
     <Compile Include="Converters\SkipNextReminderDateToIconPathConverter.cs" />
     <Compile Include="Converters\StringToVisibilityConverter.cs" />
     <Compile Include="Converters\ValidationMessageOnLocalizedStringConverter.cs" />
@@ -559,6 +560,7 @@
     <Content Include="Assets\WideLogo.scale-140.png" />
     <Content Include="Assets\WideLogo.scale-240.png" />
     <Content Include="Common\ReadMe.txt" />
+    <Content Include="UsedLibraries\Libraries.txt" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

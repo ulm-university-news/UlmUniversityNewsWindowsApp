@@ -38,6 +38,9 @@
         <!-- Konvertierung des Semester-Strings. -->
         <converter:ChannelTermToLocalizedStringConverter x:Key="ChannelTermToLocalizedStringConverter" />
         
+        <!-- Datumsangaben - Konverter -->
+        <converter:ResourceDetailsDateTimeToStringConverter x:Key="ResourceDetailsDateTimeToStringConverter" />
+        
         <!-- Data Template eines Eintrags einer Announcement-Ressource in der Detailansicht eines Kanals. -->
         <DataTemplate
             x:Key="AnnouncementListItemStyle">
@@ -619,7 +622,7 @@
                                             Grid.Row="1"
                                             x:Name="ChannelCreationDateContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
-                                            Text="{Binding CreationDate, TargetNullValue='', FallbackValue=''}" />
+                                            Text="{Binding CreationDate, TargetNullValue='', FallbackValue='', Converter={StaticResource ResourceDetailsDateTimeToStringConverter}}" />
                                                 <!--{Binding Channel.CreationDate, TargetNullValue='', FallbackValue=''}-->
 
                                         <Line Grid.Row="2"
@@ -661,7 +664,7 @@
                                             Grid.Row="1"
                                             x:Name="ChannelModificationDateContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
-                                            Text="{Binding ModificationDate, TargetNullValue='', FallbackValue=''}" />
+                                            Text="{Binding ModificationDate, TargetNullValue='', FallbackValue='', Converter={StaticResource ResourceDetailsDateTimeToStringConverter}}" />
                                                 <!--{Binding Channel.ModificationDate, TargetNullValue='', FallbackValue=''}-->
 
                                         <Line Grid.Row="2"

@@ -25,6 +25,11 @@ namespace DataHandlingLayer.Database
         /// Prozessen aus abgerufen werden.
         /// </summary>
         private static string accessControlMutexName = "DatabaseAccessControlMutex";
+        /// <summary>
+        /// Gibt die maximale Zeit in Millisekunden an, die ein Thread auf den Zugriff auf den gesicherten Bereich
+        /// warten soll, bevor mit einem Timeout abgebrochen wird.
+        /// </summary>
+        public static int MutexTimeoutValue = 8000;
         #endregion Fields
 
         /// <summary>

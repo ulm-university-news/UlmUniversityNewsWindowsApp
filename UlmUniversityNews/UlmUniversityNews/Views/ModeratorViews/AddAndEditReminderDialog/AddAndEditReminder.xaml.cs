@@ -91,12 +91,12 @@ namespace UlmUniversityNews.Views.ModeratorViews.AddAndEditReminderDialog
             if (channelId != -1)
             {
                 // Lade Channel
-                await addAndEditReminderViewModel.LoadSelectedChannel(channelId);
+                await addAndEditReminderViewModel.LoadSelectedChannelAsync(channelId);
 
                 if (reminderId != -1)
                 {
-                    // TODO Load Edit Dialog
-                    await addAndEditReminderViewModel.LoadEditReminderDialog(reminderId);
+                    // Lade Dialog 'Reminder bearbeiten'
+                    await addAndEditReminderViewModel.LoadEditReminderDialogAsync(reminderId);
                 }
                 else
                 {

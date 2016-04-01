@@ -25,6 +25,7 @@
         <valueconverter:SkipNextReminderDateToIconPathConverter x:Key="SkipNextReminderDateToIconPathConverter" />
         <valueconverter:ChannelToDrawerMenuBackgroundConverter x:Key="ChannelToDrawerMenuBackgroundConverter" />
         <valueconverter:PriorityEnumToLocalizedStringConverter x:Key="PriorityEnumToLocalizedStringConverter" />
+        <valueconverter:ResourceDetailsDateTimeToStringConverter x:Key="ResourceDetailsDateTimeToStringConverter" />
     </Page.Resources>
 
     <!-- StatusBar -->
@@ -691,7 +692,7 @@
                                     Grid.Row="1"
                                     x:Name="ReminderCreationDateContent"
                                     Style="{StaticResource TextInPropertyDescriptions}"
-                                    Text="{Binding CreationDate, TargetNullValue='', FallbackValue=''}" />
+                                    Text="{Binding CreationDate, TargetNullValue='', FallbackValue='', Converter={StaticResource ResourceDetailsDateTimeToStringConverter}}" />
 
                                     <Line Grid.Row="2"
                                       Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
@@ -732,7 +733,7 @@
                                     Grid.Row="1"
                                     x:Name="ReminderModificationDateContent"
                                     Style="{StaticResource TextInPropertyDescriptions}"
-                                    Text="{Binding ModificationDate, TargetNullValue='', FallbackValue=''}" />
+                                    Text="{Binding ModificationDate, TargetNullValue='', FallbackValue='', Converter={StaticResource ResourceDetailsDateTimeToStringConverter}}" />
 
                                     <Line Grid.Row="2"
                                       Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />

@@ -27,7 +27,6 @@ namespace UlmUniversityNews.Views.ApplicationSettings
     public sealed partial class ApplicationSettings : Page
     {
         private NavigationHelper navigationHelper;
-        private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
         private ApplicationSettingsViewModel applicationSettingsViewModel;
 
@@ -54,15 +53,6 @@ namespace UlmUniversityNews.Views.ApplicationSettings
         public NavigationHelper NavigationHelper
         {
             get { return this.navigationHelper; }
-        }
-
-        /// <summary>
-        /// Ruft das Anzeigemodell für diese <see cref="Page"/> ab.
-        /// Dies kann in ein stark typisiertes Anzeigemodell geändert werden.
-        /// </summary>
-        public ObservableDictionary DefaultViewModel
-        {
-            get { return this.defaultViewModel; }
         }
 
         /// <summary>

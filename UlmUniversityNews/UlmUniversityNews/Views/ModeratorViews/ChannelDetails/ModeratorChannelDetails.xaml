@@ -34,6 +34,8 @@
         <valueconverter:ReminderDateTimeToStringConverter x:Key="ReminderDateTimeToStringConverter" />
         <!-- Konverter für den Semester-String. -->
         <valueconverter:ChannelTermToLocalizedStringConverter x:Key="ChannelTermToLocalizedStringConverter" />
+        <!-- Konverter für Datumsangaben in Ressourcen-Details. -->
+        <valueconverter:ResourceDetailsDateTimeToStringConverter x:Key="ResourceDetailsDateTimeToStringConverter" />
         
         <!-- Data Template eines Eintrags einer Announcement-Ressource in der Detailansicht eines Kanals. -->
         <DataTemplate
@@ -692,7 +694,7 @@
                                             Grid.Row="1"
                                             x:Name="ChannelCreationDateContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
-                                            Text="{Binding CreationDate, TargetNullValue='', FallbackValue=''}" />
+                                            Text="{Binding CreationDate, TargetNullValue='', FallbackValue='', Converter={StaticResource ResourceDetailsDateTimeToStringConverter}}" />
                                         <!--{Binding Channel.CreationDate, TargetNullValue='', FallbackValue=''}-->
 
                                         <Line Grid.Row="2"
@@ -734,7 +736,7 @@
                                             Grid.Row="1"
                                             x:Name="ChannelModificationDateContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
-                                            Text="{Binding ModificationDate, TargetNullValue='', FallbackValue=''}" />
+                                            Text="{Binding ModificationDate, TargetNullValue='', FallbackValue='', Converter={StaticResource ResourceDetailsDateTimeToStringConverter}}" />
                                         <!--{Binding Channel.ModificationDate, TargetNullValue='', FallbackValue=''}-->
 
                                         <Line Grid.Row="2"
