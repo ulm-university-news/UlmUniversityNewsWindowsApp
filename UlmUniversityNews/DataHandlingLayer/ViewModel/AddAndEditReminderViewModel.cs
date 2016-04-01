@@ -314,7 +314,7 @@ namespace DataHandlingLayer.ViewModel
 
             // Erzeuge Befehle.
             CreateReminderCommand = new AsyncRelayCommand(param => executeCreateReminderCommand());
-            EditReminderCommand = new AsyncRelayCommand(param => executeEditReminderCommand());
+            EditReminderCommand = new AsyncRelayCommand(param => executeEditReminderCommand(), param => canEditReminder());
         }
 
         /// <summary>
@@ -418,6 +418,8 @@ namespace DataHandlingLayer.ViewModel
                     IsPriorityHighSelected = true;
                 }
             }
+
+            EditReminderCommand.OnCanExecuteChanged();
         }
 
         /// <summary>
@@ -591,11 +593,25 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Gibt an, ob der Befehl EditReminderCommand ausgeführt werden kann.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl ausgeführt werden kann, ansonsten false.</returns>
+        private bool canEditReminder()
+        {
+            if (SelectedReminder != null)
+                return true;
+            return false;
+        }
+
+        /// <summary>
         /// Führt den Befehl EditReminderCommand aus. Führt die Bearbeitung
         /// des Reminders aus.
         /// </summary>
         private async Task executeEditReminderCommand()
         {
+            if (SelectedReminder == null)
+                return;
+
             Reminder oldReminder = SelectedReminder;
             Reminder newReminder = createReminderFromEnteredData();
 

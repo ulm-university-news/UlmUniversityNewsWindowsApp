@@ -378,7 +378,7 @@ To do that you just have to enter a user name below and accept the terms of user
     <value>Only announce priority 'high' messages</value>
   </data>
   <data name="ApplicationSettingsAnnouncementOrderSettingsDescription.Text" xml:space="preserve">
-    <value>The sorting order of messages is not handled by the general list settings. It is possible to specify the order here. Messages can be ordered from top to bottom (latest message on top) or from bottom to top (latest message on bottom).</value>
+    <value>It is possible to specify the order of the announcements here. Announcements can be ordered from top to bottom (latest announcement on top) or from bottom to top (latest announcement on bottom).</value>
   </data>
   <data name="ApplicationSettingsAnnouncementSettingsOptionAsc.Content" xml:space="preserve">
     <value>From top to bottom</value>
@@ -546,13 +546,13 @@ To do that you just have to enter a user name below and accept the terms of user
     <value>Reminder</value>
   </data>
   <data name="AddAnnouncementDialogContentTextBox.Header" xml:space="preserve">
-    <value>Content *</value>
+    <value>Content</value>
   </data>
   <data name="AddAnnouncementDialogDescription.Text" xml:space="preserve">
-    <value>Please fill in the information into the displayed fields. Click the 'send' button in order to distribute the message to the subscribers. The fields with a * mark are mandatory fields.</value>
+    <value>Please fill in the information into the displayed fields. Click the 'send' button in order to distribute the announcement to the subscribers. All fields are mandatory.</value>
   </data>
   <data name="AddAnnouncementDialogPriorityComboBox.Header" xml:space="preserve">
-    <value>Priority *</value>
+    <value>Priority</value>
   </data>
   <data name="AddAnnouncementDialogPriorityComboBoxItemPrioHigh.Content" xml:space="preserve">
     <value>High</value>
@@ -564,10 +564,10 @@ To do that you just have to enter a user name below and accept the terms of user
     <value>send</value>
   </data>
   <data name="AddAnnouncementDialogTitle.Text" xml:space="preserve">
-    <value>Add message</value>
+    <value>Add announcement</value>
   </data>
   <data name="AddAnnouncementDialogTitleTextBox.Header" xml:space="preserve">
-    <value>Title *</value>
+    <value>Title</value>
   </data>
   <data name="AddAnnouncementValidationErrorTextIsNull" xml:space="preserve">
     <value>Please add a text as the message content.</value>
@@ -654,10 +654,12 @@ To do that you just have to enter a user name below and accept the terms of user
     <value>Faculty *</value>
   </data>
   <data name="AddAndEditChannelLectureFacultyEngineering.Content" xml:space="preserve">
-    <value>Faculty of Engineering, Computer Science and Pschology</value>
+    <value>Faculty of Engineering, 
+Computer Science and Pschology</value>
   </data>
   <data name="AddAndEditChannelLectureFacultyMathematics.Content" xml:space="preserve">
-    <value>Faculty of Mathematics and Economics</value>
+    <value>Faculty of Mathematics 
+and Economics</value>
   </data>
   <data name="AddAndEditChannelLectureFacultyMedicines.Content" xml:space="preserve">
     <value>Faculty of Medicine</value>
@@ -784,19 +786,13 @@ date: </value>
     <value>Reminder is expired.</value>
   </data>
   <data name="AddAndEditReminderAddReminderDescription.Text" xml:space="preserve">
-    <value>Configuration of a reminder. A reminder sends messages automatically in a specified interval. All fields are mandatory fields.</value>
+    <value>Configuration of a reminder. A reminder sends announcements automatically at a specified interval. All fields are mandatory.</value>
   </data>
   <data name="AddAndEditReminderAddReminderHeadline.Text" xml:space="preserve">
     <value>Add reminder</value>
   </data>
   <data name="AddAndEditReminderContentTextBox.Header" xml:space="preserve">
     <value>Text</value>
-  </data>
-  <data name="AddAndEditReminderDailyIntervalSelectionDesc1.Text" xml:space="preserve">
-    <value>Reminder fires every </value>
-  </data>
-  <data name="AddAndEditReminderDailyIntervalSelectionDesc2.Text" xml:space="preserve">
-    <value> days.</value>
   </data>
   <data name="AddAndEditReminderEditReminderDescription.Text" xml:space="preserve">
     <value>Here you can change the configuration of the reminder.</value>
@@ -834,9 +830,6 @@ date: </value>
   <data name="AddAndEditReminderNextReminderDateText.Text" xml:space="preserve">
     <value>Next reminder date: </value>
   </data>
-  <data name="AddAndEditReminderOneTimeIntervalSelectionDescription.Text" xml:space="preserve">
-    <value>Reminder fires only once.</value>
-  </data>
   <data name="AddAndEditReminderPriorityComboBox.Header" xml:space="preserve">
     <value>Priority</value>
   </data>
@@ -860,12 +853,6 @@ date: </value>
   </data>
   <data name="AddAndEditReminderTitleTextBox.Header" xml:space="preserve">
     <value>Title</value>
-  </data>
-  <data name="AddAndEditReminderWeeklyIntervalSelectionDesc1.Text" xml:space="preserve">
-    <value>Reminder fires every </value>
-  </data>
-  <data name="AddAndEditReminderWeeklyIntervalSelectionDesc2.Text" xml:space="preserve">
-    <value> weeks.</value>
   </data>
   <data name="IntervalPickerDayString" xml:space="preserve">
     <value>days</value>
@@ -1163,5 +1150,26 @@ date: </value>
   </data>
   <data name="ReminderIsInactiveText.Text" xml:space="preserve">
     <value>The reminder is deactivated.</value>
+  </data>
+  <data name="StatusBarInformationActivating" xml:space="preserve">
+    <value>activating</value>
+  </data>
+  <data name="StatusBarInformationDataSaved" xml:space="preserve">
+    <value>settings saved</value>
+  </data>
+  <data name="StatusBarInformationDeactivating" xml:space="preserve">
+    <value>deactivating</value>
+  </data>
+  <data name="StatusBarInformationSaving" xml:space="preserve">
+    <value>saving</value>
+  </data>
+  <data name="StatusBarInformationSyncAnnouncements" xml:space="preserve">
+    <value>sync announcements</value>
+  </data>
+  <data name="StatusBarInformationSyncChannelInfo" xml:space="preserve">
+    <value>sync channel info</value>
+  </data>
+  <data name="StatusBarInformationSyncReminders" xml:space="preserve">
+    <value>sync reminders</value>
   </data>
 </root>

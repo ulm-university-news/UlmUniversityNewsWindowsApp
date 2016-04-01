@@ -153,7 +153,7 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private void executeSaveNotificationSettingsCommand()
         {
-            displayIndeterminateProgressIndicator("Saving");
+            displayIndeterminateProgressIndicator("StatusBarInformationSaving");
 
             NotificationSetting selectedOption = NotificationSetting.APPLICATION_DEFAULT;
             // Prüfe, welche Option gewählt wurde.
@@ -178,7 +178,7 @@ namespace DataHandlingLayer.ViewModel
             {
                 channelController.UpdateNotificationSettingsForChannel(SelectedChannel.Id, selectedOption);
                 hideIndeterminateProgressIndicator();
-                displayStatusBarText("Data saved", 2.5f);
+                displayStatusBarText("StatusBarInformationDataSaved", 3.0f);
             }
             catch(ClientException ex)
             {

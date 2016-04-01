@@ -286,7 +286,7 @@ namespace DataHandlingLayer.ViewModel
                     {
                         channels = new List<Channel>(
                             from item in channels
-                            orderby item.NumberOfUnreadAnnouncements ascending, item.Name ascending
+                            orderby item.NumberOfUnreadAnnouncements descending, item.Name ascending
                             select item);
                     }
                     else

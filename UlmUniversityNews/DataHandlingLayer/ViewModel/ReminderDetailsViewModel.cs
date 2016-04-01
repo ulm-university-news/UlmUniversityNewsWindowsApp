@@ -402,7 +402,7 @@ namespace DataHandlingLayer.ViewModel
             if (SelectedChannel == null || SelectedReminder == null)
                 return;
 
-            displayIndeterminateProgressIndicator("Activating");
+            displayIndeterminateProgressIndicator("StatusBarInformationActivating");
             try
             {
                 IsActivateReminderFlyoutOpen = true;        // Änderung von true auf false, sonst wird Änderung nicht bekanntgegeben.
@@ -459,7 +459,7 @@ namespace DataHandlingLayer.ViewModel
             if (SelectedChannel == null || SelectedReminder == null)
                 return;
 
-            displayIndeterminateProgressIndicator("Deactivating");
+            displayIndeterminateProgressIndicator("StatusBarInformationDeactivating");
             try
             {
                 IsDeactivateReminderFlyoutOpen = true;  // Änderung von true auf false, sonst wird Änderung nicht bekanntgegeben.

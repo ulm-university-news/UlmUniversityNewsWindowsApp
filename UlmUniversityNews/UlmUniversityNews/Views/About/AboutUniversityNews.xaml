@@ -28,7 +28,7 @@
                                   BackgroundOpacity="1.0" />
         <common:ProgressIndicatorBehavior IsVisible="{Binding IsProgressIndicatorVisible, UpdateSourceTrigger=PropertyChanged}"
                                           Value="{Binding ProgressIndicatorProgressValue, UpdateSourceTrigger=PropertyChanged}"
-                                          Text="{Binding ProgressIndicatorText, UpdateSourceTrigger=PropertyChanged}"
+                                          Text="{Binding ProgressIndicatorText, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StatusBarInformationToLocalizedStringConverter}}"
                                           IsIndeterminate="{Binding IsIndeterminateProgressIndicator, UpdateSourceTrigger=PropertyChanged}" />
     </i:Interaction.Behaviors>
 

@@ -40,7 +40,7 @@
                                   BackgroundOpacity="1.0" />
         <common:ProgressIndicatorBehavior IsVisible="{Binding IsProgressIndicatorVisible, UpdateSourceTrigger=PropertyChanged}"
                                           Value="{Binding ProgressIndicatorProgressValue, UpdateSourceTrigger=PropertyChanged}"
-                                          Text="{Binding ProgressIndicatorText, UpdateSourceTrigger=PropertyChanged}"
+                                          Text="{Binding ProgressIndicatorText, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StatusBarInformationToLocalizedStringConverter}}"
                                           IsIndeterminate="{Binding IsIndeterminateProgressIndicator, UpdateSourceTrigger=PropertyChanged}" />
     </i:Interaction.Behaviors>
 
@@ -363,38 +363,6 @@
                                 Style="{StaticResource IntervalBlockFontStyle}"
                                 Text="{Binding IntervalValue, Converter={StaticResource ReminderIntervalToLocalizedStringConverter}}"/>
 
-                            <!--<TextBlock
-                                Grid.Row="3"
-                                x:Name="AddAndEditReminderDailyIntervalSelectionDescription"
-                                x:Uid="AddAndEditReminderDailyIntervalSelectionDescription"
-                                Style="{StaticResource IntervalBlockFontStyle}"
-                                Visibility="{Binding IsDailyIntervalSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                >
-                                <Run x:Uid="AddAndEditReminderDailyIntervalSelectionDesc1" />
-                                <Run Text="{Binding SelectedIntervalInDays}" />
-                                <Run x:Uid="AddAndEditReminderDailyIntervalSelectionDesc2" />
-                            </TextBlock>
-
-                            <TextBlock
-                                Grid.Row="3"
-                                x:Name="AddAndEditReminderWeeklyIntervalSelectionDescription"
-                                x:Uid="AddAndEditReminderWeeklyIntervalSelectionDescription"
-                                Style="{StaticResource IntervalBlockFontStyle}"
-                                Visibility="{Binding IsWeeklyIntervalSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                >
-                                <Run x:Uid="AddAndEditReminderWeeklyIntervalSelectionDesc1" />
-                                <Run Text="{Binding SelectedIntervalInWeeks}" />
-                                <Run x:Uid="AddAndEditReminderWeeklyIntervalSelectionDesc2" />
-                            </TextBlock>
-
-                            <TextBlock
-                                Grid.Row="3"
-                                x:Name="AddAndEditReminderOneTimeIntervalSelectionDescription"
-                                x:Uid="AddAndEditReminderOneTimeIntervalSelectionDescription"
-                                Style="{StaticResource IntervalBlockFontStyle}"
-                                Visibility="{Binding IsIntervalOneTimeSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                />-->
-
                             <!-- Validierungsfehler -->
                             <TextBlock Grid.Row="4"
                                        Margin="0, 5, 0, 0"
@@ -414,6 +382,7 @@
                                 <CheckBox Grid.Row="0"
                                           x:Name="AddAndEditReminderSkipNextDateCheckBox"
                                           x:Uid="AddAndEditReminderSkipNextDateCheckBox"
+                                          Visibility="{Binding IsIntervalOneTimeSelected, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='inverse'}"
                                           IsChecked="{Binding SkipNextReminderDate, Mode=TwoWay}"
                                           Content="Überspringe nächsten Termin"/>
                                 

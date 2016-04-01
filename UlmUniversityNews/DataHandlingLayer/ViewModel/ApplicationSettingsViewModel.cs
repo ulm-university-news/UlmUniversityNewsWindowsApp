@@ -551,7 +551,7 @@ namespace DataHandlingLayer.ViewModel
                     try
                     {
                         Debug.WriteLine("Store user information settings.");
-                        displayIndeterminateProgressIndicator("Saving");
+                        displayIndeterminateProgressIndicator("StatusBarInformationSaving");
 
                         // Aktualisiere Nutzername, falls nötig, und speichere gewählte Sprache ab.
                         bool successful = await applicationSettingsController.UpdateLocalUsernameAsync(LocalUsername);
@@ -574,7 +574,7 @@ namespace DataHandlingLayer.ViewModel
                         hideIndeterminateProgressIndicator();
                         if (successful)
                         {
-                            displayStatusBarText("Data Saved", 2.5f);
+                            displayStatusBarText("StatusBarInformationDataSaved", 3.0f);
                             
                             // Werfe aktuelles Nutzerobjekt aus dem Cache, so dass es neu aus der Datenbank geladen werden muss.
                             DataModel.LocalUser.GetInstance().CacheLocalUserObject(null);
@@ -601,7 +601,7 @@ namespace DataHandlingLayer.ViewModel
                     try
                     {
                         Debug.WriteLine("Store notification settings.");
-                        displayIndeterminateProgressIndicator("Saving");
+                        displayIndeterminateProgressIndicator("StatusBarInformationSaving");
 
                         if(IsNotificationOptionPrioHighSelected){
                             applicationSettingsController.UpdateNotificationSettings(NotificationSetting.ANNOUNCE_PRIORITY_HIGH);
@@ -616,7 +616,7 @@ namespace DataHandlingLayer.ViewModel
                         }
 
                         hideIndeterminateProgressIndicator();
-                        displayStatusBarText("Data Saved", 2.5f);
+                        displayStatusBarText("StatusBarInformationDataSaved", 3.0f);
                     }
                     catch(ClientException ex)
                     {
@@ -631,7 +631,7 @@ namespace DataHandlingLayer.ViewModel
                     try
                     {
                         Debug.WriteLine("Store list settings.");
-                        displayIndeterminateProgressIndicator("Saving");
+                        displayIndeterminateProgressIndicator("StatusBarInformationSaving");
 
                         OrderOption newGeneralListOrderSetting = OrderOption.ASCENDING;
                         if (IsDescendingSortingOptionSelected)
@@ -690,7 +690,7 @@ namespace DataHandlingLayer.ViewModel
                             newGroupOrderSetting, newConversationOrderSetting, newBallotOrderSetting);
 
                         hideIndeterminateProgressIndicator();
-                        displayStatusBarText("Data Saved", 2.5f);
+                        displayStatusBarText("StatusBarInformationDataSaved", 3.0f);
                     }
                     catch(ClientException ex)
                     {

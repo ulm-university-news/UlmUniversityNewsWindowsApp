@@ -190,7 +190,7 @@ namespace DataHandlingLayer.ViewModel
 
             if (numberOfUnreadAnnouncements != null)
             {
-                Debug.WriteLine("NumberOfUnreadAnnouncements contains {0} entries.", numberOfUnreadAnnouncements.Count);
+                // Debug.WriteLine("NumberOfUnreadAnnouncements contains {0} entries.", numberOfUnreadAnnouncements.Count);
 
                 foreach (Channel channel in ChannelCollection)
                 {

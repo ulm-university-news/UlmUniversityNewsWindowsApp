@@ -378,7 +378,7 @@ Dazu müssen Sie unten einen Nutzername angeben und die Nutzungsbedingungen akze
     <value>Nur Priorität 'hoch' ankündigen</value>
   </data>
   <data name="ApplicationSettingsAnnouncementOrderSettingsDescription.Text" xml:space="preserve">
-    <value>Die Anordnung der Nachrichten ist von den allgemeinen Listeneinstellungen ausgenommen und kann hier separat eingestellt werden. Die Nachrichten können von oben nach unten (neuste Nachricht ganz oben), oder von unten nach oben (neuste Nachricht ganz unten) angezeigt werden.</value>
+    <value>Die Anordnung der Benachrichtigungen kann hier eingestellt werden. Die Benachrichtigungen können von oben nach unten (neuste Nachricht ganz oben), oder von unten nach oben (neuste Nachricht ganz unten) angezeigt werden.</value>
   </data>
   <data name="ApplicationSettingsAnnouncementSettingsOptionAsc.Content" xml:space="preserve">
     <value>Von oben nach unten</value>
@@ -547,13 +547,13 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
     <value>Reminder</value>
   </data>
   <data name="AddAnnouncementDialogContentTextBox.Header" xml:space="preserve">
-    <value>Nachricht *</value>
+    <value>Nachricht</value>
   </data>
   <data name="AddAnnouncementDialogDescription.Text" xml:space="preserve">
-    <value>Füllen Sie die unten aufgeführten Felder aus und klicken Sie anschließend auf senden, um die Nachricht an die Abonnenten des Kanals zu senden. Die mit * gekennzeichneten Felder sind Pflichtfelder.</value>
+    <value>Füllen Sie die unten aufgeführten Felder aus und klicken Sie anschließend auf 'senden', um die Benachrichtigung an die Abonnenten des Kanals zu senden. Alle Felder sind Pflichtfelder.</value>
   </data>
   <data name="AddAnnouncementDialogPriorityComboBox.Header" xml:space="preserve">
-    <value>Priorität *</value>
+    <value>Priorität</value>
   </data>
   <data name="AddAnnouncementDialogPriorityComboBoxItemPrioHigh.Content" xml:space="preserve">
     <value>Hoch</value>
@@ -565,10 +565,10 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
     <value>senden</value>
   </data>
   <data name="AddAnnouncementDialogTitle.Text" xml:space="preserve">
-    <value>Nachricht hinzufügen</value>
+    <value>Benachrichtigung hinzufügen</value>
   </data>
   <data name="AddAnnouncementDialogTitleTextBox.Header" xml:space="preserve">
-    <value>Titel *</value>
+    <value>Titel</value>
   </data>
   <data name="AddAnnouncementValidationErrorTextIsNull" xml:space="preserve">
     <value>Bitte setzen Sie einen Text.</value>
@@ -655,10 +655,12 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
     <value>Fakultät *</value>
   </data>
   <data name="AddAndEditChannelLectureFacultyEngineering.Content" xml:space="preserve">
-    <value>Fakultät für Ingenieurwissenschaften, Informatik und Psychologie</value>
+    <value>Fakultät für Ingenieurwissenschaften, 
+Informatik und Psychologie</value>
   </data>
   <data name="AddAndEditChannelLectureFacultyMathematics.Content" xml:space="preserve">
-    <value>Fakultät für Mathematik und Wirtschaftswissenschaften</value>
+    <value>Fakultät für Mathematik und 
+Wirtschaftswissenschaften</value>
   </data>
   <data name="AddAndEditChannelLectureFacultyMedicines.Content" xml:space="preserve">
     <value>Medizinische Fakultät</value>
@@ -736,7 +738,7 @@ Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.</value>
     <value>Vorlesung</value>
   </data>
   <data name="AddAndEditChannelTypeOtherItem.Content" xml:space="preserve">
-    <value>Sonstige</value>
+    <value>Andere</value>
   </data>
   <data name="AddAndEditChannelTypeSportsItem.Content" xml:space="preserve">
     <value>Sport</value>
@@ -785,19 +787,13 @@ Nachricht am: </value>
     <value>Der Reminder ist abgelaufen.</value>
   </data>
   <data name="AddAndEditReminderAddReminderDescription.Text" xml:space="preserve">
-    <value>Konfigurieren Sie einen Reminder, welcher Nachrichten automatisch in einem festgelegten Intervall verschickt. Alle Felder sind Pflichtfelder.</value>
+    <value>Konfigurieren Sie einen Reminder, welcher Benachrichtigungen automatisch in einem festgelegten Intervall verschickt. Alle Felder sind Pflichtfelder.</value>
   </data>
   <data name="AddAndEditReminderAddReminderHeadline.Text" xml:space="preserve">
     <value>Reminder hinzufügen</value>
   </data>
   <data name="AddAndEditReminderContentTextBox.Header" xml:space="preserve">
     <value>Nachrichteninhalt</value>
-  </data>
-  <data name="AddAndEditReminderDailyIntervalSelectionDesc1.Text" xml:space="preserve">
-    <value>Reminder feuert alle </value>
-  </data>
-  <data name="AddAndEditReminderDailyIntervalSelectionDesc2.Text" xml:space="preserve">
-    <value> Tage.</value>
   </data>
   <data name="AddAndEditReminderEditReminderDescription.Text" xml:space="preserve">
     <value>Hier können Sie die Konfiguration des gewählten Reminders ändern.</value>
@@ -835,9 +831,6 @@ Nachricht am: </value>
   <data name="AddAndEditReminderNextReminderDateText.Text" xml:space="preserve">
     <value>Nächster Reminder-Termin: </value>
   </data>
-  <data name="AddAndEditReminderOneTimeIntervalSelectionDescription.Text" xml:space="preserve">
-    <value>Reminder feuert nur einmal.</value>
-  </data>
   <data name="AddAndEditReminderPriorityComboBox.Header" xml:space="preserve">
     <value>Priorität</value>
   </data>
@@ -861,12 +854,6 @@ Nachricht am: </value>
   </data>
   <data name="AddAndEditReminderTitleTextBox.Header" xml:space="preserve">
     <value>Titel</value>
-  </data>
-  <data name="AddAndEditReminderWeeklyIntervalSelectionDesc1.Text" xml:space="preserve">
-    <value>Reminder feuert alle </value>
-  </data>
-  <data name="AddAndEditReminderWeeklyIntervalSelectionDesc2.Text" xml:space="preserve">
-    <value> Wochen.</value>
   </data>
   <data name="IntervalPickerDayString" xml:space="preserve">
     <value>Tage</value>
@@ -1164,5 +1151,26 @@ Nachricht am: </value>
   </data>
   <data name="ReminderIsInactiveText.Text" xml:space="preserve">
     <value>Der Reminder ist deaktiviert.</value>
+  </data>
+  <data name="StatusBarInformationActivating" xml:space="preserve">
+    <value>Aktivieren</value>
+  </data>
+  <data name="StatusBarInformationDataSaved" xml:space="preserve">
+    <value>Einstellungen gespeichert</value>
+  </data>
+  <data name="StatusBarInformationDeactivating" xml:space="preserve">
+    <value>Deaktivieren</value>
+  </data>
+  <data name="StatusBarInformationSaving" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="StatusBarInformationSyncAnnouncements" xml:space="preserve">
+    <value>Synchronisiere Benachrichtigungen</value>
+  </data>
+  <data name="StatusBarInformationSyncChannelInfo" xml:space="preserve">
+    <value>Synchronisiere Kanalinformationen</value>
+  </data>
+  <data name="StatusBarInformationSyncReminders" xml:space="preserve">
+    <value>Synchronisiere Reminder</value>
   </data>
 </root>

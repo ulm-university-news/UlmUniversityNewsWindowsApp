@@ -323,7 +323,7 @@ namespace DataHandlingLayer.ViewModel
 
             // Lege Commands an.
             AddChannelCommand = new AsyncRelayCommand(param => executeAddChannelCommand());
-            EditChannelCommand = new AsyncRelayCommand(param => executeEditChannelCommand());
+            EditChannelCommand = new AsyncRelayCommand(param => executeEditChannelCommand(), param => canEditChannel());
         }
 
         /// <summary>
@@ -430,6 +430,9 @@ namespace DataHandlingLayer.ViewModel
                         break;
                 }
             }
+
+            // Prüfe Befehlsausführung.
+            EditChannelCommand.OnCanExecuteChanged();
         }
 
         /// <summary>
@@ -462,30 +465,8 @@ namespace DataHandlingLayer.ViewModel
         /// <summary>
         /// Führt den Befehl zum Anlegen eines neuen Kanals aus.
         /// </summary>
-        /// <returns></returns>
         private async Task executeAddChannelCommand()
-        {
-            Debug.WriteLine("The entered channel data is: {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, {18}.",
-                ChannelName,
-                SelectedChannelType,
-                IsSummerTermSelected,
-                IsWinterTermSelected,
-                TermYear,
-                ChannelDescription,
-                SelectedFaculty,
-                Lecturer,
-                Assistant,
-                LectureStartDate,
-                LectureEndDate,
-                EventCost,
-                EventOrganizer,
-                SportsCost,
-                AmountOfParticipants,
-                Dates,
-                Locations,
-                Website,
-                Contacts);
-            
+        {  
             // Erzeuge Instanz aus den eingegebenen Daten.
             Channel newChannel = createChannelObjectFromEnteredData();
 
@@ -497,7 +478,10 @@ namespace DataHandlingLayer.ViewModel
                 if (successful)
                 {
                     // Navigiere zurück auf den Homescreen der Moderatorenansicht.
-                    _navService.Navigate("HomescreenModerator");
+                    if (_navService.CanGoBack())
+                    {
+                        _navService.GoBack();
+                    }
                 }
             }
             catch (ClientException ex)
@@ -512,10 +496,24 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Gibt an, ob ein gültiger Kanal geladen wurde, der geändert werden kann.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canEditChannel()
+        {
+            if (EditableChannel != null)
+                return true;
+            return false;
+        }
+
+        /// <summary>
         /// Führt den Befehl zum Bearbeiten eines Kanals aus.
         /// </summary>
         private async Task executeEditChannelCommand()
         {
+            if (EditableChannel == null)
+                return;
+
             Channel oldChannel = EditableChannel;
             Channel newChannel = createChannelObjectFromEnteredData();
             try

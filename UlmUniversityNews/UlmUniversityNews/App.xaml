@@ -16,7 +16,7 @@
         <converter:DateTimeToStringConverter x:Key="DateTimeToStringConverter" />
         <converter:MessageReadPropertyToBackgroundColorConverter x:Key="MessageReadPropertyToBackgroundColorConverter" />
         <converter:DrawerMenuEntryNameToLocalizedStringConverter x:Key="DrawerMenuEntryNameToLocalizedStringConverter" />
-        
+        <converter:StatusBarInformationToLocalizedStringConverter x:Key="StatusBarInformationToLocalizedStringConverter" />
         
         <!-- Colors -->
         <SolidColorBrush x:Key="UniUlmMainBackgroundColor" Color="#7D9AAA" />

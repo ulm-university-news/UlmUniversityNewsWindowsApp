@@ -612,19 +612,19 @@ namespace DataHandlingLayer.ViewModel
                 switch (SelectedPivotItemIndex)
                 {
                     case 0:
-                        displayIndeterminateProgressIndicator("Synchronize messages");
+                        displayIndeterminateProgressIndicator("StatusBarInformationSyncAnnouncements");
                         // Abfrage, ob neue Announcement Nachrichten vorliegen.
                         Debug.WriteLine("executeSynchronizeWithServerCommand: Start to update announcements.");
                         await updateAnnouncementsAsync(false);
                         break;
                     case 1:
-                        displayIndeterminateProgressIndicator("Synchronize reminders");
+                        displayIndeterminateProgressIndicator("StatusBarInformationSyncReminders");
                         // Synchronisiere Reminder-Informationen mit dem Server.
                         Debug.WriteLine("executeSynchronizeWithServerCommand: Start to update reminders.");
                         await synchroniseRemindersWithServerAsync();
                         break;
                     case 2:
-                        displayIndeterminateProgressIndicator("Synchronize channel information");
+                        displayIndeterminateProgressIndicator("StatusBarInformationSyncChannelInfo");
                         // Frage Informationen zu diesem Kanal ab.
                         Debug.WriteLine("executeSynchronizeWithServerCommand: Start to update channel and moderator info.");
                         await synchroniseChannelInformationAsync();
