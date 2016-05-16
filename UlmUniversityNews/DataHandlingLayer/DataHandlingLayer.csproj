@@ -105,6 +105,7 @@
     <Compile Include="Database\ApplicationSettingsDatabaseManager.cs" />
     <Compile Include="Database\ChannelDatabaseManager.cs" />
     <Compile Include="Database\DatabaseManager.cs" />
+    <Compile Include="Database\GroupDatabaseManager.cs" />
     <Compile Include="Database\LocalUserDatabaseManager.cs" />
     <Compile Include="Database\ModeratorDatabaseManager.cs" />
     <Compile Include="DataModel\Announcement.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="DataModel\ConversationMessage.cs" />
     <Compile Include="DataModel\DrawerMenuEntry.cs" />
     <Compile Include="DataModel\Enums\ChannelType.cs" />
+    <Compile Include="DataModel\Enums\GroupType.cs" />
     <Compile Include="DataModel\Enums\Language.cs" />
     <Compile Include="DataModel\Enums\NotificationSetting.cs" />
     <Compile Include="DataModel\Enums\OrderOption.cs" />
@@ -122,6 +124,7 @@
     <Compile Include="DataModel\Enums\Platform.cs" />
     <Compile Include="DataModel\Enums\PushType.cs" />
     <Compile Include="DataModel\Event.cs" />
+    <Compile Include="DataModel\Group.cs" />
     <Compile Include="DataModel\Lecture.cs" />
     <Compile Include="DataModel\LocalUser.cs" />
     <Compile Include="DataModel\LocalModerator.cs" />

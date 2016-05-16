@@ -148,11 +148,195 @@ C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmU
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelDetails\ChannelDetails.g.cs
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelDetails\ChannelDetails.xaml
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelDetails\ChannelDetails.xbf
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\layout.resfiles
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\layout.resfiles.intermediate
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\Resources.resfiles
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\Resources.resfiles.intermediate
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\pri.resfiles
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\pri.resfiles.intermediate
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\priconfig.xml
-C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\priconfig.xml.intermediate
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Assets\AppIcons\AppLogoUni-50-50.png
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ApplicationSettings\ApplicationSettings.g.i.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ApplicationSettings\ApplicationSettings.g.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ApplicationSettings\ApplicationSettings.xaml
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ApplicationSettings\ApplicationSettings.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ApplicationSettings\ApplicationSettings.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ChannelDetails\ChannelSettings.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelDetails\ChannelSettings.g.i.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelDetails\ChannelSettings.g.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelDetails\ChannelSettings.xaml
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelDetails\ChannelSettings.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Login\LoginPage.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Login\LoginPage.g.i.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Login\LoginPage.g.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Login\LoginPage.xaml
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Login\LoginPage.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ModeratorViews\Homescreen\HomescreenModerator.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\Homescreen\HomescreenModerator.g.i.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\Homescreen\HomescreenModerator.g.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\Homescreen\HomescreenModerator.xaml
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\Homescreen\HomescreenModerator.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\ChannelDetails\ModeratorChannelDetails.g.i.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\ChannelDetails\ModeratorChannelDetails.g.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ModeratorViews\ChannelDetails\ModeratorChannelDetails.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\ChannelDetails\ModeratorChannelDetails.xaml
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\ChannelDetails\ModeratorChannelDetails.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAnnouncementDialog\AddAnnouncement.g.i.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAnnouncementDialog\AddAnnouncement.g.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ModeratorViews\AddAnnouncementDialog\AddAnnouncement.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAnnouncementDialog\AddAnnouncement.xaml
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAnnouncementDialog\AddAnnouncement.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAndEditChannelDialog\AddAndEditChannel.g.i.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAndEditChannelDialog\AddAndEditChannel.g.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAndEditChannelDialog\AddAndEditChannel.xaml
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAndEditChannelDialog\AddAndEditChannel.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ModeratorViews\AddAndEditChannelDialog\AddAndEditChannel.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Common\CustomUserControl\IntervalPicker.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ModeratorViews\AddAndEditReminderDialog\AddAndEditReminder.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Common\CustomUserControl\IntervalPicker.g.i.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Common\CustomUserControl\IntervalPicker.g.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAndEditReminderDialog\AddAndEditReminder.g.i.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAndEditReminderDialog\AddAndEditReminder.g.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Common\CustomUserControl\IntervalPicker.xaml
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAndEditReminderDialog\AddAndEditReminder.xaml
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Common\CustomUserControl\IntervalPicker.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAndEditReminderDialog\AddAndEditReminder.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ModeratorViews\ReminderDetails\ReminderDetails.xbf
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\ReminderDetails\ReminderDetails.g.i.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\ReminderDetails\ReminderDetails.g.cs
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\ReminderDetails\ReminderDetails.xaml
+C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\ReminderDetails\ReminderDetails.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\SQLitePCL.Ext.dll
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\SQLitePCL.Ext.pri
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Assets\AppIcons\AppLogoUni-50-50.png
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\App.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Common\CustomUserControl\IntervalPicker.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\ItemPage.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\PivotPage.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ApplicationSettings\ApplicationSettings.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ChannelDetails\ChannelDetails.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ChannelDetails\ChannelSettings.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ChannelSearch\ChannelSearch.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Homescreen\Homescreen.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Login\LoginPage.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ModeratorViews\AddAndEditChannelDialog\AddAndEditChannel.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ModeratorViews\AddAndEditReminderDialog\AddAndEditReminder.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ModeratorViews\AddAnnouncementDialog\AddAnnouncement.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ModeratorViews\ChannelDetails\ModeratorChannelDetails.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ModeratorViews\Homescreen\HomescreenModerator.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ModeratorViews\ReminderDetails\ReminderDetails.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\StartPage.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\UlmUniversityNews.xr.xml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\UlmUniversityNews.exe
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\UlmUniversityNews.pdb
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\resources.pri
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\AppxManifest.xml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\UlmUniversityNews.build.appxrecipe
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Microsoft.Xaml.Interactions.dll
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Microsoft.Xaml.Interactivity.dll
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\DataHandlingLayer.dll
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\DrawerLayout.dll
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\PushNotificationManagerBackground.winmd
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\SQLitePCL.dll
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Newtonsoft.Json.dll
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\DataHandlingLayer.pdb
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\DataHandlingLayer.pri
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\PushNotificationManagerBackground.pdb
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\PushNotificationManagerBackground.pri
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Newtonsoft.Json.xml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\UlmUniversityNews.csprojResolveAssemblyReference.cache
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\App.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\App.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Common\CustomUserControl\IntervalPicker.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Common\CustomUserControl\IntervalPicker.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\ItemPage.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\ItemPage.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\PivotPage.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\PivotPage.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ApplicationSettings\ApplicationSettings.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ApplicationSettings\ApplicationSettings.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelDetails\ChannelDetails.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelDetails\ChannelDetails.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelDetails\ChannelSettings.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelDetails\ChannelSettings.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelSearch\ChannelSearch.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelSearch\ChannelSearch.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Homescreen\Homescreen.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Homescreen\Homescreen.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Login\LoginPage.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Login\LoginPage.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAndEditChannelDialog\AddAndEditChannel.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAndEditChannelDialog\AddAndEditChannel.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAndEditReminderDialog\AddAndEditReminder.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAndEditReminderDialog\AddAndEditReminder.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAnnouncementDialog\AddAnnouncement.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAnnouncementDialog\AddAnnouncement.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\ChannelDetails\ModeratorChannelDetails.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\ChannelDetails\ModeratorChannelDetails.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\Homescreen\HomescreenModerator.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\Homescreen\HomescreenModerator.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\ReminderDetails\ReminderDetails.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\ReminderDetails\ReminderDetails.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\StartPage.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\StartPage.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\XamlTypeInfo.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\App.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Common\CustomUserControl\IntervalPicker.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\ItemPage.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\PivotPage.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ApplicationSettings\ApplicationSettings.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelSearch\ChannelSearch.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Homescreen\Homescreen.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Login\LoginPage.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\Homescreen\HomescreenModerator.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\App.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Common\CustomUserControl\IntervalPicker.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\ItemPage.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\PivotPage.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ApplicationSettings\ApplicationSettings.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelSearch\ChannelSearch.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Homescreen\Homescreen.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Login\LoginPage.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\Homescreen\HomescreenModerator.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\XamlSaveStateFile.xml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelDetails\ChannelDetails.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelDetails\ChannelSettings.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAndEditChannelDialog\AddAndEditChannel.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAndEditReminderDialog\AddAndEditReminder.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAnnouncementDialog\AddAnnouncement.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\ChannelDetails\ModeratorChannelDetails.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\ReminderDetails\ReminderDetails.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\StartPage.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelDetails\ChannelDetails.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ChannelDetails\ChannelSettings.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAndEditChannelDialog\AddAndEditChannel.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAndEditReminderDialog\AddAndEditReminder.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\AddAnnouncementDialog\AddAnnouncement.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\ChannelDetails\ModeratorChannelDetails.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\ModeratorViews\ReminderDetails\ReminderDetails.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\StartPage.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\UlmUniversityNews.exe
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\UlmUniversityNews.pdb
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\en\SQLitePCL.Resources.resw
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\UlmUniversityNews.csproj.GenerateResource.Cache
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL.pri
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\qualifiers.txt
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\priconfig.xml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\priconfig.xml.intermediate
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\layout.resfiles
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\layout.resfiles.intermediate
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\resources.resfiles
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\resources.resfiles.intermediate
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\pri.resfiles
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\pri.resfiles.intermediate
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\qualifiers.txt
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\qualifiers.txt.intermediate
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\MultipleQualifiersPerDimensionFound.txt
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL.Ext.pri.xml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\ProjectArchitectures.txt
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\About\AboutUniversityNews.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\About\AboutUniversityNews.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\About\AboutUniversityNews.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\About\AboutUniversityNews.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\About\AboutUniversityNews.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\layout.resfiles
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\layout.resfiles.intermediate
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\Resources.resfiles
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\Resources.resfiles.intermediate
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\pri.resfiles
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\pri.resfiles.intermediate
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\priconfig.xml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\priconfig.xml.intermediate

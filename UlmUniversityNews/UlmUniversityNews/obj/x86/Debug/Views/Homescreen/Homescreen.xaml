@@ -10,6 +10,7 @@
     xmlns:drawerLayout="using:DrawerLayout"
     xmlns:valueconverter="using:UlmUniversityNews.Converters"
     xmlns:mockData="using:UlmUniversityNews.DataModel"
+    xmlns:common="using:UlmUniversityNews.Common"
     mc:Ignorable="d"
     d:DataContext="{Binding Source={d:DesignInstance Type=mockData:MockHomescreenViewModel, IsDesignTimeCreatable=True}}"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -22,13 +23,22 @@
         <valueconverter:ListCountToVisibilityConverter x:Key="ListCountToVisibilityConverter" />
     </Page.Resources>
     
-    <!--<UserControl.Resources>
-        <mockData:MockHomescreenViewModel x:Key="MockHomescreenViewModel" />
-    </UserControl.Resources>-->
+    <!-- StatusBar -->
+    <i:Interaction.Behaviors>
+        <common:StatusBarBehavior IsVisible="True"
+                                  ForegroundColor="White"
+                                  BackgroundColor="Black"
+                                  BackgroundOpacity="1.0" />
+        <common:ProgressIndicatorBehavior IsVisible="{Binding IsProgressIndicatorVisible, UpdateSourceTrigger=PropertyChanged}"
+                                          Value="{Binding ProgressIndicatorProgressValue, UpdateSourceTrigger=PropertyChanged}"
+                                          Text="{Binding ProgressIndicatorText, UpdateSourceTrigger=PropertyChanged}"
+                                          IsIndeterminate="{Binding IsIndeterminateProgressIndicator, UpdateSourceTrigger=PropertyChanged}" />
+    </i:Interaction.Behaviors>
     
     <!-- CommandBar -->
     <Page.BottomAppBar>
         <CommandBar x:Name="HomescreenCommandBar"
+                    Foreground="{StaticResource UNUCommandBarButtonColor}"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
             <AppBarButton x:Name="SearchChannels"
                           x:Uid="HomescreenSearchChannelsButton"
@@ -106,8 +116,9 @@
 
                             <TextBlock 
                                 Grid.Row="0"
-                                Style="{StaticResource BaseTextBlockStyle}"
-                                Visibility="{Binding MyChannels.Count, Converter={StaticResource ListCountToVisibilityConverter}}">
+                                x:Uid="HomescreenNoChannelSubscribedInfoText"
+                                Style="{StaticResource UniversityNewsUlmStandardText}"
+                                Visibility="{Binding ChannelCollection.Count, TargetNullValue='0', FallbackValue='0', Converter={StaticResource ListCountToVisibilityConverter}}">
                                     Es wurde noch kein Kanal abonniert.
                                     <LineBreak/>
                                     Gehen Sie auf die Kanalsuche, um einen Kanal zu abonnieren.
@@ -118,7 +129,7 @@
                             <ListView
                                 Grid.Row="1"
                                 ItemTemplate="{StaticResource ChannelListItemStyle}"
-                                ItemsSource="{Binding MyChannels}"
+                                ItemsSource="{Binding ChannelCollection}"
                                 IsItemClickEnabled="True"
                                 HorizontalContentAlignment="Stretch"
                                 HorizontalAlignment="Stretch">
@@ -145,25 +156,49 @@
                     <PivotItem x:Uid="HomescreenMyGroupsPivotItem"
                            Style="{StaticResource PivotItemStyle}"
                            Header="Meine Gruppen">
-                        <!-- TODO -->
+                        
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock 
+                                Grid.Row="0"
+                                x:Uid="HomescreenNoGroupInfoText"
+                                Style="{StaticResource UniversityNewsUlmStandardText}"
+                                Visibility="{Binding GroupCollection.Count, TargetNullValue='0', FallbackValue='0', Converter={StaticResource ListCountToVisibilityConverter}}">
+                                    Sie sind aktuell in keiner Gruppe eingetragen.
+                                    <LineBreak/>
+                                    Gehen Sie auf die Gruppensuche, um Teilnehmer einer Gruppe zu werden.
+                            </TextBlock>
+
+                            <!-- TODO -->
+                            
+                        </Grid>
                     </PivotItem>
                 </Pivot>
             </Grid>
             
             
              <!--Inhalt des Drawer Menüs-->
-            <Grid x:Name="ListFragment" Background="{StaticResource UniUlmMainBackgroundColor}">
-                <ListView x:Name="ListMenuItems">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}"
-                                       Margin="10"
-                                       HorizontalAlignment="Left"
-                                       VerticalAlignment="Center"
-                                       FontSize="18"
-                                       Foreground="Black" />
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
+            <Grid x:Name="ListFragment" Background="{StaticResource DrawerMenuContentPanelBackgroundColor}">
+                <ListView x:Name="ListMenuItems"
+                          ItemTemplate="{StaticResource DrawerMenuEntryDataTemplate}"
+                          IsItemClickEnabled="True">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+
+                    <!-- Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
+                    <i:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{Binding DrawerButtonCommand}"
+                                                              InputConverter="{StaticResource ItemClickedConverter}" />
+                        </core:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
                 </ListView>
             </Grid>
 

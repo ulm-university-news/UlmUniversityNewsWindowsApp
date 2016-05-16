@@ -43,3 +43,30 @@ C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\Push
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\qualifiers.txt
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\qualifiers.txt.intermediate
 C:\Users\Philipp\Source\Repos\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\MultipleQualifiersPerDimensionFound.txt
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\bin\ARM\Debug\SQLitePCL.Ext.dll
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\bin\ARM\Debug\SQLitePCL.Ext.pri
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\bin\ARM\Debug\PushNotificationManagerBackground.winmd
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\bin\ARM\Debug\PushNotificationManagerBackground.pdb
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\bin\ARM\Debug\PushNotificationManagerBackground.pri
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\bin\ARM\Debug\DataHandlingLayer.dll
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\bin\ARM\Debug\SQLitePCL.dll
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\bin\ARM\Debug\Newtonsoft.Json.dll
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\bin\ARM\Debug\DataHandlingLayer.pdb
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\bin\ARM\Debug\DataHandlingLayer.pri
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\bin\ARM\Debug\Newtonsoft.Json.xml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\PushNotificationManagerBackground.csprojResolveAssemblyReference.cache
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\PushNotificationManagerBackground.winmd
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\PushNotificationManagerBackground.pdb
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\PushNotificationManagerBackground.winmdobj
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\PushNotificationManagerBackground.compile.pdb
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\priconfig.xml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\priconfig.xml.intermediate
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\layout.resfiles
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\layout.resfiles.intermediate
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\resources.resfiles
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\resources.resfiles.intermediate
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\pri.resfiles
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\pri.resfiles.intermediate
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\qualifiers.txt
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\qualifiers.txt.intermediate
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\PushNotificationManagerBackground\obj\ARM\Debug\MultipleQualifiersPerDimensionFound.txt

@@ -4,13 +4,22 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:UlmUniversityNews.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:valueconverter="using:UlmUniversityNews.Converters"
+    xmlns:common="using:UlmUniversityNews.Common"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
         <!-- Konvertierung von Ressourcenschlüssel in sprachenabhängige Nachricht.-->
         <valueconverter:ValidationMessageOnLocalizedStringConverter x:Key="ValidationMessageOnLocalizedStringConverter" />
+
+        <!-- Konverter für Umwandlung von Hyperlink String auf Instanz von Uri. -->
+        <valueconverter:HyperlinkStringToNavigationUriConverter x:Key="HyperlinkStringToNavigationUriConverter" />
+
+        <!-- Konverter, um Textfelder auszublenden, wenn der zugewiesene String leer ist. -->
+        <valueconverter:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        
         <!-- Style für die Texte auf der Startseite. -->
         <Style
             x:Key="StartPageTextStyle"
@@ -20,10 +29,24 @@
             <Setter Property="TextWrapping" Value="WrapWholeWords" />
         </Style>
     </Page.Resources>
-    
+
+    <!-- StatusBar -->
+    <i:Interaction.Behaviors>
+        <common:StatusBarBehavior IsVisible="True"
+                                  ForegroundColor="White"
+                                  BackgroundColor="Black"
+                                  BackgroundOpacity="1.0" />
+        <common:ProgressIndicatorBehavior IsVisible="{Binding IsProgressIndicatorVisible, UpdateSourceTrigger=PropertyChanged}"
+                                          Value="{Binding ProgressIndicatorProgressValue, UpdateSourceTrigger=PropertyChanged}"
+                                          Text="{Binding ProgressIndicatorText, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StatusBarInformationToLocalizedStringConverter}}"
+                                          IsIndeterminate="{Binding IsIndeterminateProgressIndicator, UpdateSourceTrigger=PropertyChanged}" />
+    </i:Interaction.Behaviors>
+
     <!-- Command Bar -->
     <Page.BottomAppBar>
-        <CommandBar Background="{StaticResource UniUlmMainBackgroundColor}">
+        <CommandBar 
+            Foreground="{StaticResource UNUCommandBarButtonColor}"
+            Background="{StaticResource UniUlmMainBackgroundColor}">
             <AppBarButton 
                 x:Name="CreateAccount"
                 x:Uid="StartPageCreateAccountButton"
@@ -58,7 +81,7 @@
             <Image x:Name="DrawerIcon" 
                    Grid.Column="0"
                    Style="{StaticResource DrawerIconStyle}"
-                   Source="/Assets/AppIcons/Logo-Uni.png" />
+                   Source="/Assets/AppLogoNeu/AppLogoIcon_v5.png" />
 
             <!-- Drawer Text -->
             <TextBlock x:Uid="StartPageTitle"
@@ -68,28 +91,87 @@
         </Grid>
 
         <!-- Inhalte innerhalb des folgenden Rasters platziert. -->
-        <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
-            <StackPanel>
-                <TextBlock Text="Ulm University News" 
-                           Style="{StaticResource StartPageTextStyle}"
-                           FontSize="30"/>
-                <TextBlock Margin="0,10,0,0"
+        <Grid Grid.Row="1" x:Name="ContentRoot">
+            <ScrollViewer>
+            <Grid Style="{StaticResource PivotLikeGridStyle}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Row="0"
+                           Text="Ulm University News" 
+                           Style="{StaticResource UniversityNewsUlmPivotHeaderLikeText}" />
+                
+                <TextBlock 
+                           Grid.Row="1"
                            x:Uid="StartPageWelcomeText"
                            Text="Willkommen bei University News." 
                            Style="{StaticResource UniversityNewsUlmStandardText}" />
-                <TextBlock x:Uid="StartPageUsernameDescription"
-                           Text="Um diese Anwendung zu nutzen, müssen sie einen Nutzernamen angeben. Der Nutzername wird verwendet, um von Ihnen erstellte Nachrichten für andere Nutzer identifzierbar zu machen." 
-                           Style="{StaticResource UniversityNewsUlmStandardText}" />
-                <TextBox x:Name="UserName"
+                
+                <!-- Beschreibung und Link zu den Nutzungsbedingungen. -->
+                <TextBlock 
+                           Grid.Row="2"
+                           Style="{StaticResource UniversityNewsUlmStandardText}">
+                    <Run x:Uid="StartPageUsernameDescription"
+                           Text="Um diese Anwendung zu nutzen, müssen sie einen Nutzernamen angeben. Der Nutzername wird verwendet, um von Ihnen erstellte Nachrichten für andere Nutzer identifzierbar zu machen. Sie müssen die Nutzungsbedingungen akzeptieren, diese finden Sie hier: " />
+                    <Hyperlink NavigateUri="{Binding ElementName=StartPageTermsAndConditionsLink, Path=Text, Converter={StaticResource HyperlinkStringToNavigationUriConverter}}">
+                        <Run
+                            x:Name="StartPageTermsAndConditionsLink"
+                            x:Uid="StartPageTermsAndConditionsLink" 
+                            Text="www.ecosia.de" />
+                    </Hyperlink>
+                    <Run Text="." />
+                </TextBlock>
+                
+                <TextBox 
+                         Grid.Row="3"
+                         x:Name="UserName"
                          x:Uid="StartPageUsernameTextBox"
                          Header="Nutzername"
                          InputScope="AlphanumericFullWidth"
                          Text="{Binding Name, Mode=TwoWay}"/>
-                <TextBlock x:Name="ErrorText" 
+                
+                <!-- Validierungsfehler. -->
+                <TextBlock 
+                           Grid.Row="4"
+                           x:Name="ErrorText" 
                            Style="{StaticResource UniversityNewsUlmStandardErrorText}"
-                           Foreground="Red"
+                           Visibility="{Binding ElementName=ErrorText, Path=Text, Converter={StaticResource StringToVisibilityConverter}}"
                            Text="{Binding ValidationMessages[Name], FallbackValue={x:Null} , Converter={StaticResource ValidationMessageOnLocalizedStringConverter}}"/>
-            </StackPanel>
+
+                <!-- Akzeptieren der Nutzungsbedingungen. -->
+                    <Grid Grid.Row="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="9*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <CheckBox 
+                          Grid.Column="0"
+                          x:Name="StartPageAcceptTermsAndConditionsCheckBox"
+                          IsChecked="{Binding AreTermsAndConditionsAccepted, Mode=TwoWay}"
+                          />
+                        
+                        <TextBlock
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            x:Name="StartPageAcceptTermsAndConditionsCheckBoxText"
+                            x:Uid="StartPageAcceptTermsAndConditionsCheckBoxText"
+                            Style="{StaticResource UniversityNewsUlmStandardText}"
+                            TextWrapping="Wrap"
+                            Text="I accept the terms and conditions"
+                            />
+
+                    </Grid>
+
+
+            </Grid>
+            </ScrollViewer>
         </Grid>
     </Grid>
 </Page>

@@ -1,0 +1,374 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="UlmUniversityNews.ErrorHandling.ErrorDescriptionMapper" Collapsed="true">
+    <Position X="1.25" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAQACAAAAAAAgAAAAA=</HashCode>
+      <FileName>ErrorHandling\ErrorDescriptionMapper.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UlmUniversityNews.NavigationService.NavigationService" Collapsed="true">
+    <Position X="4.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAIAAAAAAAAAAAAAAAAAAAAAAAAEAgAAQAQABAAA=</HashCode>
+      <FileName>NavigationService\NavigationService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UlmUniversityNews.PushNotifications.PushNotificationManager" Collapsed="true">
+    <Position X="3" Y="3.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>EAAEAAAAEAAAAAQAAAQAAAAABAAACCAACAAABAABIAA=</HashCode>
+      <FileName>PushNotifications\PushNotificationManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UlmUniversityNews.App" Collapsed="true">
+    <Position X="8" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BIAAAABAAAAAAAABAAAQCAAAACAAAAgAQAAAAAAIAEg=</HashCode>
+      <FileName>App.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UlmUniversityNews.Views.StartPage" Collapsed="true">
+    <Position X="8" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAQAAAACQAAAAAAAAAQAAAAAAAQAAAAAAAEAAkA=</HashCode>
+      <FileName>Views\StartPage.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UlmUniversityNews.Views.Login.LoginPage" Collapsed="true">
+    <Position X="10.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAACQAAAAAAAAAQAAAAAAgQAAAgAAAEAAAA=</HashCode>
+      <FileName>Views\Login\LoginPage.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UlmUniversityNews.Views.Homescreen.Homescreen" Collapsed="true">
+    <Position X="10.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQACAAQAAAEiQAgACAAAAAYAgAAAAgQAAAACAAEAAgA=</HashCode>
+      <FileName>Views\Homescreen\Homescreen.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UlmUniversityNews.Views.ChannelSearch.ChannelSearch" Collapsed="true">
+    <Position X="8" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAQAAAACQAAAAAAAAAQAAAAAEgQAAAAQAAEAAEA=</HashCode>
+      <FileName>Views\ChannelSearch\ChannelSearch.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UlmUniversityNews.Views.ChannelDetails.ChannelDetails" Collapsed="true">
+    <Position X="8" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQACAAAAAAEiQAAQCAAAAA4AAAAAAgQAAAAAAAEAAgA=</HashCode>
+      <FileName>Views\ChannelDetails\ChannelDetails.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UlmUniversityNews.Views.ChannelDetails.ChannelSettings" Collapsed="true">
+    <Position X="10.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAACQAAAAAAAAAQAAAAgAgQAAAAAAAEAAAA=</HashCode>
+      <FileName>Views\ChannelDetails\ChannelSettings.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UlmUniversityNews.Views.ApplicationSettings.ApplicationSettings" Collapsed="true">
+    <Position X="14.25" Y="3.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAQAAAACQAAAAAAAEAQAAAAAAgQAAAAAAAEAAEA=</HashCode>
+      <FileName>Views\ApplicationSettings\ApplicationSettings.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UlmUniversityNews.Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel" Collapsed="true">
+    <Position X="14.25" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAACQAAAAAAQAAQACAAAAgQAAAgAAAEAAAA=</HashCode>
+      <FileName>Views\ModeratorViews\AddAndEditChannelDialog\AddAndEditChannel.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UlmUniversityNews.Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder" Collapsed="true">
+    <Position X="16.5" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AQAAABAAAAACQAAAAAAAAAQAABAAAgQAAAgAAAEAAAA=</HashCode>
+      <FileName>Views\ModeratorViews\AddAndEditReminderDialog\AddAndEditReminder.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement" Collapsed="true">
+    <Position X="14.25" Y="1.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAACCQAAAAAAAAAYAAAAAAgQAAAgAAAEAAAA=</HashCode>
+      <FileName>Views\ModeratorViews\AddAnnouncementDialog\AddAnnouncement.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UlmUniversityNews.Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails" Collapsed="true">
+    <Position X="16.5" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAEiQAAASAAAAAYAAAAAAgQAAAAAAAEAAgA=</HashCode>
+      <FileName>Views\ModeratorViews\ChannelDetails\ModeratorChannelDetails.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UlmUniversityNews.Views.ModeratorViews.Homescreen.HomescreenModerator" Collapsed="true">
+    <Position X="18.75" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AQAACAAAAAEiQAAACAAAAAYAAAAAAgQAAAAAAAEAAAA=</HashCode>
+      <FileName>Views\ModeratorViews\Homescreen\HomescreenModerator.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UlmUniversityNews.Views.ModeratorViews.ReminderDetails.ReminderDetails" Collapsed="true">
+    <Position X="18.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAACQAAAAAAAAAQAAAAAAgQAAAAgAAEAAAA=</HashCode>
+      <FileName>Views\ModeratorViews\ReminderDetails\ReminderDetails.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.Announcement" Collapsed="true">
+    <Position X="10.25" Y="8.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.AppSettings" Collapsed="true">
+    <Position X="15" Y="9.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.AppSettingsCache" Collapsed="true">
+    <Position X="16.75" Y="9.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.Channel" Collapsed="true">
+    <Position X="2.75" Y="10.75" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.ConversationMessage" Collapsed="true">
+    <Position X="12.5" Y="8.75" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.DrawerMenuEntry" Collapsed="true">
+    <Position X="18.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.Event" Collapsed="true">
+    <Position X="2.75" Y="12.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.Lecture" Collapsed="true">
+    <Position X="5" Y="12.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.LocalModerator" Collapsed="true">
+    <Position X="15" Y="10.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.LocalUser" Collapsed="true">
+    <Position X="16.75" Y="10.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.Message" Collapsed="true">
+    <Position X="11.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.Moderator" Collapsed="true">
+    <Position X="11.25" Y="10.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.PropertyChangedNotifier" Collapsed="true">
+    <Position X="3.75" Y="9.5" Width="2" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.PushMessage" Collapsed="true">
+    <Position X="15" Y="11.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.Reminder" Collapsed="true">
+    <Position X="7.25" Y="10.75" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.Sports" Collapsed="true">
+    <Position X="0.5" Y="12.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.User" Collapsed="true">
+    <Position X="9.25" Y="10.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.DataModel.Validator.ModelValidatorBase" Collapsed="true">
+    <Position X="3.75" Y="7" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.Database.ApplicationSettingsDatabaseManager" Collapsed="true">
+    <Position X="0.5" Y="16" Width="2.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.Database.ChannelDatabaseManager" Collapsed="true">
+    <Position X="4" Y="16" Width="2" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.Database.DatabaseManager" Collapsed="true">
+    <Position X="6.5" Y="16" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.Database.LocalUserDatabaseManager" Collapsed="true">
+    <Position X="0.5" Y="17.75" Width="2.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.Database.ModeratorDatabaseManager" Collapsed="true">
+    <Position X="3.75" Y="17.75" Width="2.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.Controller.ApplicationSettingsController" Collapsed="true">
+    <Position X="8.5" Y="17.75" Width="2.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.Controller.ChannelController" Collapsed="true">
+    <Position X="15.75" Y="17.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.Controller.IncrementalAnnouncementLoaderController" Collapsed="true">
+    <Position X="22.75" Y="16.5" Width="3.25" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DataHandlingLayer.Controller.LocalUserController" Collapsed="true">
+    <Position X="11.25" Y="17.75" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.Controller.LoginController" Collapsed="true">
+    <Position X="18" Y="17.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.Controller.MainController" Collapsed="true">
+    <Position X="14.5" Y="16.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.Controller.ModeratorController" Collapsed="true">
+    <Position X="13.5" Y="17.75" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.Controller.PushNotificationController" Collapsed="true">
+    <Position X="20.25" Y="17.75" Width="2.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.Constants.Constants" Collapsed="true">
+    <Position X="13" Y="15" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.Common.IncrementalLoadingCollection&lt;T, I&gt;" Collapsed="true">
+    <Position X="15.5" Y="14" Width="2.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.CommandRelays.AsyncRelayCommand" Collapsed="true">
+    <Position X="8.75" Y="13.5" Width="1.75" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DataHandlingLayer.CommandRelays.RelayCommand" Collapsed="true">
+    <Position X="10.75" Y="13.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.API.API" Collapsed="true">
+    <Position X="1.75" Y="20.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.API.ChannelAPI" Collapsed="true">
+    <Position X="2.75" Y="22" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.API.UserAPI" Collapsed="true">
+    <Position X="0.5" Y="22" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.JsonManager.JsonParsingManager" Collapsed="true">
+    <Position X="7" Y="21.25" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.AddAndEditChannelViewModel">
+    <Position X="17.75" Y="26" Width="2.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.AddAndEditReminderViewModel">
+    <Position X="21" Y="26" Width="2.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.AddAnnouncementViewModel">
+    <Position X="24.25" Y="26" Width="2.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.ApplicationSettingsViewModel">
+    <Position X="27.75" Y="24.5" Width="2.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.ChannelDetailsViewModel">
+    <Position X="5.25" Y="24.5" Width="2" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.ChannelSettingsViewModel">
+    <Position X="12" Y="24.5" Width="2.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.DialogBaseViewModel" Collapsed="true">
+    <Position X="21" Y="24.5" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.HomescreenViewModel">
+    <Position X="30.5" Y="24.5" Width="2" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.LoginViewModel">
+    <Position X="7.5" Y="24.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.ModeratorChannelDetailsViewModel">
+    <Position X="14.75" Y="24.5" Width="2.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.ModeratorHomescreenViewModel">
+    <Position X="38.75" Y="24.5" Width="2.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.ReminderDetailsViewModel">
+    <Position X="33.25" Y="24.5" Width="2.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.SearchChannelsViewModel">
+    <Position X="9.25" Y="24.5" Width="2.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.StartPageViewModel">
+    <Position X="36.5" Y="24.5" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.ViewModel" Collapsed="true">
+    <Position X="18.75" Y="23.25" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="DataHandlingLayer.Common.IIncrementalSource&lt;T&gt;" Collapsed="true">
+    <Position X="18.75" Y="14" Width="2" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="DataHandlingLayer.CommandRelays.Interface.IAsyncCommand" Collapsed="true">
+    <Position X="10.75" Y="12.5" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="DataHandlingLayer.NavigationService.INavigationService" Collapsed="true">
+    <Position X="22.5" Y="14" Width="1.75" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="DataHandlingLayer.ErrorMapperInterface.IErrorMapper" Collapsed="true">
+    <Position X="24.75" Y="14" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

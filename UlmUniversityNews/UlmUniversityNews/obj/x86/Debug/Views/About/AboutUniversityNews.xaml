@@ -1,0 +1,169 @@
+﻿<Page
+    x:Class="UlmUniversityNews.Views.About.AboutUniversityNews"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:UlmUniversityNews.Views.About"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"	
+	xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:common="using:UlmUniversityNews.Common"
+	xmlns:valueconverter="using:UlmUniversityNews.Converters"
+	xmlns:drawerLayout="using:DrawerLayout"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <!-- Konvertierung eines ItemClickEventArgs auf das geklickte Objekt. -->
+        <valueconverter:ItemClickedConverter x:Key="ItemClickedConverter" />
+        <!-- Konverter für Abbildung von STring auf Uri. -->
+        <valueconverter:HyperlinkStringToNavigationUriConverter x:Key="HyperlinkStringToNavigationUriConverter" />
+    </Page.Resources>
+
+    <!-- StatusBar -->
+    <i:Interaction.Behaviors>
+        <common:StatusBarBehavior IsVisible="True"
+                                  ForegroundColor="White"
+                                  BackgroundColor="Black"
+                                  BackgroundOpacity="1.0" />
+        <common:ProgressIndicatorBehavior IsVisible="{Binding IsProgressIndicatorVisible, UpdateSourceTrigger=PropertyChanged}"
+                                          Value="{Binding ProgressIndicatorProgressValue, UpdateSourceTrigger=PropertyChanged}"
+                                          Text="{Binding ProgressIndicatorText, UpdateSourceTrigger=PropertyChanged}"
+                                          IsIndeterminate="{Binding IsIndeterminateProgressIndicator, UpdateSourceTrigger=PropertyChanged}" />
+    </i:Interaction.Behaviors>
+
+    
+    <Grid x:Name="LayoutRoot">
+
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Titelbereich - Drawer -->
+        <Grid Grid.Row="0" Style="{StaticResource DrawerMenuTitleBar}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Drawer Icon -->
+            <Image x:ConnectionId='2' x:Name="DrawerIcon" 
+					   Grid.Column="0"
+					   Style="{StaticResource DrawerIconStyle}"
+					                              />
+
+            <!-- Drawer Text -->
+            <TextBlock Grid.Column="1"
+						   x:Uid="AboutUniversityNewsDrawerTitle"
+						   Style="{StaticResource DrawerTextStyle}"
+						   Text="Über diese App" />
+        </Grid>
+
+        <!--Inhalt der Seite und Inhalt des Drawer Menü-->
+        <drawerLayout:DrawerLayout Grid.Row="1" x:Name="DrawerLayout">
+
+            <!-- Inhalt der Seite -->
+            <Grid x:Name="MainFragment" Background="{StaticResource MainFragmentBackgroundColor}">
+                <Grid Style="{StaticResource PivotLikeGridStyle}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Überschrift. -->
+                    <TextBlock 
+                            Grid.Row="0"
+                            x:Name="AboutUniversityNewsHeadline"
+                            x:Uid="AboutUniversityNewsHeadline"
+                            Style="{StaticResource UniversityNewsUlmPivotHeaderLikeText}"
+                            Text="Über University News"/>
+                    
+                    <!-- Grid mit Inhalt -->
+                    <Grid Grid.Row="1">
+                        <ScrollViewer>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Inhalt -->
+                                <TextBlock
+                                    Grid.Row="0"
+                                    x:Name="AboutUniversityNewsContent"
+                                    x:Uid="AboutUniversityNewsContent"
+                                    Style="{StaticResource UniversityNewsUlmStandardText}" >
+                                    <Run x:Uid="AboutUniversityNewsContentPart1"
+                                         Text="Diese App wurde im Rahmen des Anwendungsfachs Advanced Mobile Application Engineering am Institut für Datenbanken und Informationssysteme an der Universität Ulm erstellt."/>
+                                    <LineBreak />
+                                    <LineBreak />
+                                    <Run x:Uid="AboutUniversityNewsContentPart2"
+                                         Text="Diese App und zugehörige Komponenten wurden von Matthias Mak und Philipp Speidel entwickelt. Betreuer des Projekts ist Marc Schickler."/>
+                                    <LineBreak />
+                                    <LineBreak />
+                                    <Run x:Uid="AboutUniversityNewsContentPart3"
+                                         Text="Diese Software wird ohne jegliche spezielle oder implizierte Garantien zur Verfügung gestellt. Weitere Informationen erhalten Sie unter: " />
+                                    <Hyperlink NavigateUri="{Binding ElementName=AboutUniversityNewsContentWebClientHyperlink, Path=Text, Converter={StaticResource HyperlinkStringToNavigationUriConverter}}">
+                                        <Run x:Name="AboutUniversityNewsContentWebClientHyperlink"
+                                             x:Uid="AboutUniversityNewsContentWebClientHyperlink"
+                                             Text="www.ecosia.de" />
+                                    </Hyperlink>
+                                    <LineBreak />
+                                    <LineBreak />
+                                    <Run x:Uid="AboutUniversityNewsContentPart4"
+                                         Text="Bei Fragen oder Verbesserungsvorschlägen wenden Sie sich bitte an "/>
+                                    <Hyperlink x:ConnectionId='1' x:Name="AboutUniversityNewsEmailAddress"                                              >
+                                        <Run x:Name="AboutUniversityNewsContentEmailAddress"
+                                             x:Uid="AboutUniversityNewsContentEmailAddress"
+                                             Text="ulm.university.news@gmail.com" />
+                                    </Hyperlink>
+                                </TextBlock>
+
+                                <!-- University News Icon-->
+                                <Image
+                                    Grid.Row="1"
+                                    Margin="0, 10, 0, 20"
+                                    x:Name="AboutUniversityNewsIcon"
+                                    Source="/Assets/AppLogoNeu/MainLogo.png"
+                                    HorizontalAlignment="Center"
+                                    />
+
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
+                </Grid>                             
+            </Grid>
+
+
+            <!--Inhalt des Drawer Menüs-->
+            <Grid x:Name="ListFragment" Background="{StaticResource DrawerMenuContentPanelBackgroundColor}">
+                <ListView x:Name="ListMenuItems"
+							  ItemTemplate="{StaticResource DrawerMenuEntryDataTemplate}"
+							  IsItemClickEnabled="True">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+
+                    <!--Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
+                    <i:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{Binding DrawerButtonCommand}"
+																  InputConverter="{StaticResource ItemClickedConverter}" />
+                        </core:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </ListView>
+            </Grid>
+
+        </drawerLayout:DrawerLayout>
+    </Grid>
+</Page>
+

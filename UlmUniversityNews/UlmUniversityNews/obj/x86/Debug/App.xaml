@@ -15,19 +15,24 @@
         <converter:ZeroIntegerToVisibilityConverter x:Key="ZeroIntegerToVisibilityConverter" />
         <converter:DateTimeToStringConverter x:Key="DateTimeToStringConverter" />
         <converter:MessageReadPropertyToBackgroundColorConverter x:Key="MessageReadPropertyToBackgroundColorConverter" />
+        <converter:DrawerMenuEntryNameToLocalizedStringConverter x:Key="DrawerMenuEntryNameToLocalizedStringConverter" />
         
         
         <!-- Colors -->
         <SolidColorBrush x:Key="UniUlmMainBackgroundColor" Color="#7D9AAA" />
         <SolidColorBrush x:Key="UniUlmAccentColor" Color="#A9A280" Opacity="0.5"  />
-        <SolidColorBrush x:Key="UniUlmAccentColorListItemBackground" Color="#A9A280" Opacity="0.1"  />
+        <SolidColorBrush x:Key="UniUlmAccentColorListItemBackground" Color="Gray" Opacity="0.1"  />
+        <!--<SolidColorBrush x:Key="UniUlmAccentColorListItemBackground" Color="#A9A280" Opacity="0.1"  />-->
         <SolidColorBrush x:Key="UniUlmAccentColorElementBackground" Color="#A9A280" Opacity="0.4"  />
         <SolidColorBrush x:Key="UniUlmFacultyColorInformaticsAndEngineering" Color="#A32638" />
         <SolidColorBrush x:Key="UniUlmFacultyColorMathematicsAndEconomics" Color="#56AA1C" />
         <SolidColorBrush x:Key="UniUlmFacultyColorMedicine" Color="#26247C" />
         <SolidColorBrush x:Key="UniUlmFacultyColorNaturalSciences" Color="#BD6005" />
+        <SolidColorBrush x:Key="UUNChannelMarkedAsDeletedColor" Color="#333333" />
         <SolidColorBrush x:Key="MainFragmentBackgroundColor" Color="White" />
-        <SolidColorBrush x:Key="UnreadMessageBackgroundColor" Color="Gray" Opacity="0.9" />
+        <SolidColorBrush x:Key="UnreadMessageBackgroundColor" Color="Gray" Opacity="0.3" />
+        <SolidColorBrush x:Key="DrawerMenuContentPanelBackgroundColor" Color="White" />
+        <SolidColorBrush x:Key="UNUCommandBarButtonColor" Color="White" />
         
         <!-- Style für Schriften in Listen und Aufzählungen. -->
         <Style 
@@ -39,42 +44,76 @@
         
         <Style 
             x:Key="HeaderTextInPropertyDescriptions"
-            TargetType="TextBlock">
+            TargetType="TextBlock"
+            BasedOn="{StaticResource ListTextStyle}">
             <Setter Property="TextWrapping" Value="NoWrap" />
-            <Setter Property="TextTrimming" Value="WordEllipsis" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="FontSize" Value="20" />
-            <Setter Property="Margin" Value="5,0,0,5" />
-            <Setter Property="FontFamily" Value="Arial" />
+            <Setter Property="Margin" Value="5,3,0,5" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Padding" Value="10, 12.5, 10, 10" />
         </Style>
 
         <Style 
             x:Key="TextInPropertyDescriptions"
-            TargetType="TextBlock">
+            TargetType="TextBlock"
+            BasedOn="{StaticResource ListTextStyle}">
             <Setter Property="TextWrapping" Value="Wrap" />
             <Setter Property="Margin" Value="5,5,5,0" />
-            <Setter Property="FontSize" Value="18" />
-            <Setter Property="FontFamily" Value="Arial" />
+        </Style>
+
+        <Style
+            x:Key="HeaderTextInAnnouncementList"
+            TargetType="TextBlock"
+            BasedOn="{StaticResource ListTextStyle}">
+            <Setter Property="TextWrapping" Value="NoWrap" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="Margin" Value="5,0,0,5" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Padding" Value="0, 10, 10, 10" />
+        </Style>
+
+        <Style
+            x:Key="TextInAnnouncementList"
+            TargetType="TextBlock"
+            BasedOn="{StaticResource ListTextStyle}">
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="5,5,5,0" />
         </Style>
         
         <Style 
             x:Key="DateTimeFieldinList"
-            TargetType="TextBlock">
+            TargetType="TextBlock"
+            BasedOn="{StaticResource ListTextStyle}">
             <Setter Property="Margin" Value="0,0,5,0" />
             <Setter Property="TextWrapping" Value="NoWrap" />
             <Setter Property="TextTrimming" Value="None" />
             <Setter Property="FontSize" Value="16" />
-            <Setter Property="FontFamily" Value="Arial" />
         </Style>
         
         <Style
             x:Key="TextInFlyoutsStyle"
-            TargetType="TextBlock">
+            TargetType="TextBlock"
+            BasedOn="{StaticResource ListTextStyle}">
             <Setter Property="Margin" Value="10" />
             <Setter Property="TextWrapping" Value="WrapWholeWords" />
             <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="FontSize" Value="18" />
-            <Setter Property="FontFamily" Value="Arial" />
+        </Style>
+
+        <!-- *************************************************************************************************************************************-->
+        <!-- Image Style für Aufzählung der Eigenschaften eines Kanals. -->
+        <Style
+            x:Key="EnumerationOfPropertiesIconStyle"
+            TargetType="Image">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <!-- <Setter Property="MinHeight" Value="30" />
+            <Setter Property="MinWidth" Value="30" /> -->
+            <!--<Setter Property="Width" Value="Auto" /> --><!-- Before: 35 px -->
+            <!--<Setter Property="Height" Value="Auto" /> --><!-- Before: 35 px -->
         </Style>
         
         <!-- *************************************************************************************************************************************-->
@@ -84,9 +123,58 @@
             TargetType="Grid">
             <Setter Property="Margin" Value="0,0,0,10" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="Background" Value="{StaticResource UniUlmAccentColorListItemBackground}" />
+            <!--<Setter Property="Background" Value="{StaticResource UniUlmAccentColorListItemBackground}" />-->
         </Style>
-                
+        
+        <Style
+            x:Key="EnumerationOfPropertiesSeperatorStyle"
+            TargetType="Line">
+            <Setter Property="X1" Value="0" />
+            <Setter Property="X2" Value="1" />
+            <Setter Property="Stretch" Value="Fill" />
+            <Setter Property="Stroke" Value="Black" />
+            <Setter Property="StrokeThickness" Value="2" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Margin" Value="-5, 5, -5, 0" />
+        </Style>
+
+        <!-- *************************************************************************************************************************************-->
+        <!-- Allgemeine Standard Schriften. -->
+        <Style
+            x:Key="UniversityNewsUlmStandardHeader"
+            TargetType="TextBlock">
+            <Setter Property="FontSize"  Value="20"/>
+            <Setter Property="FontFamily" Value="Arial" />
+            <Setter Property="TextWrapping" Value="NoWrap" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+        
+        <Style
+            x:Key="UniversityNewsUlmStandardText"
+            TargetType="TextBlock">
+            <Setter Property="FontSize"  Value="18"/>
+            <Setter Property="FontFamily" Value="Arial" />
+            <Setter Property="TextWrapping" Value="WrapWholeWords" />
+        </Style>
+        
+        <Style x:Key="UniversityNewsUlmStandardErrorText"
+               TargetType="TextBlock">
+            <Setter Property="FontSize"  Value="16"/>
+            <Setter Property="FontFamily" Value="Arial" />
+            <Setter Property="TextWrapping" Value="WrapWholeWords" />
+            <Setter Property="Foreground" Value="Red" />
+            <Setter Property="Margin" Value="0, 0, 0, 5" />
+        </Style>
+        
+        <Style x:Key="UniversityNewsUlmPivotHeaderLikeText"
+               TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Arial" />
+            <Setter Property="TextWrapping" Value="WrapWholeWords" />
+            <Setter Property="FontSize" Value="30" />
+            <Setter Property="Margin" Value="0, 0, 0, 14.5" />
+        </Style>
+
         <!-- ************************************************************************************************************************************* -->
         <!-- ContentDialog:-->
         <!-- Definiere den Style für TextBlock Elemente innerhalb von einem ContentDialog.-->
@@ -106,7 +194,7 @@
             x:Key="DrawerTextStyle"
             TargetType="TextBlock">
             <Setter Property="TextWrapping" Value="NoWrap" />
-            <Setter Property="TextTrimming" Value="WordEllipsis" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontFamily" Value="Arial" />
             <Setter Property="Foreground" Value="White" />
@@ -129,6 +217,36 @@
             <Setter Property="Margin" Value="0,0,0,0" />
             <Setter Property="Height" Value="60" />
         </Style>
+        
+        <!-- Definition des DataTemplates für die Menüeinträge.-->
+        <DataTemplate
+            x:Key="DrawerMenuEntryDataTemplate">
+            <Grid
+                Margin="0, 5, 0, 5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <!-- 1. Spalte: Icon -->
+                <Image
+                    Width="65px"
+                    Height="65px"
+                    Grid.Column="0"
+                    Source="{Binding IconPath, TargetNullValue='', FallbackValue=''}" />
+                
+                <!-- 2. Spalte: Name des Menüeintrags. -->          
+                <TextBlock 
+                    Grid.Column="1"
+                    Text="{Binding DisplayableNameResourceKey, TargetNullValue='', FallbackValue='', Converter={StaticResource DrawerMenuEntryNameToLocalizedStringConverter}}"
+                    TextWrapping="Wrap"
+                    FontSize="20"
+                    FontFamily="Arial"
+                    FontWeight="Bold"
+                    VerticalAlignment="Center"
+                    Padding="10"/>
+            </Grid>
+        </DataTemplate>
 
         <!-- ************************************************************************************************************************************* -->
         <!-- Pivot elements: --> 
@@ -136,7 +254,7 @@
         <Style
             x:Key="PivotItemStyle"
             TargetType="PivotItem">
-            <Setter Property="Margin" Value="19,14.5,0,0" />
+            <Setter Property="Margin" Value="19,14.5,19,0" />
         </Style>
         
         <!-- PivotItem Header Style -->
@@ -152,15 +270,35 @@
             </ContentPresenter>
         </DataTemplate>
         
+        <!-- Grid mit Margin, um Pivot ähnliches Layout durch Grid zu erhalten. -->
+        <Style
+            x:Key="PivotLikeGridStyle"
+            TargetType="Grid">
+            <Setter Property="Margin" Value="19, 12, 19, 0" />
+        </Style>
+        
         <!-- ************************************************************************************************************************************ -->
         <!-- Definiere den Style für Fylout Elemente -->
         <Style
             x:Key="FlyoutStyle"
             TargetType="FlyoutPresenter">
             <Setter Property="BorderBrush" Value="Black" />
-            <Setter Property="BorderThickness" Value="5" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="MinHeight" Value="180" />
+            <Setter Property="Width" Value="Auto" />
         </Style>
+        <!-- <Setter Property="MinHeight" Value="180px" /> -->
 
+        <Style
+            x:Key="FlyoutSingleButtonStyle"
+            TargetType="Button">
+            <Setter Property="Margin" Value="0, 0, 15, 10" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+        </Style>
+               
         <!-- ************************************************************************************************************************************ -->
         <!-- Layout eines Eintrages einer Kanal-Ressource in der Übersichtliste von Kanälen.-->
         <DataTemplate x:Key="ChannelListItemStyle">
@@ -168,32 +306,29 @@
             <!-- Verwende feste Höhe pro Eintrag. -->
             <Grid 
                 Background="{StaticResource UniUlmAccentColorListItemBackground}"
-                Height="70px"       
-                Margin="0,5,19,0">
+                Margin="0,0,0,5"> <!--Height="70px"-->
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="70px" /> <!-- Spalte für Icon-->
+                    <ColumnDefinition Width="Auto" /> <!-- Spalte für Icon-->
                     <ColumnDefinition Width="*" /> <!-- Spalte für restliche Information-->
                 </Grid.ColumnDefinitions>
-                
-                <!-- TODO - entferne Icon und erstetze durch Kreis mit definiertem Text -->
+               
                 <!-- Icon -->
                 <Image Source="{Binding Converter={StaticResource ChannelToIconPathConverter}}" 
                        Grid.Column="0"
-                       Height="60px"
-                       Width="60px"
+                       Margin="5, 5, 0, 5"
                        HorizontalAlignment="Center"
-                       VerticalAlignment="Center"/>
-                
+                       VerticalAlignment="Center"/>     <!--Height="60px"   Width="60px"-->
+
                 <!-- andere Informationen -->
-                <Grid Grid.Column="1" Margin="5,0,0,0">
+                <Grid Grid.Column="1" Margin="10,0,0,0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="35px" /> <!-- Zeile für Name des Kanals und Icon für Anzahl ungelesener Nachrichten. -->
-                        <RowDefinition Height="35px" /> <!-- Zeile für Typ und Semester -->
+                        <RowDefinition Height="Auto" /> <!-- Zeile für Name des Kanals und Icon für Anzahl ungelesener Nachrichten. -->
+                        <RowDefinition Height="*" /> <!-- Zeile für Typ und Semester -->
                     </Grid.RowDefinitions>
 
                     <!-- Zeile 1 -->
                     <!-- Anzeige für Name und Icon für ungelsesen Nachrichten -->
-                    <Grid Grid.Row="0">
+                    <Grid Grid.Row="0" VerticalAlignment="Top" Margin="0, 7, 0, 0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="4*" />
                             <ColumnDefinition Width="1*" />
@@ -201,10 +336,10 @@
                         
                         <!-- Name -->
                         <TextBlock Grid.Column="0"
-                               VerticalAlignment="Center"
+                               VerticalAlignment="Top"
                                HorizontalAlignment="Left"
                                TextWrapping="NoWrap"
-                               TextTrimming="WordEllipsis"
+                               TextTrimming="CharacterEllipsis"
                                x:Name="ChannelName"
                                Style="{StaticResource ListTextStyle}"
                                FontWeight="Bold"
@@ -217,8 +352,8 @@
                             Visibility="{Binding NumberOfUnreadAnnouncements, FallbackValue=Collapsed, TargetNullValue=Collapsed, Converter={StaticResource ZeroIntegerToVisibilityConverter}}">
                             <Ellipse 
                                 Fill="Gray" 
-                                Height="30px"
-                                Width="30px"
+                                Height="33px"
+                                Width="33px"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center" />   <!-- Hintergrund der Anzeige der ungelesenen Nachrichten-->
                             <TextBlock 
@@ -236,7 +371,8 @@
                     <!-- Anzeige für Typ und Semester.-->
                     <Grid Grid.Row="1"
                           x:Name="TypAndSemester"
-                          VerticalAlignment="Center">
+                          VerticalAlignment="Bottom"
+                          Margin="0, 0, 0, 7" >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
@@ -260,66 +396,24 @@
                 </Grid>
             </Grid>
         </DataTemplate>
-        
-        <!-- Data Template eines Eintrags einer Announcement-Ressource in der Detailansicht eines Kanals. -->
-        <DataTemplate
-            x:Key="AnnouncementListItemStyle">
-            <Grid
-                Background="{StaticResource UniUlmAccentColorListItemBackground}"
-                Height="Auto"       
-                Margin="0,5,19,5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" /> <!-- 1.Zeile für Announcement Titel und Datum -->
-                    <RowDefinition Height="Auto" /> <!-- 2.Zeile für Inhalt der Nachricht -->
-                </Grid.RowDefinitions>
-                
-                <!-- 1. Zeile -->
-                <!-- Grid für Announcement Titel und Datum.-->
-                <Grid
-                    Background="{Binding Read, Converter={StaticResource MessageReadPropertyToBackgroundColorConverter}}"
-                    Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*" />   <!-- Spalte für Titel -->
-                        <ColumnDefinition Width="*" />   <!-- Spalte für Datum -->
-                    </Grid.ColumnDefinitions>
-                    
-                    <!-- Titel -->
-                    <TextBlock
-                        Grid.Column="0"
-                        x:Name="AnnouncementTitle"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        TextAlignment="Left"
-                        Style="{StaticResource HeaderTextInPropertyDescriptions}"
-                        Text="{Binding Title}" />
-                    
-                    <!-- Datum -->
-                    <TextBlock
-                        Grid.Column="1"
-                        x:Name="AnnouncementCreationDate"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Right"
-                        TextAlignment="Right"
-                        Style="{StaticResource DateTimeFieldinList}"
-                        Text="{Binding CreationDate, Converter={StaticResource DateTimeToStringConverter}}"/> <!-- TODO Add converter-->
-                </Grid>
-                
-                <!-- 2.Zeile -->
-                <!-- Nachrichteninhalt -->
-                <TextBlock
-                    Grid.Row="1"
-                    x:Name="AnnouncementContent"
-                    Style="{StaticResource TextInPropertyDescriptions}"
-                    Text="{Binding Text}" />
-            </Grid>
-        </DataTemplate>
-            
+                 
         <!-- Command Bar:-->
         <!-- Definiere die Hintergrundfarbe für die CommandBar. -->
         <!--<Style 
             x:Key="CommandBarStyle"
             TargetType="CommandBar">
             <Setter Property="Background" Value="#7D9AAA" />
+        </Style>-->
+
+        <!-- ************************************************************************************************************************************ -->
+        <!-- Style für AppBarButtons. -->
+        <!--
+        <Style x:Key="UniversityNewsAppBarButtonStyle"
+               TargetType="AppBarButton">
+            -->
+        <!--<Setter Property="RequestedTheme" Value="Dark" />-->
+        <!--<Setter Property="Foreground" Value="White" />-->
+        <!--
         </Style>-->
     </Application.Resources>
 

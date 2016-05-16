@@ -1,0 +1,164 @@
+﻿<UserControl
+    x:Class="UlmUniversityNews.Common.CustomUserControl.IntervalPicker"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:UlmUniversityNews.Common.CustomUserControl"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converter="using:UlmUniversityNews.Converters"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+      
+    <UserControl.Resources>
+        <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+    
+    <Grid
+        HorizontalAlignment="Stretch" Background="{StaticResource DatePickerForegroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <!-- Titel des UserControl. -->
+        <TextBlock 
+            x:Name="IntervalPickerTitle"
+            x:Uid="IntervalPickerTitle"
+            Style="{StaticResource ControlHeaderTextBlockStyle}"
+            Foreground="White"
+            Text="WÄHLE INTERVALL" />
+        
+        <!-- Inhalt des Intervall Picker. -->
+        <Grid Grid.Row="1"
+              Margin="30"
+              x:Name="IntervalPickerContentGrid"
+              VerticalAlignment="Center"
+              HorizontalAlignment="Center">
+            
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            
+            <ComboBox 
+                Grid.Row="0"
+                x:Name="IntervalPickerIntervalTypeComboBox"
+                x:Uid="IntervalPickerIntervalTypeComboBox"
+                SelectedIndex="{Binding SelectedComboBoxIndex, Mode=TwoWay}"
+                Header="Bitte geben Sie den Typ des Intervalls an">
+                <ComboBox.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock
+                            Foreground="White"
+                            Text="{Binding}" />
+                    </DataTemplate>
+                </ComboBox.HeaderTemplate>
+                <ComboBoxItem 
+                    x:Name="IntervalPickerItemDayly"
+                    x:Uid="IntervalPickerItemDayly"
+                    Content="Täglich"
+                    IsSelected="{Binding IsDailyIntervalSelected, Mode=TwoWay}"
+                    />
+                <ComboBoxItem
+                    x:Name="IntervalPickerItemWeekly"
+                    x:Uid="IntervalPickerItemWeekly"
+                    Content="Wöchentlich"
+                    IsSelected="{Binding IsWeeklyIntervalSelected, Mode=TwoWay}"
+                    />
+                <ComboBoxItem
+                    x:Name="IntervalPickerItemOnce"
+                    x:Uid="IntervalPickerItemOnce"
+                    Content="Einmalig"
+                    IsSelected="{Binding IsIntervalOneTimeSelected, Mode=TwoWay}"
+                    />
+            </ComboBox>
+            
+            <Grid Grid.Row="1"
+                  Visibility="{Binding IsDailyIntervalSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Grid.Column="0"
+                    x:Name="IntervalPickerDailyDescription"
+                    x:Uid="IntervalPickerDailyDescription"
+                    Foreground="White"
+                    Style="{StaticResource UniversityNewsUlmStandardText}"
+                    Text="Intervall in Tagen: " />
+                
+                <DatePicker 
+                    Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    MonthVisible="False"
+                    YearVisible="False"
+                    Date="{Binding SelectedDate, Mode=TwoWay}"
+                    DayFormat="{}{day.integer}"
+                    />
+            </Grid>
+
+            <Grid Grid.Row="1"
+                  Visibility="{Binding IsWeeklyIntervalSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Grid.Column="0"
+                    x:Name="IntervalPickerWeeklyDescription"
+                    x:Uid="IntervalPickerWeeklyDescription"
+                    Foreground="White"
+                    Style="{StaticResource UniversityNewsUlmStandardText}"
+                    Text="" />
+
+                <DatePicker 
+                    Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    MonthVisible="False"
+                    YearVisible="False"
+                    Date="{Binding SelectedDate, Mode=TwoWay}"
+                    DayFormat="{}{day.integer}"
+                    />
+            </Grid>
+
+            <Grid Grid.Row="1"
+                  Visibility="{Binding IsIntervalOneTimeSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Grid.Column="0"
+                    x:Name="IntervalPickerOneTimeDescription"
+                    x:Uid="IntervalPickerOneTimeDescription"
+                    Foreground="White"
+                    Style="{StaticResource UniversityNewsUlmStandardText}"
+                    Text="" />
+
+                <DatePicker 
+                    Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    MonthVisible="False"
+                    YearVisible="False"
+                    Date="{Binding SelectedDate, Mode=TwoWay}"
+                    DayFormat="{}{day.integer}"
+                    />
+            </Grid>
+
+            <TextBlock Grid.Row="2"
+                       Style="{StaticResource UniversityNewsUlmStandardText}"
+                       Foreground="White">
+                <Run Text="Sende Nachricht alle: "/>
+                <Run x:Name="IntervalPickerSelectedInterval"
+                     x:Uid="IntervalPickerSelectedInterval"
+                     Text="2" />
+                <Run Text=" " />
+                <Run Text="Tage" />
+            </TextBlock>
+            
+        </Grid>
+    </Grid>
+</UserControl>
+
