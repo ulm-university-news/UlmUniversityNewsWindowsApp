@@ -23,7 +23,7 @@ namespace DataHandlingLayer.Constants
         public const int ModeratorLoggedIn = 1;
         public const int ModeratorNotLoggedIn = 0;
 
-        // Längenbeschränkungen:
+        // Längenbeschränkungen Kanal:
         public const int MaxChannelNameLength = 45;
         public const int MinChannelNameLength = 3;
         public const int MaxChannelDescriptionLength = 500;
@@ -46,9 +46,15 @@ namespace DataHandlingLayer.Constants
         public const int MaxAnnouncementTitleLength = 45;
         public const int MaxAnnouncementContentLength = 500;
 
+        // Längenbeschränkungen Gruppe:
+        public const int MaxGroupNameLength = 45;
+        public const int MinGroupNameLength = 3;
+        public const int MaxGroupDescriptionLength = 500;
+
         // Patterns
         public const string TermPattern = @"^[W,S][0-9]{4}$";
         public const string UserNamePattern = @"^[-_a-zA-Z0-9]+$";
         public const string ChannelNamePattern = @"^[-!?_-öÖäÄüÜßa-zA-Z0-9\s]+$";
+        public const string GroupNamePattern = @"^[-!?_-öÖäÄüÜßa-zA-Z0-9\s]+$";
     }
 }

@@ -1,0 +1,321 @@
+﻿<Page
+    x:Class="UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:UlmUniversityNews.Views.Group.AddGroupDialog"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"	
+	xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:common="using:UlmUniversityNews.Common"
+    xmlns:valueconverter="using:UlmUniversityNews.Converters"
+	xmlns:drawerLayout="using:DrawerLayout"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <!-- Konvertierung eines ItemClickEventArgs auf das geklickte Objekt. -->
+        <valueconverter:ItemClickedConverter x:Key="ItemClickedConverter" />
+        <valueconverter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <valueconverter:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <valueconverter:ValidationMessageOnLocalizedStringConverter x:Key="ValidationMessageOnLocalizedStringConverter" />
+        <valueconverter:GroupTypeEnumToComboBoxItemIndexConverter x:Key="GroupTypeEnumToComboBoxItemIndexConverter" />
+        <valueconverter:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+    </Page.Resources>
+
+    <!-- StatusBar -->
+    <i:Interaction.Behaviors>
+        <common:StatusBarBehavior IsVisible="True"
+                                  ForegroundColor="White"
+                                  BackgroundColor="Black"
+                                  BackgroundOpacity="1.0" />
+        <common:ProgressIndicatorBehavior IsVisible="{Binding IsProgressIndicatorVisible, UpdateSourceTrigger=PropertyChanged}"
+                                          Value="{Binding ProgressIndicatorProgressValue, UpdateSourceTrigger=PropertyChanged}"
+                                          Text="{Binding ProgressIndicatorText, UpdateSourceTrigger=PropertyChanged}"
+                                          IsIndeterminate="{Binding IsIndeterminateProgressIndicator, UpdateSourceTrigger=PropertyChanged}" />
+    </i:Interaction.Behaviors>
+
+    <!-- CommandBar -->
+    <Page.BottomAppBar>
+        <CommandBar x:Name="ChannelSettingsCommandBar"
+						Foreground="{StaticResource UNUCommandBarButtonColor}"
+						Background="{StaticResource UniUlmMainBackgroundColor}">
+            <AppBarButton 
+                x:Name="AddGroupAddButton"
+                x:Uid="AddGroupAddButton"
+                Icon="Accept"
+                Label="erstellen"
+                Command="{Binding AddGroupCommand}"/>
+        </CommandBar>
+    </Page.BottomAppBar>
+
+    <Grid x:Name="LayoutRoot">
+
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Titelbereich - Drawer -->
+        <Grid Grid.Row="0" Style="{StaticResource DrawerMenuTitleBar}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Drawer Icon -->
+            <Image x:Name="DrawerIcon" 
+					   Grid.Column="0"
+					   Style="{StaticResource DrawerIconStyle}"
+					   Tapped="DrawerIcon_Tapped" />
+
+            <!-- Drawer Text -->
+            <TextBlock Grid.Column="1"
+						   x:Uid="AddGroupDrawerTitle"
+						   Style="{StaticResource DrawerTextStyle}"
+						   Text="Gruppe hinzufügen" />
+        </Grid>
+
+        <!--Inhalt der Seite und Inhalt des Drawer Menü-->
+        <drawerLayout:DrawerLayout Grid.Row="1" x:Name="DrawerLayout">
+
+            <!-- Inhalt der Seite -->
+            <Grid x:Name="MainFragment" Background="{StaticResource MainFragmentBackgroundColor}">
+                <!-- Der Inhalt der eigentlichen Seite kommt hier rein. -->
+                <ScrollViewer>
+                    <Grid x:Name="AddGroupMainGrid"
+                          Style="{StaticResource PivotLikeGridStyle}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Beschreibung für Add Group -->
+                        <TextBlock 
+                            Grid.Row="0"
+                            x:Name="AddGroupDescription"
+                            x:Uid="AddGroupDescription"
+                            Style="{StaticResource UniversityNewsUlmStandardText}"
+                            Text="Fügen Sie eine neue Gruppe hinzu. Geben Sie die hierfür notwendigen Daten an. Mit einem * markierte Felder sind Pflichtfelder. Sie müssen ein Passwort für die Gruppe angeben. Andere Nutzer können Ihrer Gruppe beitreten, wenn Sie das entsprechende Passwort kennen."
+                            />
+                        
+                        <!-- Name der Gruppe - Eingabefeld. -->
+                        <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBox 
+                                Grid.Row="0"
+                                x:Name="AddGroupNameTextBox"
+                                x:Uid="AddGroupNameTextBox"
+                                InputScope="AlphanumericFullWidth"
+                                Header="Name *"
+                                Text="{Binding GroupName, Mode=TwoWay}" />
+
+                            <TextBlock 
+                                Grid.Row="1"
+                                x:Name="AddGroupNameValidationError"
+                                Style="{StaticResource UniversityNewsUlmStandardErrorText}"
+                                Visibility="{Binding ElementName=AddGroupNameValidationError, Path=Text, Converter={StaticResource StringToVisibilityConverter}}"
+                                Text="{Binding ValidationMessages[Name], TargetNullValue='', FallbackValue='', Converter={StaticResource ValidationMessageOnLocalizedStringConverter}}"
+                                />
+                        </Grid>
+                        
+                        <!-- Typ der Gruppe -->
+                        <ComboBox Grid.Row="2"
+                                  x:Name="AddGroupTypeComboBox"
+                                  x:Uid="AddGroupTypeComboBox"
+                                  SelectedIndex="{Binding SelectedGroupType, Mode=TwoWay, Converter={StaticResource GroupTypeEnumToComboBoxItemIndexConverter}}"
+                                  Header="Gruppentyp *">
+                            <ComboBoxItem
+                                x:Name="AddGroupTypeWorkingGroupItem"
+                                x:Uid="AddGroupTypeWorkingGroupItem"
+                                Content="Arbeitsgruppe"/>
+                            <ComboBoxItem
+                                x:Name="AddGroupTypeTutorialGroupItem"
+                                x:Uid="AddGroupTypeTutorialGroupItem"
+                                Content="Tutoriumsgruppe"/>
+                        </ComboBox>
+                        
+                        <!-- Semester der Gruppe -->
+                        <Grid Grid.Row="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Sommer- oder Wintersemester + Jahreszahl-->
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <ComboBox Grid.Column="0"
+                                          x:Name="AddGroupTermComboBox"
+                                          x:Uid="AddGroupTermComboBox"
+                                          SelectedIndex="0"
+                                          Header="Semester">
+                                    <ComboBoxItem 
+                                        x:Name="AddGroupNoTermItem"
+                                        x:Uid="AddGroupNoTermItem"
+                                        Content="Keine Angabe"
+                                        IsSelected="{Binding IsNoTermSelected, Mode=TwoWay}"/>
+                                    <ComboBoxItem 
+                                        x:Name="AddGroupTermSummerItem"
+                                        x:Uid="AddGroupTermSummerItem"
+                                        Content="Sommersemester"
+                                        IsSelected="{Binding IsSummerTermSelected, Mode=TwoWay}"
+                                        />
+                                    <ComboBoxItem 
+                                        x:Name="AddGroupTermWinterItem"
+                                        x:Uid="AddGroupTermWinterItem"
+                                        Content="Wintersemester"
+                                        IsSelected="{Binding IsWinterTermSelected, Mode=TwoWay}"
+                                        />
+                                </ComboBox>
+
+                                <TextBox Grid.Column="1"
+                                         x:Name="AddGroupTermYear"
+                                         x:Uid="AddGroupTermYear"
+                                         InputScope="Number"
+                                         IsEnabled="{Binding IsNoTermSelected, Converter={StaticResource InverseBooleanConverter}}"
+                                         Header="Jahr *"
+                                         Margin="5, 0, 0, 0"
+                                         MaxLength="4"
+                                         Text="{Binding TermYear, Mode=TwoWay}"
+                                         />
+                            </Grid>
+
+                            <TextBlock
+                                Grid.Row="1"
+                                x:Name="AddGroupTermValidationError"
+                                Style="{StaticResource UniversityNewsUlmStandardErrorText}" 
+                                Visibility="{Binding ElementName=AddGroupTermValidationError, Path=Text, Converter={StaticResource StringToVisibilityConverter}}"
+                                Text="{Binding ValidationMessages[Term], TargetNullValue='', FallbackValue='', Converter={StaticResource ValidationMessageOnLocalizedStringConverter}}"
+                                />
+                        </Grid>
+
+                        <!-- Gruppenbeschreibung - Eingabefeld.-->
+                        <Grid Grid.Row="4">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBox
+                                Grid.Row="0"
+                                x:Name="AddGroupDescriptionTextBlock"
+                                x:Uid="AddGroupDescriptionTextBlock"
+                                InputScope="AlphanumericFullWidth"
+                                TextWrapping="Wrap"
+                                AcceptsReturn="True"
+                                Header="Beschreibung"
+                                Text="{Binding GroupDescription, Mode=TwoWay}"
+                                />
+
+                            <TextBlock
+                                Grid.Row="1"
+                                x:Name="AddGroupDescriptionValidationError"
+                                Style="{StaticResource UniversityNewsUlmStandardErrorText}"
+                                Visibility="{Binding ElementName=AddGroupDescriptionValidationError, Path=Text, Converter={StaticResource StringToVisibilityConverter}}"
+                                Text="{Binding ValidationMessages[Description], TargetNullValue='', FallbackValue='', Converter={StaticResource ValidationMessageOnLocalizedStringConverter}}" 
+                                />
+                        </Grid>
+
+                        <!-- Passwort Feld - Eingabefeld. -->
+                        <Grid Grid.Row="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBox
+                                Grid.Row="0"
+                                x:Name="AddGroupPasswordTextBlock"
+                                x:Uid="AddGroupPasswordTextBlock"
+                                InputScope="AlphanumericFullWidth"
+                                TextWrapping="Wrap"
+                                AcceptsReturn="True"
+                                Header="Passwort *"
+                                Text="{Binding GroupPassword, Mode=TwoWay}"
+                                />
+
+                            <TextBlock
+                                Grid.Row="1"
+                                x:Name="AddGroupPasswordValidationError"
+                                Style="{StaticResource UniversityNewsUlmStandardErrorText}"
+                                Visibility="{Binding ElementName=AddGroupPasswordValidationError, Path=Text, Converter={StaticResource StringToVisibilityConverter}}"
+                                Text="{Binding ValidationMessages[Password], TargetNullValue='', FallbackValue='', Converter={StaticResource ValidationMessageOnLocalizedStringConverter}}" 
+                                />
+
+                        </Grid>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
+
+
+            <!--Inhalt des Drawer Menüs-->
+            <Grid x:Name="ListFragment" Background="{StaticResource DrawerMenuContentPanelBackgroundColor}">
+                 <!--Flyout für Warnung "Dialog verlassen.--> 
+                <FlyoutBase.AttachedFlyout>
+                    <Flyout                    
+                        FlyoutPresenterStyle="{StaticResource ResourceKey=FlyoutStyle}"
+                            common:FlyoutHelper.IsOpen="{Binding IsFlyoutOpen, Mode=TwoWay}"
+                            common:FlyoutHelper.Parent="{Binding ElementName=ListFragment}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                                Grid.Row="0"
+                                x:Uid="FlyoutWarningDialogCloseDescription"
+                                Text="Achtung! Wenn Sie den Dialog verlassen werden die von Ihnen eingetragenen Daten gelöscht."
+                                Style="{StaticResource TextInFlyoutsStyle}"/>
+                            <Button
+                                Grid.Row="1"
+                                x:Uid="FlyoutWariningDialogCloseButton"
+                                Content="Dialog verlassen"
+                                Command="{Binding PerformOriginalDrawerMenuActionCommand}"
+                                Margin="0,0,15,15"
+                                HorizontalAlignment="Right" />
+                        </Grid>
+                    </Flyout>
+                </FlyoutBase.AttachedFlyout>
+
+                <ListView     
+                    x:Name="ListMenuItems"
+					ItemTemplate="{StaticResource DrawerMenuEntryDataTemplate}"
+					IsItemClickEnabled="True">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+
+                    <!--Bind auf Command mittels Behaviour. Öffne das Flyout beim Klick auf das Command. Übergibt den geklickten DrawerMenuEntry.--> 
+                    <i:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{Binding ShowWarningFlyout}"
+                                                      InputConverter="{StaticResource ItemClickedConverter}" />
+                        </core:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </ListView>
+            </Grid>
+
+        </drawerLayout:DrawerLayout>
+    </Grid>
+</Page>

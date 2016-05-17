@@ -656,7 +656,7 @@
 
             <!--Inhalt des Drawer Menüs-->
             <Grid x:Name="ListFragment" Background="{StaticResource DrawerMenuContentPanelBackgroundColor}">
-                 <!--Flyout für Warnung "Dialog verlassen."--> 
+                 <!--Flyout für Warnung "Dialog verlassen.--> 
                 <FlyoutBase.AttachedFlyout>
                     <Flyout                    
                         FlyoutPresenterStyle="{StaticResource ResourceKey=FlyoutStyle}"

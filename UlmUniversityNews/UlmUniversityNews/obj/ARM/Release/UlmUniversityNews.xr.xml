@@ -1,0 +1,586 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Roots xmlns="clr-namespace:Microsoft.Xaml.Tools.XamlCompiler.RootLog;assembly=Microsoft.Windows.UI.Xaml.81.Build.Tasks">
+  <Roots.Interfaces>
+    <RootInterface FullName="Windows.UI.Xaml.Data.IValueConverter" />
+  </Roots.Interfaces>
+  <Roots.PropertyPathNames>
+    <RootPropertyPathName Name="Term" />
+    <RootPropertyPathName Name="Type" />
+    <RootPropertyPathName Name="NumberOfUnreadAnnouncements" />
+    <RootPropertyPathName Name="Name" />
+    <RootPropertyPathName Name="DisplayableNameResourceKey" />
+    <RootPropertyPathName Name="IconPath" />
+    <RootPropertyPathName Name="IsIntervalOneTimeSelected" />
+    <RootPropertyPathName Name="SelectedDate" />
+    <RootPropertyPathName Name="IsWeeklyIntervalSelected" />
+    <RootPropertyPathName Name="IsDailyIntervalSelected" />
+    <RootPropertyPathName Name="SelectedComboBoxIndex" />
+    <RootPropertyPathName Name="DefaultViewModel" />
+    <RootPropertyPathName Name="Item" />
+    <RootPropertyPathName Name="Title" />
+    <RootPropertyPathName Name="SecondGroup" />
+    <RootPropertyPathName Name="Items" />
+    <RootPropertyPathName Name="Description" />
+    <RootPropertyPathName Name="FirstGroup" />
+    <RootPropertyPathName Name="IsProgressIndicatorVisible" />
+    <RootPropertyPathName Name="ProgressIndicatorProgressValue" />
+    <RootPropertyPathName Name="ProgressIndicatorText" />
+    <RootPropertyPathName Name="IsIndeterminateProgressIndicator" />
+    <RootPropertyPathName Name="DrawerButtonCommand" />
+    <RootPropertyPathName Name="Text" />
+    <RootPropertyPathName Name="SaveSettingsCommand" />
+    <RootPropertyPathName Name="IsLanguageChangedFlyoutOpen" />
+    <RootPropertyPathName Name="SelectedPivotItemIndex" />
+    <RootPropertyPathName Name="IsBallotOrderOptionByBallotType" />
+    <RootPropertyPathName Name="IsBallotOrderOptionLatestVote" />
+    <RootPropertyPathName Name="IsBallotOrderOptionAlphabetical" />
+    <RootPropertyPathName Name="IsConversationOrderOptionByMsgAmount" />
+    <RootPropertyPathName Name="IsConversationOrderOptionLatest" />
+    <RootPropertyPathName Name="IsConversationOrderOptionAlphabetical" />
+    <RootPropertyPathName Name="IsGroupOrderOptionByMsgAmount" />
+    <RootPropertyPathName Name="IsGroupOrderOptionByType" />
+    <RootPropertyPathName Name="IsGroupOrderOptionAlphabetical" />
+    <RootPropertyPathName Name="IsChannelOrderOptionByMsgAmount" />
+    <RootPropertyPathName Name="IsChannelOrderOptionByType" />
+    <RootPropertyPathName Name="IsChannelOrderOptionAlphabetical" />
+    <RootPropertyPathName Name="IsDescendingMsgOrderSelected" />
+    <RootPropertyPathName Name="IsAscendingMsgOrderSelected" />
+    <RootPropertyPathName Name="IsNotificationOptionNoneSelected" />
+    <RootPropertyPathName Name="IsNotificationOptionAllSelected" />
+    <RootPropertyPathName Name="IsNotificationOptionPrioHighSelected" />
+    <RootPropertyPathName Name="IsEnglishLanguageSelected" />
+    <RootPropertyPathName Name="IsGermanLanguageSelected" />
+    <RootPropertyPathName Name="ValidationMessages" />
+    <RootPropertyPathName Name="LocalUsername" />
+    <RootPropertyPathName Name="LocalUser" />
+    <RootPropertyPathName Name="DataContext" />
+    <RootPropertyPathName Name="ListRotationAngle" />
+    <RootPropertyPathName Name="Read" />
+    <RootPropertyPathName Name="CreationDate" />
+    <RootPropertyPathName Name="Channel" />
+    <RootPropertyPathName Name="CanUnsubscribeChannel" />
+    <RootPropertyPathName Name="UnsubscribeChannelCommand" />
+    <RootPropertyPathName Name="ChannelSubscribedStatus" />
+    <RootPropertyPathName Name="SubscribeChannelCommand" />
+    <RootPropertyPathName Name="IsEnabled" />
+    <RootPropertyPathName Name="SwitchToChannelSettingsCommand" />
+    <RootPropertyPathName Name="IsChannelInfoSynchronisationPossible" />
+    <RootPropertyPathName Name="SynchronizeChannelInformationCommand" />
+    <RootPropertyPathName Name="IsUpdateAnnouncementsPossible" />
+    <RootPropertyPathName Name="UpdateAnnouncementsCommand" />
+    <RootPropertyPathName Name="OpenDeleteChannelLocallyFlyoutCommand" />
+    <RootPropertyPathName Name="IsDeleteChannelWarningFlyoutOpen" />
+    <RootPropertyPathName Name="DeleteChannelLocallyFlyoutCommand" />
+    <RootPropertyPathName Name="IsDeletionNotificationOpen" />
+    <RootPropertyPathName Name="Moderators" />
+    <RootPropertyPathName Name="EventObj" />
+    <RootPropertyPathName Name="Organizer" />
+    <RootPropertyPathName Name="Cost" />
+    <RootPropertyPathName Name="Sports" />
+    <RootPropertyPathName Name="NumberOfParticipants" />
+    <RootPropertyPathName Name="Lecture" />
+    <RootPropertyPathName Name="Assistant" />
+    <RootPropertyPathName Name="Lecturer" />
+    <RootPropertyPathName Name="EndDate" />
+    <RootPropertyPathName Name="StartDate" />
+    <RootPropertyPathName Name="Faculty" />
+    <RootPropertyPathName Name="Website" />
+    <RootPropertyPathName Name="Contacts" />
+    <RootPropertyPathName Name="Dates" />
+    <RootPropertyPathName Name="Locations" />
+    <RootPropertyPathName Name="ModificationDate" />
+    <RootPropertyPathName Name="Announcements" />
+    <RootPropertyPathName Name="ShowScrollBar" />
+    <RootPropertyPathName Name="Count" />
+    <RootPropertyPathName Name="Deleted" />
+    <RootPropertyPathName Name="SelectedChannel" />
+    <RootPropertyPathName Name="SaveNotificationSettingsCommand" />
+    <RootPropertyPathName Name="IsNotificationOptionPrioAppDefaultSelected" />
+    <RootPropertyPathName Name="OrderByTypeChecked" />
+    <RootPropertyPathName Name="ReorderChannelsCommand" />
+    <RootPropertyPathName Name="SynchronizeChannelsCommand" />
+    <RootPropertyPathName Name="Channels" />
+    <RootPropertyPathName Name="ChannelSelectedCommand" />
+    <RootPropertyPathName Name="StartChannelSearchCommand" />
+    <RootPropertyPathName Name="SearchTerm" />
+    <RootPropertyPathName Name="AddGroupCommand" />
+    <RootPropertyPathName Name="SearchGroupsCommand" />
+    <RootPropertyPathName Name="SearchChannelsCommand" />
+    <RootPropertyPathName Name="GroupCollection" />
+    <RootPropertyPathName Name="ChannelCollection" />
+    <RootPropertyPathName Name="ChannelSelected" />
+    <RootPropertyPathName Name="LoginCommand" />
+    <RootPropertyPathName Name="Password" />
+    <RootPropertyPathName Name="Username" />
+    <RootPropertyPathName Name="EditableChannel" />
+    <RootPropertyPathName Name="IsEditChannelDialog" />
+    <RootPropertyPathName Name="EditChannelCommand" />
+    <RootPropertyPathName Name="IsAddChannelDialog" />
+    <RootPropertyPathName Name="AddChannelCommand" />
+    <RootPropertyPathName Name="IsFlyoutOpen" />
+    <RootPropertyPathName Name="PerformOriginalDrawerMenuActionCommand" />
+    <RootPropertyPathName Name="ShowWarningFlyout" />
+    <RootPropertyPathName Name="SportsSpecificFieldsVisible" />
+    <RootPropertyPathName Name="AmountOfParticipants" />
+    <RootPropertyPathName Name="SportsCost" />
+    <RootPropertyPathName Name="EventSpecificFieldsVisible" />
+    <RootPropertyPathName Name="EventOrganizer" />
+    <RootPropertyPathName Name="EventCost" />
+    <RootPropertyPathName Name="LectureSpecificFieldsVisible" />
+    <RootPropertyPathName Name="LectureEndDate" />
+    <RootPropertyPathName Name="LectureStartDate" />
+    <RootPropertyPathName Name="SelectedFaculty" />
+    <RootPropertyPathName Name="ChannelDescription" />
+    <RootPropertyPathName Name="TermYear" />
+    <RootPropertyPathName Name="IsWinterTermSelected" />
+    <RootPropertyPathName Name="IsSummerTermSelected" />
+    <RootPropertyPathName Name="SelectedChannelType" />
+    <RootPropertyPathName Name="ChannelName" />
+    <RootPropertyPathName Name="IsEditReminderDialog" />
+    <RootPropertyPathName Name="EditReminderCommand" />
+    <RootPropertyPathName Name="IsAddReminderDialog" />
+    <RootPropertyPathName Name="CreateReminderCommand" />
+    <RootPropertyPathName Name="IsPriorityHighSelected" />
+    <RootPropertyPathName Name="IsPriorityNormalSelcted" />
+    <RootPropertyPathName Name="IsReminderExpired" />
+    <RootPropertyPathName Name="NextReminderDate" />
+    <RootPropertyPathName Name="SkipNextReminderDate" />
+    <RootPropertyPathName Name="IntervalValue" />
+    <RootPropertyPathName Name="SelectedIntervalInWeeks" />
+    <RootPropertyPathName Name="SelectedIntervalInDays" />
+    <RootPropertyPathName Name="SelectedIntervalTypeComboBoxIndex" />
+    <RootPropertyPathName Name="SelectedTime" />
+    <RootPropertyPathName Name="SelectedEndDate" />
+    <RootPropertyPathName Name="SelectedStartDate" />
+    <RootPropertyPathName Name="CreateNewAnnouncementCommand" />
+    <RootPropertyPathName Name="AnnouncementContent" />
+    <RootPropertyPathName Name="IsMessagePriorityHighSelected" />
+    <RootPropertyPathName Name="IsMessagePriorityNormalSelected" />
+    <RootPropertyPathName Name="AnnouncementTitle" />
+    <RootPropertyPathName Name="IsActive" />
+    <RootPropertyPathName Name="IsExpired" />
+    <RootPropertyPathName Name="NextDate" />
+    <RootPropertyPathName Name="SwitchToAddReminderDialogCommand" />
+    <RootPropertyPathName Name="SwitchToEditChannelDialogCommand" />
+    <RootPropertyPathName Name="SwitchToAddAnnouncementDialogCommand" />
+    <RootPropertyPathName Name="SynchronizeWithServerCommand" />
+    <RootPropertyPathName Name="CanDeleteChannel" />
+    <RootPropertyPathName Name="DeleteChannelCommand" />
+    <RootPropertyPathName Name="Reminders" />
+    <RootPropertyPathName Name="ReminderSelectedCommand" />
+    <RootPropertyPathName Name="SwitchToAddChannelDialogCommand" />
+    <RootPropertyPathName Name="SynchronizeManagedChannelsCommand" />
+    <RootPropertyPathName Name="SwitchToEditReminderDialogCommand" />
+    <RootPropertyPathName Name="ValidReminderSelected" />
+    <RootPropertyPathName Name="SelectedReminder" />
+    <RootPropertyPathName Name="IsDeactivateReminderFlyoutOpen" />
+    <RootPropertyPathName Name="DeactivateReminderCommand" />
+    <RootPropertyPathName Name="IsActivateReminderFlyoutOpen" />
+    <RootPropertyPathName Name="ActivateReminderCommand" />
+    <RootPropertyPathName Name="SynchronizeReminderCommand" />
+    <RootPropertyPathName Name="DeleteReminderCommand" />
+    <RootPropertyPathName Name="LastModifiedBy" />
+    <RootPropertyPathName Name="Ignore" />
+    <RootPropertyPathName Name="Interval" />
+    <RootPropertyPathName Name="MessagePriority" />
+    <RootPropertyPathName Name="CreateUserCommand" />
+    <RootPropertyPathName Name="AreTermsAndConditionsAccepted" />
+  </Roots.PropertyPathNames>
+  <Roots.RootTypes>
+    <RootType FullName="Windows.UI.Xaml.Application">
+      <RootProperty Name="RequestedTheme" />
+      <RootProperty Name="Resources" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.Converters.ChannelTypeToStringConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.ChannelToIconPathConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.ZeroIntegerToVisibilityConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.DateTimeToStringConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.MessageReadPropertyToBackgroundColorConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.DrawerMenuEntryNameToLocalizedStringConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.StatusBarInformationToLocalizedStringConverter" />
+    <RootType FullName="Windows.UI.Xaml.Media.SolidColorBrush">
+      <RootProperty Name="Color" />
+      <RootProperty Name="Opacity" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.TextBlock">
+      <RootProperty Name="FontSize" />
+      <RootProperty Name="FontFamily" />
+      <RootProperty Name="TextWrapping" />
+      <RootProperty Name="TextTrimming" />
+      <RootProperty Name="FontWeight" />
+      <RootProperty Name="Padding" />
+      <RootProperty Name="Foreground" />
+      <RootProperty Name="HorizontalAlignment" />
+      <RootProperty Name="Style" />
+      <RootProperty Name="Text" />
+      <RootProperty Name="Margin" />
+      <RootProperty Name="VerticalAlignment" />
+      <RootProperty Name="TextAlignment" />
+      <RootProperty Name="Inlines" />
+      <RootProperty Name="CharacterSpacing" />
+      <RootProperty Name="Visibility" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.FrameworkElement">
+      <RootProperty Name="Margin" />
+      <RootProperty Name="VerticalAlignment" />
+      <RootProperty Name="HorizontalAlignment" />
+      <RootProperty Name="Height" />
+      <RootProperty Name="MinHeight" />
+      <RootProperty Name="Width" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.Image">
+      <RootProperty Name="Source" />
+      <RootProperty Name="Margin" />
+      <RootProperty Name="HorizontalAlignment" />
+      <RootProperty Name="VerticalAlignment" />
+      <RootProperty Name="Width" />
+      <RootProperty Name="Height" />
+      <RootProperty Name="Style" />
+      <RootEvent Name="Tapped" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.Grid">
+      <RootProperty Name="Background" />
+      <RootProperty Name="Margin" />
+      <RootProperty Name="ColumnDefinitions" />
+      <RootProperty Name="Children" />
+      <RootProperty Name="RowDefinitions" />
+      <RootProperty Name="VerticalAlignment" />
+      <RootProperty Name="Visibility" />
+      <RootProperty Name="HorizontalAlignment" />
+      <RootProperty Name="ChildrenTransitions" />
+      <RootProperty Name="Style" />
+      <RootProperty Name="RenderTransformOrigin" />
+      <RootProperty Name="RenderTransform" />
+      <RootProperty Name="Height" />
+      <RootProperty Name="DataContext" />
+      <RootMethod Name="GetColumn" />
+      <RootMethod Name="SetColumn" />
+      <RootMethod Name="GetRow" />
+      <RootMethod Name="SetRow" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Shapes.Line">
+      <RootProperty Name="X1" />
+      <RootProperty Name="X2" />
+      <RootProperty Name="Margin" />
+      <RootProperty Name="Style" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Shapes.Shape">
+      <RootProperty Name="Stretch" />
+      <RootProperty Name="Stroke" />
+      <RootProperty Name="StrokeThickness" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.Panel">
+      <RootProperty Name="Background" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.DataTemplate">
+      <RootProperty Name="Template" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.PivotItem">
+      <RootProperty Name="Margin" />
+      <RootProperty Name="Header" />
+      <RootProperty Name="DataContext" />
+      <RootProperty Name="Content" />
+      <RootProperty Name="Style" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.FlyoutPresenter" />
+    <RootType FullName="Windows.UI.Xaml.Controls.Control">
+      <RootProperty Name="BorderBrush" />
+      <RootProperty Name="BorderThickness" />
+      <RootProperty Name="VerticalContentAlignment" />
+      <RootProperty Name="HorizontalContentAlignment" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.Button">
+      <RootProperty Name="Style" />
+      <RootProperty Name="Content" />
+      <RootProperty Name="Command" />
+      <RootProperty Name="Margin" />
+      <RootProperty Name="MinWidth" />
+      <RootProperty Name="HorizontalContentAlignment" />
+      <RootProperty Name="HorizontalAlignment" />
+      <RootProperty Name="BorderThickness" />
+      <RootProperty Name="Background" />
+    </RootType>
+    <RootType FullName="Microsoft.Xaml.Tools.DirectUI.ProxyTypes.StaticResourceExtension">
+      <RootProperty Name="ResourceKey" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.ColumnDefinition">
+      <RootProperty Name="Width" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.RowDefinition">
+      <RootProperty Name="Height" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Data.Binding">
+      <RootProperty Name="Converter" />
+      <RootProperty Name="FallbackValue" />
+      <RootProperty Name="TargetNullValue" />
+      <RootProperty Name="Mode" />
+      <RootProperty Name="RelativeSource" />
+      <RootProperty Name="UpdateSourceTrigger" />
+      <RootProperty Name="ElementName" />
+      <RootProperty Name="Path" />
+      <RootProperty Name="ConverterParameter" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Shapes.Ellipse">
+      <RootProperty Name="Fill" />
+      <RootProperty Name="Height" />
+      <RootProperty Name="Width" />
+      <RootProperty Name="HorizontalAlignment" />
+      <RootProperty Name="VerticalAlignment" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Setter">
+      <RootProperty Name="Property" />
+      <RootProperty Name="Value" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.ContentPresenter">
+      <RootProperty Name="Content" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.UserControl">
+      <RootProperty Name="Resources" />
+      <RootProperty Name="Content" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.Converters.BooleanToVisibilityConverter" />
+    <RootType FullName="Windows.UI.Xaml.Controls.ComboBox">
+      <RootProperty Name="SelectedIndex" />
+      <RootProperty Name="Header" />
+      <RootProperty Name="HeaderTemplate" />
+      <RootProperty Name="Items" />
+      <RootProperty Name="IsEnabled" />
+      <RootProperty Name="HorizontalContentAlignment" />
+      <RootProperty Name="VerticalAlignment" />
+      <RootProperty Name="MinWidth" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Documents.Run">
+      <RootProperty Name="Text" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.DatePicker">
+      <RootProperty Name="HorizontalAlignment" />
+      <RootProperty Name="MonthVisible" />
+      <RootProperty Name="YearVisible" />
+      <RootProperty Name="Date" />
+      <RootProperty Name="DayFormat" />
+      <RootProperty Name="Header" />
+      <RootProperty Name="MonthFormat" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.ComboBoxItem">
+      <RootProperty Name="Content" />
+      <RootProperty Name="IsSelected" />
+      <RootProperty Name="Visibility" />
+      <RootProperty Name="IsEnabled" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.Common.CustomUserControl.IntervalPicker" />
+    <RootType FullName="Windows.UI.Xaml.Controls.Page">
+      <RootProperty Name="DataContext" />
+      <RootProperty Name="Background" />
+      <RootProperty Name="Transitions" />
+      <RootProperty Name="Content" />
+      <RootProperty Name="BottomAppBar" />
+      <RootProperty Name="Resources" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Data.RelativeSource" />
+    <RootType FullName="Microsoft.Xaml.Tools.DirectUI.ProxyTypes.ThemeResourceExtension" />
+    <RootType FullName="Windows.UI.Xaml.Media.Animation.TransitionCollection" />
+    <RootType FullName="Windows.UI.Xaml.Media.Animation.NavigationThemeTransition">
+      <RootProperty Name="DefaultNavigationTransitionInfo" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Media.Animation.ContinuumNavigationTransitionInfo">
+      <RootMethod Name="GetExitElementContainer" />
+      <RootMethod Name="SetExitElementContainer" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Media.Animation.EntranceThemeTransition" />
+    <RootType FullName="Windows.UI.Xaml.Controls.StackPanel">
+      <RootProperty Name="Margin" />
+      <RootProperty Name="Children" />
+      <RootProperty Name="Orientation" />
+      <RootProperty Name="Background" />
+      <RootProperty Name="Height" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.ItemPage" />
+    <RootType FullName="Windows.UI.Xaml.Media.Animation.CommonNavigationTransitionInfo">
+      <RootProperty Name="IsStaggeringEnabled" />
+      <RootMethod Name="GetIsStaggerElement" />
+      <RootMethod Name="SetIsStaggerElement" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.Pivot">
+      <RootProperty Name="Title" />
+      <RootProperty Name="Items" />
+      <RootProperty Name="HeaderTemplate" />
+      <RootProperty Name="SelectedIndex" />
+      <RootMethod Name="GetSlideInAnimationGroup" />
+      <RootMethod Name="SetSlideInAnimationGroup" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.ListView">
+      <RootProperty Name="ItemsSource" />
+      <RootProperty Name="IsItemClickEnabled" />
+      <RootProperty Name="ItemTemplate" />
+      <RootProperty Name="ItemContainerStyle" />
+      <RootProperty Name="HorizontalContentAlignment" />
+      <RootProperty Name="HorizontalAlignment" />
+      <RootProperty Name="RenderTransformOrigin" />
+      <RootProperty Name="RenderTransform" />
+      <RootProperty Name="Margin" />
+      <RootEvent Name="ItemClick" />
+      <RootEvent Name="Loaded" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.CommandBar">
+      <RootProperty Name="PrimaryCommands" />
+      <RootProperty Name="SecondaryCommands" />
+      <RootProperty Name="Foreground" />
+      <RootProperty Name="Background" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.AppBarButton">
+      <RootProperty Name="Label" />
+      <RootProperty Name="Icon" />
+      <RootProperty Name="Command" />
+      <RootProperty Name="Visibility" />
+      <RootProperty Name="Flyout" />
+      <RootProperty Name="IsEnabled" />
+      <RootEvent Name="Click" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.PivotPage" />
+    <RootType FullName="Microsoft.Xaml.Interactivity.Interaction">
+      <RootMethod Name="GetBehaviors" />
+      <RootMethod Name="SetBehaviors" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.Converters.ItemClickedConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.HyperlinkStringToNavigationUriConverter" />
+    <RootType FullName="UlmUniversityNews.Common.StatusBarBehavior">
+      <RootProperty Name="IsVisible" />
+      <RootProperty Name="ForegroundColor" />
+      <RootProperty Name="BackgroundColor" />
+      <RootProperty Name="BackgroundOpacity" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.Common.ProgressIndicatorBehavior">
+      <RootProperty Name="IsVisible" />
+      <RootProperty Name="Value" />
+      <RootProperty Name="Text" />
+      <RootProperty Name="IsIndeterminate" />
+    </RootType>
+    <RootType FullName="DrawerLayout.DrawerLayout">
+      <RootProperty Name="Children" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.ListViewItem" />
+    <RootType FullName="Microsoft.Xaml.Interactions.Core.EventTriggerBehavior">
+      <RootProperty Name="EventName" />
+      <RootProperty Name="Actions" />
+    </RootType>
+    <RootType FullName="Microsoft.Xaml.Interactions.Core.InvokeCommandAction">
+      <RootProperty Name="Command" />
+      <RootProperty Name="InputConverter" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.ScrollViewer">
+      <RootProperty Name="Content" />
+      <RootProperty Name="VerticalScrollBarVisibility" />
+      <RootMethod Name="GetVerticalScrollBarVisibility" />
+      <RootMethod Name="SetVerticalScrollBarVisibility" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Documents.LineBreak" />
+    <RootType FullName="Windows.UI.Xaml.Documents.Hyperlink">
+      <RootProperty Name="NavigateUri" />
+      <RootProperty Name="Inlines" />
+      <RootEvent Name="Click" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.Views.About.AboutUniversityNews" />
+    <RootType FullName="UlmUniversityNews.Converters.ValidationMessageOnLocalizedStringConverter" />
+    <RootType FullName="Windows.UI.Xaml.Controls.Primitives.FlyoutBase">
+      <RootMethod Name="GetAttachedFlyout" />
+      <RootMethod Name="SetAttachedFlyout" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.Flyout">
+      <RootProperty Name="FlyoutPresenterStyle" />
+      <RootProperty Name="Content" />
+      <RootProperty Name="Placement" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.Common.FlyoutHelper">
+      <RootMethod Name="GetIsOpen" />
+      <RootMethod Name="SetIsOpen" />
+      <RootMethod Name="GetParent" />
+      <RootMethod Name="SetParent" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.RadioButton">
+      <RootProperty Name="Content" />
+      <RootProperty Name="IsChecked" />
+      <RootProperty Name="GroupName" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.TextBox">
+      <RootProperty Name="Margin" />
+      <RootProperty Name="Header" />
+      <RootProperty Name="InputScope" />
+      <RootProperty Name="Text" />
+      <RootProperty Name="Background" />
+      <RootProperty Name="TextWrapping" />
+      <RootProperty Name="AcceptsReturn" />
+      <RootProperty Name="MaxLength" />
+      <RootProperty Name="MinHeight" />
+      <RootEvent Name="KeyDown" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.Views.ApplicationSettings.ApplicationSettings" />
+    <RootType FullName="UlmUniversityNews.Converters.FacultyToLocalizedStringConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.NullValuetoVisibilityConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.ChannelToDrawerMenuBackgroundConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.ListCountToVisibilityConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.ChannelTermToLocalizedStringConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.ResourceDetailsDateTimeToStringConverter" />
+    <RootType FullName="Windows.UI.Xaml.Media.RotateTransform">
+      <RootProperty Name="Angle" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.Common.HyperLinkedTextBlock">
+      <RootMethod Name="GetText" />
+      <RootMethod Name="SetText" />
+    </RootType>
+    <RootType FullName="Microsoft.Xaml.Tools.DirectUI.ProxyTypes.NullExtension" />
+    <RootType FullName="UlmUniversityNews.Common.EmailTextBlock">
+      <RootMethod Name="GetEmailText" />
+      <RootMethod Name="SetEmailText" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.Common.HideablePivotItemBehavior">
+      <RootProperty Name="Visible" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.Views.ChannelDetails.ChannelDetails" />
+    <RootType FullName="UlmUniversityNews.Views.ChannelDetails.ChannelSettings" />
+    <RootType FullName="Windows.UI.Xaml.Controls.AppBarToggleButton">
+      <RootProperty Name="Label" />
+      <RootProperty Name="Icon" />
+      <RootProperty Name="IsChecked" />
+      <RootProperty Name="Command" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Media.ImageBrush">
+      <RootProperty Name="Stretch" />
+      <RootProperty Name="ImageSource" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.Views.ChannelSearch.ChannelSearch" />
+    <RootType FullName="UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup" />
+    <RootType FullName="UlmUniversityNews.Views.Homescreen.Homescreen" />
+    <RootType FullName="Windows.UI.Xaml.Controls.PasswordBox">
+      <RootProperty Name="Margin" />
+      <RootProperty Name="Header" />
+      <RootProperty Name="Password" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.Views.Login.LoginPage" />
+    <RootType FullName="UlmUniversityNews.Converters.StringToVisibilityConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.ChannelTypeEnumToComboBoxItemIndexConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.FacultyEnumToComboBoxItemIndexConverter" />
+    <RootType FullName="UlmUniversityNews.Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel" />
+    <RootType FullName="UlmUniversityNews.Converters.ReminderDateTimeToStringConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.ReminderIntervalToLocalizedStringConverter" />
+    <RootType FullName="Windows.UI.Xaml.Controls.TimePicker">
+      <RootProperty Name="Header" />
+      <RootProperty Name="Time" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.CheckBox">
+      <RootProperty Name="Visibility" />
+      <RootProperty Name="IsChecked" />
+      <RootProperty Name="Content" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder" />
+    <RootType FullName="UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement" />
+    <RootType FullName="UlmUniversityNews.Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails" />
+    <RootType FullName="UlmUniversityNews.Views.ModeratorViews.Homescreen.HomescreenModerator" />
+    <RootType FullName="UlmUniversityNews.Converters.DateTimeToPureDateStringConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.DateTimeToPureTimeStringConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.BooleanValueToLocalizedStringConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.SkipNextReminderDateToIconPathConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.PriorityEnumToLocalizedStringConverter" />
+    <RootType FullName="UlmUniversityNews.Views.ModeratorViews.ReminderDetails.ReminderDetails" />
+    <RootType FullName="UlmUniversityNews.Views.StartPage" />
+  </Roots.RootTypes>
+</Roots>

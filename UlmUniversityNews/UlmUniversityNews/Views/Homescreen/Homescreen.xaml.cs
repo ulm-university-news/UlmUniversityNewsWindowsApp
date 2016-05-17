@@ -108,6 +108,9 @@ namespace UlmUniversityNews.Views.Homescreen
 
             // Lade "Meine Kanäle"
             await homescreenViewModel.LoadMyChannelsAsync();
+
+            // Lade "Meine Gruppen"
+            await homescreenViewModel.LoadMyGroupsAsync();
         }
 
         /// <summary>

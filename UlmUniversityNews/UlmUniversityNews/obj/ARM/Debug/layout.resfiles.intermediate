@@ -131,6 +131,8 @@ Assets\extIcons\appbar.door.leave.png
 Assets\extIcons\appbar.home.empty.png
 Assets\extIcons\appbar.information.png
 Assets\extIcons\license.txt
+Assets\groupIcons\g.png
+Assets\groupIcons\g_admin.png
 Assets\Logo.scale-100.png
 Assets\Logo.scale-140.png
 Assets\Logo.scale-240.png
@@ -307,6 +309,7 @@ Views\ApplicationSettings\ApplicationSettings.xbf
 Views\ChannelDetails\ChannelDetails.xbf
 Views\ChannelDetails\ChannelSettings.xbf
 Views\ChannelSearch\ChannelSearch.xbf
+Views\Group\AddGroupDialog\AddGroup.xbf
 Views\Homescreen\Homescreen.xbf
 Views\Login\LoginPage.xbf
 Views\ModeratorViews\AddAndEditChannelDialog\AddAndEditChannel.xbf

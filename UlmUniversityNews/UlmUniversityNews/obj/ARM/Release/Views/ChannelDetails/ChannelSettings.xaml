@@ -1,0 +1,193 @@
+﻿<Page
+    x:Class="UlmUniversityNews.Views.ChannelDetails.ChannelSettings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:UlmUniversityNews.Views.ChannelDetails"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:common="using:UlmUniversityNews.Common"
+    xmlns:valueconverter="using:UlmUniversityNews.Converters"
+    xmlns:drawerLayout="using:DrawerLayout"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <!-- Konvertierung eines ItemClickEventArgs auf das geklickte Objekt. -->
+        <valueconverter:ItemClickedConverter x:Key="ItemClickedConverter" />
+
+        <!-- Ändert Hintergrundfarbe nach Fakultät bei Kanälen des Typs Vorlesung.-->
+        <valueconverter:ChannelToDrawerMenuBackgroundConverter x:Key="ChannelToDrawerMenuBackgroundConverter" />
+
+        <!-- Bildet Boolean Wert auf Sichtbarkeitswert ab. -->
+        <valueconverter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Page.Resources>
+
+    <!-- StatusBar -->
+    <i:Interaction.Behaviors>
+        <common:StatusBarBehavior IsVisible="True"
+                                  ForegroundColor="White"
+                                  BackgroundColor="Black"
+                                  BackgroundOpacity="1.0" />
+        <common:ProgressIndicatorBehavior IsVisible="{Binding IsProgressIndicatorVisible, UpdateSourceTrigger=PropertyChanged}"
+                                          Value="{Binding ProgressIndicatorProgressValue, UpdateSourceTrigger=PropertyChanged}"
+                                          Text="{Binding ProgressIndicatorText, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StatusBarInformationToLocalizedStringConverter}}"
+                                          IsIndeterminate="{Binding IsIndeterminateProgressIndicator, UpdateSourceTrigger=PropertyChanged}" />
+    </i:Interaction.Behaviors>
+
+    <!-- CommandBar -->
+    <Page.BottomAppBar>
+        <CommandBar x:Name="ChannelSettingsCommandBar"
+                    Foreground="{StaticResource UNUCommandBarButtonColor}"
+                    Background="{Binding SelectedChannel, Converter={StaticResource ChannelToDrawerMenuBackgroundConverter}}">
+            <AppBarButton
+                x:Name="ChannelSettingsSaveButton"
+                x:Uid="ChannelSettingsSaveButton"
+                Icon="Save"
+                Label="speichern"
+                Visibility="{Binding ElementName=ChannelSettingsSaveButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding SaveNotificationSettingsCommand}" /> <!-- Visibility hier eigentlich nicht nötig, zumindest aktuell noch sollte dort immer true sein.-->
+        </CommandBar>
+    </Page.BottomAppBar>
+
+    <Grid x:Name="LayoutRoot">
+
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Titelbereich - Drawer -->
+        <Grid Grid.Row="0" Style="{StaticResource DrawerMenuTitleBar}"
+              Background="{Binding SelectedChannel, Converter={StaticResource ChannelToDrawerMenuBackgroundConverter}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Drawer Icon -->
+            <Image x:ConnectionId='1' x:Name="DrawerIcon" 
+                   Grid.Column="0"
+                   Style="{StaticResource DrawerIconStyle}"
+                                              />
+
+            <!-- Drawer Text -->
+            <TextBlock Grid.Column="1"
+                       x:Name="ChannelSettingsTitle"
+                       Style="{StaticResource DrawerTextStyle}"
+                       Text="{Binding SelectedChannel.Name, TargetNullValue='ChannelSettings', FallbackValue='ChannelSettings'}" />
+        </Grid>
+
+        <!--Inhalt der Seite und Inhalt des Drawer Menü-->
+        <drawerLayout:DrawerLayout Grid.Row="1" x:Name="DrawerLayout">
+
+            <!-- Inhalt der Seite -->
+            <Grid x:Name="MainFragment" Background="{StaticResource MainFragmentBackgroundColor}">
+                <ScrollViewer>
+                    <Grid Style="{StaticResource PivotLikeGridStyle}">
+                    <!-- Margin nach links gleich zu Pivot -->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Überschrift -->
+                    <TextBlock Grid.Row="0"
+                                   x:Name="ChannelSettingsHeadline"
+                                   x:Uid="ChannelSettingsHeadline"
+                                   Style="{StaticResource UniversityNewsUlmPivotHeaderLikeText}"
+                                   Text="Kanaleinstellungen"/>
+
+                        <!-- Benachrichtigungseinstellungen -->
+                        <Grid
+                            Grid.Row="1">
+                            <!--Margin nach oben gleich zu Pivot Item-->
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Header -->
+                            <TextBlock Grid.Row="0"
+                                       x:Name="ChannelSettingsNotificationSettingsHeader"
+                                       x:Uid="ChannelSettingsNotificationSettingsHeader"
+                                       Style="{StaticResource UniversityNewsUlmStandardHeader}"
+                                       Text="Benachrichtigungen"/>
+
+                            <!-- Description -->
+                            <TextBlock Grid.Row="1" 
+                                       x:Name="ChannelSettingsNotificationSettingsDescription"
+                                       x:Uid="ChannelSettingsNotificationSettingsDescription"
+                                       Style="{StaticResource UniversityNewsUlmStandardText}"
+                                       Text="Hier können Sie für diesen Kanal spezifische Benachrichtigungseinstellungen festlegen, welche die globalen Einstellungen überschreiben. Wenn Sie Default wählen, werden für den Kanal die globalen Benachrichtigungseinstellungen verwendet."/>
+
+                            <!-- Auswahlelemente -->
+                            <StackPanel
+                                        Orientation="Vertical"
+                                        Grid.Row="2">
+                                <RadioButton 
+                                            x:Name="ChannelSettingsNotificationSettingsOptionAppDefault"
+                                            x:Uid="ChannelSettingsNotificationSettingsOptionAppDefault"
+                                            Content="Default"
+                                            IsChecked="{Binding IsNotificationOptionPrioAppDefaultSelected, Mode=TwoWay}"
+                                            GroupName="notificationSettings"/>
+                                <RadioButton 
+                                            x:Name="ChannelSettingsNotificationSettingsOptionPrioHigh"
+                                            x:Uid="ChannelSettingsNotificationSettingsOptionPrioHigh"
+                                            Content="Nur Priorität 'hoch' ankündigen"
+                                            IsChecked="{Binding IsNotificationOptionPrioHighSelected, Mode=TwoWay}"
+                                            GroupName="notificationSettings"/>
+
+                                <RadioButton
+                                            x:Name="ChannelSettingsNotificationSettingsOptionAll"
+                                            x:Uid="ChannelSettingsNotificationSettingsOptionAll"
+                                            Content="Alle Nachrichten ankündigen"
+                                            IsChecked="{Binding IsNotificationOptionAllSelected, Mode=TwoWay}"
+                                            GroupName="notificationSettings"/>
+
+                                <RadioButton
+                                            x:Name="ChannelSettingsNotificationSettingsOptionNone"
+                                            x:Uid="ChannelSettingsNotificationSettingsOptionNone"
+                                            Content="Keine Nachrichten ankündigen"
+                                            IsChecked="{Binding IsNotificationOptionNoneSelected, Mode=TwoWay}"
+                                            GroupName="notificationSettings"/>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
+
+
+            <!--Inhalt des Drawer Menüs-->
+            <Grid x:Name="ListFragment" Background="{StaticResource DrawerMenuContentPanelBackgroundColor}">
+                <ListView x:Name="ListMenuItems"
+                          ItemTemplate="{StaticResource DrawerMenuEntryDataTemplate}"
+                          IsItemClickEnabled="True">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+
+                     <!--Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
+                    <i:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{Binding DrawerButtonCommand}"
+                                                              InputConverter="{StaticResource ItemClickedConverter}" />
+                        </core:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </ListView>
+            </Grid>
+
+        </drawerLayout:DrawerLayout>
+    </Grid>
+</Page>
+

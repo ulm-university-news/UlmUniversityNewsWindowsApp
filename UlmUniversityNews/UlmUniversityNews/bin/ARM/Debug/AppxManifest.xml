@@ -3,7 +3,7 @@
   <!--
     DIESE PAKETMANIFESTDATEI WIRD DURCH DEN BUILDVORGANG GENERIERT.
 
-    Änderungen an dieser Datei gehen verloren, wenn sie erneut erstellt wird. Um Fehler in dieser Datei zu beheben, bearbeiten Sie die '.appxmanifest'-Quelldatei.
+    Änderungen an dieser Datei gehen verloren, wenn sie erneut erstellt wird. Um Fehler in dieser Datei zu beheben, bearbeiten Sie die ".appxmanifest"-Quelldatei.
 
     Weitere Informationen zu Paketmanifestdateien finden Sie unter http://go.microsoft.com/fwlink/?LinkID=241727
   -->
@@ -53,21 +53,21 @@
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
         <Path>CLRHost.dll</Path>
-        <ActivatableClass ActivatableClassId="PushNotificationManagerBackground.PushNotificationMaintenanceTask" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="PushNotificationManagerBackground.PushNotificationManager" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="PushNotificationManagerBackground.PushNotificationMaintenanceTask" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
   </Extensions>
   <build:Metadata>
     <build:Item Name="TargetFrameworkMoniker" Value="WindowsPhoneApp,Version=v8.1" />
-    <build:Item Name="VisualStudio" Version="12.0" />
-    <build:Item Name="VisualStudioEdition" Value="Microsoft Visual Studio Express 2013 für Windows" />
-    <build:Item Name="OperatingSystem" Version="6.3.9600.16384 (winblue_rtm.130821-1623)" />
-    <build:Item Name="Microsoft.Build.AppxPackage.dll" Version="12.0.40629.0" />
+    <build:Item Name="VisualStudio" Version="14.0" />
+    <build:Item Name="VisualStudioEdition" Value="Microsoft Visual Studio Community 2015" />
+    <build:Item Name="OperatingSystem" Version="10.0.10586.0 (th2_release.151029-1700)" />
+    <build:Item Name="Microsoft.Build.AppxPackage.dll" Version="14.0.25123.0" />
     <build:Item Name="ProjectGUID" Value="{B48DF0A4-6B9A-4FEE-9011-C013120B3725}" />
-    <build:Item Name="Microsoft.Windows.UI.Xaml.Build.Tasks.dll" Version="12.0.30501.0" />
+    <build:Item Name="Microsoft.Windows.UI.Xaml.81.Build.Tasks.dll" Version="14.0.22705.1" />
     <build:Item Name="BehaviorsXamlSDKManaged" Version="12.0" />
-    <build:Item Name="SQLite.WP81" Version="3.9.2" />
+    <build:Item Name="SQLite.WP81" Version="3.12.2" />
     <build:Item Name="MakePri.exe" Version="6.3.9600.17336 (winblue.150226-1500)" />
   </build:Metadata>
 </Package>

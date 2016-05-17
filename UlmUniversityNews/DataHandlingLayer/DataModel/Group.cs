@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DataHandlingLayer.DataModel
 {
-    public class Group
+    public class Group : Validator.ModelValidatorBase
     {
         #region Properties
         private int id;
@@ -131,6 +131,17 @@ namespace DataHandlingLayer.DataModel
             get { return deleted; }
             set { deleted = value; }
         }
+
+        private int numberOfUnreadMessages;
+        /// <summary>
+        /// Die Anzahl an ungelesenen Nachrichten innerhalb der Gruppe.
+        /// Dabei handelt es sich um Nachrichten von Konversationen.
+        /// </summary>
+        public int NumberOfUnreadMessages
+        {
+            get { return numberOfUnreadMessages; }
+            set { numberOfUnreadMessages = value; }
+        }
         #endregion Properties
 
         /// <summary>
@@ -140,5 +151,86 @@ namespace DataHandlingLayer.DataModel
         {
 
         }
+        
+        #region Properties
+
+        /// <summary>
+        /// Validiert die Eigenschaft "Name".
+        /// </summary>
+        public void ValidateNameProperty()
+        {
+            if (Name == null)
+            {
+                SetValidationError("Name", "VE_GroupNameIsNullValidationError");
+                return;
+            }
+
+            if (!base.checkStringRange(
+                Constants.Constants.MinGroupNameLength,
+                Constants.Constants.MaxGroupNameLength,
+                Name))
+            {
+                SetValidationError("Name", "VE_GroupNameLengthValidationError");
+                return;
+            }
+
+            if (!base.checkStringFormat(Constants.Constants.GroupNamePattern, Name))
+            {
+                SetValidationError("Name", "VE_GroupNameFormatValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Validiert die Eigenschaft "Description".
+        /// </summary>
+        public void ValidateDescriptionProperty()
+        {
+            if (Description == null)
+                return;
+
+            if (!base.checkStringRange(0, Constants.Constants.MaxGroupDescriptionLength, Description))
+            {
+                SetValidationError("Description", "VE_GroupDescriptionLengthValidationError");
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Validiert die Eigenschaft "Term".
+        /// </summary>
+        public void ValidateTermProperty()
+        {
+            if (Term == null)
+            {
+                return;
+            }
+            if (!checkStringFormat(Constants.Constants.TermPattern, Term))
+            {
+                SetValidationError("Term", "VE_GroupTermFormatValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Validiert die Eigenschaft "Password".
+        /// </summary>
+        public void ValidatePasswordProperty()
+        {
+            if (Password == null)
+            {
+                SetValidationError("Password", "VE_GroupPasswordIsNullValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Validiert alle mit einer Validierungsregel versehenen Eigenschaften.
+        /// </summary>
+        public override void ValidateAll()
+        {
+            ValidateNameProperty();
+            ValidateDescriptionProperty();
+            ValidateTermProperty();
+            ValidatePasswordProperty();
+        }
+        #endregion Properties
     }
 }

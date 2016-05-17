@@ -114,6 +114,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Group\AddGroupDialog\AddGroup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Homescreen\Homescreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -182,7 +186,11 @@
     <Compile Include="Converters\DrawerMenuEntryNameToLocalizedStringConverter.cs" />
     <Compile Include="Converters\FacultyEnumToComboBoxItemIndexConverter.cs" />
     <Compile Include="Converters\FacultyToLocalizedStringConverter.cs" />
+    <Compile Include="Converters\GroupToIconPathConverter.cs" />
+    <Compile Include="Converters\GroupTypeEnumToComboBoxItemIndexConverter.cs" />
+    <Compile Include="Converters\GroupTypeToStringConverter.cs" />
     <Compile Include="Converters\HyperlinkStringToNavigationUriConverter.cs" />
+    <Compile Include="Converters\InverseBooleanConverter.cs" />
     <Compile Include="Converters\ItemClickedConverter.cs" />
     <Compile Include="Converters\ListCountToVisibilityConverter.cs" />
     <Compile Include="Converters\MessageReadPropertyToBackgroundColorConverter.cs" />
@@ -226,6 +234,9 @@
     </Compile>
     <Compile Include="Views\ChannelSearch\ChannelSearch.xaml.cs">
       <DependentUpon>ChannelSearch.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Group\AddGroupDialog\AddGroup.xaml.cs">
+      <DependentUpon>AddGroup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Homescreen\Homescreen.xaml.cs">
       <DependentUpon>Homescreen.xaml</DependentUpon>
@@ -385,6 +396,8 @@
     <Content Include="Assets\extIcons\appbar.home.empty.png" />
     <Content Include="Assets\extIcons\appbar.information.png" />
     <Content Include="Assets\extIcons\license.txt" />
+    <Content Include="Assets\groupIcons\g.png" />
+    <Content Include="Assets\groupIcons\g_admin.png" />
     <Content Include="Assets\ResourceDetailsIcons\ContactsInfo.png" />
     <Content Include="Assets\ResourceDetailsIcons\FacultyInfo.png" />
     <Content Include="Assets\ResourceDetailsIcons\CostInfo.png" />

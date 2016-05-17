@@ -19,11 +19,24 @@ namespace DataHandlingLayer.ViewModel
     public class HomescreenViewModel : ChannelEnumerationBaseViewModel
     {
         #region Fields
+        /// <summary>
+        /// Referenz auf den GroupController.
+        /// </summary>
+        private GroupController groupController;
+
+        /// <summary>
+        /// Lookup Verzeichnis für Gruppen. Enthält Gruppen,
+        /// die aktuell an die View gebunden sind.
+        /// </summary>
+        private Dictionary<int, Group> currentGroups;
+
         // Speichert die AppSettings, die zum Zeitpunkt des Ladens der Kanäle aktuell gültig sind.
         // Wird benötigt, um zu prüfen, ob bei geänderten Einstellungen die Liste der Kanäle neu 
         // sortiert werden muss.
         private OrderOption cachedGeneralListSettings;
         private OrderOption cachedChannelOrderSettings;
+        // Gleiches gilt für Gruppen.
+        private OrderOption cachedGroupOrderSettings;
         #endregion Fields
         
         #region Properties
@@ -43,15 +56,25 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
-        private ObservableCollection<Channel> groupCollection;
+        private ObservableCollection<Group> groupCollection;
         /// <summary>
         /// Liste von Gruppenobjekten, in denen der lokale Nutzer Teilnehmer ist.
         /// </summary>
-        public ObservableCollection<Channel> GroupCollection
+        public ObservableCollection<Group> GroupCollection
         {
             get { return groupCollection; }
             set { this.setProperty(ref this.groupCollection, value); }
-        }    
+        }
+
+        private User localUser;
+        /// <summary>
+        /// Das Nutzerobjekt des aktuell angemeldeten Nutzers.
+        /// </summary>
+        public User LocalUser
+        {
+            get { return localUser; }
+            set { localUser = value; }
+        }
         #endregion Properties
 
         #region Commands
@@ -94,6 +117,16 @@ namespace DataHandlingLayer.ViewModel
             get { return channelSelected; }
             set { channelSelected = value; }
         }
+
+        private RelayCommand groupSelected;
+        /// <summary>
+        /// Es wurde eine Gruppe ausgewählt, zu der nun die Gruppendetails angezeigt werden sollen.
+        /// </summary>
+        public RelayCommand GroupSelected
+        {
+            get { return groupSelected; }
+            set { groupSelected = value; }
+        }
         #endregion Commands
 
         /// <summary>
@@ -104,11 +137,14 @@ namespace DataHandlingLayer.ViewModel
         public HomescreenViewModel(INavigationService navService, IErrorMapper errorMapper)
             : base(navService, errorMapper)
         {
+            groupController = new GroupController();
+
             // Initialisiere die Befehle.
             searchChannelsCommand = new RelayCommand(param => executeSearchChannelsCommand(), param => canSearchChannels());
             addGroupCommand = new RelayCommand(param => executeAddGroupCommand(), param => canAddGroup());
             searchGroupsCommand = new RelayCommand(param => executeSearchGroupsCommand(), param => canSearchGroups());
             channelSelected = new RelayCommand(param => executeChannelSelected(param), param => canSelectChannel());
+            groupSelected = new RelayCommand(param => executeGroupSelected(param), param => canSelectGroup());
         }
 
         /// <summary>
@@ -212,6 +248,62 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
+        /// <summary>
+        /// Lädt die Gruppen, in denen der lokale Nutzer Teilnehmer ist und 
+        /// macht diese über Properties zugreifbar.
+        /// </summary>
+        public async Task LoadMyGroupsAsync()
+        {
+            if (LocalUser == null)
+            {
+                // Setze lokales Nutzerobjekt.
+                LocalUser = groupController.GetLocalUser();
+            }
+
+            List<Group> groups = null;
+            if (GroupCollection == null || GroupCollection.Count == 0)
+            {
+                Debug.WriteLine("LoadMyGroupsAsync: Not from cache. Load groups from DB.");
+
+                // Frage Gruppen aus der Datenbank ab.
+                groups = await Task.Run(() => groupController.GetAllGroups());
+                Debug.WriteLine("There are {0} group elements in the list.", groups.Count);
+
+                // Sortiere Gruppen anhand von aktuellen Anwendungseinstellungen.
+                groups = await Task.Run(() => sortGroupsByApplicationSettings(groups));
+
+                // Mache Gruppen über Property abrufbar.
+                GroupCollection = new ObservableCollection<Group>(groups);
+
+                // Speichere die aktuell gültigen Anwendungseinstellungen zwischen.
+                AppSettings currentSettings = groupController.GetApplicationSettings();
+                cachedGroupOrderSettings = currentSettings.GroupOrderSetting;
+
+                // Füge Gruppen dem Lookup Verzeichnis hinzu.
+                foreach (Group group in groups)
+                {
+                    currentGroups.Add(group.Id, group);
+                }
+            }
+            else
+            {
+                Debug.WriteLine("LoadMyGroupsAsync: Seems like page comes from cache.");
+
+                // TODO
+            }
+        }
+
+        /// <summary>
+        /// Sortiere die Gruppen anhand der aktuellen Anwendungseinstellungen.
+        /// </summary>
+        /// <param name="groups">Die zu sortierende Liste an Gruppen-Objekten.</param>
+        /// <returns>Eine sortierte Liste von Gruppen.</returns>
+        private List<Group> sortGroupsByApplicationSettings(List<Group> groups)
+        {
+            // TODO
+            return groups;
+        }
+
         #region CommandFunctionality
         /// <summary>
         /// Eine Hilfsmethode, die nach einer Statusänderung des Pivot Elements prüft,
@@ -260,11 +352,11 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
-        /// Starte den Dialog zum Hinzufügen einer Gruppe.
+        /// Wechsle auf den Dialog zum Hinzufügen einer Gruppe.
         /// </summary>
         private void executeAddGroupCommand()
         {
-            // TODO
+            _navService.Navigate("AddGroup");
         }
 
         /// <summary>
@@ -316,6 +408,29 @@ namespace DataHandlingLayer.ViewModel
             {
                 _navService.Navigate("ChannelDetails", selectedChannel.Id);
             }
+        }
+
+        /// <summary>
+        /// Zeigt an, ob aktuell eine Gruppe ausgewählt werden kann.
+        /// </summary>
+        /// <returns></returns>
+        private bool canSelectGroup()
+        {
+            if (selectedPivotItemIndex == 1)     // Aktiv, wenn "Meine Gruppen" Pivotitem aktiv ist.
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Bereite Anzeige der Gruppendetails für die ausgwählte Gruppe vor und löse Übergang
+        /// auf Gruppendetails View aus.
+        /// </summary>
+        /// <param name="selectedGroupObj"></param>
+        private void executeGroupSelected(object selectedGroupObj)
+        {
+            // TODO
         }
         #endregion CommandFunctionality
     }

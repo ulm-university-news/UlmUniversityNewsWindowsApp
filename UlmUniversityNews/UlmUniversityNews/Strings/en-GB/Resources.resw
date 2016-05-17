@@ -1172,4 +1172,28 @@ date: </value>
   <data name="StatusBarInformationSyncReminders" xml:space="preserve">
     <value>sync reminders</value>
   </data>
+  <data name="ListItemGroupTypeTutorialString" xml:space="preserve">
+    <value>Tutorial group</value>
+  </data>
+  <data name="ListItemGroupTypeWorkingString" xml:space="preserve">
+    <value>Working group</value>
+  </data>
+  <data name="VE_GroupDescriptionLengthValidationError" xml:space="preserve">
+    <value>The description must not exceed a length of 500 characters.</value>
+  </data>
+  <data name="VE_GroupNameFormatValidationError" xml:space="preserve">
+    <value>The name of the group does not match the required pattern. Please make sure no special characters other than !,? or _ are contained.</value>
+  </data>
+  <data name="VE_GroupNameIsNullValidationError" xml:space="preserve">
+    <value>Please enter a group name.</value>
+  </data>
+  <data name="VE_GroupNameLengthValidationError" xml:space="preserve">
+    <value>The name of the group needs to be at least 3 characters long and must not exceed the size of 45 characters.</value>
+  </data>
+  <data name="VE_GroupPasswordIsNullValidationError" xml:space="preserve">
+    <value>Please provide a password for the group.</value>
+  </data>
+  <data name="VE_GroupTermFormatValidationError" xml:space="preserve">
+    <value>The format of the specified term is not valid. Please provide a valid term.</value>
+  </data>
 </root>

@@ -37,7 +37,7 @@ namespace DataHandlingLayer.Database
                 {
                     try
                     {
-                        string query = @"INSERT INTO Group (Id, Name, Description, Type, CreationDate, ModificationDate,
+                        string query = @"INSERT INTO ""Group"" (Id, Name, Description, Type, CreationDate, ModificationDate,
                             Term, Deleted, GroupAdmin_User_Id, NotificationSettings_NotifierId, IsDirty) 
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
@@ -109,7 +109,7 @@ namespace DataHandlingLayer.Database
                 {
                     try
                     {
-                        string query = @"UPDATE Group 
+                        string query = @"UPDATE ""Group"" 
                             SET Name=?, Description=?, Type=?, CreationDate=?, ModificationDate=?,
                             Term=?, Deleted=?, GroupAdmin_User_Id=?, NotificationSettings_NotifierId=?, IsDirty=? 
                             WHERE Id=?;";
@@ -175,7 +175,7 @@ namespace DataHandlingLayer.Database
                     try
                     {
                         string query = @"SELECT * 
-                            FROM Group 
+                            FROM ""Group"" 
                             WHERE Id=?;";
 
                         using (var stmt = conn.Prepare(query))
@@ -241,7 +241,7 @@ namespace DataHandlingLayer.Database
                     try
                     {
                         string query = @"SELECT * 
-                            FROM Group;";
+                            FROM ""Group"";";
 
                         using (var stmt = conn.Prepare(query))
                         {
@@ -306,7 +306,7 @@ namespace DataHandlingLayer.Database
                     try
                     {
                         string query = @"SELECT * 
-                            FROM Group
+                            FROM ""Group""
                             WHERE IsDirty=?;";
 
                         using (var stmt = conn.Prepare(query))
@@ -370,7 +370,7 @@ namespace DataHandlingLayer.Database
                 {
                     try
                     {
-                        string query = @"UPDATE Group 
+                        string query = @"UPDATE ""Group"" 
                                         SET IsDirty=? 
                                         WHERE IsDirty=?;";
 

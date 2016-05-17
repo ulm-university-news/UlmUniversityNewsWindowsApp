@@ -317,6 +317,7 @@ namespace UlmUniversityNews
             NavigationService.RegisterPage("AddAndEditReminder", typeof(Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder));
             NavigationService.RegisterPage("ReminderDetails", typeof(Views.ModeratorViews.ReminderDetails.ReminderDetails));
             NavigationService.RegisterPage("AboutUniversityNews", typeof(Views.About.AboutUniversityNews));
+            NavigationService.RegisterPage("AddGroup", typeof(Views.Group.AddGroupDialog.AddGroup));
         }
 
         /// <summary>

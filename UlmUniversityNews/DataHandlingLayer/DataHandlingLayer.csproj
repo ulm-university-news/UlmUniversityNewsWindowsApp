@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="API\API.cs" />
     <Compile Include="API\ChannelAPI.cs" />
+    <Compile Include="API\GroupAPI.cs" />
     <Compile Include="API\UserAPI.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="CommandRelays\AsyncRelayCommand.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="Constants\Constants.cs" />
     <Compile Include="Controller\ApplicationSettingsController.cs" />
     <Compile Include="Controller\ChannelController.cs" />
+    <Compile Include="Controller\GroupController.cs" />
     <Compile Include="Controller\IncrementalAnnouncementLoaderController.cs" />
     <Compile Include="Controller\LoginController.cs" />
     <Compile Include="Controller\ModeratorController.cs" />
@@ -108,6 +110,7 @@
     <Compile Include="Database\GroupDatabaseManager.cs" />
     <Compile Include="Database\LocalUserDatabaseManager.cs" />
     <Compile Include="Database\ModeratorDatabaseManager.cs" />
+    <Compile Include="Database\UserDatabaseManager.cs" />
     <Compile Include="DataModel\Announcement.cs" />
     <Compile Include="DataModel\AppSettings.cs" />
     <Compile Include="DataModel\AppSettingsCache.cs" />
@@ -141,6 +144,7 @@
     <Compile Include="Exceptions\ClientException.cs" />
     <Compile Include="Exceptions\DatabaseException.cs" />
     <Compile Include="Exceptions\ErrorCodes.cs" />
+    <Compile Include="HashingHelper\HashingHelper.cs" />
     <Compile Include="JsonManager\JsonParsingManager.cs" />
     <Compile Include="NavigationService\INavigationService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -148,6 +152,7 @@
     <Compile Include="ViewModel\AddAndEditChannelViewModel.cs" />
     <Compile Include="ViewModel\AddAndEditReminderViewModel.cs" />
     <Compile Include="ViewModel\AddAnnouncementViewModel.cs" />
+    <Compile Include="ViewModel\AddGroupViewModel.cs" />
     <Compile Include="ViewModel\ApplicationSettingsViewModel.cs" />
     <Compile Include="ViewModel\ChannelDetailsBaseViewModel.cs" />
     <Compile Include="ViewModel\ChannelDetailsViewModel.cs" />
@@ -180,8 +185,8 @@
     <SDKReference Include="Microsoft.VCLibs, version=12.0">
       <Name>Microsoft Visual C++ 2013 Runtime Package for Windows Phone</Name>
     </SDKReference>
-    <SDKReference Include="SQLite.WP81, Version=3.9.2">
-      <Name>SQLite for Windows Phone 8.1 %28SQLite.WP81, Version=3.9.2%29</Name>
+    <SDKReference Include="SQLite.WP81, Version=3.12.2">
+      <Name>SQLite for Windows Phone 8.1 %28SQLite.WP81, Version=3.12.2%29</Name>
     </SDKReference>
   </ItemGroup>
   <ItemGroup />

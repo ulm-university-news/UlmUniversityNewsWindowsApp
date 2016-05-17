@@ -173,7 +173,29 @@
                                     Gehen Sie auf die Gruppensuche, um Teilnehmer einer Gruppe zu werden.
                             </TextBlock>
 
-                            <!-- TODO -->
+                            <!-- Definiere Liste für Gruppen. -->
+                            <!-- Beachte, IsItemClickEnabled muss explizit aktiviert werden, sonst funktioniert das Binding auf das Command über das Behaviour nicht.-->
+                            <ListView
+                                Grid.Row="1"
+                                ItemTemplate="{StaticResource GroupListItemStyle}"
+                                ItemsSource="{Binding GroupCollection}"
+                                IsItemClickEnabled="True"
+                                HorizontalContentAlignment="Stretch"
+                                HorizontalAlignment="Stretch">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+
+                                <!-- Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
+                                <i:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="ItemClick">
+                                        <core:InvokeCommandAction Command="{Binding GroupSelected}"
+                                                              InputConverter="{StaticResource ItemClickedConverter}" />
+                                    </core:EventTriggerBehavior>
+                                </i:Interaction.Behaviors>
+                            </ListView>
                             
                         </Grid>
                     </PivotItem>

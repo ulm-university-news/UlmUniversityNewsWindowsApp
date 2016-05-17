@@ -1,16 +1,13 @@
 ﻿using DataHandlingLayer.Controller.ValidationErrorReportInterface;
 using DataHandlingLayer.DataModel;
 using DataHandlingLayer.Exceptions;
+using DataHandlingLayer.HashingHelper;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.Security.Cryptography;
-using Windows.Security.Cryptography.Core;
-using Windows.Storage.Streams;
-using DataHandlingLayer.Constants;
 
 namespace DataHandlingLayer.Controller
 {
@@ -163,17 +160,9 @@ namespace DataHandlingLayer.Controller
         /// <returns>Einen Hash über das übergebene Passwort als String.</returns>
         private string hashPassword(string password)
         {
-            // Debug.WriteLine("The cleartext password is: {0}.", password);
-            IBuffer bufferedPassword = CryptographicBuffer.ConvertStringToBinary(password, BinaryStringEncoding.Utf8);
-
-            // Apply SHA-256 Hash function.
-            var hashFunction = HashAlgorithmProvider.OpenAlgorithm("SHA256");
-            IBuffer hashedPassword = hashFunction.HashData(bufferedPassword);
-
-            string passwordHash = CryptographicBuffer.EncodeToHexString(hashedPassword);
-            // Debug.WriteLine("The hashed password is: {0}.", passwordHash);
-
-            return passwordHash;
+            HashingHelper.HashingHelper helper = new HashingHelper.HashingHelper();
+            
+            return helper.GenerateSHA256Hash(password);
         }
 
         /// <summary>

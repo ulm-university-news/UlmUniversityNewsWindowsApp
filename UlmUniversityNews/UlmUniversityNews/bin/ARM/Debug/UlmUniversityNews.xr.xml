@@ -1,13 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Roots >
+<Roots xmlns="clr-namespace:Microsoft.Xaml.Tools.XamlCompiler.RootLog;assembly=Microsoft.Windows.UI.Xaml.81.Build.Tasks">
   <Roots.Interfaces>
     <RootInterface FullName="Windows.UI.Xaml.Data.IValueConverter" />
   </Roots.Interfaces>
   <Roots.PropertyPathNames>
     <RootPropertyPathName Name="Term" />
     <RootPropertyPathName Name="Type" />
+    <RootPropertyPathName Name="NumberOfUnreadMessages" />
     <RootPropertyPathName Name="NumberOfUnreadAnnouncements" />
     <RootPropertyPathName Name="Name" />
+    <RootPropertyPathName Name="LocalUser" />
     <RootPropertyPathName Name="DisplayableNameResourceKey" />
     <RootPropertyPathName Name="IconPath" />
     <RootPropertyPathName Name="IsIntervalOneTimeSelected" />
@@ -52,7 +54,6 @@
     <RootPropertyPathName Name="IsGermanLanguageSelected" />
     <RootPropertyPathName Name="ValidationMessages" />
     <RootPropertyPathName Name="LocalUsername" />
-    <RootPropertyPathName Name="LocalUser" />
     <RootPropertyPathName Name="DataContext" />
     <RootPropertyPathName Name="ListRotationAngle" />
     <RootPropertyPathName Name="Read" />
@@ -104,9 +105,21 @@
     <RootPropertyPathName Name="StartChannelSearchCommand" />
     <RootPropertyPathName Name="SearchTerm" />
     <RootPropertyPathName Name="AddGroupCommand" />
+    <RootPropertyPathName Name="IsFlyoutOpen" />
+    <RootPropertyPathName Name="PerformOriginalDrawerMenuActionCommand" />
+    <RootPropertyPathName Name="ShowWarningFlyout" />
+    <RootPropertyPathName Name="GroupPassword" />
+    <RootPropertyPathName Name="GroupDescription" />
+    <RootPropertyPathName Name="IsNoTermSelected" />
+    <RootPropertyPathName Name="TermYear" />
+    <RootPropertyPathName Name="IsWinterTermSelected" />
+    <RootPropertyPathName Name="IsSummerTermSelected" />
+    <RootPropertyPathName Name="SelectedGroupType" />
+    <RootPropertyPathName Name="GroupName" />
     <RootPropertyPathName Name="SearchGroupsCommand" />
     <RootPropertyPathName Name="SearchChannelsCommand" />
     <RootPropertyPathName Name="GroupCollection" />
+    <RootPropertyPathName Name="GroupSelected" />
     <RootPropertyPathName Name="ChannelCollection" />
     <RootPropertyPathName Name="ChannelSelected" />
     <RootPropertyPathName Name="LoginCommand" />
@@ -117,9 +130,6 @@
     <RootPropertyPathName Name="EditChannelCommand" />
     <RootPropertyPathName Name="IsAddChannelDialog" />
     <RootPropertyPathName Name="AddChannelCommand" />
-    <RootPropertyPathName Name="IsFlyoutOpen" />
-    <RootPropertyPathName Name="PerformOriginalDrawerMenuActionCommand" />
-    <RootPropertyPathName Name="ShowWarningFlyout" />
     <RootPropertyPathName Name="SportsSpecificFieldsVisible" />
     <RootPropertyPathName Name="AmountOfParticipants" />
     <RootPropertyPathName Name="SportsCost" />
@@ -131,9 +141,6 @@
     <RootPropertyPathName Name="LectureStartDate" />
     <RootPropertyPathName Name="SelectedFaculty" />
     <RootPropertyPathName Name="ChannelDescription" />
-    <RootPropertyPathName Name="TermYear" />
-    <RootPropertyPathName Name="IsWinterTermSelected" />
-    <RootPropertyPathName Name="IsSummerTermSelected" />
     <RootPropertyPathName Name="SelectedChannelType" />
     <RootPropertyPathName Name="ChannelName" />
     <RootPropertyPathName Name="IsEditReminderDialog" />
@@ -192,7 +199,9 @@
       <RootProperty Name="Resources" />
     </RootType>
     <RootType FullName="UlmUniversityNews.Converters.ChannelTypeToStringConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.GroupTypeToStringConverter" />
     <RootType FullName="UlmUniversityNews.Converters.ChannelToIconPathConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.GroupToIconPathConverter" />
     <RootType FullName="UlmUniversityNews.Converters.ZeroIntegerToVisibilityConverter" />
     <RootType FullName="UlmUniversityNews.Converters.DateTimeToStringConverter" />
     <RootType FullName="UlmUniversityNews.Converters.MessageReadPropertyToBackgroundColorConverter" />
@@ -231,10 +240,10 @@
     <RootType FullName="Windows.UI.Xaml.Controls.Image">
       <RootProperty Name="Source" />
       <RootProperty Name="Margin" />
+      <RootProperty Name="Height" />
+      <RootProperty Name="Width" />
       <RootProperty Name="HorizontalAlignment" />
       <RootProperty Name="VerticalAlignment" />
-      <RootProperty Name="Width" />
-      <RootProperty Name="Height" />
       <RootProperty Name="Style" />
       <RootEvent Name="Tapped" />
     </RootType>
@@ -310,15 +319,15 @@
       <RootProperty Name="Height" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Data.Binding">
-      <RootProperty Name="Converter" />
       <RootProperty Name="FallbackValue" />
       <RootProperty Name="TargetNullValue" />
+      <RootProperty Name="Converter" />
+      <RootProperty Name="ConverterParameter" />
       <RootProperty Name="Mode" />
       <RootProperty Name="RelativeSource" />
       <RootProperty Name="UpdateSourceTrigger" />
       <RootProperty Name="ElementName" />
       <RootProperty Name="Path" />
-      <RootProperty Name="ConverterParameter" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Shapes.Ellipse">
       <RootProperty Name="Fill" />
@@ -509,6 +518,7 @@
       <RootProperty Name="Background" />
       <RootProperty Name="TextWrapping" />
       <RootProperty Name="AcceptsReturn" />
+      <RootProperty Name="IsEnabled" />
       <RootProperty Name="MaxLength" />
       <RootProperty Name="MinHeight" />
       <RootEvent Name="KeyDown" />
@@ -548,6 +558,10 @@
       <RootProperty Name="ImageSource" />
     </RootType>
     <RootType FullName="UlmUniversityNews.Views.ChannelSearch.ChannelSearch" />
+    <RootType FullName="UlmUniversityNews.Converters.StringToVisibilityConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.GroupTypeEnumToComboBoxItemIndexConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.InverseBooleanConverter" />
+    <RootType FullName="UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup" />
     <RootType FullName="UlmUniversityNews.Views.Homescreen.Homescreen" />
     <RootType FullName="Windows.UI.Xaml.Controls.PasswordBox">
       <RootProperty Name="Margin" />
@@ -555,7 +569,6 @@
       <RootProperty Name="Password" />
     </RootType>
     <RootType FullName="UlmUniversityNews.Views.Login.LoginPage" />
-    <RootType FullName="UlmUniversityNews.Converters.StringToVisibilityConverter" />
     <RootType FullName="UlmUniversityNews.Converters.ChannelTypeEnumToComboBoxItemIndexConverter" />
     <RootType FullName="UlmUniversityNews.Converters.FacultyEnumToComboBoxItemIndexConverter" />
     <RootType FullName="UlmUniversityNews.Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel" />

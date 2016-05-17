@@ -11,7 +11,9 @@
         <!-- Converters -->
         <!-- <valueconverter:ValidationMessageOnLocalizedStringConverter x:Key="ValidationMessageOnLocalizedStringConverter" /> -->
         <converter:ChannelTypeToStringConverter x:Key="ChannelTypeToStringConverter" />
+        <converter:GroupTypeToStringConverter x:Key="GroupTypeToStringConverter" />
         <converter:ChannelToIconPathConverter x:Key="ChannelToIconPathConverter" />
+        <converter:GroupToIconPathConverter x:Key="GroupToIconPathConverter" />
         <converter:ZeroIntegerToVisibilityConverter x:Key="ZeroIntegerToVisibilityConverter" />
         <converter:DateTimeToStringConverter x:Key="DateTimeToStringConverter" />
         <converter:MessageReadPropertyToBackgroundColorConverter x:Key="MessageReadPropertyToBackgroundColorConverter" />
@@ -396,7 +398,113 @@
                 </Grid>
             </Grid>
         </DataTemplate>
-                 
+
+        <!-- Layout eines Eintrages einer Kanal-Ressource in der Übersichtliste von Group.-->
+        <DataTemplate x:Key="GroupListItemStyle">
+            <!-- Margin ist angepasst an den des PivotItem.-->
+            <!-- Verwende feste Höhe pro Eintrag. -->
+            <Grid 
+                Background="{StaticResource UniUlmAccentColorListItemBackground}"
+                Margin="0,0,0,5">
+                <!--Height="70px"-->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <!-- Spalte für Icon-->
+                    <ColumnDefinition Width="*" />
+                    <!-- Spalte für restliche Information-->
+                </Grid.ColumnDefinitions>
+
+                <!-- Icon -->
+                <Image Source="{Binding Converter={StaticResource GroupToIconPathConverter}, ConverterParameter={Binding LocalUser}}" 
+                       Grid.Column="0"
+                       Margin="5, 5, 0, 5"
+                       Height="70px"
+                       Width="70px"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/> <!-- TODO - remove hard coded sizes of icons-->
+                <!--Height="60px"   Width="60px"-->
+
+                <!-- andere Informationen -->
+                <Grid Grid.Column="1" Margin="10,0,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <!-- Zeile für Name der Gruppe und Icon für Anzahl ungelesener Nachrichten. -->
+                        <RowDefinition Height="*" />
+                        <!-- Zeile für Typ und Semester -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Zeile 1 -->
+                    <!-- Anzeige für Name und Icon für ungelsesen Nachrichten -->
+                    <Grid Grid.Row="0" VerticalAlignment="Top" Margin="0, 7, 0, 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Name -->
+                        <TextBlock Grid.Column="0"
+                               VerticalAlignment="Top"
+                               HorizontalAlignment="Left"
+                               TextWrapping="NoWrap"
+                               TextTrimming="CharacterEllipsis"
+                               x:Name="GroupName"
+                               Style="{StaticResource ListTextStyle}"
+                               FontWeight="Bold"
+                               Text="{Binding Name}"/>
+
+                        <!-- Anzahl ungelesener Nachrichten -->
+                        <Grid
+                            Grid.Column="1"
+                            x:Name="UnreadConvMessagesIcon"
+                            Visibility="{Binding NumberOfUnreadMessages, FallbackValue=Collapsed, TargetNullValue=Collapsed, Converter={StaticResource ZeroIntegerToVisibilityConverter}}">
+                            <Ellipse 
+                                Fill="Gray" 
+                                Height="33px"
+                                Width="33px"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+                            <!-- Hintergrund der Anzeige der ungelesenen Nachrichten-->
+                            <TextBlock 
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                Foreground="White"
+                                FontSize="15"
+                                TextWrapping="NoWrap"
+                                TextAlignment="Center"
+                                Text="{Binding NumberOfUnreadAnnouncements}"/>
+                        </Grid>
+                    </Grid>
+
+                    <!-- Zeile 2 -->
+                    <!-- Anzeige für Typ und Semester.-->
+                    <Grid Grid.Row="1"
+                          x:Name="TypAndSemester"
+                          VerticalAlignment="Bottom"
+                          Margin="0, 0, 0, 7" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Typ -->
+                        <TextBlock Grid.Column="0" 
+                                   x:Name="GroupType" 
+                                   HorizontalAlignment="Left"
+                                   Style="{StaticResource ListTextStyle}"
+                                   Text="{Binding Type, Converter={StaticResource GroupTypeToStringConverter}}"/>
+                        <!-- Semester -->
+                        <TextBlock Grid.Column="1"
+                                   x:Name="TermOfGroup" 
+                                   HorizontalAlignment="Right"
+                                   Margin="0,0,5,0"
+                                   Style="{StaticResource ListTextStyle}"
+                                   Text="{Binding Term, FallbackValue='', TargetNullValue=''}"/>
+                    </Grid>
+
+                </Grid>
+            </Grid>
+        </DataTemplate>
+
         <!-- Command Bar:-->
         <!-- Definiere die Hintergrundfarbe für die CommandBar. -->
         <!--<Style 

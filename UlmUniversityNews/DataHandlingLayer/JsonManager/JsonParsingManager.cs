@@ -476,6 +476,50 @@ namespace DataHandlingLayer.JsonManager
         }
         #endregion PushMessage
 
+        #region Group
+        /// <summary>
+        /// Wandelt ein Objekt der Klasse Group in ein entsprechendes JSON Dokument um.
+        /// </summary>
+        /// <param name="group">Das umzuwandelnde Group Objekt.</param>
+        /// <returns>Ein JSON Dokument in Form eines Strings. Oder null, wenn die Umwandlung fehlgeschlagen hat.</returns>
+        public string ParseGroupToJson(Group group)
+        {
+            string groupJson = null;
+            try
+            {
+                groupJson = JsonConvert.SerializeObject(group);
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine("ParseGroupToJson: Json parser error occurred. " +
+                    "Message is {0}.", ex.Message);
+            }
+
+            return groupJson;
+        }
+
+        /// <summary>
+        /// Extrahiert eine Instanz der Klasse Group aus dem übergebenen JSON Dokument.
+        /// </summary>
+        /// <param name="jsonString">Ds JSON Dokument.</param>
+        /// <returns>Eine Instanz der Klasse Group, oder null, falls das Umwandeln fehlgeschlagen ist.</returns>
+        public Group ParseGroupFromJson(string jsonString)
+        {
+            Group parsedGroup = null;
+            try
+            {
+                parsedGroup = JsonConvert.DeserializeObject<Group>(jsonString);
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine("ParseGroupFromJson: Json parser error occurred. " +
+                    "Message is {0}.", ex.Message);
+            }
+
+            return parsedGroup;
+        }
+        #endregion Group
+
         ///// <summary>
         ///// Eine Hilfsmethode, die ein DateTimeOffset Objekt in das Format der koordinierten Weltzeit umwandelt und
         ///// als String zurückliefert. Diese Methode kann verwendet werden, um DateTimeOffset Objekte in ein

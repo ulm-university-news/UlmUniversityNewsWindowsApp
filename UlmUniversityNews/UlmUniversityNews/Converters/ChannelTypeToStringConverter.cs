@@ -43,9 +43,7 @@ namespace UlmUniversityNews.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
-            ChannelType type;
-            Enum.TryParse(value as string, out type);
-            return type;
+            throw new NotImplementedException();
         }
     }
 }

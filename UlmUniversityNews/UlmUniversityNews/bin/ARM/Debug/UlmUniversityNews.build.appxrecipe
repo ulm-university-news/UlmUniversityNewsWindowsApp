@@ -1,9 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Machine>PHILIPP-UNI-PC</Machine>
+    <Machine>DESKTOP-27TQHA1</Machine>
     <WindowsUser>Philipp</WindowsUser>
     <TargetPlatformIdentifier>WindowsPhoneApp</TargetPlatformIdentifier>
+    <TargetOsVersion>6.3</TargetOsVersion>
+    <TargetOsDescription>Windows Phone 8.1</TargetOsDescription>
     <SolutionConfiguration>Debug|ARM</SolutionConfiguration>
     <PackageArchitecture>arm</PackageArchitecture>
     <PackageIdentityName>495084a5-e14d-4057-9f30-02f91b4fad2d</PackageIdentityName>
@@ -411,6 +413,12 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\extIcons\appbar.information.png">
       <PackagePath>Assets\extIcons\appbar.information.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\groupIcons\g.png">
+      <PackagePath>Assets\groupIcons\g.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\groupIcons\g_admin.png">
+      <PackagePath>Assets\groupIcons\g_admin.png</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\ResourceDetailsIcons\ContactsInfo.png">
       <PackagePath>Assets\ResourceDetailsIcons\ContactsInfo.png</PackagePath>
@@ -967,6 +975,9 @@
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\DataModel\SampleData.json">
       <PackagePath>DataModel\SampleData.json</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\UlmUniversityNews.xr.xml">
+      <PackagePath>UlmUniversityNews.xr.xml</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\App.xbf">
       <PackagePath>App.xbf</PackagePath>
     </AppxPackagedFile>
@@ -993,6 +1004,9 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ChannelSearch\ChannelSearch.xbf">
       <PackagePath>Views\ChannelSearch\ChannelSearch.xbf</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Group\AddGroupDialog\AddGroup.xbf">
+      <PackagePath>Views\Group\AddGroupDialog\AddGroup.xbf</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Homescreen\Homescreen.xbf">
       <PackagePath>Views\Homescreen\Homescreen.xbf</PackagePath>
@@ -1021,10 +1035,7 @@
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\StartPage.xbf">
       <PackagePath>Views\StartPage.xbf</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\UlmUniversityNews.xr.xml">
-      <PackagePath>UlmUniversityNews.xr.xml</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\WindowsPhoneApp\v8.1\ExtensionSDKs\SQLite.WP81\3.9.2\Redist\Debug\ARM\sqlite3.dll">
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\WindowsPhoneApp\v8.1\ExtensionSDKs\SQLite.WP81\3.12.2\Redist\Debug\ARM\sqlite3.dll">
       <PackagePath>sqlite3.dll</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\resources.pri">

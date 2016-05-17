@@ -1173,4 +1173,28 @@ Nachricht am: </value>
   <data name="StatusBarInformationSyncReminders" xml:space="preserve">
     <value>Synchronisiere Reminder</value>
   </data>
+  <data name="ListItemGroupTypeTutorialString" xml:space="preserve">
+    <value>Tutoriumsgruppe</value>
+  </data>
+  <data name="ListItemGroupTypeWorkingString" xml:space="preserve">
+    <value>Arbeitsgruppe</value>
+  </data>
+  <data name="VE_GroupDescriptionLengthValidationError" xml:space="preserve">
+    <value>Die Beschreibung darf eine Länge von 500 Zeichen nicht überschreiten.</value>
+  </data>
+  <data name="VE_GroupNameFormatValidationError" xml:space="preserve">
+    <value>Der Name der Gruppe entspricht nicht dem gültigen Format. Bitte prüfen Sie, ob der Name Sonderzeichen enthält. Gültige Sonderzeichen sind ?, ! und _.</value>
+  </data>
+  <data name="VE_GroupNameIsNullValidationError" xml:space="preserve">
+    <value>Bitte geben Sie einen Gruppennamen an.</value>
+  </data>
+  <data name="VE_GroupNameLengthValidationError" xml:space="preserve">
+    <value>Der Name der Gruppe muss mindestens 3 Zeichen lang sein und darf nicht mehr als 45 Zeichen umfassen.</value>
+  </data>
+  <data name="VE_GroupPasswordIsNullValidationError" xml:space="preserve">
+    <value>Bitte geben Sie ein Passwort für die Gruppe an.</value>
+  </data>
+  <data name="VE_GroupTermFormatValidationError" xml:space="preserve">
+    <value>Das angegebene Semester entspricht nicht dem gültigen Format. Bitte prüfen Sie Ihre Eingabe.</value>
+  </data>
 </root>
