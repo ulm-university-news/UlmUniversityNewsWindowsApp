@@ -22,17 +22,18 @@ namespace UlmUniversityNews.Converters
 
             if (group != null)
             {
-               // GroupType type = group.GroupType;
+                // GroupType type = group.GroupType;
 
-                User currentLocalUser = parameter as User;
+                // Prüfe, ob der lokale Nutzer Admin ist.
+                User currentLocalUser = LocalUser.GetInstance().GetCachedLocalUserObject();
                 if (currentLocalUser != null && group.GroupAdmin == currentLocalUser.Id)
                 {
-                    // Set administrator icon.
+                    // Setze Administrator icon.
                     iconPath = "/Assets/groupIcons/g_admin.png";
                 }
                 else
                 {
-                    // Set normal group icon.
+                    // Setze normales group icon.
                     iconPath = "/Assets/groupIcons/g.png";
                 }
             }

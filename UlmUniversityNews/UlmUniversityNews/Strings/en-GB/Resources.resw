@@ -1196,4 +1196,46 @@ date: </value>
   <data name="VE_GroupTermFormatValidationError" xml:space="preserve">
     <value>The format of the specified term is not valid. Please provide a valid term.</value>
   </data>
+  <data name="AddGroupAddButton.Label" xml:space="preserve">
+    <value>create group</value>
+  </data>
+  <data name="AddGroupDescription.Text" xml:space="preserve">
+    <value>Add a new group. Please specifiy the required data. Fields that are marked with * are mandatory. You need to provide a password for the group. Other users can join your group if they know the password.</value>
+  </data>
+  <data name="AddGroupDescriptionTextBlock.Header" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="AddGroupDrawerTitle.Text" xml:space="preserve">
+    <value>Add group</value>
+  </data>
+  <data name="AddGroupNameTextBox.Header" xml:space="preserve">
+    <value>Name *</value>
+  </data>
+  <data name="AddGroupNoTermItem.Content" xml:space="preserve">
+    <value>Not specified</value>
+  </data>
+  <data name="AddGroupPasswordTextBlock.Header" xml:space="preserve">
+    <value>Password *</value>
+  </data>
+  <data name="AddGroupTermComboBox.Header" xml:space="preserve">
+    <value>Term</value>
+  </data>
+  <data name="AddGroupTermSummerItem.Content" xml:space="preserve">
+    <value>Summer</value>
+  </data>
+  <data name="AddGroupTermWinterItem.Content" xml:space="preserve">
+    <value>Winter</value>
+  </data>
+  <data name="AddGroupTermYear.Header" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="AddGroupTypeComboBox.Header" xml:space="preserve">
+    <value>Group type *</value>
+  </data>
+  <data name="AddGroupTypeTutorialGroupItem.Content" xml:space="preserve">
+    <value>Tutorial group</value>
+  </data>
+  <data name="AddGroupTypeWorkingGroupItem.Content" xml:space="preserve">
+    <value>Working group</value>
+  </data>
 </root>

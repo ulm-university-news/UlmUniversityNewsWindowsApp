@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:UlmUniversityNews"
     xmlns:converter="using:UlmUniversityNews.Converters"
-    RequestedTheme="Light"> <!-- TODO - entferne Requested Theme -->
+    RequestedTheme="Light"> <!-- Requested Theme gesetzt wegen Farben. -->
     
     <Application.Resources>
 
@@ -415,7 +415,7 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Icon -->
-                <Image Source="{Binding Converter={StaticResource GroupToIconPathConverter}, ConverterParameter={Binding LocalUser}}" 
+                <Image Source="{Binding Converter={StaticResource GroupToIconPathConverter}}" 
                        Grid.Column="0"
                        Margin="5, 5, 0, 5"
                        Height="70px"
@@ -471,7 +471,7 @@
                                 FontSize="15"
                                 TextWrapping="NoWrap"
                                 TextAlignment="Center"
-                                Text="{Binding NumberOfUnreadAnnouncements}"/>
+                                Text="{Binding NumberOfUnreadMessages}"/>
                         </Grid>
                     </Grid>
 
@@ -491,7 +491,7 @@
                                    x:Name="GroupType" 
                                    HorizontalAlignment="Left"
                                    Style="{StaticResource ListTextStyle}"
-                                   Text="{Binding Type, Converter={StaticResource GroupTypeToStringConverter}}"/>
+                                   Text="{Binding GroupType, Converter={StaticResource GroupTypeToStringConverter}}"/>
                         <!-- Semester -->
                         <TextBlock Grid.Column="1"
                                    x:Name="TermOfGroup" 

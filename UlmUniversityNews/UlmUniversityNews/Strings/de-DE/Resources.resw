@@ -1197,4 +1197,46 @@ Nachricht am: </value>
   <data name="VE_GroupTermFormatValidationError" xml:space="preserve">
     <value>Das angegebene Semester entspricht nicht dem gültigen Format. Bitte prüfen Sie Ihre Eingabe.</value>
   </data>
+  <data name="AddGroupAddButton.Label" xml:space="preserve">
+    <value>erstellen</value>
+  </data>
+  <data name="AddGroupDescription.Text" xml:space="preserve">
+    <value>Fügen Sie eine neue Gruppe hinzu. Geben Sie die hierfür notwendigen Daten an. Mit einem * markierte Felder sind Pflichtfelder. Sie müssen ein Passwort für die Gruppe angeben. Andere Nutzer können Ihrer Gruppe beitreten, wenn Sie das entsprechende Passwort kennen.</value>
+  </data>
+  <data name="AddGroupDescriptionTextBlock.Header" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="AddGroupDrawerTitle.Text" xml:space="preserve">
+    <value>Gruppe hinzufügen</value>
+  </data>
+  <data name="AddGroupNameTextBox.Header" xml:space="preserve">
+    <value>Name *</value>
+  </data>
+  <data name="AddGroupNoTermItem.Content" xml:space="preserve">
+    <value>Keine Angabe</value>
+  </data>
+  <data name="AddGroupPasswordTextBlock.Header" xml:space="preserve">
+    <value>Passwort *</value>
+  </data>
+  <data name="AddGroupTermComboBox.Header" xml:space="preserve">
+    <value>Semester</value>
+  </data>
+  <data name="AddGroupTermSummerItem.Content" xml:space="preserve">
+    <value>Sommersemester</value>
+  </data>
+  <data name="AddGroupTermWinterItem.Content" xml:space="preserve">
+    <value>Wintersemester</value>
+  </data>
+  <data name="AddGroupTermYear.Header" xml:space="preserve">
+    <value>Jahr</value>
+  </data>
+  <data name="AddGroupTypeComboBox.Header" xml:space="preserve">
+    <value>Gruppentyp *</value>
+  </data>
+  <data name="AddGroupTypeTutorialGroupItem.Content" xml:space="preserve">
+    <value>Tutoriumsgruppe</value>
+  </data>
+  <data name="AddGroupTypeWorkingGroupItem.Content" xml:space="preserve">
+    <value>Arbeitsgruppe</value>
+  </data>
 </root>

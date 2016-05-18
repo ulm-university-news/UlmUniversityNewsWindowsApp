@@ -5,11 +5,11 @@
   </Roots.Interfaces>
   <Roots.PropertyPathNames>
     <RootPropertyPathName Name="Term" />
-    <RootPropertyPathName Name="Type" />
+    <RootPropertyPathName Name="GroupType" />
     <RootPropertyPathName Name="NumberOfUnreadMessages" />
-    <RootPropertyPathName Name="NumberOfUnreadAnnouncements" />
     <RootPropertyPathName Name="Name" />
-    <RootPropertyPathName Name="LocalUser" />
+    <RootPropertyPathName Name="Type" />
+    <RootPropertyPathName Name="NumberOfUnreadAnnouncements" />
     <RootPropertyPathName Name="DisplayableNameResourceKey" />
     <RootPropertyPathName Name="IconPath" />
     <RootPropertyPathName Name="IsIntervalOneTimeSelected" />
@@ -54,6 +54,7 @@
     <RootPropertyPathName Name="IsGermanLanguageSelected" />
     <RootPropertyPathName Name="ValidationMessages" />
     <RootPropertyPathName Name="LocalUsername" />
+    <RootPropertyPathName Name="LocalUser" />
     <RootPropertyPathName Name="DataContext" />
     <RootPropertyPathName Name="ListRotationAngle" />
     <RootPropertyPathName Name="Read" />
@@ -322,12 +323,12 @@
       <RootProperty Name="FallbackValue" />
       <RootProperty Name="TargetNullValue" />
       <RootProperty Name="Converter" />
-      <RootProperty Name="ConverterParameter" />
       <RootProperty Name="Mode" />
       <RootProperty Name="RelativeSource" />
       <RootProperty Name="UpdateSourceTrigger" />
       <RootProperty Name="ElementName" />
       <RootProperty Name="Path" />
+      <RootProperty Name="ConverterParameter" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Shapes.Ellipse">
       <RootProperty Name="Fill" />

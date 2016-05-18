@@ -138,6 +138,7 @@ namespace DataHandlingLayer.ViewModel
             : base(navService, errorMapper)
         {
             groupController = new GroupController();
+            currentGroups = new Dictionary<int, Group>();
 
             // Initialisiere die Befehle.
             searchChannelsCommand = new RelayCommand(param => executeSearchChannelsCommand(), param => canSearchChannels());

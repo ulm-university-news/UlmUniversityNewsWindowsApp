@@ -101,6 +101,7 @@
     <Compile Include="Controller\LoginController.cs" />
     <Compile Include="Controller\ModeratorController.cs" />
     <Compile Include="Controller\PushNotificationController.cs" />
+    <Compile Include="Controller\UserController.cs" />
     <Compile Include="Controller\ValidationErrorReportInterface\IValidationErrorReport.cs" />
     <Compile Include="Controller\LocalUserController.cs" />
     <Compile Include="Controller\MainController.cs" />
@@ -165,6 +166,7 @@
     <Compile Include="ViewModel\ModeratorHomescreenViewModel.cs" />
     <Compile Include="ViewModel\ReminderDetailsViewModel.cs" />
     <Compile Include="ViewModel\SearchChannelsViewModel.cs" />
+    <Compile Include="ViewModel\SearchGroupViewModel.cs" />
     <Compile Include="ViewModel\StartPageViewModel.cs" />
     <Compile Include="ViewModel\ViewModel.cs" />
   </ItemGroup>

@@ -27,6 +27,11 @@ namespace DataHandlingLayer.Controller
         private JsonParsingManager jsonManager;
 
         /// <summary>
+        /// Refernz auf die Controller Instanz für die Verwaltung der Nutzerdaten.
+        /// </summary>
+        private UserController userController;
+
+        /// <summary>
         /// Referenz auf die Datenbank Manager Instanz für Gruppen.
         /// </summary>
         private GroupDatabaseManager groupDBManager;
@@ -41,6 +46,7 @@ namespace DataHandlingLayer.Controller
             groupAPI = new GroupAPI();
             jsonManager = new JsonParsingManager();
             groupDBManager = new GroupDatabaseManager();
+            userController = new UserController();
         }
 
         /// <summary>
@@ -53,6 +59,7 @@ namespace DataHandlingLayer.Controller
             groupAPI = new GroupAPI();
             jsonManager = new JsonParsingManager();
             groupDBManager = new GroupDatabaseManager();
+            userController = new UserController();
         }
 
         /// <summary>
@@ -132,8 +139,13 @@ namespace DataHandlingLayer.Controller
                 // Speichere Gruppe lokal ab.
                 try
                 {
-                    // TODO - pürfe, ob admin als user in der DB steht
-                    // falls nicht füge ihn hinzu, sonst Foreign Key constraint verletzt.
+                    // Prüfe, ob Gruppenadmin (lokaler Nutzer in diesem Fall) als User lokal bereits gespeichert ist.
+                    if (!userController.IsUserLocallyStored(localUser.Id))
+                    {
+                        // Speichere lokalen Nutzer in den lokalen Nutzerdatensätzen für Gruppen ab.
+                        // Wird benötigt, da sonst Foreign Key constraints verletzt werden beim Speichern der Gruppe.
+                        userController.StoreUserLocally(localUser);
+                    }
 
                     groupDBManager.StoreGroup(responseGroupObj);
                 }
