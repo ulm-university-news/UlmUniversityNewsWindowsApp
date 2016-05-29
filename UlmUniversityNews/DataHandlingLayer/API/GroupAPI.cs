@@ -75,7 +75,7 @@ namespace DataHandlingLayer.API
         public async Task<string> SendGetGroupsRequest(string serverAccessToken, string groupName, string groupType)
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
-            if (groupName != null)
+            if (groupName != null && groupName.Trim().Length > 0)
             {
                 parameters.Add("groupName", groupName);
             }

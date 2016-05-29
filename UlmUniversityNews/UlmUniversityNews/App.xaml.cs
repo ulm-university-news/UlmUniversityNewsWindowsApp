@@ -318,6 +318,7 @@ namespace UlmUniversityNews
             NavigationService.RegisterPage("ReminderDetails", typeof(Views.ModeratorViews.ReminderDetails.ReminderDetails));
             NavigationService.RegisterPage("AboutUniversityNews", typeof(Views.About.AboutUniversityNews));
             NavigationService.RegisterPage("AddGroup", typeof(Views.Group.AddGroupDialog.AddGroup));
+            NavigationService.RegisterPage("SearchGroups", typeof(Views.Group.SearchGroups));
         }
 
         /// <summary>

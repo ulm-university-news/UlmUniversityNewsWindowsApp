@@ -124,5 +124,31 @@ namespace UlmUniversityNews.Views.Group
                 DrawerLayout.OpenDrawer();
             }
         }
+
+        /// <summary>
+        /// Event Handler, der Tastenevents der TextBox abfängt.
+        /// </summary>
+        /// <param name="sender">Der Sender der Tastenevents.</param>
+        /// <param name="e">Das gesendete Event.</param>
+        private async void SearchGroupsInputBox_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            object focusObj = FocusManager.GetFocusedElement();
+            if (focusObj != null && focusObj is TextBox)
+            {
+                var binding = (focusObj as TextBox).GetBindingExpression(TextBox.TextProperty);
+                binding.UpdateSource();
+            }
+
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                if (searchGroupViewModel.SearchGroupsCommand != null
+                    && searchGroupViewModel.SearchGroupsCommand.CanExecute(null))
+                {
+                    await searchGroupViewModel.SearchGroupsCommand.Execute(null);
+                }
+                // Keyboard soll nicht mehr angezeigt wird.
+                InputPane.GetForCurrentView().TryHide();
+            }
+        }
     }
 }

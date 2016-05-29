@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:UlmUniversityNews"
     xmlns:converter="using:UlmUniversityNews.Converters"
-    RequestedTheme="Light"> <!-- TODO - entferne Requested Theme -->
+    RequestedTheme="Light"> <!-- Requested Theme gesetzt wegen Farben. -->
     
     <Application.Resources>
 

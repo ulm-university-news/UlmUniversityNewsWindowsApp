@@ -501,7 +501,7 @@ namespace DataHandlingLayer.JsonManager
         /// <summary>
         /// Extrahiert eine Instanz der Klasse Group aus dem übergebenen JSON Dokument.
         /// </summary>
-        /// <param name="jsonString">Ds JSON Dokument.</param>
+        /// <param name="jsonString">Das JSON Dokument.</param>
         /// <returns>Eine Instanz der Klasse Group, oder null, falls das Umwandeln fehlgeschlagen ist.</returns>
         public Group ParseGroupFromJson(string jsonString)
         {
@@ -517,6 +517,27 @@ namespace DataHandlingLayer.JsonManager
             }
 
             return parsedGroup;
+        }
+
+        /// <summary>
+        /// Extrahiert eine Liste von Gruppen-Ressourcen aus dem übergebenen JSON-Dokument.
+        /// </summary>
+        /// <param name="jsonString">Das JSON Dokument.</param>
+        /// <returns>Eine Liste von Group Objekten, oder null, falls das Umwandeln fehlgeschlagen ist.</returns>
+        public List<Group> ParseGroupListFromJson(string jsonString)
+        {
+            List<Group> groupList = null;
+            try
+            {
+                groupList = JsonConvert.DeserializeObject<List<Group>>(jsonString);
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine("ParseGroupListFromJson: Json parser error occurred. " +
+                    "Message is {0}.", ex.Message);
+            }
+
+            return groupList;
         }
         #endregion Group
 

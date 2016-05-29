@@ -2,6 +2,7 @@
 using DataHandlingLayer.Controller.ValidationErrorReportInterface;
 using DataHandlingLayer.Database;
 using DataHandlingLayer.DataModel;
+using DataHandlingLayer.DataModel.Enums;
 using DataHandlingLayer.Exceptions;
 using DataHandlingLayer.JsonManager;
 using System;
@@ -163,6 +164,89 @@ namespace DataHandlingLayer.Controller
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Führe die Suche nach Gruppen anhand der übergebenen Suchparametern aus. Hierfür
+        /// wird ein Request an den Server abgesetzt und die ermittelten Gruppen in der Antwort
+        /// überliefert.
+        /// </summary>
+        /// <param name="groupName">Der Suchbegriff bezüglich des Namens der Gruppe.</param>
+        /// <param name="groupType">Suche kann über Angabe von Typ noch eingeschränkt werden. 
+        ///     Kann auch null sein, dann wird der Parameter bei der Suche ignoriert.</param>
+        /// <returns>Eine Liste von Group Objekten. Die Liste kann auch leer sein.</returns>
+        /// <exception cref="ClientException">Wirft ClientException wenn Suchanfrage fehlschlägt 
+        ///     oder abgelehnt wird.</exception>
+        public async Task<List<Group>> SearchGroupsAsync(string groupName, GroupType? groupType)
+        {
+            List<Group> retrievedGroups = null;
+
+            string type = null;
+            if (groupType.HasValue)
+            {
+                type = groupType.Value.ToString();
+            }
+
+            string serverResponse = null;
+            try
+            {
+                // Setzte Request mit Suchparametern an den Server ab.
+                serverResponse = await groupAPI.SendGetGroupsRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupName,
+                    type);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("SearchGroupsAsync: Request to server failed.");
+                // Abbilden auf ClientException.
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            if (serverResponse != null)
+            {
+                retrievedGroups = jsonManager.ParseGroupListFromJson(serverResponse);
+            }
+
+            return retrievedGroups;
+        }
+
+        /// <summary>
+        /// Ruft die Details zu der Gruppen-Ressource mit der angegebenen ID
+        /// vom Server ab.
+        /// </summary>
+        /// <param name="id">Die Id der Gruppe, zu der Details abgerufen werden sollen.</param>
+        /// <param name="withCaching">Gibt an, ob Caching bei diesem Request zugelassen werden soll.</param>
+        /// <returns>Liefert eine Instanz der Klasse Group zurück, oder null, falls zu der
+        ///     Id keine Ressource auf dem Server gefunden wurde.</returns>
+        /// <exception cref="ClientException">Wirft ClientException wenn Anfrage fehlschlägt 
+        ///     oder abgelehnt wird.</exception>
+        public async Task<Group> GetGroupAsync(int id, bool withCaching)
+        {
+            Group group = null;
+
+            string serverResponse = null;
+            try
+            {
+                // Setze Request an den Server ab.
+                serverResponse = await groupAPI.SendGetGroupRequest(
+                    getLocalUser().ServerAccessToken,
+                    id,
+                    withCaching);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("GetGroupAsync: Request to server failed.");
+                // Abbilden auf ClientException.
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            if (serverResponse != null)
+            {
+                group = jsonManager.ParseGroupFromJson(serverResponse);
+            }
+
+            return group;
         }
         #endregion RemoteGroupMethods
 

@@ -1239,4 +1239,25 @@ Nachricht am: </value>
   <data name="AddGroupTypeWorkingGroupItem.Content" xml:space="preserve">
     <value>Arbeitsgruppe</value>
   </data>
+  <data name="SearchGroupsDrawerTitle.Text" xml:space="preserve">
+    <value>Gruppensuche</value>
+  </data>
+  <data name="SearchGroupsSearchButton.Label" xml:space="preserve">
+    <value>gruppe suchen</value>
+  </data>
+  <data name="SearchGroupsSearchOptionId.Content" xml:space="preserve">
+    <value>Suche nach Id</value>
+  </data>
+  <data name="SearchGroupsSearchOptionName.Content" xml:space="preserve">
+    <value>Suche nach Name</value>
+  </data>
+  <data name="SearchGroupStatus" xml:space="preserve">
+    <value>Suche nach Gruppen</value>
+  </data>
+  <data name="SearchGroupsTypeOptionTutorialGroup.Content" xml:space="preserve">
+    <value>Tutoriumsgruppe</value>
+  </data>
+  <data name="SearchGroupsTypeOptionWorkingGroup.Content" xml:space="preserve">
+    <value>Arbeitsgruppe</value>
+  </data>
 </root>

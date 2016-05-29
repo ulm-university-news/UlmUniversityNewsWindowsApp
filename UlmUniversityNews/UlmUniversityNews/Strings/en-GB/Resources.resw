@@ -1238,4 +1238,25 @@ date: </value>
   <data name="AddGroupTypeWorkingGroupItem.Content" xml:space="preserve">
     <value>Working group</value>
   </data>
+  <data name="SearchGroupsDrawerTitle.Text" xml:space="preserve">
+    <value>Search groups</value>
+  </data>
+  <data name="SearchGroupsSearchButton.Label" xml:space="preserve">
+    <value>search groups</value>
+  </data>
+  <data name="SearchGroupsSearchOptionId.Content" xml:space="preserve">
+    <value>Search by id</value>
+  </data>
+  <data name="SearchGroupsSearchOptionName.Content" xml:space="preserve">
+    <value>Search by name</value>
+  </data>
+  <data name="SearchGroupStatus" xml:space="preserve">
+    <value>Searching for groups</value>
+  </data>
+  <data name="SearchGroupsTypeOptionTutorialGroup.Content" xml:space="preserve">
+    <value>Tutorial group</value>
+  </data>
+  <data name="SearchGroupsTypeOptionWorkingGroup.Content" xml:space="preserve">
+    <value>Working group</value>
+  </data>
 </root>

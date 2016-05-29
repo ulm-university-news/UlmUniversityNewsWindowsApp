@@ -374,11 +374,14 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
-        /// Wechsle auf die Gruppensuche.
+        /// Ausführung des Befehls SearchGroupsCommand. Wechsel auf die Gruppensuche Ansicht.
         /// </summary>
         private void executeSearchGroupsCommand()
         {
-            // TODO
+            if (_navService != null)
+            {
+                _navService.Navigate("SearchGroups");
+            }
         }
 
         /// <summary>

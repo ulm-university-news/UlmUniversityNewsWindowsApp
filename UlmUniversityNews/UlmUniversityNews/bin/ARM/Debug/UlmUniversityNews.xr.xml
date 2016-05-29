@@ -118,6 +118,12 @@
     <RootPropertyPathName Name="SelectedGroupType" />
     <RootPropertyPathName Name="GroupName" />
     <RootPropertyPathName Name="SearchGroupsCommand" />
+    <RootPropertyPathName Name="Groups" />
+    <RootPropertyPathName Name="GroupSelectedCommand" />
+    <RootPropertyPathName Name="SearchForNameEnabled" />
+    <RootPropertyPathName Name="TutorialGroupSelected" />
+    <RootPropertyPathName Name="WorkingGroupSelected" />
+    <RootPropertyPathName Name="SearchForIdEnabled" />
     <RootPropertyPathName Name="SearchChannelsCommand" />
     <RootPropertyPathName Name="GroupCollection" />
     <RootPropertyPathName Name="GroupSelected" />
@@ -521,6 +527,8 @@
       <RootProperty Name="AcceptsReturn" />
       <RootProperty Name="IsEnabled" />
       <RootProperty Name="MaxLength" />
+      <RootProperty Name="HorizontalAlignment" />
+      <RootProperty Name="VerticalAlignment" />
       <RootProperty Name="MinHeight" />
       <RootEvent Name="KeyDown" />
     </RootType>
@@ -563,6 +571,12 @@
     <RootType FullName="UlmUniversityNews.Converters.GroupTypeEnumToComboBoxItemIndexConverter" />
     <RootType FullName="UlmUniversityNews.Converters.InverseBooleanConverter" />
     <RootType FullName="UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup" />
+    <RootType FullName="Windows.UI.Xaml.Controls.CheckBox">
+      <RootProperty Name="Content" />
+      <RootProperty Name="IsChecked" />
+      <RootProperty Name="Visibility" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.Views.Group.SearchGroups" />
     <RootType FullName="UlmUniversityNews.Views.Homescreen.Homescreen" />
     <RootType FullName="Windows.UI.Xaml.Controls.PasswordBox">
       <RootProperty Name="Margin" />
@@ -578,11 +592,6 @@
     <RootType FullName="Windows.UI.Xaml.Controls.TimePicker">
       <RootProperty Name="Header" />
       <RootProperty Name="Time" />
-    </RootType>
-    <RootType FullName="Windows.UI.Xaml.Controls.CheckBox">
-      <RootProperty Name="Visibility" />
-      <RootProperty Name="IsChecked" />
-      <RootProperty Name="Content" />
     </RootType>
     <RootType FullName="UlmUniversityNews.Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder" />
     <RootType FullName="UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement" />

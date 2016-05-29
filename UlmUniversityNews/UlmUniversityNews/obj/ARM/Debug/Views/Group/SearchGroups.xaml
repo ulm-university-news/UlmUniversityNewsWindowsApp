@@ -66,10 +66,10 @@
             </Grid.ColumnDefinitions>
 
             <!-- Drawer Icon -->
-            <Image x:Name="DrawerIcon" 
+            <Image x:ConnectionId='2' x:Name="DrawerIcon" 
 					   Grid.Column="0"
 					   Style="{StaticResource DrawerIconStyle}"
-					   Tapped="DrawerIcon_Tapped" />
+					                              />
 
             <!-- Drawer Text -->
             <TextBlock Grid.Column="1"
@@ -139,7 +139,7 @@
                             </Grid>
                             
                             <!-- Eingabefeld. -->
-                        <TextBox 
+                        <TextBox x:ConnectionId='1' 
                             Grid.Row="2"
                             Margin="19, 0, 19, 10"
                             HorizontalAlignment="Stretch"
@@ -147,7 +147,7 @@
                             x:Name="SearchGroupsInputBox"
                             InputScope="Search" 
                             Background="White"
-                            KeyDown="SearchGroupsInputBox_KeyDown"
+                                                                  
                             Text="{Binding SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                         </TextBox>
                         </Grid>
@@ -207,3 +207,4 @@
         </drawerLayout:DrawerLayout>
     </Grid>
 </Page>
+
