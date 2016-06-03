@@ -491,7 +491,7 @@
                                    x:Name="GroupType" 
                                    HorizontalAlignment="Left"
                                    Style="{StaticResource ListTextStyle}"
-                                   Text="{Binding GroupType, Converter={StaticResource GroupTypeToStringConverter}}"/>
+                                   Text="{Binding Type, Converter={StaticResource GroupTypeToStringConverter}}"/>
                         <!-- Semester -->
                         <TextBlock Grid.Column="1"
                                    x:Name="TermOfGroup" 

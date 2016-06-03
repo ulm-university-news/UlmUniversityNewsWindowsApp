@@ -50,7 +50,7 @@ namespace DataHandlingLayer.DataModel
         /// Der Typ der Gruppe.
         /// </summary>
         [JsonProperty("groupType"), JsonConverter(typeof(StringEnumConverter))]
-        public GroupType GroupType
+        public GroupType Type
         {
             get { return groupType; }
             set { groupType = value; }
@@ -137,11 +137,24 @@ namespace DataHandlingLayer.DataModel
         /// Die Anzahl an ungelesenen Nachrichten innerhalb der Gruppe.
         /// Dabei handelt es sich um Nachrichten von Konversationen.
         /// </summary>
+        [JsonIgnore]
         public int NumberOfUnreadMessages
         {
             get { return numberOfUnreadMessages; }
             set { numberOfUnreadMessages = value; }
         }
+
+        private List<User> participants;
+        /// <summary>
+        /// Die Teilnehmer der Gruppe.
+        /// </summary>
+        [JsonIgnore]
+        public List<User> Participants
+        {
+            get { return participants; }
+            set { participants = value; }
+        }
+
         #endregion Properties
 
         /// <summary>

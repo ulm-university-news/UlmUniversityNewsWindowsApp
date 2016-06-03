@@ -310,6 +310,7 @@ Views\ChannelDetails\ChannelDetails.xbf
 Views\ChannelDetails\ChannelSettings.xbf
 Views\ChannelSearch\ChannelSearch.xbf
 Views\Group\AddGroupDialog\AddGroup.xbf
+Views\Group\GroupDetails.xbf
 Views\Group\SearchGroups.xbf
 Views\Homescreen\Homescreen.xbf
 Views\Login\LoginPage.xbf

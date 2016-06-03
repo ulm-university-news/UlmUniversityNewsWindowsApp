@@ -489,8 +489,8 @@ namespace DataHandlingLayer.Database
                                         User_Id         INTEGER NOT NULL,
                                         Active          INTEGER NOT NULL,
                                         PRIMARY KEY(Group_Id, User_Id),
-                                        FOREIGN KEY(Group_Id) REFERENCES ""Group""(Id),
-                                        FOREIGN KEY(User_Id) REFERENCES User(Id)
+                                        FOREIGN KEY(Group_Id) REFERENCES ""Group""(Id) ON DELETE CASCADE,
+                                        FOREIGN KEY(User_Id) REFERENCES User(Id) ON DELETE CASCADE
                             );";
             using (var statement = conn.Prepare(sql))
             {

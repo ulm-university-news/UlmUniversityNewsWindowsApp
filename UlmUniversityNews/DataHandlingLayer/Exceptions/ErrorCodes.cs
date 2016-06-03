@@ -63,6 +63,19 @@ namespace DataHandlingLayer.Exceptions
         public const int ReminderInvalidTitle = 3204;
         public const int ReminderInvalidInterval = 3205;
 
+        // Group
+        public const int GroupNotFound = 4000;
+        public const int GroupDataIncomplete = 4002;
+        public const int GroupInvalidName = 4003;
+        public const int GroupInvalidPassword = 4004;
+        public const int GroupInvalidDescription = 4005;
+        public const int GroupInvalidTerm = 4006;
+        public const int GroupInvalidGroupAdmin = 4007;
+        public const int GroupIncorrectPassword = 4008;
+        public const int GroupMissingPassword = 4009;
+        public const int GroupParticipantNotFound = 4010;
+        public const int GroupAdminNotAllowedToExit = 4011;
+
         public const int ServerDatabaseFailure = 5000;
 
         // Allgemeingültige Fehlercodes (von HTTP).

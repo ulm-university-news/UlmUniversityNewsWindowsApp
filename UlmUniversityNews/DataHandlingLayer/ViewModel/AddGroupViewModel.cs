@@ -171,7 +171,7 @@ namespace DataHandlingLayer.ViewModel
                 Name = GroupName,
                 Description = GroupDescription,
                 Term = term,
-                GroupType = SelectedGroupType,
+                Type = SelectedGroupType,
                 Password = GroupPassword
             };
 

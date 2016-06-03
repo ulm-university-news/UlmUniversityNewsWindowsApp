@@ -125,5 +125,101 @@ namespace DataHandlingLayer.Database
             }
         }
 
+        /// <summary>
+        /// Speichert eine Menge von Nutzer-Ressourcen in der lokalen Datenbank ab.
+        /// </summary>
+        /// <param name="users">Eine Liste mit zu speichernden Datenobjekten vom Typ User.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn die Speicherung fehlschlägt.</exception>
+        public void BulkInsertUsers(List<User> users)
+        {
+            if (users == null || users.Count == 0)
+            {
+                Debug.WriteLine("BulkInsertUsers: No valid users passed to the BulkInsertUsers method.");
+                return;
+            }
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        // Starte eine Transaktion.
+                        using (var statement = conn.Prepare("BEGIN TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+
+                        string query = @"INSERT INTO User (Id, Name) 
+                            VALUES (?, ?);";
+
+                        var insertStmt = conn.Prepare(query);
+
+                        using (insertStmt)
+                        {
+                            foreach (User user in users)
+                            {
+                                insertStmt.Bind(1, user.Id);
+                                insertStmt.Bind(2, user.Name);
+
+                                insertStmt.Step();
+
+                                // Reset für nächste Ausführung.
+                                insertStmt.Reset();
+                            }
+                        }
+
+                        // Commit der Transaktion.
+                        using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                        {
+                            if (statement.Step() == SQLiteResult.DONE)
+                            {
+                                Debug.WriteLine("BulkInsertUsers: Stored {0} users per Bulk Insert.", users.Count);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SQLException occured in BulkInsertUsers.");
+                        Debug.WriteLine("SQLException: " + sqlEx.HResult + " and message: " + sqlEx.Message);
+
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+
+                        throw new DatabaseException("Bulk insert of users has failed.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Exception occured in BulkInsertUsers.");
+                        Debug.WriteLine("Exception: " + ex.HResult + " and message: " + ex.Message);
+
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+
+                        throw new DatabaseException("Bulk insert of users has failed.");
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Couldn't get access to database. Time out.");
+                throw new DatabaseException("Could not get access to the database.");
+            }
+        }
+
     }
 }

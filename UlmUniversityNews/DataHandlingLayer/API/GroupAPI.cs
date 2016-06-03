@@ -151,5 +151,62 @@ namespace DataHandlingLayer.API
                 serverAccessToken,
                 "/group/" + groupId.ToString());
         }
+
+        // ************ Nutzer/Teilnehmer bezogene Requests. **********************************
+
+        /// <summary>
+        /// Sende einen Request zum Abfragen aller Teilnehmer der Gruppe mit der angegebenen Id zum Server.
+        /// Für die Ausfürhung des Requests muss der Nutzer Teilnehmer der Gruppe sein.
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Nutzers.</param>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <param name="withCaching">Gibt an, ob Caching für die Abfrage zugelassen werden soll.</param>
+        /// <returns>Die Antwort des Server als String. Hierbei handelt es sich um die abgerufene Teilnehmer in
+        ///     Form von Nutzer-Ressourcen. </returns>
+        /// <exception cref="APIException">Wenn der Request fehlschlägt, oder vom Server abgelehnt wurde.</exception>
+        public async Task<string> SendGetParticipantsRequest(string serverAccessToken, int groupId, bool withCaching)
+        {
+            string serverResponse = await base.SendHttpGetRequestAsync(
+                serverAccessToken,
+                "/group/" + groupId.ToString() + "/user",
+                null,
+                withCaching);
+
+            return serverResponse;
+        }
+
+        /// <summary>
+        /// Sende einen Request zum Beitreten zur Gruppe mit der angegebenen Id. Für das Beitreten zur Gruppe
+        /// ist ein Passwort erforderlich. Das Passwort wird kodiert im Body des Requests übertragen.
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Nutzers.</param>
+        /// <param name="groupId">Die Id der Gruppe, in die der Nutzer eintreten möchte.</param>
+        /// <param name="jsonContent">Der Inhalt des Requests. In diesem Fall wird das Passwort in Form
+        ///     eines JSON Dokuments an den Server übermittelt.</param>
+        /// <exception cref="APIException">Wenn der Request fehlschlägt, oder vom Server abgelehnt wurde.</exception>
+        public async Task SendJoinGroupRequest(string serverAccessToken, int groupId, string jsonContent)
+        {
+            await base.SendHttpPostRequestWithJsonBodyAsync(
+                serverAccessToken,
+                jsonContent,
+                "/group/" + groupId + "/user",
+                null);
+        }
+
+        /// <summary>
+        /// Sende einen Request, um den Teilnehmer mit der angegebnen Id von der Gruppe zu entfernen.
+        /// Man kann als Nutzer selbst aus der Gruppe austreten, wenn man Teilnehmer der Gruppe ist. Ist man
+        /// Gruppenadministrator, so kann man auch andere Teilnehmer von der Gruppe entfernen.
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Nutzers.</param>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <param name="participantId">Die Id des Teilnehmers, der entfernt werden soll.</param>
+        /// <exception cref="APIException">Wenn der Request fehlschlägt, oder vom Server abgelehnt wurde.</exception>
+        public async Task SendLeaveGroupRequest(string serverAccessToken, int groupId, int participantId)
+        {
+            await base.SendHttpDeleteRequestAsync(
+                serverAccessToken,
+                "/group/" + groupId + "/user/" + participantId);
+        }
     }
 }

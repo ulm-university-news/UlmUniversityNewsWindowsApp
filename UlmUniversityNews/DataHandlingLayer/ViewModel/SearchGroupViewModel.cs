@@ -112,12 +112,12 @@ namespace DataHandlingLayer.ViewModel
             set { searchGroupsCommand = value; }
         }
 
-        private RelayCommand groupSelectedCommand;
+        private AsyncRelayCommand groupSelectedCommand;
         /// <summary>
         /// Befehl, der genutzt werden kann um eine Gruppe auszuwählen und sich die Details
         /// dieser Gruppe anzeigen zu lassen.
         /// </summary>
-        public RelayCommand GroupSelectedCommand
+        public AsyncRelayCommand GroupSelectedCommand
         {
             get { return groupSelectedCommand; }
             set { groupSelectedCommand = value; }
@@ -140,7 +140,7 @@ namespace DataHandlingLayer.ViewModel
             TutorialGroupSelected = true;
 
             // Befehle erzeugen
-            GroupSelectedCommand = new RelayCommand(param => executeGroupSelectedCommand(param));
+            GroupSelectedCommand = new AsyncRelayCommand(param => executeGroupSelectedCommandAsync(param));
             SearchGroupsCommand = new AsyncRelayCommand(
                 param => executeSearchGroupsCommandAsync(),
                 param => canSearchGroups()
@@ -257,9 +257,20 @@ namespace DataHandlingLayer.ViewModel
         /// der Details der gewählten Gruppe an.
         /// <param name="selectedItem">Die angeklickte Gruppe.</param>
         /// </summary>
-        private void executeGroupSelectedCommand(object selectedItem)
+        private async Task executeGroupSelectedCommandAsync(object selectedItem)
         {
             Debug.WriteLine("The selected item is: " + (selectedItem as Group).Name);
+
+            // Cast object to group.
+            Group selectedGroup = selectedItem as Group;
+
+            string key = "testKey";
+            // Store to temporary cache.
+            await Common.TemporaryCacheManager.StoreObjectInTmpCacheAsync(key, selectedGroup);
+
+            // Stoße Navigation an.
+            if (_navService != null)
+                _navService.Navigate("GroupDetails", key);
         }
         #endregion CommandFunctionality
     }

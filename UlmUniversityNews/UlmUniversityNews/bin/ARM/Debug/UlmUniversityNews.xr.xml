@@ -5,10 +5,9 @@
   </Roots.Interfaces>
   <Roots.PropertyPathNames>
     <RootPropertyPathName Name="Term" />
-    <RootPropertyPathName Name="GroupType" />
+    <RootPropertyPathName Name="Type" />
     <RootPropertyPathName Name="NumberOfUnreadMessages" />
     <RootPropertyPathName Name="Name" />
-    <RootPropertyPathName Name="Type" />
     <RootPropertyPathName Name="NumberOfUnreadAnnouncements" />
     <RootPropertyPathName Name="DisplayableNameResourceKey" />
     <RootPropertyPathName Name="IconPath" />
@@ -117,6 +116,9 @@
     <RootPropertyPathName Name="IsSummerTermSelected" />
     <RootPropertyPathName Name="SelectedGroupType" />
     <RootPropertyPathName Name="GroupName" />
+    <RootPropertyPathName Name="SelectedGroup" />
+    <RootPropertyPathName Name="Participants" />
+    <RootPropertyPathName Name="GroupAdmin" />
     <RootPropertyPathName Name="SearchGroupsCommand" />
     <RootPropertyPathName Name="Groups" />
     <RootPropertyPathName Name="GroupSelectedCommand" />
@@ -571,6 +573,9 @@
     <RootType FullName="UlmUniversityNews.Converters.GroupTypeEnumToComboBoxItemIndexConverter" />
     <RootType FullName="UlmUniversityNews.Converters.InverseBooleanConverter" />
     <RootType FullName="UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup" />
+    <RootType FullName="UlmUniversityNews.Converters.GroupAdminIdToStringConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.ParticipantsListToStringConverter" />
+    <RootType FullName="UlmUniversityNews.Views.Group.GroupDetails" />
     <RootType FullName="Windows.UI.Xaml.Controls.CheckBox">
       <RootProperty Name="Content" />
       <RootProperty Name="IsChecked" />

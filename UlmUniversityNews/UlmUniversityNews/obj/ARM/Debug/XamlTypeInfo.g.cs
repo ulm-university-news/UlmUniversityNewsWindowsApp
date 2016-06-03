@@ -124,7 +124,7 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
 
         private void InitTypeTables()
         {
-            _typeNameTable = new string[84];
+            _typeNameTable = new string[87];
             _typeNameTable[0] = "UlmUniversityNews.Converters.ChannelTypeToStringConverter";
             _typeNameTable[1] = "Object";
             _typeNameTable[2] = "UlmUniversityNews.Converters.GroupTypeToStringConverter";
@@ -190,27 +190,30 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
             _typeNameTable[62] = "UlmUniversityNews.Converters.GroupTypeEnumToComboBoxItemIndexConverter";
             _typeNameTable[63] = "UlmUniversityNews.Converters.InverseBooleanConverter";
             _typeNameTable[64] = "UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup";
-            _typeNameTable[65] = "UlmUniversityNews.Views.Group.SearchGroups";
-            _typeNameTable[66] = "UlmUniversityNews.Views.Homescreen.Homescreen";
-            _typeNameTable[67] = "UlmUniversityNews.Views.Login.LoginPage";
-            _typeNameTable[68] = "UlmUniversityNews.Converters.ChannelTypeEnumToComboBoxItemIndexConverter";
-            _typeNameTable[69] = "UlmUniversityNews.Converters.FacultyEnumToComboBoxItemIndexConverter";
-            _typeNameTable[70] = "UlmUniversityNews.Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel";
-            _typeNameTable[71] = "UlmUniversityNews.Converters.ReminderDateTimeToStringConverter";
-            _typeNameTable[72] = "UlmUniversityNews.Converters.ReminderIntervalToLocalizedStringConverter";
-            _typeNameTable[73] = "UlmUniversityNews.Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder";
-            _typeNameTable[74] = "UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement";
-            _typeNameTable[75] = "UlmUniversityNews.Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails";
-            _typeNameTable[76] = "UlmUniversityNews.Views.ModeratorViews.Homescreen.HomescreenModerator";
-            _typeNameTable[77] = "UlmUniversityNews.Converters.DateTimeToPureDateStringConverter";
-            _typeNameTable[78] = "UlmUniversityNews.Converters.DateTimeToPureTimeStringConverter";
-            _typeNameTable[79] = "UlmUniversityNews.Converters.BooleanValueToLocalizedStringConverter";
-            _typeNameTable[80] = "UlmUniversityNews.Converters.SkipNextReminderDateToIconPathConverter";
-            _typeNameTable[81] = "UlmUniversityNews.Converters.PriorityEnumToLocalizedStringConverter";
-            _typeNameTable[82] = "UlmUniversityNews.Views.ModeratorViews.ReminderDetails.ReminderDetails";
-            _typeNameTable[83] = "UlmUniversityNews.Views.StartPage";
+            _typeNameTable[65] = "UlmUniversityNews.Converters.GroupAdminIdToStringConverter";
+            _typeNameTable[66] = "UlmUniversityNews.Converters.ParticipantsListToStringConverter";
+            _typeNameTable[67] = "UlmUniversityNews.Views.Group.GroupDetails";
+            _typeNameTable[68] = "UlmUniversityNews.Views.Group.SearchGroups";
+            _typeNameTable[69] = "UlmUniversityNews.Views.Homescreen.Homescreen";
+            _typeNameTable[70] = "UlmUniversityNews.Views.Login.LoginPage";
+            _typeNameTable[71] = "UlmUniversityNews.Converters.ChannelTypeEnumToComboBoxItemIndexConverter";
+            _typeNameTable[72] = "UlmUniversityNews.Converters.FacultyEnumToComboBoxItemIndexConverter";
+            _typeNameTable[73] = "UlmUniversityNews.Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel";
+            _typeNameTable[74] = "UlmUniversityNews.Converters.ReminderDateTimeToStringConverter";
+            _typeNameTable[75] = "UlmUniversityNews.Converters.ReminderIntervalToLocalizedStringConverter";
+            _typeNameTable[76] = "UlmUniversityNews.Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder";
+            _typeNameTable[77] = "UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement";
+            _typeNameTable[78] = "UlmUniversityNews.Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails";
+            _typeNameTable[79] = "UlmUniversityNews.Views.ModeratorViews.Homescreen.HomescreenModerator";
+            _typeNameTable[80] = "UlmUniversityNews.Converters.DateTimeToPureDateStringConverter";
+            _typeNameTable[81] = "UlmUniversityNews.Converters.DateTimeToPureTimeStringConverter";
+            _typeNameTable[82] = "UlmUniversityNews.Converters.BooleanValueToLocalizedStringConverter";
+            _typeNameTable[83] = "UlmUniversityNews.Converters.SkipNextReminderDateToIconPathConverter";
+            _typeNameTable[84] = "UlmUniversityNews.Converters.PriorityEnumToLocalizedStringConverter";
+            _typeNameTable[85] = "UlmUniversityNews.Views.ModeratorViews.ReminderDetails.ReminderDetails";
+            _typeNameTable[86] = "UlmUniversityNews.Views.StartPage";
 
-            _typeTable = new global::System.Type[84];
+            _typeTable = new global::System.Type[87];
             _typeTable[0] = typeof(global::UlmUniversityNews.Converters.ChannelTypeToStringConverter);
             _typeTable[1] = typeof(global::System.Object);
             _typeTable[2] = typeof(global::UlmUniversityNews.Converters.GroupTypeToStringConverter);
@@ -276,25 +279,28 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
             _typeTable[62] = typeof(global::UlmUniversityNews.Converters.GroupTypeEnumToComboBoxItemIndexConverter);
             _typeTable[63] = typeof(global::UlmUniversityNews.Converters.InverseBooleanConverter);
             _typeTable[64] = typeof(global::UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup);
-            _typeTable[65] = typeof(global::UlmUniversityNews.Views.Group.SearchGroups);
-            _typeTable[66] = typeof(global::UlmUniversityNews.Views.Homescreen.Homescreen);
-            _typeTable[67] = typeof(global::UlmUniversityNews.Views.Login.LoginPage);
-            _typeTable[68] = typeof(global::UlmUniversityNews.Converters.ChannelTypeEnumToComboBoxItemIndexConverter);
-            _typeTable[69] = typeof(global::UlmUniversityNews.Converters.FacultyEnumToComboBoxItemIndexConverter);
-            _typeTable[70] = typeof(global::UlmUniversityNews.Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel);
-            _typeTable[71] = typeof(global::UlmUniversityNews.Converters.ReminderDateTimeToStringConverter);
-            _typeTable[72] = typeof(global::UlmUniversityNews.Converters.ReminderIntervalToLocalizedStringConverter);
-            _typeTable[73] = typeof(global::UlmUniversityNews.Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder);
-            _typeTable[74] = typeof(global::UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement);
-            _typeTable[75] = typeof(global::UlmUniversityNews.Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails);
-            _typeTable[76] = typeof(global::UlmUniversityNews.Views.ModeratorViews.Homescreen.HomescreenModerator);
-            _typeTable[77] = typeof(global::UlmUniversityNews.Converters.DateTimeToPureDateStringConverter);
-            _typeTable[78] = typeof(global::UlmUniversityNews.Converters.DateTimeToPureTimeStringConverter);
-            _typeTable[79] = typeof(global::UlmUniversityNews.Converters.BooleanValueToLocalizedStringConverter);
-            _typeTable[80] = typeof(global::UlmUniversityNews.Converters.SkipNextReminderDateToIconPathConverter);
-            _typeTable[81] = typeof(global::UlmUniversityNews.Converters.PriorityEnumToLocalizedStringConverter);
-            _typeTable[82] = typeof(global::UlmUniversityNews.Views.ModeratorViews.ReminderDetails.ReminderDetails);
-            _typeTable[83] = typeof(global::UlmUniversityNews.Views.StartPage);
+            _typeTable[65] = typeof(global::UlmUniversityNews.Converters.GroupAdminIdToStringConverter);
+            _typeTable[66] = typeof(global::UlmUniversityNews.Converters.ParticipantsListToStringConverter);
+            _typeTable[67] = typeof(global::UlmUniversityNews.Views.Group.GroupDetails);
+            _typeTable[68] = typeof(global::UlmUniversityNews.Views.Group.SearchGroups);
+            _typeTable[69] = typeof(global::UlmUniversityNews.Views.Homescreen.Homescreen);
+            _typeTable[70] = typeof(global::UlmUniversityNews.Views.Login.LoginPage);
+            _typeTable[71] = typeof(global::UlmUniversityNews.Converters.ChannelTypeEnumToComboBoxItemIndexConverter);
+            _typeTable[72] = typeof(global::UlmUniversityNews.Converters.FacultyEnumToComboBoxItemIndexConverter);
+            _typeTable[73] = typeof(global::UlmUniversityNews.Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel);
+            _typeTable[74] = typeof(global::UlmUniversityNews.Converters.ReminderDateTimeToStringConverter);
+            _typeTable[75] = typeof(global::UlmUniversityNews.Converters.ReminderIntervalToLocalizedStringConverter);
+            _typeTable[76] = typeof(global::UlmUniversityNews.Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder);
+            _typeTable[77] = typeof(global::UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement);
+            _typeTable[78] = typeof(global::UlmUniversityNews.Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails);
+            _typeTable[79] = typeof(global::UlmUniversityNews.Views.ModeratorViews.Homescreen.HomescreenModerator);
+            _typeTable[80] = typeof(global::UlmUniversityNews.Converters.DateTimeToPureDateStringConverter);
+            _typeTable[81] = typeof(global::UlmUniversityNews.Converters.DateTimeToPureTimeStringConverter);
+            _typeTable[82] = typeof(global::UlmUniversityNews.Converters.BooleanValueToLocalizedStringConverter);
+            _typeTable[83] = typeof(global::UlmUniversityNews.Converters.SkipNextReminderDateToIconPathConverter);
+            _typeTable[84] = typeof(global::UlmUniversityNews.Converters.PriorityEnumToLocalizedStringConverter);
+            _typeTable[85] = typeof(global::UlmUniversityNews.Views.ModeratorViews.ReminderDetails.ReminderDetails);
+            _typeTable[86] = typeof(global::UlmUniversityNews.Views.StartPage);
         }
 
         private int LookupTypeIndexByName(string typeName)
@@ -371,25 +377,28 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
         private object Activate_62_GroupTypeEnumToComboBoxItemIndexConverter() { return new global::UlmUniversityNews.Converters.GroupTypeEnumToComboBoxItemIndexConverter(); }
         private object Activate_63_InverseBooleanConverter() { return new global::UlmUniversityNews.Converters.InverseBooleanConverter(); }
         private object Activate_64_AddGroup() { return new global::UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup(); }
-        private object Activate_65_SearchGroups() { return new global::UlmUniversityNews.Views.Group.SearchGroups(); }
-        private object Activate_66_Homescreen() { return new global::UlmUniversityNews.Views.Homescreen.Homescreen(); }
-        private object Activate_67_LoginPage() { return new global::UlmUniversityNews.Views.Login.LoginPage(); }
-        private object Activate_68_ChannelTypeEnumToComboBoxItemIndexConverter() { return new global::UlmUniversityNews.Converters.ChannelTypeEnumToComboBoxItemIndexConverter(); }
-        private object Activate_69_FacultyEnumToComboBoxItemIndexConverter() { return new global::UlmUniversityNews.Converters.FacultyEnumToComboBoxItemIndexConverter(); }
-        private object Activate_70_AddAndEditChannel() { return new global::UlmUniversityNews.Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel(); }
-        private object Activate_71_ReminderDateTimeToStringConverter() { return new global::UlmUniversityNews.Converters.ReminderDateTimeToStringConverter(); }
-        private object Activate_72_ReminderIntervalToLocalizedStringConverter() { return new global::UlmUniversityNews.Converters.ReminderIntervalToLocalizedStringConverter(); }
-        private object Activate_73_AddAndEditReminder() { return new global::UlmUniversityNews.Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder(); }
-        private object Activate_74_AddAnnouncement() { return new global::UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement(); }
-        private object Activate_75_ModeratorChannelDetails() { return new global::UlmUniversityNews.Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails(); }
-        private object Activate_76_HomescreenModerator() { return new global::UlmUniversityNews.Views.ModeratorViews.Homescreen.HomescreenModerator(); }
-        private object Activate_77_DateTimeToPureDateStringConverter() { return new global::UlmUniversityNews.Converters.DateTimeToPureDateStringConverter(); }
-        private object Activate_78_DateTimeToPureTimeStringConverter() { return new global::UlmUniversityNews.Converters.DateTimeToPureTimeStringConverter(); }
-        private object Activate_79_BooleanValueToLocalizedStringConverter() { return new global::UlmUniversityNews.Converters.BooleanValueToLocalizedStringConverter(); }
-        private object Activate_80_SkipNextReminderDateToIconPathConverter() { return new global::UlmUniversityNews.Converters.SkipNextReminderDateToIconPathConverter(); }
-        private object Activate_81_PriorityEnumToLocalizedStringConverter() { return new global::UlmUniversityNews.Converters.PriorityEnumToLocalizedStringConverter(); }
-        private object Activate_82_ReminderDetails() { return new global::UlmUniversityNews.Views.ModeratorViews.ReminderDetails.ReminderDetails(); }
-        private object Activate_83_StartPage() { return new global::UlmUniversityNews.Views.StartPage(); }
+        private object Activate_65_GroupAdminIdToStringConverter() { return new global::UlmUniversityNews.Converters.GroupAdminIdToStringConverter(); }
+        private object Activate_66_ParticipantsListToStringConverter() { return new global::UlmUniversityNews.Converters.ParticipantsListToStringConverter(); }
+        private object Activate_67_GroupDetails() { return new global::UlmUniversityNews.Views.Group.GroupDetails(); }
+        private object Activate_68_SearchGroups() { return new global::UlmUniversityNews.Views.Group.SearchGroups(); }
+        private object Activate_69_Homescreen() { return new global::UlmUniversityNews.Views.Homescreen.Homescreen(); }
+        private object Activate_70_LoginPage() { return new global::UlmUniversityNews.Views.Login.LoginPage(); }
+        private object Activate_71_ChannelTypeEnumToComboBoxItemIndexConverter() { return new global::UlmUniversityNews.Converters.ChannelTypeEnumToComboBoxItemIndexConverter(); }
+        private object Activate_72_FacultyEnumToComboBoxItemIndexConverter() { return new global::UlmUniversityNews.Converters.FacultyEnumToComboBoxItemIndexConverter(); }
+        private object Activate_73_AddAndEditChannel() { return new global::UlmUniversityNews.Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel(); }
+        private object Activate_74_ReminderDateTimeToStringConverter() { return new global::UlmUniversityNews.Converters.ReminderDateTimeToStringConverter(); }
+        private object Activate_75_ReminderIntervalToLocalizedStringConverter() { return new global::UlmUniversityNews.Converters.ReminderIntervalToLocalizedStringConverter(); }
+        private object Activate_76_AddAndEditReminder() { return new global::UlmUniversityNews.Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder(); }
+        private object Activate_77_AddAnnouncement() { return new global::UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement(); }
+        private object Activate_78_ModeratorChannelDetails() { return new global::UlmUniversityNews.Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails(); }
+        private object Activate_79_HomescreenModerator() { return new global::UlmUniversityNews.Views.ModeratorViews.Homescreen.HomescreenModerator(); }
+        private object Activate_80_DateTimeToPureDateStringConverter() { return new global::UlmUniversityNews.Converters.DateTimeToPureDateStringConverter(); }
+        private object Activate_81_DateTimeToPureTimeStringConverter() { return new global::UlmUniversityNews.Converters.DateTimeToPureTimeStringConverter(); }
+        private object Activate_82_BooleanValueToLocalizedStringConverter() { return new global::UlmUniversityNews.Converters.BooleanValueToLocalizedStringConverter(); }
+        private object Activate_83_SkipNextReminderDateToIconPathConverter() { return new global::UlmUniversityNews.Converters.SkipNextReminderDateToIconPathConverter(); }
+        private object Activate_84_PriorityEnumToLocalizedStringConverter() { return new global::UlmUniversityNews.Converters.PriorityEnumToLocalizedStringConverter(); }
+        private object Activate_85_ReminderDetails() { return new global::UlmUniversityNews.Views.ModeratorViews.ReminderDetails.ReminderDetails(); }
+        private object Activate_86_StartPage() { return new global::UlmUniversityNews.Views.StartPage(); }
         private void MapAdd_22_ObservableDictionary(object instance, object key, object item)
         {
             var collection = (global::System.Collections.Generic.IDictionary<global::System.String, global::System.Object>)instance;
@@ -863,144 +872,166 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 65:   //  UlmUniversityNews.Views.Group.SearchGroups
+            case 65:   //  UlmUniversityNews.Converters.GroupAdminIdToStringConverter
+                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
+                userType.Activator = Activate_65_GroupAdminIdToStringConverter;
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 66:   //  UlmUniversityNews.Converters.ParticipantsListToStringConverter
+                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
+                userType.Activator = Activate_66_ParticipantsListToStringConverter;
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 67:   //  UlmUniversityNews.Views.Group.GroupDetails
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_65_SearchGroups;
+                userType.Activator = Activate_67_GroupDetails;
                 userType.AddMemberName("NavigationHelper");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 66:   //  UlmUniversityNews.Views.Homescreen.Homescreen
+            case 68:   //  UlmUniversityNews.Views.Group.SearchGroups
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_66_Homescreen;
+                userType.Activator = Activate_68_SearchGroups;
                 userType.AddMemberName("NavigationHelper");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 67:   //  UlmUniversityNews.Views.Login.LoginPage
+            case 69:   //  UlmUniversityNews.Views.Homescreen.Homescreen
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_67_LoginPage;
+                userType.Activator = Activate_69_Homescreen;
                 userType.AddMemberName("NavigationHelper");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 68:   //  UlmUniversityNews.Converters.ChannelTypeEnumToComboBoxItemIndexConverter
-                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
-                userType.Activator = Activate_68_ChannelTypeEnumToComboBoxItemIndexConverter;
-                userType.SetIsLocalType();
-                xamlType = userType;
-                break;
-
-            case 69:   //  UlmUniversityNews.Converters.FacultyEnumToComboBoxItemIndexConverter
-                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
-                userType.Activator = Activate_69_FacultyEnumToComboBoxItemIndexConverter;
-                userType.SetIsLocalType();
-                xamlType = userType;
-                break;
-
-            case 70:   //  UlmUniversityNews.Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel
+            case 70:   //  UlmUniversityNews.Views.Login.LoginPage
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_70_AddAndEditChannel;
+                userType.Activator = Activate_70_LoginPage;
                 userType.AddMemberName("NavigationHelper");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 71:   //  UlmUniversityNews.Converters.ReminderDateTimeToStringConverter
+            case 71:   //  UlmUniversityNews.Converters.ChannelTypeEnumToComboBoxItemIndexConverter
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
-                userType.Activator = Activate_71_ReminderDateTimeToStringConverter;
+                userType.Activator = Activate_71_ChannelTypeEnumToComboBoxItemIndexConverter;
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 72:   //  UlmUniversityNews.Converters.ReminderIntervalToLocalizedStringConverter
+            case 72:   //  UlmUniversityNews.Converters.FacultyEnumToComboBoxItemIndexConverter
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
-                userType.Activator = Activate_72_ReminderIntervalToLocalizedStringConverter;
+                userType.Activator = Activate_72_FacultyEnumToComboBoxItemIndexConverter;
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 73:   //  UlmUniversityNews.Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder
+            case 73:   //  UlmUniversityNews.Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_73_AddAndEditReminder;
+                userType.Activator = Activate_73_AddAndEditChannel;
                 userType.AddMemberName("NavigationHelper");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 74:   //  UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement
+            case 74:   //  UlmUniversityNews.Converters.ReminderDateTimeToStringConverter
+                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
+                userType.Activator = Activate_74_ReminderDateTimeToStringConverter;
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 75:   //  UlmUniversityNews.Converters.ReminderIntervalToLocalizedStringConverter
+                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
+                userType.Activator = Activate_75_ReminderIntervalToLocalizedStringConverter;
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 76:   //  UlmUniversityNews.Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_74_AddAnnouncement;
+                userType.Activator = Activate_76_AddAndEditReminder;
                 userType.AddMemberName("NavigationHelper");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 75:   //  UlmUniversityNews.Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails
+            case 77:   //  UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_75_ModeratorChannelDetails;
+                userType.Activator = Activate_77_AddAnnouncement;
                 userType.AddMemberName("NavigationHelper");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 76:   //  UlmUniversityNews.Views.ModeratorViews.Homescreen.HomescreenModerator
+            case 78:   //  UlmUniversityNews.Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_76_HomescreenModerator;
+                userType.Activator = Activate_78_ModeratorChannelDetails;
                 userType.AddMemberName("NavigationHelper");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 77:   //  UlmUniversityNews.Converters.DateTimeToPureDateStringConverter
-                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
-                userType.Activator = Activate_77_DateTimeToPureDateStringConverter;
-                userType.SetIsLocalType();
-                xamlType = userType;
-                break;
-
-            case 78:   //  UlmUniversityNews.Converters.DateTimeToPureTimeStringConverter
-                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
-                userType.Activator = Activate_78_DateTimeToPureTimeStringConverter;
-                userType.SetIsLocalType();
-                xamlType = userType;
-                break;
-
-            case 79:   //  UlmUniversityNews.Converters.BooleanValueToLocalizedStringConverter
-                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
-                userType.Activator = Activate_79_BooleanValueToLocalizedStringConverter;
-                userType.SetIsLocalType();
-                xamlType = userType;
-                break;
-
-            case 80:   //  UlmUniversityNews.Converters.SkipNextReminderDateToIconPathConverter
-                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
-                userType.Activator = Activate_80_SkipNextReminderDateToIconPathConverter;
-                userType.SetIsLocalType();
-                xamlType = userType;
-                break;
-
-            case 81:   //  UlmUniversityNews.Converters.PriorityEnumToLocalizedStringConverter
-                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
-                userType.Activator = Activate_81_PriorityEnumToLocalizedStringConverter;
-                userType.SetIsLocalType();
-                xamlType = userType;
-                break;
-
-            case 82:   //  UlmUniversityNews.Views.ModeratorViews.ReminderDetails.ReminderDetails
+            case 79:   //  UlmUniversityNews.Views.ModeratorViews.Homescreen.HomescreenModerator
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_82_ReminderDetails;
+                userType.Activator = Activate_79_HomescreenModerator;
                 userType.AddMemberName("NavigationHelper");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 83:   //  UlmUniversityNews.Views.StartPage
+            case 80:   //  UlmUniversityNews.Converters.DateTimeToPureDateStringConverter
+                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
+                userType.Activator = Activate_80_DateTimeToPureDateStringConverter;
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 81:   //  UlmUniversityNews.Converters.DateTimeToPureTimeStringConverter
+                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
+                userType.Activator = Activate_81_DateTimeToPureTimeStringConverter;
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 82:   //  UlmUniversityNews.Converters.BooleanValueToLocalizedStringConverter
+                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
+                userType.Activator = Activate_82_BooleanValueToLocalizedStringConverter;
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 83:   //  UlmUniversityNews.Converters.SkipNextReminderDateToIconPathConverter
+                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
+                userType.Activator = Activate_83_SkipNextReminderDateToIconPathConverter;
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 84:   //  UlmUniversityNews.Converters.PriorityEnumToLocalizedStringConverter
+                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
+                userType.Activator = Activate_84_PriorityEnumToLocalizedStringConverter;
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 85:   //  UlmUniversityNews.Views.ModeratorViews.ReminderDetails.ReminderDetails
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_83_StartPage;
+                userType.Activator = Activate_85_ReminderDetails;
+                userType.AddMemberName("NavigationHelper");
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 86:   //  UlmUniversityNews.Views.StartPage
+                userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
+                userType.Activator = Activate_86_StartPage;
                 userType.AddMemberName("NavigationHelper");
                 userType.SetIsLocalType();
                 xamlType = userType;
@@ -1350,52 +1381,57 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
             var that = (global::UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup)instance;
             return that.NavigationHelper;
         }
-        private object get_41_SearchGroups_NavigationHelper(object instance)
+        private object get_41_GroupDetails_NavigationHelper(object instance)
+        {
+            var that = (global::UlmUniversityNews.Views.Group.GroupDetails)instance;
+            return that.NavigationHelper;
+        }
+        private object get_42_SearchGroups_NavigationHelper(object instance)
         {
             var that = (global::UlmUniversityNews.Views.Group.SearchGroups)instance;
             return that.NavigationHelper;
         }
-        private object get_42_Homescreen_NavigationHelper(object instance)
+        private object get_43_Homescreen_NavigationHelper(object instance)
         {
             var that = (global::UlmUniversityNews.Views.Homescreen.Homescreen)instance;
             return that.NavigationHelper;
         }
-        private object get_43_LoginPage_NavigationHelper(object instance)
+        private object get_44_LoginPage_NavigationHelper(object instance)
         {
             var that = (global::UlmUniversityNews.Views.Login.LoginPage)instance;
             return that.NavigationHelper;
         }
-        private object get_44_AddAndEditChannel_NavigationHelper(object instance)
+        private object get_45_AddAndEditChannel_NavigationHelper(object instance)
         {
             var that = (global::UlmUniversityNews.Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel)instance;
             return that.NavigationHelper;
         }
-        private object get_45_AddAndEditReminder_NavigationHelper(object instance)
+        private object get_46_AddAndEditReminder_NavigationHelper(object instance)
         {
             var that = (global::UlmUniversityNews.Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder)instance;
             return that.NavigationHelper;
         }
-        private object get_46_AddAnnouncement_NavigationHelper(object instance)
+        private object get_47_AddAnnouncement_NavigationHelper(object instance)
         {
             var that = (global::UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement)instance;
             return that.NavigationHelper;
         }
-        private object get_47_ModeratorChannelDetails_NavigationHelper(object instance)
+        private object get_48_ModeratorChannelDetails_NavigationHelper(object instance)
         {
             var that = (global::UlmUniversityNews.Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails)instance;
             return that.NavigationHelper;
         }
-        private object get_48_HomescreenModerator_NavigationHelper(object instance)
+        private object get_49_HomescreenModerator_NavigationHelper(object instance)
         {
             var that = (global::UlmUniversityNews.Views.ModeratorViews.Homescreen.HomescreenModerator)instance;
             return that.NavigationHelper;
         }
-        private object get_49_ReminderDetails_NavigationHelper(object instance)
+        private object get_50_ReminderDetails_NavigationHelper(object instance)
         {
             var that = (global::UlmUniversityNews.Views.ModeratorViews.ReminderDetails.ReminderDetails)instance;
             return that.NavigationHelper;
         }
-        private object get_50_StartPage_NavigationHelper(object instance)
+        private object get_51_StartPage_NavigationHelper(object instance)
         {
             var that = (global::UlmUniversityNews.Views.StartPage)instance;
             return that.NavigationHelper;
@@ -1682,64 +1718,70 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
                 xamlMember.Getter = get_40_AddGroup_NavigationHelper;
                 xamlMember.SetIsReadOnly();
                 break;
+            case "UlmUniversityNews.Views.Group.GroupDetails.NavigationHelper":
+                userType = (global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType)GetXamlTypeByName("UlmUniversityNews.Views.Group.GroupDetails");
+                xamlMember = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlMember(this, "NavigationHelper", "UlmUniversityNews.Common.NavigationHelper");
+                xamlMember.Getter = get_41_GroupDetails_NavigationHelper;
+                xamlMember.SetIsReadOnly();
+                break;
             case "UlmUniversityNews.Views.Group.SearchGroups.NavigationHelper":
                 userType = (global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType)GetXamlTypeByName("UlmUniversityNews.Views.Group.SearchGroups");
                 xamlMember = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlMember(this, "NavigationHelper", "UlmUniversityNews.Common.NavigationHelper");
-                xamlMember.Getter = get_41_SearchGroups_NavigationHelper;
+                xamlMember.Getter = get_42_SearchGroups_NavigationHelper;
                 xamlMember.SetIsReadOnly();
                 break;
             case "UlmUniversityNews.Views.Homescreen.Homescreen.NavigationHelper":
                 userType = (global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType)GetXamlTypeByName("UlmUniversityNews.Views.Homescreen.Homescreen");
                 xamlMember = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlMember(this, "NavigationHelper", "UlmUniversityNews.Common.NavigationHelper");
-                xamlMember.Getter = get_42_Homescreen_NavigationHelper;
+                xamlMember.Getter = get_43_Homescreen_NavigationHelper;
                 xamlMember.SetIsReadOnly();
                 break;
             case "UlmUniversityNews.Views.Login.LoginPage.NavigationHelper":
                 userType = (global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType)GetXamlTypeByName("UlmUniversityNews.Views.Login.LoginPage");
                 xamlMember = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlMember(this, "NavigationHelper", "UlmUniversityNews.Common.NavigationHelper");
-                xamlMember.Getter = get_43_LoginPage_NavigationHelper;
+                xamlMember.Getter = get_44_LoginPage_NavigationHelper;
                 xamlMember.SetIsReadOnly();
                 break;
             case "UlmUniversityNews.Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel.NavigationHelper":
                 userType = (global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType)GetXamlTypeByName("UlmUniversityNews.Views.ModeratorViews.AddAndEditChannelDialog.AddAndEditChannel");
                 xamlMember = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlMember(this, "NavigationHelper", "UlmUniversityNews.Common.NavigationHelper");
-                xamlMember.Getter = get_44_AddAndEditChannel_NavigationHelper;
+                xamlMember.Getter = get_45_AddAndEditChannel_NavigationHelper;
                 xamlMember.SetIsReadOnly();
                 break;
             case "UlmUniversityNews.Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder.NavigationHelper":
                 userType = (global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType)GetXamlTypeByName("UlmUniversityNews.Views.ModeratorViews.AddAndEditReminderDialog.AddAndEditReminder");
                 xamlMember = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlMember(this, "NavigationHelper", "UlmUniversityNews.Common.NavigationHelper");
-                xamlMember.Getter = get_45_AddAndEditReminder_NavigationHelper;
+                xamlMember.Getter = get_46_AddAndEditReminder_NavigationHelper;
                 xamlMember.SetIsReadOnly();
                 break;
             case "UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement.NavigationHelper":
                 userType = (global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType)GetXamlTypeByName("UlmUniversityNews.Views.ModeratorViews.AddAnnouncementDialog.AddAnnouncement");
                 xamlMember = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlMember(this, "NavigationHelper", "UlmUniversityNews.Common.NavigationHelper");
-                xamlMember.Getter = get_46_AddAnnouncement_NavigationHelper;
+                xamlMember.Getter = get_47_AddAnnouncement_NavigationHelper;
                 xamlMember.SetIsReadOnly();
                 break;
             case "UlmUniversityNews.Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails.NavigationHelper":
                 userType = (global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType)GetXamlTypeByName("UlmUniversityNews.Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails");
                 xamlMember = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlMember(this, "NavigationHelper", "UlmUniversityNews.Common.NavigationHelper");
-                xamlMember.Getter = get_47_ModeratorChannelDetails_NavigationHelper;
+                xamlMember.Getter = get_48_ModeratorChannelDetails_NavigationHelper;
                 xamlMember.SetIsReadOnly();
                 break;
             case "UlmUniversityNews.Views.ModeratorViews.Homescreen.HomescreenModerator.NavigationHelper":
                 userType = (global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType)GetXamlTypeByName("UlmUniversityNews.Views.ModeratorViews.Homescreen.HomescreenModerator");
                 xamlMember = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlMember(this, "NavigationHelper", "UlmUniversityNews.Common.NavigationHelper");
-                xamlMember.Getter = get_48_HomescreenModerator_NavigationHelper;
+                xamlMember.Getter = get_49_HomescreenModerator_NavigationHelper;
                 xamlMember.SetIsReadOnly();
                 break;
             case "UlmUniversityNews.Views.ModeratorViews.ReminderDetails.ReminderDetails.NavigationHelper":
                 userType = (global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType)GetXamlTypeByName("UlmUniversityNews.Views.ModeratorViews.ReminderDetails.ReminderDetails");
                 xamlMember = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlMember(this, "NavigationHelper", "UlmUniversityNews.Common.NavigationHelper");
-                xamlMember.Getter = get_49_ReminderDetails_NavigationHelper;
+                xamlMember.Getter = get_50_ReminderDetails_NavigationHelper;
                 xamlMember.SetIsReadOnly();
                 break;
             case "UlmUniversityNews.Views.StartPage.NavigationHelper":
                 userType = (global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType)GetXamlTypeByName("UlmUniversityNews.Views.StartPage");
                 xamlMember = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlMember(this, "NavigationHelper", "UlmUniversityNews.Common.NavigationHelper");
-                xamlMember.Getter = get_50_StartPage_NavigationHelper;
+                xamlMember.Getter = get_51_StartPage_NavigationHelper;
                 xamlMember.SetIsReadOnly();
                 break;
             }

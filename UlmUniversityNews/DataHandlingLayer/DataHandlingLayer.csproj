@@ -93,6 +93,7 @@
     <Compile Include="Common\IncrementalLoadingCollection.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
     <Compile Include="Common\PropertyChangedListeningObservableCollection.cs" />
+    <Compile Include="Common\TemporaryCacheManager.cs" />
     <Compile Include="Constants\Constants.cs" />
     <Compile Include="Controller\ApplicationSettingsController.cs" />
     <Compile Include="Controller\ChannelController.cs" />
@@ -160,6 +161,7 @@
     <Compile Include="ViewModel\ChannelEnumerationBaseViewModel.cs" />
     <Compile Include="ViewModel\ChannelSettingsViewModel.cs" />
     <Compile Include="ViewModel\DialogBaseViewModel.cs" />
+    <Compile Include="ViewModel\GroupDetailsViewModel.cs" />
     <Compile Include="ViewModel\HomescreenViewModel.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />
     <Compile Include="ViewModel\ModeratorChannelDetailsViewModel.cs" />

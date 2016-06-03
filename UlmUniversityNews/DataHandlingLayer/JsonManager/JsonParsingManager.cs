@@ -1,6 +1,7 @@
 ﻿using DataHandlingLayer.DataModel;
 using DataHandlingLayer.DataModel.Enums;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -60,6 +61,27 @@ namespace DataHandlingLayer.JsonManager
                     "Exception is: " + ex.Message);
             }
             return localUser;
+        }
+
+        /// <summary>
+        /// Extrahiert eine Liste von Objekten der Klasse User aus dem übergebnen JSON String.
+        /// </summary>
+        /// <param name="jsonString">Das JSON Dokument mit den Daten.</param>
+        /// <returns>Liefert eine Liste von User Objekten, oder null, wenn die Umwandlung nicht möglich war.</returns>
+        public List<User> ParseUserListFromJson(string jsonString)
+        {
+            List<User> participantList = null;
+            try
+            {
+                participantList = JsonConvert.DeserializeObject<List<User>>(jsonString);
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine("ParseUserListFromJson: Error during deserialization of user list object. " +
+                    "Exception is: " + ex.Message);
+            }
+
+            return participantList;
         }
         #endregion User
 
@@ -538,6 +560,26 @@ namespace DataHandlingLayer.JsonManager
             }
 
             return groupList;
+        }
+
+        /// <summary>
+        /// Erzeugt das JSON-Dokument, welches bei der Passwort-Übergabe
+        /// beim Beitritt zu einer Gruppe gesendet werden kann.
+        /// </summary>
+        /// <param name="password">Das zu kodierende Passwort.</param>
+        /// <returns>Das generierte JSON-Dokument als String.</returns>
+        public string CreatePasswordResource(string password)
+        {
+            string resource = string.Empty;
+            JTokenWriter writer = new JTokenWriter();
+            writer.WriteStartObject();
+            writer.WritePropertyName("password");
+            writer.WriteValue(password);
+            writer.WriteEndObject();
+
+            JObject o = (JObject) writer.Token;
+            resource = o.ToString();
+            return resource;
         }
         #endregion Group
 

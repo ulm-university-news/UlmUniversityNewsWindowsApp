@@ -248,6 +248,148 @@ namespace DataHandlingLayer.Controller
 
             return group;
         }
+
+        /// <summary>
+        /// Trete der Gruppe bei, die durch die angegebene Id repräsentiert wird.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <param name="password">Das Passwort der Gruppe, das für den Request verwendet wird.</param>
+        /// <returns>Liefer true, wenn der Beitritt erfolgreich war, ansonsten false.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn der Beitritt fehlschlägt
+        ///     oder der Server diesen ablehnt.</exception>
+        public async Task<bool> JoinGroupAsync(int groupId, string password)
+        {
+            // Erstelle JSON-Dokument für Passwortübergabe.
+            string jsonContent = jsonManager.CreatePasswordResource(password);
+
+            // Frage zunächst die Gruppen-Ressource vom Server ab.
+            Group group = await GetGroupAsync(groupId, false);
+
+            // Frage die Teilnehmer der Gruppe ab.
+            List<User> participants = await GetParticipantsOfGroupAsync(groupId, false);
+
+            // Setze Request zum Beitreten in die Gruppe ab.
+            try
+            {
+                await groupAPI.SendJoinGroupRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    jsonContent);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("JoinGroupAsync: Failed to join group. Msg is: {0}.", ex.Message);
+
+                if (ex.ErrorCode == ErrorCodes.GroupIncorrectPassword)
+                {
+                    // TODO - Validation error "password incorrect"
+
+                    return false;
+                }
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            try
+            {
+                // Speichere die Teilnehmer und die Gruppe lokal ab.
+                userController.StoreUsersLocally(participants);
+                StoreGroupLocally(group);
+
+                // Füge Teilnehmer der Gruppe hinzu.
+                AddParticipantsToGroup(groupId, participants);
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("JoinGroupAsync: Storing of data has failed. Msg is: {0}.", ex.Message);
+
+                // Lösche Gruppe wieder. Teilnehmer-Referenzen werden durch On Delete Cascade 
+                // automatisch gelöscht. Die Nutzer-Ressourcen selbst können gespeichert bleiben.
+                DeleteGroupLocally(groupId);
+
+                // Trage den Nutzer wieder von der Gruppe aus.
+                await RemoveParticipantFromGroupAsync(groupId, getLocalUser().Id);
+
+                return false;
+            }
+            
+            return true;
+        }
+
+        /// <summary>
+        /// Entfernen eines Teilnehmers aus einer Gruppe. Es wird ein Request an den 
+        /// Server geschickt, um den Teilnehmer aus der Gruppe zu entfernen.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <param name="participantId">Die Id des Teilnehmers.</param>
+        /// <returns>Liefert true, wenn der Teilnehmer erfolgreich von der Gruppe entfernt wurde.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Aktion fehlschlägt.</exception>
+        public async Task<bool> RemoveParticipantFromGroupAsync(int groupId, int participantId)
+        {
+            try
+            {
+                await groupAPI.SendLeaveGroupRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    participantId);
+            }
+            catch (APIException ex)
+            {
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    Debug.WriteLine("RemoveParticipantFromGroupAsync: Group seems to be deleted.");
+                    Debug.WriteLine("This means participant is already removed.");
+
+                    ChangeActiveStatusOfParticipant(groupId, participantId, false);
+
+                    return true;
+                }
+
+                Debug.WriteLine("RemoveParticipantFromGroupAsync: Request has failed or was rejected.");
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            ChangeActiveStatusOfParticipant(groupId, participantId, false);
+            
+            return true;
+        }
+
+        /// <summary>
+        /// Ruft die Teilnehmer der Gruppe mit der angegebnen Id vom Server ab.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <param name="withCaching">Gibt an, ob für diesen Request Caching zugelassen werden soll, oder nicht.</param>
+        /// <returns>Liefert eine Liste von User Objekten zurück. Die Liste kann auch leer sein.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Anfrage fehlschlägt oder abgelehnt wurde.</exception>
+        public async Task<List<User>> GetParticipantsOfGroupAsync(int groupId, bool withCaching)
+        {
+            List<User> participants = new List<User>();
+
+            string serverResponse = null;
+            try
+            {
+                // Setze Request an den Server ab.
+                serverResponse = await groupAPI.SendGetParticipantsRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    withCaching);
+            }
+            catch (APIException ex)
+            {
+                // TODO - Behandlung Gruppe nicht gefunden.
+
+                Debug.WriteLine("GetParticipantsOfGroup: Request to server failed.");
+                // Abbilden auf ClientException.
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            if (serverResponse != null)
+            {
+                participants = jsonManager.ParseUserListFromJson(serverResponse);
+            }
+
+            return participants;
+        }
         #endregion RemoteGroupMethods
 
         #region LocalGroupMethods
@@ -270,6 +412,122 @@ namespace DataHandlingLayer.Controller
             }
 
             return groups;
+        }
+
+        /// <summary>
+        /// Speichert die Daten der Gruppe in den lokalen Datensätzen ab.
+        /// </summary>
+        /// <param name="group">Die zu speichernde Gruppe.</param>
+        /// <exception cref="ClientException">Wenn die Speicherung fehlschlägt.</exception>
+        public void StoreGroupLocally(Group group)
+        {
+            try
+            {
+                groupDBManager.StoreGroup(group);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("StoreGroupLocally: Failed to store the group.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Löscht die Gruppe mit der angegebenen Id aus der Datenbank.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, die gelöscht werden soll.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Löschvorgang fehlschlägt.</exception>
+        public void DeleteGroupLocally(int groupId)
+        {
+            try
+            {
+                groupDBManager.DeleteGroup(groupId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("StoreGroupLocally: Failed to store the group.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Liefert die Teilnehmer der Gruppe mit der angegebenen Id aus den
+        /// lokalen Datensätzen zurück.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <returns>Eine Liste von User Objekten. Die Liste kann auch leer sein.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abruf fehlschlägt.</exception>
+        public List<User> GetActiveParticipantsOfGroup(int groupId)
+        {
+            List<User> participants = null;
+            try
+            {
+                participants = groupDBManager.GetParticipantsOfGroup(groupId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetParticipantsOfGroup: Error during retrieval. Msg is {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return participants;
+        }
+
+        /// <summary>
+        /// Füge die Nutzer lokal als Teilnehmer der Gruppe hinzu.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Nutzer als Teilnehmer
+        ///     hinzugefügt werden sollen.</param>
+        /// <param name="participants">Die Liste der Nutzer, die als Teilnehmer hinzu-
+        ///     gefügt werden sollen.</param>
+        ///     <exception cref="ClientException">Wirft ClientException, wenn Aktion fehlschlägt.</exception>
+        public void AddParticipantsToGroup(int groupId, List<User> participants)
+        {
+            if (!groupDBManager.IsGroupStored(groupId))
+            {
+                Debug.WriteLine("AddParticipantsToGroup: There is no group with id {0} in the local datasets.",
+                    groupId);
+
+                throw new ClientException(ErrorCodes.GroupNotFound, "Cannot continue without stored group.");
+            }
+
+            // Speichere als erstes die Teilnehmer lokal ab.
+            // Die gerufene Methode speichert nur Teilnehmer, die lokal noch nicht gespeichert sind.
+            userController.StoreUsersLocally(participants);
+
+            // Füge die Teilnehmer der Gruppe hinzu.
+            try
+            {
+                groupDBManager.AddParticipantsToGroup(groupId, participants);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("AddParticipantsToGroup: Adding participants failed.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Ändere den Active Status des Teilnehmers mit der angegebenen Id bezüglich der spezifizierten Gruppe.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <param name="participantId">Die Id des Teilnehmers.</param>
+        /// <param name="active">Der neue Active Status.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Änderung fehlschlägt.</exception>
+        public void ChangeActiveStatusOfParticipant(int groupId, int participantId, bool active)
+        {
+            try
+            {
+                if (groupDBManager.RetrieveActiveStatusOfParticipant(groupId, participantId).HasValue)
+                {
+                    groupDBManager.ChangeActiveStatusOfParticipant(groupId, participantId, active);
+                }
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("ChangeActiveStatusOfParticipant: Changing status of participant failed.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
         }
         #endregion LocalGroupMethods
     }

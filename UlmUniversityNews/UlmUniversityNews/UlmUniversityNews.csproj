@@ -118,6 +118,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Group\GroupDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Group\SearchGroups.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -190,6 +194,7 @@
     <Compile Include="Converters\DrawerMenuEntryNameToLocalizedStringConverter.cs" />
     <Compile Include="Converters\FacultyEnumToComboBoxItemIndexConverter.cs" />
     <Compile Include="Converters\FacultyToLocalizedStringConverter.cs" />
+    <Compile Include="Converters\GroupAdminIdToStringConverter.cs" />
     <Compile Include="Converters\GroupToIconPathConverter.cs" />
     <Compile Include="Converters\GroupTypeEnumToComboBoxItemIndexConverter.cs" />
     <Compile Include="Converters\GroupTypeToStringConverter.cs" />
@@ -199,6 +204,7 @@
     <Compile Include="Converters\ListCountToVisibilityConverter.cs" />
     <Compile Include="Converters\MessageReadPropertyToBackgroundColorConverter.cs" />
     <Compile Include="Converters\NullValuetoVisibilityConverter.cs" />
+    <Compile Include="Converters\ParticipantsListToStringConverter.cs" />
     <Compile Include="Converters\PriorityEnumToLocalizedStringConverter.cs" />
     <Compile Include="Converters\ReminderDateTimeToStringConverter.cs" />
     <Compile Include="Converters\ReminderIntervalToLocalizedStringConverter.cs" />
@@ -241,6 +247,9 @@
     </Compile>
     <Compile Include="Views\Group\AddGroupDialog\AddGroup.xaml.cs">
       <DependentUpon>AddGroup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Group\GroupDetails.xaml.cs">
+      <DependentUpon>GroupDetails.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Group\SearchGroups.xaml.cs">
       <DependentUpon>SearchGroups.xaml</DependentUpon>

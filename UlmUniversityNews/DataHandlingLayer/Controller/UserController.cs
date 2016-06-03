@@ -66,5 +66,33 @@ namespace DataHandlingLayer.Controller
         {
             return userDBManager.IsUserStored(userId);
         }
+
+        /// <summary>
+        /// Speicherung der Nutzer in den lokalen Datensätzen.
+        /// </summary>
+        /// <param name="users">Die zu speichernden Nutzer.</param>
+        /// <exception cref="ClientException">Wenn die Speicherung fehlschlägt.</exception>
+        public void StoreUsersLocally(List<User> users)
+        {
+            List<User> usersToStore = new List<User>();
+
+            try
+            {
+                foreach (User user in users)
+                {
+                    if (!userDBManager.IsUserStored(user.Id))
+                        usersToStore.Add(user);
+                }
+
+                userDBManager.BulkInsertUsers(usersToStore);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("StoreUsersLocally: Problem occurred during storing process.");
+                Debug.WriteLine("Message is: {0}.", ex.Message);
+
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
     }
 }
