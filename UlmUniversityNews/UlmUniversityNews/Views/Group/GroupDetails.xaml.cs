@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using DataHandlingLayer.ViewModel;
+using System.Diagnostics;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -47,6 +48,57 @@ namespace UlmUniversityNews.Views.Group
             // Initialiisierung des Drawer Menüs.
             DrawerLayout.InitializeDrawerLayout();
             ListMenuItems.ItemsSource = groupDetailsViewModel.LoadDrawerMenuEntries();
+
+            // Registriere Property-Changed Listener.
+            groupDetailsViewModel.PropertyChanged += GroupDetailsViewModel_PropertyChanged;
+            this.Loaded += GroupDetails_Loaded;
+        }
+
+        /// <summary>
+        /// Workaround: Evaluiere Visibility von PivotItems zum Zeitpunkt, an dem 
+        /// die Seite geladen ist.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GroupDetails_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Stoße Evaluierung der PivotItem-Sichtbarkeiten an.
+            forceBehaviorEvaluation();
+        }
+
+        /// <summary>
+        /// Event-Handler, der aufgerufen wird, wenn das PropertyChanged Event vom ViewModel gefeuert wird.
+        /// Wird hier für Workaround bezüglich HideablePivotItemBehavior verwendet.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GroupDetailsViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsGroupParticipant")
+            {
+                forceBehaviorEvaluation();
+            }
+        }
+
+        /// <summary>
+        /// Hilfsmethode, die einen Workaround bezüglich des HideablePivotItems ausführt. Das Problem ist,
+        /// dass die Prüfung des Visible Attributs nicht zuverlässig bei PropertyChanged Events oder beim
+        /// Laden der Seite angestoßen wird. Mittels dieser Methode lässt sich die Prüfung manuell anstoßen.
+        /// </summary>
+        private void forceBehaviorEvaluation()
+        {
+            Debug.WriteLine("Called forceBehaviorEvaluation.");
+
+            // Workaround to call an update of the Visible attribute and thus force the evaluation of the
+            // visibility status of the pivot item once againg when the pivot element is actually loaded.
+            HidablePivotItemBehaviorElementConversations.ClearValue(HideablePivotItemBehavior.VisibleProperty);
+            HidablePivotItemBehaviorElementConversations.Visible = groupDetailsViewModel.IsGroupParticipant;
+
+            HidablePivotItemBehaviorElementEvents.ClearValue(HideablePivotItemBehavior.VisibleProperty);
+            HidablePivotItemBehaviorElementEvents.Visible = groupDetailsViewModel.IsGroupParticipant;
+
+            HidablePivotItemBehaviorElementBallots.ClearValue(HideablePivotItemBehavior.VisibleProperty);
+            HidablePivotItemBehaviorElementBallots.Visible = groupDetailsViewModel.IsGroupParticipant;
         }
 
         /// <summary>
@@ -73,7 +125,7 @@ namespace UlmUniversityNews.Views.Group
             // Für den Typvergleich, siehe hier: http://stackoverflow.com/questions/983030/type-checking-typeof-gettype-or-is
             if (e.NavigationParameter != null && e.NavigationParameter.GetType() == typeof(string))
             {
-               await groupDetailsViewModel.LoadGroupFromTemporaryCache(e.NavigationParameter as string);
+               await groupDetailsViewModel.LoadGroupFromTemporaryCacheAsync(e.NavigationParameter as string);
             }
         }
 
@@ -132,6 +184,18 @@ namespace UlmUniversityNews.Views.Group
             {
                 DrawerLayout.OpenDrawer();
             }
+        }
+
+        /// <summary>
+        /// Behandelt den Click auf den Beitreten-Button. Stößt die Anzeige
+        /// des Passwort Feldes an. Mit der Eingabe des Passworts kann man 
+        /// den Request zum Beitreten zur Gruppe absetzen.
+        /// </summary>
+        /// <param name="sender">Die Eventquelle.</param>
+        /// <param name="e">Die Eventparameter.</param>
+        private async void GroupDetailsJoinGroupButton_Click(object sender, RoutedEventArgs e)
+        {
+            await GroupDetailsPasswordEntryDialog.ShowAsync();
         }
     }
 }

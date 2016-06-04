@@ -8,6 +8,7 @@ using Microsoft.Xaml.Interactions.Core;
 using Microsoft.Xaml.Interactions.Media;
 using Microsoft.Xaml.Interactivity;
 using Windows.UI.Xaml;
+using System.Diagnostics;
 
 namespace UlmUniversityNews.Common
 {
@@ -69,6 +70,8 @@ namespace UlmUniversityNews.Common
 
         private static void VisiblePropertyChanged(DependencyObject dpObj, DependencyPropertyChangedEventArgs change)
         {
+            Debug.WriteLine("HideablePivotItemBehavior: Visibility changed.");
+
             // Prüfe, ob man einen bool Wert erhalten hat und ob das DependencyObject ein HideablePivotItemBehaviour ist.
             if (change.NewValue.GetType() != typeof(bool) || dpObj.GetType() != typeof(HideablePivotItemBehavior))
             {
@@ -93,15 +96,18 @@ namespace UlmUniversityNews.Common
             // Wenn nun Visibility auf false gesetzt wurde.
             if(!(bool)change.NewValue)      
             {
+                Debug.WriteLine("HideablePivotItemBehavior: Need to remove pivot item.");
                 if(parentPivot.Items.Contains(behavior._pivotItem))     // Prüfe, ob das PivotItem aktuell als Item im Pivot Element registriert ist.
                 {
                     behavior._previousPivotItemIndex = parentPivot.Items.IndexOf(pivotItem);
                     parentPivot.Items.Remove(pivotItem);            // Entferne das PivotItem aus der Collection von PivotItems des Pivot Elements.
                     behavior._lastPivotItemsCount = parentPivot.Items.Count;
+                    Debug.WriteLine("HideablePivotItemBehavior: Pivot item with name {0} removed.", pivotItem.Name);
                 }
             }
             else
             {
+                Debug.WriteLine("HideablePivotItemBehavior: Need to add pivot item with name {0}.", pivotItem.Name);
                 // Visibility wieder auf true gesetzt.
                 if (!parentPivot.Items.Contains(pivotItem))     // Falls das PivotItem nicht schon in der Collection von PivotItems enthalten ist.
                 {

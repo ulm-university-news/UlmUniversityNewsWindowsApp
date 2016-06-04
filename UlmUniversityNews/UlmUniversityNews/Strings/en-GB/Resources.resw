@@ -1259,4 +1259,61 @@ date: </value>
   <data name="SearchGroupsTypeOptionWorkingGroup.Content" xml:space="preserve">
     <value>Working group</value>
   </data>
+  <data name="GroupDetailsBallotPivotItem.Header" xml:space="preserve">
+    <value>Ballots</value>
+  </data>
+  <data name="GroupDetailsConversationPivotItem.Header" xml:space="preserve">
+    <value>Conversations</value>
+  </data>
+  <data name="GroupDetailsCreationDateField.Text" xml:space="preserve">
+    <value>Creation date</value>
+  </data>
+  <data name="GroupDetailsDescriptionField.Text" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="GroupDetailsEventsPivotItem.Header" xml:space="preserve">
+    <value>Events</value>
+  </data>
+  <data name="GroupDetailsGroupAdminField.Text" xml:space="preserve">
+    <value>Administrator</value>
+  </data>
+  <data name="GroupDetailsGroupInfoPivotItem.Header" xml:space="preserve">
+    <value>Group details</value>
+  </data>
+  <data name="GroupDetailsGroupNameField.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="GroupDetailsGroupTypeField.Text" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="GroupDetailsJoinGroupButton.Label" xml:space="preserve">
+    <value>join group</value>
+  </data>
+  <data name="GroupDetailsJoinGroupStatus" xml:space="preserve">
+    <value>Joining group</value>
+  </data>
+  <data name="GroupDetailsModificationDateField.Text" xml:space="preserve">
+    <value>Modification date</value>
+  </data>
+  <data name="GroupDetailsParticipantsField.Text" xml:space="preserve">
+    <value>Participants</value>
+  </data>
+  <data name="GroupDetailsPasswordEntryDescription.Text" xml:space="preserve">
+    <value>Please enter the password of the group.</value>
+  </data>
+  <data name="GroupDetailsPasswordEntryDialog.PrimaryButtonText" xml:space="preserve">
+    <value>join</value>
+  </data>
+  <data name="GroupDetailsPasswordEntryDialog.SecondaryButtonText" xml:space="preserve">
+    <value>cancel</value>
+  </data>
+  <data name="GroupDetailsPasswordEntryDialog.Title" xml:space="preserve">
+    <value>Join group</value>
+  </data>
+  <data name="GroupDetailsPasswordEntryInputBox.Header" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="GroupDetailsTermField.Text" xml:space="preserve">
+    <value>Term</value>
+  </data>
 </root>

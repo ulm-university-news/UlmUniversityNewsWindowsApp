@@ -41,6 +41,8 @@ namespace DataHandlingLayer.Database
                             Term, Deleted, GroupAdmin_User_Id, NotificationSettings_NotifierId, IsDirty) 
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
+                        Debug.WriteLine("Admin of group is: {0}.", group.GroupAdmin);
+
                         using (var insertStmt = conn.Prepare(query))
                         {
                             insertStmt.Bind(1, group.Id);
@@ -182,7 +184,7 @@ namespace DataHandlingLayer.Database
                         {
                             stmt.Bind(1, id);
 
-                            if (stmt.Step() == SQLiteResult.DONE)
+                            if (stmt.Step() == SQLiteResult.ROW)
                             {
                                 group = new Group()
                                 {
@@ -431,7 +433,7 @@ namespace DataHandlingLayer.Database
                         {
                             stmt.Bind(1, groupId);
 
-                            if (stmt.Step() == SQLiteResult.DONE)
+                            if (stmt.Step() == SQLiteResult.ROW)
                             {
                                 int amount = Convert.ToInt32(stmt["amount"]);
 
@@ -690,7 +692,7 @@ namespace DataHandlingLayer.Database
                                 if (amount == 1)
                                 {
                                     // Datensatz schon vorhanden. Führe Aktualisierung des Active Feld aus.
-                                    updateStmt.Bind(1, participant.Active);
+                                    updateStmt.Bind(1, (participant.Active) ? 1 : 0);
                                     updateStmt.Bind(2, groupId);
                                     updateStmt.Bind(3, participant.Id);
 
@@ -702,7 +704,7 @@ namespace DataHandlingLayer.Database
                                     // Füge Datensatz hinzu.
                                     insertStmt.Bind(1, groupId);
                                     insertStmt.Bind(2, participant.Id);
-                                    insertStmt.Bind(3, participant.Active);
+                                    insertStmt.Bind(3, (participant.Active) ? 1 : 0);
 
                                     insertStmt.Step();
                                     amountOfInserts++;

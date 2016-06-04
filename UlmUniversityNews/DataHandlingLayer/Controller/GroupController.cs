@@ -149,6 +149,9 @@ namespace DataHandlingLayer.Controller
                     }
 
                     groupDBManager.StoreGroup(responseGroupObj);
+
+                    // Füge Teilnehmer der Gruppe hinzu.
+                    AddParticipantToGroup(responseGroupObj.Id, getLocalUser());
                 }
                 catch (DatabaseException ex)
                 {
@@ -259,14 +262,14 @@ namespace DataHandlingLayer.Controller
         ///     oder der Server diesen ablehnt.</exception>
         public async Task<bool> JoinGroupAsync(int groupId, string password)
         {
+            HashingHelper.HashingHelper hashHelper = new HashingHelper.HashingHelper();
+            string hash = hashHelper.GenerateSHA256Hash(password);
+
             // Erstelle JSON-Dokument für Passwortübergabe.
-            string jsonContent = jsonManager.CreatePasswordResource(password);
+            string jsonContent = jsonManager.CreatePasswordResource(hash);
 
             // Frage zunächst die Gruppen-Ressource vom Server ab.
             Group group = await GetGroupAsync(groupId, false);
-
-            // Frage die Teilnehmer der Gruppe ab.
-            List<User> participants = await GetParticipantsOfGroupAsync(groupId, false);
 
             // Setze Request zum Beitreten in die Gruppe ab.
             try
@@ -280,15 +283,18 @@ namespace DataHandlingLayer.Controller
             {
                 Debug.WriteLine("JoinGroupAsync: Failed to join group. Msg is: {0}.", ex.Message);
 
-                if (ex.ErrorCode == ErrorCodes.GroupIncorrectPassword)
-                {
-                    // TODO - Validation error "password incorrect"
+                //if (ex.ErrorCode == ErrorCodes.GroupIncorrectPassword)
+                //{
+                //    // TODO - Validation error "password incorrect"
 
-                    return false;
-                }
+                //    return false;
+                //}
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
+
+            // Frage die Teilnehmer der Gruppe ab.
+            List<User> participants = await GetParticipantsOfGroupAsync(groupId, false);
 
             try
             {
@@ -298,6 +304,9 @@ namespace DataHandlingLayer.Controller
 
                 // Füge Teilnehmer der Gruppe hinzu.
                 AddParticipantsToGroup(groupId, participants);
+
+                // Trage Nutzer selbst als Teilnehmer ein.
+                AddParticipantToGroup(groupId, getLocalUser());
             }
             catch (ClientException ex)
             {
@@ -415,6 +424,29 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Hole Gruppe mit der angegebenen Id aus den lokalen Datensätzen
+        /// und gib sie zurück.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <returns>Liefert eine Instanz der Klasse Group.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn der Abruf fehlschlägt.</exception>
+        public Group GetGroup(int groupId)
+        {
+            Group group = null;
+            try
+            {
+                group = groupDBManager.GetGroup(groupId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetGroup: Error occurred in DB. Message is {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return group;
+        }
+
+        /// <summary>
         /// Speichert die Daten der Gruppe in den lokalen Datensätzen ab.
         /// </summary>
         /// <param name="group">Die zu speichernde Gruppe.</param>
@@ -505,6 +537,70 @@ namespace DataHandlingLayer.Controller
                 Debug.WriteLine("AddParticipantsToGroup: Adding participants failed.");
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Fügt den übergebenen Nutzer als aktiven Nutzer der Gruppe mit der angegebenen Id hinzu.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <param name="user">Der hinzuzufügende Nutzer.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Aktion fehlschlägt.</exception>
+        public void AddParticipantToGroup(int groupId, User user)
+        {
+            if (!groupDBManager.IsGroupStored(groupId))
+            {
+                Debug.WriteLine("AddParticipantToGroup: There is no group with id {0} in the local datasets.",
+                    groupId);
+
+                throw new ClientException(ErrorCodes.GroupNotFound, "Cannot continue without stored group.");
+            }
+
+            // Prüfe, ob der Nutzer schon in den lokalen Datensätzen gespeichert ist.
+            bool stored = userController.IsUserLocallyStored(user.Id);
+            if (!stored)
+            {
+                userController.StoreUserLocally(user);
+            }
+
+            // Füge Nutzer als aktiver Teilnehmer der Gruppe hinzu.
+            try
+            {
+                groupDBManager.AddParticipantToGroup(groupId, user.Id, true);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("AddParticipantToGroup: Failed to add participant to group. Msg is {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Ermittelt, ob der Nutzer mit der angegebnen Id ein aktiver Teilnehmer der 
+        /// spezifizierten Gruppe ist.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <param name="participantId">Die Id des Teilnehmers.</param>
+        /// <returns>Liefer true, wenn der Nutzer ein aktiver Teilnehmer ist, ansonsten false.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Aktion fehlschlägt.</exception>
+        public bool IsActiveParticipant(int groupId, int participantId)
+        {
+            bool isActiveParticipant = false;
+
+            try
+            {
+                bool? status = groupDBManager.RetrieveActiveStatusOfParticipant(groupId, participantId);
+                if (status.HasValue && status.Value == true)
+                {
+                    isActiveParticipant = true;
+                }
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("IsActiveParticipant: Failed to determine active status of participant.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return isActiveParticipant;
         }
 
         /// <summary>

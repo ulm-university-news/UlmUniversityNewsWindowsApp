@@ -1260,4 +1260,61 @@ Nachricht am: </value>
   <data name="SearchGroupsTypeOptionWorkingGroup.Content" xml:space="preserve">
     <value>Arbeitsgruppe</value>
   </data>
+  <data name="GroupDetailsBallotPivotItem.Header" xml:space="preserve">
+    <value>Abstimmungen</value>
+  </data>
+  <data name="GroupDetailsConversationPivotItem.Header" xml:space="preserve">
+    <value>Konversationen</value>
+  </data>
+  <data name="GroupDetailsCreationDateField.Text" xml:space="preserve">
+    <value>Erstellungsdatum</value>
+  </data>
+  <data name="GroupDetailsDescriptionField.Text" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="GroupDetailsEventsPivotItem.Header" xml:space="preserve">
+    <value>Ereignisse</value>
+  </data>
+  <data name="GroupDetailsGroupAdminField.Text" xml:space="preserve">
+    <value>Administrator</value>
+  </data>
+  <data name="GroupDetailsGroupInfoPivotItem.Header" xml:space="preserve">
+    <value>Gruppeninformationen</value>
+  </data>
+  <data name="GroupDetailsGroupNameField.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="GroupDetailsGroupTypeField.Text" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="GroupDetailsJoinGroupButton.Label" xml:space="preserve">
+    <value>beitreten</value>
+  </data>
+  <data name="GroupDetailsJoinGroupStatus" xml:space="preserve">
+    <value>Trete Gruppe bei</value>
+  </data>
+  <data name="GroupDetailsModificationDateField.Text" xml:space="preserve">
+    <value>Änderungsdatum</value>
+  </data>
+  <data name="GroupDetailsParticipantsField.Text" xml:space="preserve">
+    <value>Teilnehmer</value>
+  </data>
+  <data name="GroupDetailsPasswordEntryDescription.Text" xml:space="preserve">
+    <value>Bitte geben Sie das Passwort für die Gruppe an.</value>
+  </data>
+  <data name="GroupDetailsPasswordEntryDialog.PrimaryButtonText" xml:space="preserve">
+    <value>beitreten</value>
+  </data>
+  <data name="GroupDetailsPasswordEntryDialog.SecondaryButtonText" xml:space="preserve">
+    <value>abbrechen</value>
+  </data>
+  <data name="GroupDetailsPasswordEntryDialog.Title" xml:space="preserve">
+    <value>Gruppe beitreten</value>
+  </data>
+  <data name="GroupDetailsPasswordEntryInputBox.Header" xml:space="preserve">
+    <value>Passwort</value>
+  </data>
+  <data name="GroupDetailsTermField.Text" xml:space="preserve">
+    <value>Semester</value>
+  </data>
 </root>

@@ -116,6 +116,10 @@
     <RootPropertyPathName Name="IsSummerTermSelected" />
     <RootPropertyPathName Name="SelectedGroupType" />
     <RootPropertyPathName Name="GroupName" />
+    <RootPropertyPathName Name="IsGroupParticipant" />
+    <RootPropertyPathName Name="JoinGroupCommand" />
+    <RootPropertyPathName Name="ActualWidth" />
+    <RootPropertyPathName Name="EnteredPassword" />
     <RootPropertyPathName Name="SelectedGroup" />
     <RootPropertyPathName Name="Participants" />
     <RootPropertyPathName Name="GroupAdmin" />
@@ -299,6 +303,7 @@
       <RootProperty Name="DataContext" />
       <RootProperty Name="Content" />
       <RootProperty Name="Style" />
+      <RootProperty Name="Name" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.FlyoutPresenter" />
     <RootType FullName="Windows.UI.Xaml.Controls.Control">
@@ -575,6 +580,20 @@
     <RootType FullName="UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup" />
     <RootType FullName="UlmUniversityNews.Converters.GroupAdminIdToStringConverter" />
     <RootType FullName="UlmUniversityNews.Converters.ParticipantsListToStringConverter" />
+    <RootType FullName="Windows.UI.Xaml.Controls.ContentDialog">
+      <RootProperty Name="VerticalAlignment" />
+      <RootProperty Name="Title" />
+      <RootProperty Name="PrimaryButtonCommand" />
+      <RootProperty Name="PrimaryButtonText" />
+      <RootProperty Name="SecondaryButtonText" />
+      <RootProperty Name="MaxWidth" />
+      <RootProperty Name="Content" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.PasswordBox">
+      <RootProperty Name="Header" />
+      <RootProperty Name="Password" />
+      <RootProperty Name="Margin" />
+    </RootType>
     <RootType FullName="UlmUniversityNews.Views.Group.GroupDetails" />
     <RootType FullName="Windows.UI.Xaml.Controls.CheckBox">
       <RootProperty Name="Content" />
@@ -583,11 +602,6 @@
     </RootType>
     <RootType FullName="UlmUniversityNews.Views.Group.SearchGroups" />
     <RootType FullName="UlmUniversityNews.Views.Homescreen.Homescreen" />
-    <RootType FullName="Windows.UI.Xaml.Controls.PasswordBox">
-      <RootProperty Name="Margin" />
-      <RootProperty Name="Header" />
-      <RootProperty Name="Password" />
-    </RootType>
     <RootType FullName="UlmUniversityNews.Views.Login.LoginPage" />
     <RootType FullName="UlmUniversityNews.Converters.ChannelTypeEnumToComboBoxItemIndexConverter" />
     <RootType FullName="UlmUniversityNews.Converters.FacultyEnumToComboBoxItemIndexConverter" />

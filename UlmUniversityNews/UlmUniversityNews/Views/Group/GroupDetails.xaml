@@ -11,6 +11,7 @@
 	xmlns:valueconverter="using:UlmUniversityNews.Converters"
 	xmlns:drawerLayout="using:DrawerLayout"
     mc:Ignorable="d"
+    x:Name="pageRoot"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
@@ -21,6 +22,7 @@
         <valueconverter:ResourceDetailsDateTimeToStringConverter x:Key="ResourceDetailsDateTimeToStringConverter" />
         <valueconverter:GroupAdminIdToStringConverter x:Key="GroupAdminIdToStringConverter" />
         <valueconverter:ParticipantsListToStringConverter x:Key="ParticipantsListToStringConverter" />
+        <valueconverter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Page.Resources>
 
     <!-- StatusBar -->
@@ -31,7 +33,7 @@
                                   BackgroundOpacity="1.0" />
         <common:ProgressIndicatorBehavior IsVisible="{Binding IsProgressIndicatorVisible, UpdateSourceTrigger=PropertyChanged}"
                                           Value="{Binding ProgressIndicatorProgressValue, UpdateSourceTrigger=PropertyChanged}"
-                                          Text="{Binding ProgressIndicatorText, UpdateSourceTrigger=PropertyChanged}"
+                                          Text="{Binding ProgressIndicatorText, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StatusBarInformationToLocalizedStringConverter}}"
                                           IsIndeterminate="{Binding IsIndeterminateProgressIndicator, UpdateSourceTrigger=PropertyChanged}" />
     </i:Interaction.Behaviors>
 
@@ -40,10 +42,17 @@
         <CommandBar x:Name="ChannelSettingsCommandBar"
 						Foreground="{StaticResource UNUCommandBarButtonColor}"
 						Background="{StaticResource UniUlmMainBackgroundColor}">
-            <!-- TODO AppBarButtons -->
+            <AppBarButton 
+                x:Name="GroupDetailsJoinGroupButton"
+                x:Uid="GroupDetailsJoinGroupButton"
+                Icon="Favorite"
+                Label="beitreten"
+                Visibility="{Binding IsGroupParticipant, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='inverse'}"
+                Click="GroupDetailsJoinGroupButton_Click"
+                />
         </CommandBar>
     </Page.BottomAppBar>
-
+    
     <Grid x:Name="LayoutRoot">
 
         <Grid.ChildrenTransitions>
@@ -72,9 +81,9 @@
 
             <!-- Drawer Text -->
             <TextBlock Grid.Column="1"
-						   x:Uid="Your UID for the Drawer Title Text goes here"
+						   x:Uid="GroupDetailsDrawerText"
 						   Style="{StaticResource DrawerTextStyle}"
-						   Text="Your Drawer Title Text goes here" />
+						   Text="{Binding SelectedGroup.Name, TargetNullValue='Gruppendetails', FallbackValue='Gruppendetails'}" />
         </Grid>
 
         <!--Inhalt der Seite und Inhalt des Drawer Menü-->
@@ -89,22 +98,37 @@
                     
                     <!-- Pivotitem 1 - Konversationen -->
                     <PivotItem
+                        Name="ConversationPivotItem"
                         x:Uid="GroupDetailsConversationPivotItem"
                         Style="{StaticResource PivotItemStyle}"
                         Header="Konversationen">
+                        
+                        <!-- Blende dieses PivotItem aus, wenn Nutzer nicht Teilnehmer der Gruppe ist.-->
+                        <i:Interaction.Behaviors>
+                            <common:HideablePivotItemBehavior x:Name="HidablePivotItemBehaviorElementConversations" Visible="{Binding IsGroupParticipant, UpdateSourceTrigger=PropertyChanged}" />
+                        </i:Interaction.Behaviors>
+
                         <!--TODO-->
                     </PivotItem>
                     
                     <!-- Pivotitem 2 - Abstimmungen -->
                     <PivotItem
+                        Name="BallotsPivotItem"
                         x:Uid="GroupDetailsBallotPivotItem"
                         Style="{StaticResource PivotItemStyle}"
                         Header="Abstimmungen">
+
+                        <!-- Blende dieses PivotItem aus, wenn Nutzer nicht Teilnehmer der Gruppe ist.-->
+                        <i:Interaction.Behaviors>
+                            <common:HideablePivotItemBehavior x:Name="HidablePivotItemBehaviorElementBallots" Visible="{Binding IsGroupParticipant, UpdateSourceTrigger=PropertyChanged}" />
+                        </i:Interaction.Behaviors>
+
                         <!--TODO-->
                     </PivotItem>
                     
                     <!-- Pivotitem 3 - Gruppendetails -->
                     <PivotItem
+                        Name="GroupDetailsPivotItem"
                         x:Uid="GroupDetailsGroupInfoPivotItem"
                         Style="{StaticResource PivotItemStyle}"
                         Header="Gruppeninformationen">
@@ -117,7 +141,7 @@
                             <Grid
                                 Grid.Row="0"
                                 x:Name="GroupDetailsGroupInfoMainGrid"
-                                DataContext="{Binding SelectedGroup, TargetNullValue={x:Null}}"
+                                DataContext="{Binding SelectedGroup, TargetNullValue={x:Null}, UpdateSourceTrigger=PropertyChanged}"
                                 HorizontalAlignment="Stretch">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
@@ -459,9 +483,16 @@
 
                     <!-- Pivotitem 4 - Events -->
                     <PivotItem
+                        Name="EventsPivotItem"
                         x:Uid="GroupDetailsEventsPivotItem"
                         Style="{StaticResource PivotItemStyle}"
                         Header="Events">
+
+                        <!-- Blende dieses PivotItem aus, wenn Nutzer nicht Teilnehmer der Gruppe ist.-->
+                        <i:Interaction.Behaviors>
+                            <common:HideablePivotItemBehavior x:Name="HidablePivotItemBehaviorElementEvents" Visible="{Binding IsGroupParticipant, UpdateSourceTrigger=PropertyChanged}" />
+                        </i:Interaction.Behaviors>
+
                         <!--TODO-->
                     </PivotItem>
                 </Pivot>
@@ -489,6 +520,30 @@
             </Grid>
 
         </drawerLayout:DrawerLayout>
-        
+
+        <!-- Content Dialog for password entry.-->
+        <ContentDialog
+            x:Uid="GroupDetailsPasswordEntryDialog"
+            x:Name="GroupDetailsPasswordEntryDialog"
+            VerticalAlignment="Stretch"
+            Title="PasswordEntry"
+            PrimaryButtonCommand="{Binding JoinGroupCommand}"
+            PrimaryButtonText="Join"
+            SecondaryButtonText="Cancel"
+            MaxWidth="{Binding ActualWidth, ElementName=pageRoot}">
+            <StackPanel>
+                <TextBlock
+                    x:Name="GroupDetailsPasswordEntryDescription"
+                    x:Uid="GroupDetailsPasswordEntryDescription"
+                    Style="{StaticResource ContentDialogTextStyle}"
+                    Text="Bitte geben Sie das Passwort für die Gruppe an." />
+                <PasswordBox 
+                    x:Name="GroupDetailsPasswordEntryInputBox"
+                    x:Uid="GroupDetailsPasswordEntryInputBox"
+                    Header="Password"
+                    Password="{Binding EnteredPassword, Mode=TwoWay}"/>
+            </StackPanel>
+        </ContentDialog>
+
     </Grid>
 </Page>

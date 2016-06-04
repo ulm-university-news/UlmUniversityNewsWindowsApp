@@ -334,7 +334,6 @@
                         x:Uid="ChannelDetailsMessagesPivotItem"
                         Style="{StaticResource PivotItemStyle}"
                         Header="Nachrichtenansicht">
-                        <!--Visibility="{Binding ChannelSubscribedStatus, Converter={StaticResource BooleanToVisibilityConverter}, TargetNullValue=Collapsed}"-->
 
                         <!-- Blende Nachrichten PivotItem aus, wenn der Kanal noch nicht abonniert ist.-->
                         <!-- Behavior zum Ein- bzw. Ausblenden dieses PivotItems abhängig vom SubscribeStatus. -->
