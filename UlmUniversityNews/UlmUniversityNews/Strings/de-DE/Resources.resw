@@ -1317,4 +1317,7 @@ Nachricht am: </value>
   <data name="GroupDetailsTermField.Text" xml:space="preserve">
     <value>Semester</value>
   </data>
+  <data name="GroupSearchEmptyResultInfo.Text" xml:space="preserve">
+    <value>Die Suche lieferte keine Gruppe als Ergebnis zurück.</value>
+  </data>
 </root>

@@ -262,36 +262,72 @@ namespace DataHandlingLayer.ViewModel
             }
 
             List<Group> groups = null;
-            if (GroupCollection == null || GroupCollection.Count == 0)
+            try
             {
-                Debug.WriteLine("LoadMyGroupsAsync: Not from cache. Load groups from DB.");
-
-                // Frage Gruppen aus der Datenbank ab.
-                groups = await Task.Run(() => groupController.GetAllGroups());
-                Debug.WriteLine("There are {0} group elements in the list.", groups.Count);
-
-                // Sortiere Gruppen anhand von aktuellen Anwendungseinstellungen.
-                groups = await Task.Run(() => sortGroupsByApplicationSettings(groups));
-
-                // Mache Gruppen über Property abrufbar.
-                GroupCollection = new ObservableCollection<Group>(groups);
-
-                // Speichere die aktuell gültigen Anwendungseinstellungen zwischen.
-                AppSettings currentSettings = groupController.GetApplicationSettings();
-                cachedGroupOrderSettings = currentSettings.GroupOrderSetting;
-
-                // Füge Gruppen dem Lookup Verzeichnis hinzu.
-                foreach (Group group in groups)
+                if (GroupCollection == null || GroupCollection.Count == 0)
                 {
-                    currentGroups.Add(group.Id, group);
+                    Debug.WriteLine("LoadMyGroupsAsync: Not from cache. Load groups from DB.");
+
+                    // Frage Gruppen aus der Datenbank ab.
+                    groups = await Task.Run(() => groupController.GetAllGroups());
+                    Debug.WriteLine("There are {0} group elements in the list.", groups.Count);
+
+                    // Sortiere Gruppen anhand von aktuellen Anwendungseinstellungen.
+                    groups = await Task.Run(() => sortGroupsByApplicationSettings(groups));
+
+                    // Mache Gruppen über Property abrufbar.
+                    GroupCollection = new ObservableCollection<Group>(groups);
+
+                    // Speichere die aktuell gültigen Anwendungseinstellungen zwischen.
+                    AppSettings currentSettings = groupController.GetApplicationSettings();
+                    cachedGroupOrderSettings = currentSettings.GroupOrderSetting;
+
+                    // Füge Gruppen dem Lookup Verzeichnis hinzu.
+                    foreach (Group group in groups)
+                    {
+                        currentGroups.Add(group.Id, group);
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("LoadMyGroupsAsync: Seems like page comes from cache.");
+
+                    // Prüfe zunächst, ob die Einstellungen aktualisiert wurden.
+                    AppSettings currentAppSettings = channelController.GetApplicationSettings();
+                    if (currentAppSettings.GroupOrderSetting != cachedGroupOrderSettings)
+                    {
+                        // Restrukturierung der Liste von Gruppen durch neu laden.
+                        // TODO
+
+                        // Aktualisiere die nun für die View geltenden Einstellungen.
+                        cachedGroupOrderSettings = currentAppSettings.GroupOrderSetting;
+                    }
+                    else
+                    {
+                        // Führe nur lokale Synchronisation durch.
+                        List<Group> modifiedGroups = await Task.Run(() => groupController.GetDirtyGroups());
+                        await updateViewModelGroupCollectionAsync(modifiedGroups);
+
+                        // Setze Dirty-Flag zurück.
+                        groupController.ResetDirtyFlagsOnGroups();
+                    }
                 }
             }
-            else
+            catch (ClientException ex)
             {
-                Debug.WriteLine("LoadMyGroupsAsync: Seems like page comes from cache.");
-
-                // TODO
+                Debug.WriteLine("Error during loading process of my groups");
+                displayError(ex.ErrorCode);
             }
+            
+        }
+
+        /// <summary>
+        /// Aktualisiert die Group Collection, die im ViewModel gehalten wird.
+        /// </summary>
+        /// <returns></returns>
+        private async Task updateViewModelGroupCollectionAsync(List<Group> referenceList)
+        {
+            // TODO
         }
 
         /// <summary>
@@ -434,7 +470,11 @@ namespace DataHandlingLayer.ViewModel
         /// <param name="selectedGroupObj"></param>
         private void executeGroupSelected(object selectedGroupObj)
         {
-            // TODO
+            Group selectedGroup = selectedGroupObj as Group;
+            if (selectedGroup != null)
+            {
+                _navService.Navigate("GroupDetails", selectedGroup.Id);
+            }
         }
         #endregion CommandFunctionality
     }

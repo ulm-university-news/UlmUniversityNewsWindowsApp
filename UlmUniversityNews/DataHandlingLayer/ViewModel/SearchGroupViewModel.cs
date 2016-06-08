@@ -82,13 +82,19 @@ namespace DataHandlingLayer.ViewModel
         public string SearchTerm
         {
             get { return searchTerm; }
-            set
-            {
-                this.setProperty(ref this.searchTerm, value);
-                // checkCommandExecution();
-            }
+            set { this.setProperty(ref this.searchTerm, value); }
         }
 
+        private bool hasEmptySearchResult;
+        /// <summary>
+        /// Gibt an, ob bei der Suche eine leere Ergebnismenge zurückgeliefert wurde.
+        /// </summary>
+        public bool HasEmptySearchResult
+        {
+            get { return hasEmptySearchResult; }
+            set { this.setProperty(ref this.hasEmptySearchResult, value); }
+        }
+        
         private ObservableCollection<Group> groups;
         /// <summary>
         /// Die Gruppen, die bei der Suche als Ergebnis vom Server zurückgeliefert wurden.
@@ -138,6 +144,7 @@ namespace DataHandlingLayer.ViewModel
             // Setze initiale Parameter.
             WorkingGroupSelected = true;
             TutorialGroupSelected = true;
+            HasEmptySearchResult = false;
 
             // Befehle erzeugen
             GroupSelectedCommand = new AsyncRelayCommand(param => executeGroupSelectedCommandAsync(param));
@@ -145,6 +152,29 @@ namespace DataHandlingLayer.ViewModel
                 param => executeSearchGroupsCommandAsync(),
                 param => canSearchGroups()
                 );
+        }
+
+        /// <summary>
+        /// Aktualisiert die Collection mit Group Instanzen. Die Collection
+        /// wird komplett neu geladen. Die übergebenen Elemente werden hinzugefügt.
+        /// Dadurch wird die Anzeige aktualisiert.
+        /// </summary>
+        /// <param name="newGroups">Die anzuzeigenden Group Instanzen.</param>
+        private void updateGroupsCollection(List<Group> newGroups)
+        {
+            if (Groups == null)
+            {
+                Groups = new ObservableCollection<Group>();
+            }
+            Groups.Clear();
+            if (newGroups != null && newGroups.Count > 0)
+            {
+                // Füge zur Collection hinzu.
+                foreach (Group group in newGroups)
+                {
+                    Groups.Add(group);
+                }
+            }
         }
 
         #region CommandFunctionality
@@ -179,6 +209,9 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private async Task executeSearchGroupsCommandAsync()
         {
+            // Setze Parameter zurück.
+            HasEmptySearchResult = false;
+
             try
             {
                 displayIndeterminateProgressIndicator("SearchGroupStatus");
@@ -203,18 +236,7 @@ namespace DataHandlingLayer.ViewModel
                         );
 
                     // Aktualisiere Anzeige.
-                    if (Groups == null)
-                    {
-                        Groups = new ObservableCollection<Group>();
-                    }
-                    Groups.Clear();
-                    if (retrievedGroups != null && retrievedGroups.Count > 0)
-                    {
-                        foreach (Group group in retrievedGroups)
-                        {
-                            Groups.Add(group);
-                        }
-                    }
+                    updateGroupsCollection(retrievedGroups);
                 }
                 else if (SearchForIdEnabled)
                 {
@@ -226,19 +248,12 @@ namespace DataHandlingLayer.ViewModel
                     {
                         // Suche nach Id.
                          retrievedGroup = await groupController.GetGroupAsync(id, false);
-
                     }
 
                     // Aktualisiere Anzeige.
-                    if (Groups == null)
-                    {
-                        Groups = new ObservableCollection<Group>();
-                    }
-                    Groups.Clear();
-                    if (retrievedGroup != null)
-                    {
-                        Groups.Add(retrievedGroup);
-                    }
+                    List<Group> groups = new List<Group>();
+                    groups.Add(retrievedGroup);
+                    updateGroupsCollection(groups);
                 }
             }
             catch (ClientException ex)
@@ -249,6 +264,12 @@ namespace DataHandlingLayer.ViewModel
             finally
             {
                 hideIndeterminateProgressIndicator();
+            }
+
+            // Prüfe, ob das Suchergebnis leer ist.
+            if (Groups != null && Groups.Count == 0)
+            {
+                HasEmptySearchResult = true;
             }
         }
 

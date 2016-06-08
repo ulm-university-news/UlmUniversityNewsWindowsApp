@@ -190,7 +190,7 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
             _typeNameTable[62] = "UlmUniversityNews.Converters.GroupTypeEnumToComboBoxItemIndexConverter";
             _typeNameTable[63] = "UlmUniversityNews.Converters.InverseBooleanConverter";
             _typeNameTable[64] = "UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup";
-            _typeNameTable[65] = "UlmUniversityNews.Converters.GroupAdminIdToStringConverter";
+            _typeNameTable[65] = "UlmUniversityNews.Converters.GroupToGroupAdminStringConverter";
             _typeNameTable[66] = "UlmUniversityNews.Converters.ParticipantsListToStringConverter";
             _typeNameTable[67] = "UlmUniversityNews.Views.Group.GroupDetails";
             _typeNameTable[68] = "UlmUniversityNews.Views.Group.SearchGroups";
@@ -279,7 +279,7 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
             _typeTable[62] = typeof(global::UlmUniversityNews.Converters.GroupTypeEnumToComboBoxItemIndexConverter);
             _typeTable[63] = typeof(global::UlmUniversityNews.Converters.InverseBooleanConverter);
             _typeTable[64] = typeof(global::UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup);
-            _typeTable[65] = typeof(global::UlmUniversityNews.Converters.GroupAdminIdToStringConverter);
+            _typeTable[65] = typeof(global::UlmUniversityNews.Converters.GroupToGroupAdminStringConverter);
             _typeTable[66] = typeof(global::UlmUniversityNews.Converters.ParticipantsListToStringConverter);
             _typeTable[67] = typeof(global::UlmUniversityNews.Views.Group.GroupDetails);
             _typeTable[68] = typeof(global::UlmUniversityNews.Views.Group.SearchGroups);
@@ -377,7 +377,7 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
         private object Activate_62_GroupTypeEnumToComboBoxItemIndexConverter() { return new global::UlmUniversityNews.Converters.GroupTypeEnumToComboBoxItemIndexConverter(); }
         private object Activate_63_InverseBooleanConverter() { return new global::UlmUniversityNews.Converters.InverseBooleanConverter(); }
         private object Activate_64_AddGroup() { return new global::UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup(); }
-        private object Activate_65_GroupAdminIdToStringConverter() { return new global::UlmUniversityNews.Converters.GroupAdminIdToStringConverter(); }
+        private object Activate_65_GroupToGroupAdminStringConverter() { return new global::UlmUniversityNews.Converters.GroupToGroupAdminStringConverter(); }
         private object Activate_66_ParticipantsListToStringConverter() { return new global::UlmUniversityNews.Converters.ParticipantsListToStringConverter(); }
         private object Activate_67_GroupDetails() { return new global::UlmUniversityNews.Views.Group.GroupDetails(); }
         private object Activate_68_SearchGroups() { return new global::UlmUniversityNews.Views.Group.SearchGroups(); }
@@ -872,9 +872,9 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 65:   //  UlmUniversityNews.Converters.GroupAdminIdToStringConverter
+            case 65:   //  UlmUniversityNews.Converters.GroupToGroupAdminStringConverter
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
-                userType.Activator = Activate_65_GroupAdminIdToStringConverter;
+                userType.Activator = Activate_65_GroupToGroupAdminStringConverter;
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;

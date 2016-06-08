@@ -154,14 +154,27 @@
 
                     <ScrollViewer Grid.Row="1">
                         <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0"
+                                       x:Name="GroupSearchEmptyResultInfo"
+                                       x:Uid="GroupSearchEmptyResultInfo"
+                                       Style="{StaticResource UniversityNewsUlmStandardText}"
+                                       Margin="19,19,19,19"
+                                       Visibility="{Binding HasEmptySearchResult, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                       />
+
                             <!-- Liste mit Gruppen. IsItemClickEnabled muss aktiviert sein, sonst funktioniert das Binding mittels der Behaviour SDK nicht.-->
-                          <ListView Grid.Row="0"
-                            Margin="19,5,19,0"
-                            HorizontalContentAlignment="Stretch"
-                            HorizontalAlignment="Stretch"
-                            IsItemClickEnabled="True"
-                            ItemTemplate="{StaticResource GroupListItemStyle}"
-                            ItemsSource="{Binding Groups}">
+                            <ListView Grid.Row="1"
+                                Margin="19,5,19,0"
+                                HorizontalContentAlignment="Stretch"
+                                HorizontalAlignment="Stretch"
+                                IsItemClickEnabled="True"
+                                ItemTemplate="{StaticResource GroupListItemStyle}"
+                                ItemsSource="{Binding Groups}">
                                 <ListView.ItemContainerStyle>
                                     <Style TargetType="ListViewItem">
                                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -172,7 +185,7 @@
                                 <i:Interaction.Behaviors>
                                     <core:EventTriggerBehavior EventName="ItemClick">
                                         <core:InvokeCommandAction Command="{Binding GroupSelectedCommand}"
-                                                              InputConverter="{StaticResource ItemClickedConverter}" />
+                                                                  InputConverter="{StaticResource ItemClickedConverter}" />
                                     </core:EventTriggerBehavior>
                                 </i:Interaction.Behaviors>
 

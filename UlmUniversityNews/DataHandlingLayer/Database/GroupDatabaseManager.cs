@@ -127,7 +127,8 @@ namespace DataHandlingLayer.Database
                             updateStmt.Bind(7, (updatedGroup.Deleted) ? 1 : 0);
                             updateStmt.Bind(8, updatedGroup.GroupAdmin);
                             updateStmt.Bind(9, (int) updatedGroup.GroupNotificationSetting);
-                            updateStmt.Bind(10, 1); // Änderung am Datensatz, daher true.
+                            // IsDirty:
+                            updateStmt.Bind(10, 1); // Änderung am Datensatz, daher Dirty = true.
 
                             updateStmt.Bind(11, updatedGroup.Id);
 
@@ -157,7 +158,8 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
-        /// Liefert Datensatz der Gruppe mit der angegebenen Id aus der Datenbank zurück.
+        /// Liefert Datensatz der Gruppe mit der angegebenen Id aus der Datenbank zurück. Liefert auch
+        /// die Informationen über die Teilnehmer der Gruppe mit.
         /// </summary>
         /// <param name="id">Die Id der Gruppe.</param>
         /// <returns>Eine Instanz der Klasse Group, oder null, wenn kein entsprechender Datensatz existiert.</returns>
@@ -176,30 +178,53 @@ namespace DataHandlingLayer.Database
                 {
                     try
                     {
-                        string query = @"SELECT * 
+                        string getGroupQuery = @"SELECT * 
                             FROM ""Group"" 
                             WHERE Id=?;";
 
-                        using (var stmt = conn.Prepare(query))
-                        {
-                            stmt.Bind(1, id);
+                        string queryParticipants = @"SELECT * 
+                            FROM UserGroup AS ug JOIN User AS u ON ug.User_Id=u.Id
+                            WHERE ug.Group_Id=?;";
 
-                            if (stmt.Step() == SQLiteResult.ROW)
+                        using (var getParticipantsStmt = conn.Prepare(queryParticipants))
+                        using (var getGroupStmt = conn.Prepare(getGroupQuery))
+                        {
+                            getGroupStmt.Bind(1, id);
+
+                            if (getGroupStmt.Step() == SQLiteResult.ROW)
                             {
                                 group = new Group()
                                 {
                                     Id = id,
-                                    Name = (string)stmt["Name"],
-                                    Description = (string)stmt["Description"],
-                                    Type = (GroupType)Enum.ToObject(typeof(GroupType), stmt["Type"]),
-                                    CreationDate = DatabaseManager.DateTimeFromSQLite((string)stmt["CreationDate"]),
-                                    ModificationDate = DatabaseManager.DateTimeFromSQLite((string)stmt["ModificationDate"]),
-                                    Term = (string)stmt["Term"],
-                                    Deleted = ((long)stmt["Deleted"] == 1) ? true : false,
-                                    GroupAdmin = Convert.ToInt32(stmt["GroupAdmin_User_Id"]),
-                                    GroupNotificationSetting = (NotificationSetting)Enum.ToObject(typeof(NotificationSetting), stmt["NotificationSettings_NotifierId"]),
+                                    Name = (string)getGroupStmt["Name"],
+                                    Description = (string)getGroupStmt["Description"],
+                                    Type = (GroupType)Enum.ToObject(typeof(GroupType), getGroupStmt["Type"]),
+                                    CreationDate = DatabaseManager.DateTimeFromSQLite((string)getGroupStmt["CreationDate"]),
+                                    ModificationDate = DatabaseManager.DateTimeFromSQLite((string)getGroupStmt["ModificationDate"]),
+                                    Term = (string)getGroupStmt["Term"],
+                                    Deleted = ((long)getGroupStmt["Deleted"] == 1) ? true : false,
+                                    GroupAdmin = Convert.ToInt32(getGroupStmt["GroupAdmin_User_Id"]),
+                                    GroupNotificationSetting = (NotificationSetting)Enum.ToObject(typeof(NotificationSetting), getGroupStmt["NotificationSettings_NotifierId"]),
                                 };
                             }
+
+                            // Lade Teilnehmer der Gruppe.
+                            getParticipantsStmt.Bind(1, id);
+
+                            List<User> participants = new List<User>();
+                            while (getParticipantsStmt.Step() == SQLiteResult.ROW)
+                            {
+                                User user = new User()
+                                {
+                                    Id = Convert.ToInt32(getParticipantsStmt["Id"]),
+                                    Name = (string)getParticipantsStmt["Name"]
+                                };
+
+                                participants.Add(user);
+                            }
+
+                            // Füge Teilnehmerliste der Gruppe hinzu.
+                            group.Participants = participants;
                         }
                     }
                     catch (SQLiteException sqlEx)
@@ -224,7 +249,8 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
-        /// Liefert alle in der Datenbank gespeicherten Gruppen zurück.
+        /// Liefert alle in der Datenbank gespeicherten Gruppen zurück. Liefert nur die Gruppendaten.
+        /// Liefert insbesondere keine Informationen über die Teilnehmer der Gruppe.
         /// </summary>
         /// <returns>Eine Liste von Group Instanzen. Die Liste kann auch leer sein.</returns>
         /// <exception cref="DatabaseException">Wirft eine DatabaseException, wenn der Abruf fehlschlägt.</exception>
@@ -290,6 +316,7 @@ namespace DataHandlingLayer.Database
 
         /// <summary>
         /// Gibt alle Datensätze von Gruppen zurück, die das IsDirty Flag gesetzt haben.
+        /// Liefert nur die Gruppendaten und keine Informationen über die Teilnehmer der Gruppe.
         /// </summary>
         /// <returns>Eine Liste von Instanzen der Klasse Group. Die Liste kann auch leer sein.</returns>
         /// <exception cref="DatabaseException">Wirft eine DatabaseException, wenn der Abruf fehlschlägt.</exception>

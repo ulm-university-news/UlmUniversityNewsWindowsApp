@@ -111,14 +111,15 @@ namespace DataHandlingLayer.ViewModel
             {
                 Debug.WriteLine("Loaded group is: " + loadedGroup.Name);
 
-                SelectedGroup = loadedGroup;
-
                 try
                 {
                     if (groupController.IsActiveParticipant(loadedGroup.Id, groupController.GetLocalUser().Id))
                     {
                         Debug.WriteLine("User seems to be an active participant of the group.");
                         IsGroupParticipant = true;
+                        // Frage noch die Teilnehmer ab.
+                        List<User> participants = await Task.Run(() => groupController.GetActiveParticipantsOfGroup(loadedGroup.Id));
+                        loadedGroup.Participants = participants;
                     }
                     else
                     {
@@ -132,8 +133,36 @@ namespace DataHandlingLayer.ViewModel
                     displayError(ex.ErrorCode);
                 }
 
+                // Setze die geladenen Daten.
+                SelectedGroup = loadedGroup;
+
                 checkCommandExecution();
             }
+        }
+
+        /// <summary>
+        /// Lade Gruppe aus den lokalen Datensätzen.
+        /// </summary>
+        /// <param name="groupId">Die Id der zu ladenden Gruppe.</param>
+        public async Task LoadGroupFromLocalStorageAsync(int groupId)
+        {
+            IsGroupParticipant = true;      // Wenn Gruppe im lokalen Speicher, dann gilt das.
+            Debug.WriteLine("LoadGroupFromLocalStorageAsync: Load group from local datasets.");
+
+            try
+            {
+                Group loadedGroup = await Task.Run(() => groupController.GetGroup(groupId));
+                Debug.WriteLine("Loaded group is: " + loadedGroup.Name);
+
+                SelectedGroup = loadedGroup;               
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("LoadGroupFromLocalStorageAsync: Execution failed.");
+                displayError(ex.ErrorCode);
+            }
+
+            checkCommandExecution();
         }
 
         #region CommandFunctionality

@@ -122,10 +122,10 @@
     <RootPropertyPathName Name="EnteredPassword" />
     <RootPropertyPathName Name="SelectedGroup" />
     <RootPropertyPathName Name="Participants" />
-    <RootPropertyPathName Name="GroupAdmin" />
     <RootPropertyPathName Name="SearchGroupsCommand" />
     <RootPropertyPathName Name="Groups" />
     <RootPropertyPathName Name="GroupSelectedCommand" />
+    <RootPropertyPathName Name="HasEmptySearchResult" />
     <RootPropertyPathName Name="SearchForNameEnabled" />
     <RootPropertyPathName Name="TutorialGroupSelected" />
     <RootPropertyPathName Name="WorkingGroupSelected" />
@@ -578,7 +578,7 @@
     <RootType FullName="UlmUniversityNews.Converters.GroupTypeEnumToComboBoxItemIndexConverter" />
     <RootType FullName="UlmUniversityNews.Converters.InverseBooleanConverter" />
     <RootType FullName="UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup" />
-    <RootType FullName="UlmUniversityNews.Converters.GroupAdminIdToStringConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.GroupToGroupAdminStringConverter" />
     <RootType FullName="UlmUniversityNews.Converters.ParticipantsListToStringConverter" />
     <RootType FullName="Windows.UI.Xaml.Controls.ContentDialog">
       <RootProperty Name="VerticalAlignment" />

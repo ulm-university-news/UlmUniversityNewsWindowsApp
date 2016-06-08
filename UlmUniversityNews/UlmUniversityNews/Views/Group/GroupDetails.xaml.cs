@@ -122,10 +122,27 @@ namespace UlmUniversityNews.Views.Group
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            // Prüfe, ob ein Index gespeichert ist, der angibt, auf welchem PivotItem der Nutzer zuletzt war.
+            if (e.PageState != null &&
+                e.PageState.Keys.Contains("PivotIndex") &&
+                e.PageState["PivotIndex"] != null)
+            {
+                int selectedIndex = 0;
+                bool successful = int.TryParse(e.PageState["PivotIndex"].ToString(), out selectedIndex);
+
+                // Falls es einen gespeicherten PivotIndex gibt, setze ihn wieder aktiv.
+                if (successful && GroupDetailsPivot != null)
+                    GroupDetailsPivot.SelectedIndex = selectedIndex;
+            }
+
             // Für den Typvergleich, siehe hier: http://stackoverflow.com/questions/983030/type-checking-typeof-gettype-or-is
             if (e.NavigationParameter != null && e.NavigationParameter.GetType() == typeof(string))
             {
                await groupDetailsViewModel.LoadGroupFromTemporaryCacheAsync(e.NavigationParameter as string);
+            }
+            else if (e.NavigationParameter != null && e.NavigationParameter.GetType() == typeof(int))
+            {
+                await groupDetailsViewModel.LoadGroupFromLocalStorageAsync(Convert.ToInt32(e.NavigationParameter));
             }
         }
 
@@ -139,6 +156,9 @@ namespace UlmUniversityNews.Views.Group
         /// serialisierbarer Zustand.</param>
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
+            // Speichere Pivot-Index zwischen, so dass man ihn beim nächsten Aufruf der Seite wieder aktiv setzen kann.
+            if (e.PageState != null && GroupDetailsPivot != null)
+                e.PageState["PivotIndex"] = GroupDetailsPivot.SelectedIndex;
         }
 
         #region NavigationHelper-Registrierung

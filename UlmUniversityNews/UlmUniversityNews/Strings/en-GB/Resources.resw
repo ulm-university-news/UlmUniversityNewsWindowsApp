@@ -1316,4 +1316,7 @@ date: </value>
   <data name="GroupDetailsTermField.Text" xml:space="preserve">
     <value>Term</value>
   </data>
+  <data name="GroupSearchEmptyResultInfo.Text" xml:space="preserve">
+    <value>The search did not return a group.</value>
+  </data>
 </root>

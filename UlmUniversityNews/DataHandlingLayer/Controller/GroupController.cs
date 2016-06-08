@@ -435,6 +435,7 @@ namespace DataHandlingLayer.Controller
             Group group = null;
             try
             {
+                // Rufe Gruppe ab, inklusive Informationen über Teilnehmer.
                 group = groupDBManager.GetGroup(groupId);
             }
             catch (DatabaseException ex)
@@ -444,6 +445,46 @@ namespace DataHandlingLayer.Controller
             }
 
             return group;
+        }
+
+        /// <summary>
+        /// Hole alle Gruppen, die mittels eines Dirty-Flag markiert sind.
+        /// Diese Gruppen wurden markiert, da sich ihre Daten geändert haben seit dem
+        /// letzten Abruf.
+        /// </summary>
+        /// <returns>Eine Liste von Instanzen von Group.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abruf fehlschlägt.</exception>
+        public List<Group> GetDirtyGroups()
+        {
+            List<Group> dirtyGroups = null;
+            try
+            {
+                dirtyGroups = groupDBManager.GetDirtyGroups();
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetDirtyGroups: Error occurred in DB. Message is {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return dirtyGroups;
+        }
+
+        /// <summary>
+        /// Setzt das Dirty-Flag auf allen Datensätzen von Gruppen zurück.
+        /// </summary>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Reset fehlschlägt.</exception>
+        public void ResetDirtyFlagsOnGroups()
+        {
+            try
+            {
+                groupDBManager.ResetDirtyFlagOnGroups();
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("ResetDirtyFlagsOnGroups: Error occurred in DB. Message is {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
         }
 
         /// <summary>

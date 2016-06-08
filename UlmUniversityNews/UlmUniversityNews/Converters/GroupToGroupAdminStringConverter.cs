@@ -12,30 +12,27 @@ namespace UlmUniversityNews.Converters
     /// Konvertierung einer Admin-Id in den Namen des entsprechenden Teilnehmers der Gruppe.
     /// Hierfür ist es notwendig die Teilnehmerliste als Parameter zu übergeben.
     /// </summary>
-    class GroupAdminIdToStringConverter : IValueConverter
+    class GroupToGroupAdminStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             string adminName = string.Empty;
+            Group affectedGroup = value as Group;
 
-            // Extrahiere Teilnehmer aus Converter-Parameter:
-            List<User> participants = parameter as List<User>;
-            
-            if (participants != null)
+            if (affectedGroup != null)
             {
-                int adminId = -1;
-                bool parsedSuccessful = int.TryParse(value as string, out adminId);
+                int adminId = affectedGroup.GroupAdmin;
 
-                if (parsedSuccessful)
+                if (affectedGroup.Participants != null)
                 {
-                    for (int i = 0; i < participants.Count; i++)
+                    foreach (User participant in affectedGroup.Participants)
                     {
-                        if (participants[i].Id == adminId)
+                        if (participant.Id == adminId)
                         {
-                            adminName = participants[i].Name;
+                            adminName = participant.Name;
                         }
                     }
-                }
+                }    
             }
 
             return adminName;

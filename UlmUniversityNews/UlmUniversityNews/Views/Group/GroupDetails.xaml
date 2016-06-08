@@ -20,9 +20,10 @@
         <valueconverter:GroupTypeToStringConverter x:Key="GroupTypeToStringConverter" />
         <valueconverter:ChannelTermToLocalizedStringConverter x:Key="ChannelTermToLocalizedStringConverter" />
         <valueconverter:ResourceDetailsDateTimeToStringConverter x:Key="ResourceDetailsDateTimeToStringConverter" />
-        <valueconverter:GroupAdminIdToStringConverter x:Key="GroupAdminIdToStringConverter" />
+        <valueconverter:GroupToGroupAdminStringConverter x:Key="GroupToGroupAdminStringConverter" />
         <valueconverter:ParticipantsListToStringConverter x:Key="ParticipantsListToStringConverter" />
         <valueconverter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <valueconverter:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
     </Page.Resources>
 
     <!-- StatusBar -->
@@ -399,6 +400,7 @@
                                     <!-- Gruppen-Admin -->
                                     <Grid
                                         Grid.Row="6"
+                                        Visibility="{Binding ElementName=GroupAdminContent, Path=Text, Converter={StaticResource StringToVisibilityConverter}}"
                                         Style="{StaticResource EnumerationOfPropertiesGridStyle}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
@@ -430,7 +432,7 @@
                                             Grid.Row="1"
                                             x:Name="GroupAdminContent"
                                             Style="{StaticResource TextInPropertyDescriptions}"
-                                            Text="{Binding GroupAdmin, TargetNullValue='', FallbackValue='', Converter={StaticResource GroupAdminIdToStringConverter}, ConverterParameter={Binding Participants}}" />
+                                            Text="{Binding TargetNullValue='', FallbackValue='', Converter={StaticResource GroupToGroupAdminStringConverter}}" /> <!-- Binding to Group itself (which is the dataContext)-->
 
                                     <Line Grid.Row="2"
                                               Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
@@ -439,6 +441,7 @@
                                     <!-- Teilnehmer der Gruppe -->
                                     <Grid
                                         Grid.Row="7"
+                                        Visibility="{Binding ElementName=GroupParticipantsContent, Path=Text, Converter={StaticResource StringToVisibilityConverter}}"
                                         Style="{StaticResource EnumerationOfPropertiesGridStyle}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />

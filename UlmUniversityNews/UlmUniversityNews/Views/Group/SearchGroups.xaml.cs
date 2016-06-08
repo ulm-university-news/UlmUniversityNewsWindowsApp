@@ -40,6 +40,9 @@ namespace UlmUniversityNews.Views.Group
             searchGroupViewModel = new SearchGroupViewModel(App.NavigationService, App.ErrorMapper);
             this.DataContext = searchGroupViewModel;
 
+            // Diese Seite soll wenn möglich im Cache gehalten werden.
+            NavigationCacheMode = NavigationCacheMode.Enabled;
+
             // Initialiese das Drawer Layout.
             DrawerLayout.InitializeDrawerLayout();
             ListMenuItems.ItemsSource = searchGroupViewModel.DrawerMenuEntriesStatusNoLogin;
