@@ -104,18 +104,24 @@
     <RootPropertyPathName Name="ChannelSelectedCommand" />
     <RootPropertyPathName Name="StartChannelSearchCommand" />
     <RootPropertyPathName Name="SearchTerm" />
+    <RootPropertyPathName Name="EditGroupCommand" />
     <RootPropertyPathName Name="AddGroupCommand" />
     <RootPropertyPathName Name="IsFlyoutOpen" />
     <RootPropertyPathName Name="PerformOriginalDrawerMenuActionCommand" />
     <RootPropertyPathName Name="ShowWarningFlyout" />
+    <RootPropertyPathName Name="IsPasswordFieldActive" />
+    <RootPropertyPathName Name="IsChecked" />
     <RootPropertyPathName Name="GroupPassword" />
+    <RootPropertyPathName Name="IsEditDialog" />
     <RootPropertyPathName Name="GroupDescription" />
     <RootPropertyPathName Name="IsNoTermSelected" />
     <RootPropertyPathName Name="TermYear" />
     <RootPropertyPathName Name="IsWinterTermSelected" />
     <RootPropertyPathName Name="IsSummerTermSelected" />
+    <RootPropertyPathName Name="IsCreateDialog" />
     <RootPropertyPathName Name="SelectedGroupType" />
     <RootPropertyPathName Name="GroupName" />
+    <RootPropertyPathName Name="EditableGroup" />
     <RootPropertyPathName Name="HasLeaveOption" />
     <RootPropertyPathName Name="LeaveGroupCommand" />
     <RootPropertyPathName Name="IsGroupParticipant" />
@@ -533,9 +539,12 @@
       <RootProperty Name="InputScope" />
       <RootProperty Name="Text" />
       <RootProperty Name="Background" />
+      <RootProperty Name="IsTextPredictionEnabled" />
+      <RootProperty Name="IsSpellCheckEnabled" />
+      <RootProperty Name="IsEnabled" />
+      <RootProperty Name="Visibility" />
       <RootProperty Name="TextWrapping" />
       <RootProperty Name="AcceptsReturn" />
-      <RootProperty Name="IsEnabled" />
       <RootProperty Name="MaxLength" />
       <RootProperty Name="HorizontalAlignment" />
       <RootProperty Name="VerticalAlignment" />
@@ -580,7 +589,23 @@
     <RootType FullName="UlmUniversityNews.Converters.StringToVisibilityConverter" />
     <RootType FullName="UlmUniversityNews.Converters.GroupTypeEnumToComboBoxItemIndexConverter" />
     <RootType FullName="UlmUniversityNews.Converters.InverseBooleanConverter" />
-    <RootType FullName="UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup" />
+    <RootType FullName="Windows.UI.Xaml.Controls.CheckBox">
+      <RootProperty Name="Margin" />
+      <RootProperty Name="Content" />
+      <RootProperty Name="Visibility" />
+      <RootProperty Name="IsChecked" />
+      <RootProperty Name="IsEnabled" />
+      <RootProperty Name="HorizontalAlignment" />
+      <RootProperty Name="VerticalAlignment" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.PasswordBox">
+      <RootProperty Name="IsEnabled" />
+      <RootProperty Name="Visibility" />
+      <RootProperty Name="Header" />
+      <RootProperty Name="Password" />
+      <RootProperty Name="Margin" />
+    </RootType>
+    <RootType FullName="UlmUniversityNews.Views.Group.AddAndEditGroupDialog.AddAndEditGroup" />
     <RootType FullName="UlmUniversityNews.Converters.GroupToGroupAdminStringConverter" />
     <RootType FullName="UlmUniversityNews.Converters.ParticipantsListToStringConverter" />
     <RootType FullName="Windows.UI.Xaml.Controls.ContentDialog">
@@ -592,17 +617,7 @@
       <RootProperty Name="MaxWidth" />
       <RootProperty Name="Content" />
     </RootType>
-    <RootType FullName="Windows.UI.Xaml.Controls.PasswordBox">
-      <RootProperty Name="Header" />
-      <RootProperty Name="Password" />
-      <RootProperty Name="Margin" />
-    </RootType>
     <RootType FullName="UlmUniversityNews.Views.Group.GroupDetails" />
-    <RootType FullName="Windows.UI.Xaml.Controls.CheckBox">
-      <RootProperty Name="Content" />
-      <RootProperty Name="IsChecked" />
-      <RootProperty Name="Visibility" />
-    </RootType>
     <RootType FullName="UlmUniversityNews.Views.Group.SearchGroups" />
     <RootType FullName="UlmUniversityNews.Views.Homescreen.Homescreen" />
     <RootType FullName="UlmUniversityNews.Views.Login.LoginPage" />

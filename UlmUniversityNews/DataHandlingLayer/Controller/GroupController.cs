@@ -519,6 +519,12 @@ namespace DataHandlingLayer.Controller
             if (localUser == null)
                 return false;
 
+            // Gruppen-Admin sollte nicht 0 sein, falls das der Fall ist, setzte ihn auf den alten Wert.
+            if (newGroup.GroupAdmin == 0)
+            {
+                newGroup.GroupAdmin = oldGroup.GroupAdmin;
+            }
+
             // Führe Validierung aus. Wenn Validierung fehlschlägt, kann abgebrochen werden.
             clearValidationErrors();
             newGroup.ClearValidationErrors();

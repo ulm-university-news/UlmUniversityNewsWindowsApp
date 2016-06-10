@@ -1005,8 +1005,8 @@
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ChannelSearch\ChannelSearch.xbf">
       <PackagePath>Views\ChannelSearch\ChannelSearch.xbf</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Group\AddGroupDialog\AddGroup.xbf">
-      <PackagePath>Views\Group\AddGroupDialog\AddGroup.xbf</PackagePath>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Group\AddAndEditGroupDialog\AddAndEditGroup.xbf">
+      <PackagePath>Views\Group\AddAndEditGroupDialog\AddAndEditGroup.xbf</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Group\GroupDetails.xbf">
       <PackagePath>Views\Group\GroupDetails.xbf</PackagePath>

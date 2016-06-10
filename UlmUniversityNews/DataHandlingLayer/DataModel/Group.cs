@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace DataHandlingLayer.DataModel
 {
-    public class Group : Validator.ModelValidatorBase
+    public class Group : PropertyChangedNotifier
     {
         #region Properties
         private int id;
         /// <summary>
         /// Die eindeutige Id der Gruppe.
         /// </summary>
-        [JsonProperty("id")]
+        [JsonProperty("id", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int Id
         {
             get { return id; }
@@ -31,7 +31,7 @@ namespace DataHandlingLayer.DataModel
         public string Name
         {
             get { return name; }
-            set { name = value; }
+            set { this.setProperty(ref this.name, value); }
         }
 
         private string description;
@@ -86,7 +86,7 @@ namespace DataHandlingLayer.DataModel
         public string Term
         {
             get { return term; }
-            set { term = value; }
+            set { this.setProperty(ref this.term, value); }
         }
 
         private string password;
@@ -115,6 +115,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Die akutell für die Gruppe gewählten Benachrichtigungseinstellungen.
         /// </summary>
+        [JsonIgnore]
         public NotificationSetting GroupNotificationSetting
         {
             get { return groupNotificationSetting; }

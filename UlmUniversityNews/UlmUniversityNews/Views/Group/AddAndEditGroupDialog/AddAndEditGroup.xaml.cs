@@ -20,17 +20,17 @@ using DataHandlingLayer.DataModel;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
-namespace UlmUniversityNews.Views.Group.AddGroupDialog
+namespace UlmUniversityNews.Views.Group.AddAndEditGroupDialog
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class AddGroup : Page
+    public sealed partial class AddAndEditGroup : Page
     {
         private NavigationHelper navigationHelper;
-        private AddGroupViewModel addGroupViewModel;
+        private AddAndEditGroupViewModel addAndEditGroupViewModel;
 
-        public AddGroup()
+        public AddAndEditGroup()
         {
             this.InitializeComponent();
 
@@ -41,12 +41,12 @@ namespace UlmUniversityNews.Views.Group.AddGroupDialog
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
 
-            addGroupViewModel = new AddGroupViewModel(App.NavigationService, App.ErrorMapper);
-            this.DataContext = addGroupViewModel;
+            addAndEditGroupViewModel = new AddAndEditGroupViewModel(App.NavigationService, App.ErrorMapper);
+            this.DataContext = addAndEditGroupViewModel;
 
             // Initialisiere das Drawer Layout.
             DrawerLayout.InitializeDrawerLayout();
-            ListMenuItems.ItemsSource = addGroupViewModel.DrawerMenuEntriesStatusNoLogin;
+            ListMenuItems.ItemsSource = addAndEditGroupViewModel.DrawerMenuEntriesStatusNoLogin;
         }
 
         /// <summary>
@@ -70,6 +70,17 @@ namespace UlmUniversityNews.Views.Group.AddGroupDialog
         /// session.  The state will be null the first time a page is visited.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            if (e.NavigationParameter == null)
+            {
+                // Erstellungsdialog.
+                addAndEditGroupViewModel.LoadCreateDialog();
+            }
+            else if (e.NavigationParameter.GetType() == typeof(int))
+            {
+                // Änderungsdialog.
+                int groupId = Convert.ToInt32(e.NavigationParameter);
+                addAndEditGroupViewModel.LoadEditDialog(groupId);
+            }
         }
 
         /// <summary>
@@ -130,7 +141,7 @@ namespace UlmUniversityNews.Views.Group.AddGroupDialog
                 ReferencedPageKey = null
             };
 
-            addGroupViewModel.ShowWarningFlyout.Execute(drawerMenuEntry);
+            addAndEditGroupViewModel.ShowWarningFlyout.Execute(drawerMenuEntry);
         }
 
         /// <summary>

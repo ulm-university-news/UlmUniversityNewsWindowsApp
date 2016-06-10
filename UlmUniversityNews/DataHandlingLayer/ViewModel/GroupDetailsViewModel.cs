@@ -98,6 +98,16 @@ namespace DataHandlingLayer.ViewModel
             get { return leaveGroupCommand; }
             set { leaveGroupCommand = value; }
         }
+
+        private RelayCommand editGroupCommand;
+        /// <summary>
+        /// Befehl zum Wechseln auf den Bearbeitungsdialog für die Gruppe.
+        /// </summary>
+        public RelayCommand EditGroupCommand
+        {
+            get { return editGroupCommand; }
+            set { editGroupCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -121,6 +131,9 @@ namespace DataHandlingLayer.ViewModel
             LeaveGroupCommand = new AsyncRelayCommand(
                 param => executeLeaveGroupCommandAsync(),
                 param => canLeaveGroup());
+            EditGroupCommand = new RelayCommand(
+                param => executeEditGroupCommand(),
+                param => canEditGroup());
         }
 
         /// <summary>
@@ -210,6 +223,7 @@ namespace DataHandlingLayer.ViewModel
             {
                 HasLeaveOption = false;
             }
+            EditGroupCommand.RaiseCanExecuteChanged();
         }
 
         /// <summary>
@@ -311,6 +325,37 @@ namespace DataHandlingLayer.ViewModel
             finally
             {
                 hideIndeterminateProgressIndicator();
+            }
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zum Wechsel auf den Dialog zur Aktualisierung der Gruppendaten 
+        /// ausgeführt werden kann.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canEditGroup()
+        {
+            User localUser = groupController.GetLocalUser();
+            // Nur möglich für Administrator von Gruppe. Außerdem nur auf dem "Details" Pivot Item.
+            if (SelectedGroup != null &&
+                localUser.Id == SelectedGroup.GroupAdmin && 
+                SelectedPivotItemIndex == 2)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl zum Wechseln auf den Dialog zur Änderung der Gruppendaten
+        /// aus. 
+        /// </summary>
+        private void executeEditGroupCommand()
+        {
+            if (SelectedGroup !=null && _navService != null)
+            {
+                _navService.Navigate("AddAndEditGroup", SelectedGroup.Id);
             }
         }
         #endregion CommandFunctionality

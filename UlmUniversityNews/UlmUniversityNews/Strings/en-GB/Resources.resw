@@ -1205,7 +1205,7 @@ date: </value>
   <data name="AddGroupDescriptionTextBlock.Header" xml:space="preserve">
     <value>Description</value>
   </data>
-  <data name="AddGroupDrawerTitle.Text" xml:space="preserve">
+  <data name="AddGroupDrawerTitleCreate.Text" xml:space="preserve">
     <value>Add group</value>
   </data>
   <data name="AddGroupNameTextBox.Header" xml:space="preserve">
@@ -1319,6 +1319,9 @@ date: </value>
   <data name="GroupSearchEmptyResultInfo.Text" xml:space="preserve">
     <value>The search did not return a group.</value>
   </data>
+  <data name="AddGroupDisplayCleartextPassword.Content" xml:space="preserve">
+    <value>Show</value>
+  </data>
   <data name="ApplicationErrorGroupAdminNotAllowedToExitError" xml:space="preserve">
     <value>You are the administrator of the group. The administrator cannot leave the group if no other participant can take over this position.</value>
   </data>
@@ -1354,6 +1357,12 @@ date: </value>
   </data>
   <data name="ApplicationErrorInvalidGroupAdminError" xml:space="preserve">
     <value>An error occurred in the determination of the group administrator.</value>
+  </data>
+  <data name="EditGroupChangePasswordCheckBox.Content" xml:space="preserve">
+    <value>Change password</value>
+  </data>
+  <data name="EditGroupDescription.Text" xml:space="preserve">
+    <value>You can change the data values for the given group using this dialog.</value>
   </data>
   <data name="GroupDetailsLeaveGroupButton.Label" xml:space="preserve">
     <value>leave group</value>

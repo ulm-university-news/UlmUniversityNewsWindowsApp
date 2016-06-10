@@ -484,7 +484,7 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private void executeAddGroupCommand()
         {
-            _navService.Navigate("AddGroup");
+            _navService.Navigate("AddAndEditGroup");
         }
 
         /// <summary>

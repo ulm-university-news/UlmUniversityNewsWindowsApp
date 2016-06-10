@@ -189,7 +189,7 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
             _typeNameTable[61] = "UlmUniversityNews.Converters.StringToVisibilityConverter";
             _typeNameTable[62] = "UlmUniversityNews.Converters.GroupTypeEnumToComboBoxItemIndexConverter";
             _typeNameTable[63] = "UlmUniversityNews.Converters.InverseBooleanConverter";
-            _typeNameTable[64] = "UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup";
+            _typeNameTable[64] = "UlmUniversityNews.Views.Group.AddAndEditGroupDialog.AddAndEditGroup";
             _typeNameTable[65] = "UlmUniversityNews.Converters.GroupToGroupAdminStringConverter";
             _typeNameTable[66] = "UlmUniversityNews.Converters.ParticipantsListToStringConverter";
             _typeNameTable[67] = "UlmUniversityNews.Views.Group.GroupDetails";
@@ -278,7 +278,7 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
             _typeTable[61] = typeof(global::UlmUniversityNews.Converters.StringToVisibilityConverter);
             _typeTable[62] = typeof(global::UlmUniversityNews.Converters.GroupTypeEnumToComboBoxItemIndexConverter);
             _typeTable[63] = typeof(global::UlmUniversityNews.Converters.InverseBooleanConverter);
-            _typeTable[64] = typeof(global::UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup);
+            _typeTable[64] = typeof(global::UlmUniversityNews.Views.Group.AddAndEditGroupDialog.AddAndEditGroup);
             _typeTable[65] = typeof(global::UlmUniversityNews.Converters.GroupToGroupAdminStringConverter);
             _typeTable[66] = typeof(global::UlmUniversityNews.Converters.ParticipantsListToStringConverter);
             _typeTable[67] = typeof(global::UlmUniversityNews.Views.Group.GroupDetails);
@@ -376,7 +376,7 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
         private object Activate_61_StringToVisibilityConverter() { return new global::UlmUniversityNews.Converters.StringToVisibilityConverter(); }
         private object Activate_62_GroupTypeEnumToComboBoxItemIndexConverter() { return new global::UlmUniversityNews.Converters.GroupTypeEnumToComboBoxItemIndexConverter(); }
         private object Activate_63_InverseBooleanConverter() { return new global::UlmUniversityNews.Converters.InverseBooleanConverter(); }
-        private object Activate_64_AddGroup() { return new global::UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup(); }
+        private object Activate_64_AddAndEditGroup() { return new global::UlmUniversityNews.Views.Group.AddAndEditGroupDialog.AddAndEditGroup(); }
         private object Activate_65_GroupToGroupAdminStringConverter() { return new global::UlmUniversityNews.Converters.GroupToGroupAdminStringConverter(); }
         private object Activate_66_ParticipantsListToStringConverter() { return new global::UlmUniversityNews.Converters.ParticipantsListToStringConverter(); }
         private object Activate_67_GroupDetails() { return new global::UlmUniversityNews.Views.Group.GroupDetails(); }
@@ -864,9 +864,9 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 64:   //  UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup
+            case 64:   //  UlmUniversityNews.Views.Group.AddAndEditGroupDialog.AddAndEditGroup
                 userType = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_64_AddGroup;
+                userType.Activator = Activate_64_AddAndEditGroup;
                 userType.AddMemberName("NavigationHelper");
                 userType.SetIsLocalType();
                 xamlType = userType;
@@ -1376,9 +1376,9 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
             var that = (global::UlmUniversityNews.Views.ChannelSearch.ChannelSearch)instance;
             return that.NavigationHelper;
         }
-        private object get_40_AddGroup_NavigationHelper(object instance)
+        private object get_40_AddAndEditGroup_NavigationHelper(object instance)
         {
-            var that = (global::UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup)instance;
+            var that = (global::UlmUniversityNews.Views.Group.AddAndEditGroupDialog.AddAndEditGroup)instance;
             return that.NavigationHelper;
         }
         private object get_41_GroupDetails_NavigationHelper(object instance)
@@ -1712,10 +1712,10 @@ namespace UlmUniversityNews.UlmUniversityNews_XamlTypeInfo
                 xamlMember.Getter = get_39_ChannelSearch_NavigationHelper;
                 xamlMember.SetIsReadOnly();
                 break;
-            case "UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup.NavigationHelper":
-                userType = (global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType)GetXamlTypeByName("UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup");
+            case "UlmUniversityNews.Views.Group.AddAndEditGroupDialog.AddAndEditGroup.NavigationHelper":
+                userType = (global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlUserType)GetXamlTypeByName("UlmUniversityNews.Views.Group.AddAndEditGroupDialog.AddAndEditGroup");
                 xamlMember = new global::UlmUniversityNews.UlmUniversityNews_XamlTypeInfo.XamlMember(this, "NavigationHelper", "UlmUniversityNews.Common.NavigationHelper");
-                xamlMember.Getter = get_40_AddGroup_NavigationHelper;
+                xamlMember.Getter = get_40_AddAndEditGroup_NavigationHelper;
                 xamlMember.SetIsReadOnly();
                 break;
             case "UlmUniversityNews.Views.Group.GroupDetails.NavigationHelper":

@@ -114,7 +114,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Group\AddGroupDialog\AddGroup.xaml">
+    <Page Include="Views\Group\AddAndEditGroupDialog\AddAndEditGroup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -245,8 +245,8 @@
     <Compile Include="Views\ChannelSearch\ChannelSearch.xaml.cs">
       <DependentUpon>ChannelSearch.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Group\AddGroupDialog\AddGroup.xaml.cs">
-      <DependentUpon>AddGroup.xaml</DependentUpon>
+    <Compile Include="Views\Group\AddAndEditGroupDialog\AddAndEditGroup.xaml.cs">
+      <DependentUpon>AddAndEditGroup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Group\GroupDetails.xaml.cs">
       <DependentUpon>GroupDetails.xaml</DependentUpon>

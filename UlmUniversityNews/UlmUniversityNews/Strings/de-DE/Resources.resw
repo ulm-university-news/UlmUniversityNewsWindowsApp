@@ -1206,7 +1206,7 @@ Nachricht am: </value>
   <data name="AddGroupDescriptionTextBlock.Header" xml:space="preserve">
     <value>Beschreibung</value>
   </data>
-  <data name="AddGroupDrawerTitle.Text" xml:space="preserve">
+  <data name="AddGroupDrawerTitleCreate.Text" xml:space="preserve">
     <value>Gruppe hinzufügen</value>
   </data>
   <data name="AddGroupNameTextBox.Header" xml:space="preserve">
@@ -1320,6 +1320,9 @@ Nachricht am: </value>
   <data name="GroupSearchEmptyResultInfo.Text" xml:space="preserve">
     <value>Die Suche lieferte keine Gruppe als Ergebnis zurück.</value>
   </data>
+  <data name="AddGroupDisplayCleartextPassword.Content" xml:space="preserve">
+    <value>Anzeigen</value>
+  </data>
   <data name="ApplicationErrorGroupAdminNotAllowedToExitError" xml:space="preserve">
     <value>Sie sind der Administrator dieser Gruppe. Der Administrator der Gruppe kann die Gruppe nicht verlassen, wenn kein anderer Teilnehmer die Position des Administrators übernehmen kann.</value>
   </data>
@@ -1355,6 +1358,12 @@ Nachricht am: </value>
   </data>
   <data name="ApplicationErrorInvalidGroupAdminError" xml:space="preserve">
     <value>Es ist ein Fehler bei der Bestimmung des Gruppenadministrators aufgetreten.</value>
+  </data>
+  <data name="EditGroupChangePasswordCheckBox.Content" xml:space="preserve">
+    <value>Passwort ändern</value>
+  </data>
+  <data name="EditGroupDescription.Text" xml:space="preserve">
+    <value>Hier können Sie die Daten der Gruppe anpassen.</value>
   </data>
   <data name="GroupDetailsLeaveGroupButton.Label" xml:space="preserve">
     <value>verlassen</value>

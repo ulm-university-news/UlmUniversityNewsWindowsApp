@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="UlmUniversityNews.Views.Group.AddGroupDialog.AddGroup"
+    x:Class="UlmUniversityNews.Views.Group.AddAndEditGroupDialog.AddAndEditGroup"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:UlmUniversityNews.Views.Group.AddGroupDialog"
@@ -45,7 +45,16 @@
                 x:Uid="AddGroupAddButton"
                 Icon="Accept"
                 Label="erstellen"
+                Visibility="{Binding ElementName=AddGroupAddButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding AddGroupCommand}"/>
+            <AppBarButton 
+                x:Name="EditGroupEditButton"
+                x:Uid="EditGroupEditButton"
+                Icon="Save"
+                Label="speichern"
+                Visibility="{Binding ElementName=EditGroupEditButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding EditGroupCommand}"
+                />
         </CommandBar>
     </Page.BottomAppBar>
 
@@ -75,11 +84,18 @@
 					   Style="{StaticResource DrawerIconStyle}"
 					   Tapped="DrawerIcon_Tapped" />
 
-            <!-- Drawer Text -->
+            <!-- Drawer Text für "Gruppe hinzufügen" Dialog -->
             <TextBlock Grid.Column="1"
-						   x:Uid="AddGroupDrawerTitle"
+						   x:Uid="AddGroupDrawerTitleCreate"
 						   Style="{StaticResource DrawerTextStyle}"
+                           Visibility="{Binding IsCreateDialog, Converter={StaticResource BooleanToVisibilityConverter}}"
 						   Text="Gruppe hinzufügen" />
+
+            <!-- Drawer Text für "Gruppe ändern" Dialog -->
+            <TextBlock Grid.Column="1"
+						   Style="{StaticResource DrawerTextStyle}"
+                           Visibility="{Binding IsEditDialog, Converter={StaticResource BooleanToVisibilityConverter}}"
+						   Text="{Binding EditableGroup.Name, FallbackValue='Gruppe ändern', TargetNullValue='Gruppe ändern'}" />
         </Grid>
 
         <!--Inhalt der Seite und Inhalt des Drawer Menü-->
@@ -106,9 +122,19 @@
                             x:Name="AddGroupDescription"
                             x:Uid="AddGroupDescription"
                             Style="{StaticResource UniversityNewsUlmStandardText}"
+                            Visibility="{Binding IsCreateDialog, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Text="Fügen Sie eine neue Gruppe hinzu. Geben Sie die hierfür notwendigen Daten an. Mit einem * markierte Felder sind Pflichtfelder. Sie müssen ein Passwort für die Gruppe angeben. Andere Nutzer können Ihrer Gruppe beitreten, wenn Sie das entsprechende Passwort kennen."
                             />
                         
+                        <!-- Beschreibung für Edit Group -->
+                        <TextBlock 
+                            Grid.Row="0"
+                            x:Name="EditGroupDescription"
+                            x:Uid="EditGroupDescription"
+                            Style="{StaticResource UniversityNewsUlmStandardText}"
+                            Visibility="{Binding IsEditDialog, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            />
+
                         <!-- Name der Gruppe - Eingabefeld. -->
                         <Grid Grid.Row="1">
                             <Grid.RowDefinitions>
@@ -137,6 +163,7 @@
                         <ComboBox Grid.Row="2"
                                   x:Name="AddGroupTypeComboBox"
                                   x:Uid="AddGroupTypeComboBox"
+                                  IsEnabled="{Binding IsCreateDialog}"
                                   SelectedIndex="{Binding SelectedGroupType, Mode=TwoWay, Converter={StaticResource GroupTypeEnumToComboBoxItemIndexConverter}}"
                                   Header="Gruppentyp *">
                             <ComboBoxItem
@@ -166,7 +193,7 @@
                                 <ComboBox Grid.Column="0"
                                           x:Name="AddGroupTermComboBox"
                                           x:Uid="AddGroupTermComboBox"
-                                          SelectedIndex="0"
+                                          SelectedIndex="{Binding SelectedComboBoxIndex, Mode=TwoWay}"
                                           Header="Semester">
                                     <ComboBoxItem 
                                         x:Name="AddGroupNoTermItem"
@@ -240,21 +267,62 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <TextBox
+                            <CheckBox 
                                 Grid.Row="0"
-                                x:Name="AddGroupPasswordTextBlock"
-                                x:Uid="AddGroupPasswordTextBlock"
-                                InputScope="AlphanumericFullWidth"
-                                TextWrapping="Wrap"
-                                AcceptsReturn="True"
-                                Header="Passwort *"
-                                Text="{Binding GroupPassword, Mode=TwoWay}"
+                                x:Name="EditGroupChangePasswordCheckBox"
+                                x:Uid="EditGroupChangePasswordCheckBox"
+                                Margin="0, 0, 0, -5"
+                                Content="Passwort ändern"
+                                Visibility="{Binding IsEditDialog, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                IsChecked="{Binding IsPasswordFieldActive, Mode=TwoWay}"/>
+
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox
+                                    Grid.Column="0"
+                                    x:Name="AddGroupPasswordCleartextTextBlock"
+                                    x:Uid="AddGroupPasswordTextBlock"
+                                    InputScope="AlphanumericFullWidth"
+                                    IsTextPredictionEnabled="False" 
+                                    IsSpellCheckEnabled="False"
+                                    IsEnabled="{Binding IsPasswordFieldActive}"
+                                    Visibility="{Binding ElementName=AddGroupDisplayCleartextPassword, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Header="Passwort *"
+                                    Text="{Binding GroupPassword, Mode=TwoWay}"
                                 />
 
+                                <PasswordBox
+                                    Grid.Column="0"
+                                    x:Name="AddGroupPasswordTextBlock"
+                                    x:Uid="AddGroupPasswordTextBlock"
+                                    IsEnabled="{Binding IsPasswordFieldActive}"
+                                    Visibility="{Binding ElementName=AddGroupDisplayCleartextPassword, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='inverse'}"
+                                    Header="Passwort *"
+                                    Password="{Binding GroupPassword, Mode=TwoWay}" 
+                                />
+
+                                <CheckBox 
+                                    Grid.Column="1"
+                                    Margin="15, 0, 0, 0"
+                                    x:Name="AddGroupDisplayCleartextPassword"
+                                    x:Uid="AddGroupDisplayCleartextPassword"
+                                    IsEnabled="{Binding IsPasswordFieldActive}"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Bottom"
+                                    Content="Anzeigen"
+                                    />
+
+                            </Grid>
+                            
                             <TextBlock
-                                Grid.Row="1"
+                                Grid.Row="2"
                                 x:Name="AddGroupPasswordValidationError"
                                 Style="{StaticResource UniversityNewsUlmStandardErrorText}"
                                 Visibility="{Binding ElementName=AddGroupPasswordValidationError, Path=Text, Converter={StaticResource StringToVisibilityConverter}}"

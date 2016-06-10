@@ -154,7 +154,7 @@
     <Compile Include="ViewModel\AddAndEditChannelViewModel.cs" />
     <Compile Include="ViewModel\AddAndEditReminderViewModel.cs" />
     <Compile Include="ViewModel\AddAnnouncementViewModel.cs" />
-    <Compile Include="ViewModel\AddGroupViewModel.cs" />
+    <Compile Include="ViewModel\AddAndEditGroupViewModel.cs" />
     <Compile Include="ViewModel\ApplicationSettingsViewModel.cs" />
     <Compile Include="ViewModel\ChannelDetailsBaseViewModel.cs" />
     <Compile Include="ViewModel\ChannelDetailsViewModel.cs" />

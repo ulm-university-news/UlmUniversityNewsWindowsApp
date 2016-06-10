@@ -97,6 +97,13 @@
                     </Flyout>
                 </AppBarButton.Flyout>
             </AppBarButton>
+            <AppBarButton 
+                x:Name="GroupDetailsEditGroupButton"
+                x:Uid="GroupDetailsEditGroupButton"
+                Icon="Edit"
+                Label="bearbeiten"
+                Visibility="{Binding ElementName=GroupDetailsEditGroupButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding EditGroupCommand}"/>
         </CommandBar>
     </Page.BottomAppBar>
     
