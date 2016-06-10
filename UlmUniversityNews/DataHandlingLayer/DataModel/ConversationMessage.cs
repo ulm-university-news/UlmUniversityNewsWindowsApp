@@ -1,4 +1,5 @@
 ﻿using DataHandlingLayer.DataModel.Enums;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,11 @@ using System.Threading.Tasks;
 
 namespace DataHandlingLayer.DataModel
 {
+    /// <summary>
+    /// Die Klasse ConversationMessage repräsentiert eine Nachricht, die
+    /// in einer Konversation gesendet wird. Die Nachricht wird an alle Teilnehmer
+    /// der zugehörigen Gruppe verteilt.
+    /// </summary>
     public class ConversationMessage : Message
     {
         #region Properties
@@ -14,6 +20,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Die Id des Autors (ein Nutzer) der Konversationsnachricht.
         /// </summary>
+        [JsonProperty("authorUser", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int AuthorId
         {
             get { return authorUser; }
@@ -24,6 +31,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Die Id der Konversation, zu der die Konversationsnachricht gehört.
         /// </summary>
+        [JsonProperty("conversationId", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int ConversationId
         {
             get { return conversationId; }

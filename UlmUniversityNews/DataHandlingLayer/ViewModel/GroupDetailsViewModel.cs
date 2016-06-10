@@ -6,6 +6,7 @@ using DataHandlingLayer.NavigationService;
 using DataHandlingLayer.CommandRelays;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -75,6 +76,16 @@ namespace DataHandlingLayer.ViewModel
         {
             get { return enteredPassword; }
             set { enteredPassword = value; }
+        }
+
+        private ObservableCollection<Conversation> conversationCollection;
+        /// <summary>
+        /// Eine Menge von Conversation Objekten, die dieser Gruppe zugeordnet sind.
+        /// </summary>
+        public ObservableCollection<Conversation> ConversationCollection
+        {
+            get { return conversationCollection; }
+            set { this.setProperty(ref this.conversationCollection, value); }
         }
         #endregion Properties
 

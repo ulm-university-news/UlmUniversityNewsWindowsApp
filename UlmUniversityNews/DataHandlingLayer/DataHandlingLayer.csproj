@@ -116,7 +116,9 @@
     <Compile Include="DataModel\Announcement.cs" />
     <Compile Include="DataModel\AppSettings.cs" />
     <Compile Include="DataModel\AppSettingsCache.cs" />
+    <Compile Include="DataModel\Ballot.cs" />
     <Compile Include="DataModel\Channel.cs" />
+    <Compile Include="DataModel\Conversation.cs" />
     <Compile Include="DataModel\ConversationMessage.cs" />
     <Compile Include="DataModel\DrawerMenuEntry.cs" />
     <Compile Include="DataModel\Enums\ChannelType.cs" />
@@ -135,6 +137,7 @@
     <Compile Include="DataModel\LocalModerator.cs" />
     <Compile Include="DataModel\Message.cs" />
     <Compile Include="DataModel\Moderator.cs" />
+    <Compile Include="DataModel\Option.cs" />
     <Compile Include="DataModel\PropertyChangedNotifier.cs" />
     <Compile Include="DataModel\PushMessage.cs" />
     <Compile Include="DataModel\Reminder.cs" />
