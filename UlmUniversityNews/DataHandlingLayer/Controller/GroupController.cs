@@ -305,6 +305,7 @@ namespace DataHandlingLayer.Controller
                 // Füge Teilnehmer der Gruppe hinzu.
                 AddParticipantsToGroup(groupId, participants);
 
+                // TODO - check if this last call can be removed. User should already be added toghether with the other participants.
                 // Trage Nutzer selbst als Teilnehmer ein.
                 AddParticipantToGroup(groupId, getLocalUser());
             }
@@ -364,6 +365,105 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Der lokale Nutzer verlässt die Gruppe mit der angegebenen Id.
+        /// Schickt einen Request an den Server, um den Teilnehmer von der Gruppe zu entfernen.
+        /// Behandelt auch den Fall, dass der lokale Nutzer Administrator dieser Gruppe ist. In diesem Fall
+        /// wird zunächst ein neuer Administrator bestimmt und die Gruppe aktualisiert.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, aus der der lokale Nutzer austritt.</param>
+        /// <exception cref="ClientException">Wirft Exception, wenn der Austritt fehlschlägt, oder der
+        ///     entsprechende Request vom Server abgelehnt wurde.</exception>
+        public async Task LeaveGroupAsync(int groupId)
+        {
+            User localUser = getLocalUser();
+
+            // Hole die betroffene Gruppe aus dem lokalen Speicher.
+            Group affectedGroup = GetGroup(groupId);
+
+            // Sonderfallbehandlung: Nutzer ist Administrator der Gruppe.
+            if (affectedGroup.GroupAdmin == localUser.Id)
+            {
+                // Frage in diesem Fall zunächst alle Teilnehmer der Gruppe vom Server ab, um sicher den aktuellsten Datensatz zu haben.
+                List<User> participants = await GetParticipantsOfGroupAsync(groupId, false);
+
+                // Sortiere alle "inaktiven" Nutzer aus.
+                for (int i=0; i < participants.Count; i++)
+                {
+                    if (!participants[i].Active)
+                    {
+                        participants.RemoveAt(i);
+                    }
+                }
+
+                if (participants.Count <= 1)
+                {
+                    // Sonderfall: Es gibt nur einen Teilnehmer der Gruppe, den lokalen Nutzer.
+                    // Nutzer kann Gruppe nicht verlassen, da diese sonst leer wäre.
+                    throw new ClientException(ErrorCodes.GroupAdminNotAllowedToExit, "Administrator cannot leave group.");
+                }
+
+                // Ansonsten: Wähle zufälligen Nutzer und übertrage die Administrationsrechte.
+                Random rnd = new Random();
+                User newAdmin = localUser;
+                while (newAdmin.Id == localUser.Id)
+                {
+                    int rndIndex = rnd.Next(0, participants.Count);
+                    newAdmin = participants[rndIndex];
+                }
+                Group newGroup = new Group()
+                {
+                    Id = affectedGroup.Id,
+                    Name = affectedGroup.Name,
+                    Description = affectedGroup.Description,
+                    CreationDate = affectedGroup.CreationDate,
+                    ModificationDate = affectedGroup.ModificationDate,
+                    GroupNotificationSetting = affectedGroup.GroupNotificationSetting,
+                    Deleted = affectedGroup.Deleted,
+                    NumberOfUnreadMessages = affectedGroup.NumberOfUnreadMessages,
+                    Participants = affectedGroup.Participants,
+                    Password = affectedGroup.Password,
+                    Term = affectedGroup.Term,
+                    Type = affectedGroup.Type
+                };
+                newGroup.GroupAdmin = newAdmin.Id;
+
+                // Führe Aktualisierung aus.
+                bool successful = await UpdateGroupAsync(affectedGroup, newGroup, true);
+                if (!successful)
+                {
+                    // Konnte Rechte nicht übertragen.
+                    throw new ClientException(ErrorCodes.GroupAdminRightsTransferHasFailed, "Couldn't transfer admin rights.");
+                }                
+            }
+
+            // Aus Gruppe austreten.
+            try
+            {
+                // Sende Request an den Server, um lokalen Nutzer von der Gruppe zu entfernen.
+                await groupAPI.SendLeaveGroupRequest(
+                    localUser.ServerAccessToken,
+                    groupId,
+                    localUser.Id);
+
+                Debug.WriteLine("LeaveGroupAsync: Successfully left group with id {0}.", groupId);
+            }
+            catch (APIException ex)
+            {
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    // Kann Gruppe einfach entfernen.
+                    DeleteGroupLocally(groupId);
+                    return;
+                }
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            // Entferne die Gruppe aus den lokalen Datensätzen.
+            DeleteGroupLocally(groupId);
+        }
+
+        /// <summary>
         /// Ruft die Teilnehmer der Gruppe mit der angegebnen Id vom Server ab.
         /// </summary>
         /// <param name="groupId">Die Id der Gruppe.</param>
@@ -398,6 +498,175 @@ namespace DataHandlingLayer.Controller
             }
 
             return participants;
+        }
+
+        /// <summary>
+        /// Führt Aktualisierung der Gruppe aus. Es wird ermittelt welche Properties eine Aktualisierung 
+        /// erhalten haben. Die Aktualisierungen werden an den Server übermittelt, der die Aktualisierung auf
+        /// dem Serverdatensatz ausführt und die Teilnehmer über die Änderung informiert.
+        /// </summary>
+        /// <param name="oldGroup">Der Datensatz der Gruppe vor der Aktualisierung.</param>
+        /// <param name="newGroup">Der Datensatz mit aktualisierten Daten.</param>
+        /// <param name="ignorePassword">Gibt an, ob das Passwort Property bei der Aktualisierung ignoriert werden soll.</param>
+        /// <returns>Liefert true, wenn die Aktualisierung erfolgreich war, ansonsten false.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Fehler während des Aktualisierungsvorgangs auftritt.</exception>
+        public async Task<bool> UpdateGroupAsync(Group oldGroup, Group newGroup, bool ignorePassword)
+        {
+            if (oldGroup == null || newGroup == null)
+                return false;
+
+            User localUser = getLocalUser();
+            if (localUser == null)
+                return false;
+
+            // Führe Validierung aus. Wenn Validierung fehlschlägt, kann abgebrochen werden.
+            clearValidationErrors();
+            newGroup.ClearValidationErrors();
+            newGroup.ValidateAll();
+
+            if (newGroup.HasValidationErrors() && !ignorePassword)
+            {
+                reportValidationErrors(newGroup.GetValidationErrors());
+                return false;
+            }
+            else if (ignorePassword)
+            {
+                // Prüfe alle Properties bis auf Passwort separat.
+                if (newGroup.HasValidationError("Name") ||
+                    newGroup.HasValidationError("Term") || 
+                    newGroup.HasValidationError("Description"))
+                {
+                    Dictionary<string, string> validationErrors = newGroup.GetValidationErrors();
+                    if (validationErrors.ContainsKey("Password"))
+                    {
+                        validationErrors.Remove("Password");
+                    }
+                    reportValidationErrors(validationErrors);
+                    return false;
+                }
+            }
+
+            // Erstelle ein Objekt für die Aktualisierung, welches die Daten enthält, die aktualisiert werden müssen.
+            Group updatableGroupObj = prepareUpdatableGroupInstance(oldGroup, newGroup);
+
+            if (updatableGroupObj == null)
+                return false;   // Keine Aktualisierung notwendig.
+
+            // Hash Passwort bei Änderung.
+            if (updatableGroupObj.Password != null)
+            {
+                HashingHelper.HashingHelper hashHelper = new HashingHelper.HashingHelper();
+                string hashedPassword = hashHelper.GenerateSHA256Hash(updatableGroupObj.Password);
+                updatableGroupObj.Password = hashedPassword;
+            }
+
+            // Erstelle Json-Dokument für die Aktualisierung.
+            string jsonContent = jsonParser.ParseGroupToJson(updatableGroupObj);
+            if (jsonContent == null)
+            {
+                Debug.WriteLine("UpdateGroupAsync: Group object could not be translated to a json document.");
+                return false;
+            }
+
+            // Server Request.
+            string serverResponse = null;
+            try
+            {
+                serverResponse = await groupAPI.SendUpdateGroupRequest(
+                    getLocalUser().ServerAccessToken,
+                    oldGroup.Id,
+                    jsonContent);
+            }
+            catch (APIException ex)
+            {
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    // TODO
+                }
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            // Führe lokale Aktualisierung des Datensatzes aus.
+            try
+            {
+                Group updatedGroup = jsonParser.ParseGroupFromJson(serverResponse);
+                if (updatedGroup == null)
+                {
+                    throw new ClientException(ErrorCodes.JsonParserError, "Couldn't parse server response.");
+                }
+
+                // Notification settings bleiben unverändert.
+                updatedGroup.GroupNotificationSetting = oldGroup.GroupNotificationSetting;
+
+                // Speichere neuen Datensatz ab.
+                groupDBManager.UpdateGroup(updatedGroup);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("UpdateGroupAsync: Failed to store updated resource.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Bereitet ein Objekt vom Typ Group vor, welches alle Properties enthält, die sich geändert haben.
+        /// Die Methode bekommt eine alte Version eines Group Objekts und eine neue Version und ermittelt 
+        /// dann die Properties, die eine Aktualisierung erhalten haben und schreibt diese in eine neue Group
+        /// Instanz. Die von der Methode zurückgelieferte Group Instanz kann dann direkt für die Aktualisierung auf
+        /// dem Server verwendet werden. Achtung: Hat sich überhaupt keine Property geändert, so gibt die Methode null zurück.
+        /// </summary>
+        /// <param name="oldGroup">Das Group Objekt vor der Aktualisierung.</param>
+        /// <param name="newGroup">Das Group Objekt mit den aktuellen Werten.</param>
+        /// <returns>Ein Objekt der Klasse Group, bei dem die Properties, die sich geändert haben, mit den
+        ///     aktualisierten Werten gefüllt sind.</returns>
+        private Group prepareUpdatableGroupInstance(Group oldGroup, Group newGroup)
+        {
+            bool hasChanged = false;
+            Group updatedGroup = new Group();
+
+            // Vergleiche die Properties.
+            if (oldGroup.Name != newGroup.Name)
+            {
+                hasChanged = true;
+                updatedGroup.Name = newGroup.Name;
+            }
+
+            if (oldGroup.Description != newGroup.Description)
+            {
+                hasChanged = true;
+                updatedGroup.Description = newGroup.Description;
+            }
+
+            // Aktualisiere Passwort, wenn es in der neuen Instanz gesetzt ist.
+            if (newGroup.Password != null)
+            {
+                hasChanged = true;
+                updatedGroup.Password = newGroup.Password;
+            }
+
+            if (oldGroup.Term != newGroup.Term)
+            {
+                hasChanged = true;
+                updatedGroup.Term = newGroup.Term;
+            }
+
+            if (oldGroup.GroupAdmin != newGroup.GroupAdmin)
+            {
+                hasChanged = true;
+                updatedGroup.GroupAdmin = newGroup.GroupAdmin;
+            }
+
+            // Prüfe, ob sich überhaupt ein Property geändert hat.
+            if (!hasChanged)
+            {
+                Debug.WriteLine("prepareUpdatableGroupInstance: No property of group has been updated. Method will return null.");
+                updatedGroup = null;
+            }
+
+            return updatedGroup;
         }
         #endregion RemoteGroupMethods
 
@@ -485,6 +754,27 @@ namespace DataHandlingLayer.Controller
                 Debug.WriteLine("ResetDirtyFlagsOnGroups: Error occurred in DB. Message is {0}.", ex.Message);
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Liefert die Identifier aller lokal verwalteten Gruppen zurück.
+        /// </summary>
+        /// <returns>Eine Liste von Ids lokal verwalteter Gruppen.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Aktion fehlschlägt.</exception>
+        public List<int> GetLocalGroupIdentifiers()
+        {
+            List<int> identifiers;
+            try
+            {
+                identifiers = groupDBManager.GetLocalGroupIdentifiers();
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetLocalGroupIdentifiers: Error occurred in DB. Message is {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return identifiers;
         }
 
         /// <summary>
@@ -606,7 +896,17 @@ namespace DataHandlingLayer.Controller
             // Füge Nutzer als aktiver Teilnehmer der Gruppe hinzu.
             try
             {
-                groupDBManager.AddParticipantToGroup(groupId, user.Id, true);
+                bool? activeStatus = groupDBManager.RetrieveActiveStatusOfParticipant(groupId, user.Id);
+                if (!activeStatus.HasValue)
+                {
+                    // Teilnehmer noch nicht in Gruppe.
+                    groupDBManager.AddParticipantToGroup(groupId, user.Id, true);
+                }
+                else if (activeStatus.Value == false)
+                {
+                    // Setze Teilnehmer wieder in den aktiven Zustand.
+                    groupDBManager.ChangeActiveStatusOfParticipant(groupId, user.Id, true);
+                }
             }
             catch (DatabaseException ex)
             {

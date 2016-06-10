@@ -159,7 +159,7 @@
   <data name="ValidationErrorStartPageUserNameLengthInvalid" xml:space="preserve">
     <value>Der Nutzername muss mindestens 3 Zeichen und darf maximal 35 Zeichen umfassen.</value>
   </data>
-  <data name="ValidationErrorStartPAgeUserNameTextInvalid" xml:space="preserve">
+  <data name="ValidationErrorStartPageUserNameTextInvalid" xml:space="preserve">
     <value>Bitte verwenden Sie für den Nutzernamen keine Leerzeichen und Sonderzeichen.</value>
   </data>
   <data name="ApplicationErrorUserNotFoundError" xml:space="preserve">
@@ -1319,5 +1319,53 @@ Nachricht am: </value>
   </data>
   <data name="GroupSearchEmptyResultInfo.Text" xml:space="preserve">
     <value>Die Suche lieferte keine Gruppe als Ergebnis zurück.</value>
+  </data>
+  <data name="ApplicationErrorGroupAdminNotAllowedToExitError" xml:space="preserve">
+    <value>Sie sind der Administrator dieser Gruppe. Der Administrator der Gruppe kann die Gruppe nicht verlassen, wenn kein anderer Teilnehmer die Position des Administrators übernehmen kann.</value>
+  </data>
+  <data name="ApplicationErrorGroupAdminRightsTransferHasFailedError" xml:space="preserve">
+    <value>Die Übertragung der Administrationsrechte an einen anderen Nutzer ist fehlgeschlagen. Die Aktion "Gruppe verlassen" wurde abgebrochen. Bitte versuchen Sie es erneut.</value>
+  </data>
+  <data name="ApplicationErrorGroupDataIncompleteError" xml:space="preserve">
+    <value>Es fehlen wichtige Daten, die für die Ausführung der Anfrage notwendig sind. Bitte prüfen Sie Ihre Eingaben.</value>
+  </data>
+  <data name="ApplicationErrorGroupIncorrectPasswordError" xml:space="preserve">
+    <value>Das von Ihnen eingegebene Passwort war nicht korrekt. Bitte geben Sie das korrekte Passwort an, um der Gruppe beizutreten.</value>
+  </data>
+  <data name="ApplicationErrorGroupInvalidDescriptionError" xml:space="preserve">
+    <value>Die eingegebene Beschreibung wurde vom Server abgelehnt. Bitte prüfen Sie Ihre Eingabe.</value>
+  </data>
+  <data name="ApplicationErrorGroupInvalidNameError" xml:space="preserve">
+    <value>Der eingegebene Gruppenname wurde vom Server abgelehnt. Bitte prüfen Sie Ihre Eingabe.</value>
+  </data>
+  <data name="ApplicationErrorGroupInvalidPasswordError" xml:space="preserve">
+    <value>Das eingegebene Passwort wurde vom Server abgelehnt. Bitte prüfen Sie Ihre Eingabe.</value>
+  </data>
+  <data name="ApplicationErrorGroupInvalidTermError" xml:space="preserve">
+    <value>Das eingegebene Semester wurde vom Server abgelehnt. Bitte prüfen Sie Ihre Eingabe.</value>
+  </data>
+  <data name="ApplicationErrorGroupMissingPasswordError" xml:space="preserve">
+    <value>Es wurde kein Passwort für die Gruppe definiert. Bitte geben Sie ein Passwort an.</value>
+  </data>
+  <data name="ApplicationErrorGroupNotFoundError" xml:space="preserve">
+    <value>Die angegebene Gruppe konnte auf dem Server nicht gefunden werden. Die Gruppe wurde wahrscheinlich auf dem Server gelöscht.</value>
+  </data>
+  <data name="ApplicationErrorGroupParticipantNotFoundError" xml:space="preserve">
+    <value>Der angegebene Teilnehmer der Gruppe konnte auf dem Server nicht gefunden werden. Es ist möglich, dass der Teilnehmer die Gruppe bereits verlassen hat.</value>
+  </data>
+  <data name="ApplicationErrorInvalidGroupAdminError" xml:space="preserve">
+    <value>Es ist ein Fehler bei der Bestimmung des Gruppenadministrators aufgetreten.</value>
+  </data>
+  <data name="GroupDetailsLeaveGroupButton.Label" xml:space="preserve">
+    <value>verlassen</value>
+  </data>
+  <data name="GroupDetailsLeaveGroupFlyoutButton.Content" xml:space="preserve">
+    <value>Verlassen</value>
+  </data>
+  <data name="GroupDetailsLeaveGroupStatus" xml:space="preserve">
+    <value>Verlasse Gruppe</value>
+  </data>
+  <data name="GroupDetailsLeaveGroupWarning.Text" xml:space="preserve">
+    <value>Wollen Sie die Gruppe wirklich verlassen?</value>
   </data>
 </root>

@@ -118,6 +118,7 @@ namespace DataHandlingLayer.API
             }
 
             HttpRequestMessage request = createHttpRequestMessageWithJsonBody(HttpMethod.Patch, content, restResourcePath);
+            Debug.WriteLine("Sending HTTP PATCH request to URL {0} with content {1}.", request.RequestUri, content);
 
             // Sende den Request und warte auf die Antwort.
             HttpResponseMessage response = await sendHttpRequest(httpClient, request);

@@ -113,6 +113,42 @@ namespace UlmUniversityNews.ErrorHandling
                 case ErrorCodes.ReminderNotFound:
                     errorDescription = loader.GetString("ApplicationErrorReminderNotFoundError");
                     break;
+                case ErrorCodes.GroupNotFound:
+                    errorDescription = loader.GetString("ApplicationErrorGroupNotFoundError");
+                    break;
+                case ErrorCodes.GroupDataIncomplete:
+                    errorDescription = loader.GetString("ApplicationErrorGroupDataIncompleteError");
+                    break;
+                case ErrorCodes.GroupInvalidName:
+                    errorDescription = loader.GetString("ApplicationErrorGroupInvalidNameError");
+                    break;
+                case ErrorCodes.GroupInvalidPassword:
+                    errorDescription = loader.GetString("ApplicationErrorGroupInvalidPasswordError");
+                    break;
+                case ErrorCodes.GroupInvalidDescription:
+                    errorDescription = loader.GetString("ApplicationErrorGroupInvalidDescriptionError");
+                    break;
+                case ErrorCodes.GroupInvalidTerm:
+                    errorDescription = loader.GetString("ApplicationErrorGroupInvalidTermError");
+                    break;
+                case ErrorCodes.GroupInvalidGroupAdmin:
+                    errorDescription = loader.GetString("ApplicationErrorInvalidGroupAdminError");
+                    break;
+                case ErrorCodes.GroupIncorrectPassword:
+                    errorDescription = loader.GetString("ApplicationErrorGroupIncorrectPasswordError");
+                    break;
+                case ErrorCodes.GroupMissingPassword:
+                    errorDescription = loader.GetString("ApplicationErrorGroupMissingPasswordError");
+                    break;
+                case ErrorCodes.GroupParticipantNotFound:
+                    errorDescription = loader.GetString("ApplicationErrorGroupParticipantNotFoundError");
+                    break;
+                case ErrorCodes.GroupAdminNotAllowedToExit:
+                    errorDescription = loader.GetString("ApplicationErrorGroupAdminNotAllowedToExitError");
+                    break;
+                case ErrorCodes.GroupAdminRightsTransferHasFailed:
+                    errorDescription = loader.GetString("ApplicationErrorGroupAdminRightsTransferHasFailedError");
+                    break;
                 case ErrorCodes.BadRequest:
                     errorDescription = loader.GetString("ApplicationErrorBadRequestError");;
                     break;

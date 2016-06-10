@@ -270,7 +270,7 @@ namespace DataHandlingLayer.ViewModel
 
                     // Frage Gruppen aus der Datenbank ab.
                     groups = await Task.Run(() => groupController.GetAllGroups());
-                    Debug.WriteLine("There are {0} group elements in the list.", groups.Count);
+                    Debug.WriteLine("LoadMyGroupsAsync: There are {0} group elements in the list.", groups.Count);
 
                     // Sortiere Gruppen anhand von aktuellen Anwendungseinstellungen.
                     groups = await Task.Run(() => sortGroupsByApplicationSettings(groups));
@@ -296,17 +296,22 @@ namespace DataHandlingLayer.ViewModel
                     AppSettings currentAppSettings = channelController.GetApplicationSettings();
                     if (currentAppSettings.GroupOrderSetting != cachedGroupOrderSettings)
                     {
+                        Debug.WriteLine("LoadMyGroupsAsync: Reloading completely.");
                         // Restrukturierung der Liste von Gruppen durch neu laden.
-                        // TODO
+                        List<Group> localGroups = await Task.Run(() => groupController.GetAllGroups());
+                        await reloadGroupCollectionCompletelyAsync(localGroups);
 
                         // Aktualisiere die nun für die View geltenden Einstellungen.
                         cachedGroupOrderSettings = currentAppSettings.GroupOrderSetting;
                     }
                     else
                     {
+                        Debug.WriteLine("LoadMyGroupsAsync: Perform local sync.");
                         // Führe nur lokale Synchronisation durch.
+                        Task<List<int>> localGroups = Task.Run(() => groupController.GetLocalGroupIdentifiers());
                         List<Group> modifiedGroups = await Task.Run(() => groupController.GetDirtyGroups());
-                        await updateViewModelGroupCollectionAsync(modifiedGroups);
+                        List<int> localGroupSnapshot = await localGroups;
+                        updateViewModelGroupCollection(modifiedGroups, localGroupSnapshot);
 
                         // Setze Dirty-Flag zurück.
                         groupController.ResetDirtyFlagsOnGroups();
@@ -323,11 +328,79 @@ namespace DataHandlingLayer.ViewModel
 
         /// <summary>
         /// Aktualisiert die Group Collection, die im ViewModel gehalten wird.
+        /// <param name="modifiedGroups">Die Gruppen, die seit dem letzten Vergleich geändert wurden.</param>
+        /// <param name="localGroupSnapshot">Ein Snapshot über die Ids der aktuell im System verwalten Gruppen.</param>
         /// </summary>
-        /// <returns></returns>
-        private async Task updateViewModelGroupCollectionAsync(List<Group> referenceList)
+        private void updateViewModelGroupCollection(List<Group> modifiedGroups, List<int> localGroupSnapshot)
         {
-            // TODO
+            Debug.WriteLine("updateViewModelGroupCollection: Start. Collection has {0} elements.", GroupCollection.Count);
+            // Gehe geänderte Gruppen durch.
+            foreach (Group group in modifiedGroups)
+            {
+                if (currentGroups.ContainsKey(group.Id))
+                {
+                    // Aktualisiere die für die View relevanten Properties.
+                    updateViewRelatedGroupProperties(currentGroups[group.Id], group);
+                    Debug.WriteLine("updateViewModelGroupCollection: Performed update on group with id {0}.", group.Id);
+                }
+                else
+                {
+                    // Füge hinzugekommene Gruppe der Aufzählung hinzu. 
+                    GroupCollection.Add(group);
+                    currentGroups.Add(group.Id, group);
+                    Debug.WriteLine("updateViewModelGroupCollection: Added group with id {0}.", group.Id);
+                }
+            }
+
+            // Prüfe, ob Gruppen lokal entfernt wurden.
+            List<Group> groups = currentGroups.Values.ToList<Group>();
+            for (int i=0; i < groups.Count; i++)
+            {
+                Group group = groups[i];
+                if (!localGroupSnapshot.Contains(group.Id))
+                {
+                    // Entferne Gruppe von Collection.
+                    GroupCollection.RemoveAt(i);
+                    currentGroups.Remove(group.Id);
+                    Debug.WriteLine("updateViewModelGroupCollection: Removed group with id {0}.", group.Id);
+                }
+            }
+
+            Debug.WriteLine("updateViewModelGroupCollection: Finished. Collection has {0} elements.", GroupCollection.Count);
+        }
+
+        /// <summary>
+        /// Lädt die Collection von Gruppen-Objekten neu mit den Daten aus der übergebenen Liste
+        /// von Gruppen-Objekten.
+        /// </summary>
+        /// <param name="newGroups">Die Datensätze, mit denen die Collection neu geladen wird.</param>
+        protected async Task reloadGroupCollectionCompletelyAsync(List<Group> newGroups)
+        {
+            // Sortiere eingegebene Daten nach aktuellen Anwendungseinstellungen.
+            newGroups = await Task.Run(() => sortGroupsByApplicationSettings(newGroups));
+
+            // Lade die Collection neu und füge Gruppen dem Lookup Verzeichnis hinzu.
+            // Muss auf dem UI Thread erfolgen, da Collection an View gebunden ist.
+            GroupCollection.Clear();
+            currentGroups.Clear();
+            foreach (Group group in newGroups)
+            {
+                GroupCollection.Add(group);
+                currentGroups.Add(group.Id, group);
+            }
+        }
+
+        /// <summary>
+        /// Aktualisiert die für die View relevanten Properties der aktuell
+        /// verwalteten Gruppen-Instanz mit den Werten der übergebenen neuen
+        /// Gruppen-Instanz.
+        /// </summary>
+        /// <param name="currentGroup">Die aktuell im ViewModel verwaltete Gruppe.</param>
+        /// <param name="newGroup">Die neue Gruppen-Instanz.</param>
+        private void updateViewRelatedGroupProperties(Group currentGroup, Group newGroup)
+        {
+            currentGroup.Name = newGroup.Name;
+            currentGroup.Term = newGroup.Term;
         }
 
         /// <summary>
@@ -337,7 +410,25 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Eine sortierte Liste von Gruppen.</returns>
         private List<Group> sortGroupsByApplicationSettings(List<Group> groups)
         {
-            // TODO
+            // Hole die Anwendungseinstellungen.
+            AppSettings appSettings = channelController.GetApplicationSettings();
+
+            switch (appSettings.GroupOrderSetting)
+            {
+                case OrderOption.ALPHABETICAL:
+                    groups = new List<Group>(
+                        from item in groups
+                        orderby item.Name ascending
+                        select item);
+                    break;
+                case OrderOption.BY_TYPE:
+                    groups = new List<Group>(
+                        from item in groups
+                        orderby item.Type ascending
+                        select item);
+                    break;
+            }
+
             return groups;
         }
 

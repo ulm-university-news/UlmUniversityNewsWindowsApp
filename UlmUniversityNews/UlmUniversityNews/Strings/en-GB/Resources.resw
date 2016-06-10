@@ -1319,4 +1319,52 @@ date: </value>
   <data name="GroupSearchEmptyResultInfo.Text" xml:space="preserve">
     <value>The search did not return a group.</value>
   </data>
+  <data name="ApplicationErrorGroupAdminNotAllowedToExitError" xml:space="preserve">
+    <value>You are the administrator of the group. The administrator cannot leave the group if no other participant can take over this position.</value>
+  </data>
+  <data name="ApplicationErrorGroupAdminRightsTransferHasFailedError" xml:space="preserve">
+    <value>The transfer of the administrator rights to another participant has failed. The action "leave group" is aborted. Please try again.</value>
+  </data>
+  <data name="ApplicationErrorGroupDataIncompleteError" xml:space="preserve">
+    <value>Important data values which are required for the request are missing. Please check your input.</value>
+  </data>
+  <data name="ApplicationErrorGroupIncorrectPasswordError" xml:space="preserve">
+    <value>The entered password was not correct. Please provide the correct password in order to join the group.</value>
+  </data>
+  <data name="ApplicationErrorGroupInvalidDescriptionError" xml:space="preserve">
+    <value>The entered description was rejected by the server. Please check your input.</value>
+  </data>
+  <data name="ApplicationErrorGroupInvalidNameError" xml:space="preserve">
+    <value>The specified group name was rejected by the server. Please check your input.</value>
+  </data>
+  <data name="ApplicationErrorGroupInvalidPasswordError" xml:space="preserve">
+    <value>The entered password was rejected by the server. Please check your input.</value>
+  </data>
+  <data name="ApplicationErrorGroupInvalidTermError" xml:space="preserve">
+    <value>The entered term was rejected by the server. Please check your input.</value>
+  </data>
+  <data name="ApplicationErrorGroupMissingPasswordError" xml:space="preserve">
+    <value>No password was defined for the group. Please define a password for the group.</value>
+  </data>
+  <data name="ApplicationErrorGroupNotFoundError" xml:space="preserve">
+    <value>The specified group could not be found on the server. The group has probably been deleted on the server.</value>
+  </data>
+  <data name="ApplicationErrorGroupParticipantNotFoundError" xml:space="preserve">
+    <value>The specified participant of the group could not be found on the server. It is possible that the participant has already left the group.</value>
+  </data>
+  <data name="ApplicationErrorInvalidGroupAdminError" xml:space="preserve">
+    <value>An error occurred in the determination of the group administrator.</value>
+  </data>
+  <data name="GroupDetailsLeaveGroupButton.Label" xml:space="preserve">
+    <value>leave group</value>
+  </data>
+  <data name="GroupDetailsLeaveGroupFlyoutButton.Content" xml:space="preserve">
+    <value>Leave</value>
+  </data>
+  <data name="GroupDetailsLeaveGroupStatus" xml:space="preserve">
+    <value>Leaving group</value>
+  </data>
+  <data name="GroupDetailsLeaveGroupWarning.Text" xml:space="preserve">
+    <value>Do you really want to leave the group?</value>
+  </data>
 </root>

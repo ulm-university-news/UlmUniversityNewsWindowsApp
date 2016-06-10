@@ -51,6 +51,52 @@
                 Visibility="{Binding IsGroupParticipant, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='inverse'}"
                                                          
                 />
+            <AppBarButton
+                x:Name="GroupDetailsLeaveGroupButton"
+                x:Uid="GroupDetailsLeaveGroupButton"
+                Icon="UnFavorite"
+                Label="verlassen"
+                Visibility="{Binding HasLeaveOption, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <AppBarButton.Flyout>
+                    <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}">
+                        <Grid
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Warnhinweis bezüglich Gruppe verlassen. -->
+                            <TextBlock 
+                                Grid.Row="0"
+                                x:Name="LeaveGroupWarning"
+                                x:Uid="GroupDetailsLeaveGroupWarning"
+                                Style="{StaticResource TextInFlyoutsStyle}" >
+                                Wollen Sie die Gruppe wirklich verlassen?
+                            </TextBlock>
+
+                            <!-- Verlassen Button-->
+                            <Button
+                                Grid.Row="1"
+                                x:Name="LeaveGroupFlyoutButton"
+                                x:Uid="GroupDetailsLeaveGroupFlyoutButton"
+                                Style="{StaticResource FlyoutSingleButtonStyle}"
+                                Content="Verlassen"
+                                Command="{Binding LeaveGroupCommand}">
+                                <!--<i:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="IsEnabledChanged">
+                                        <core:ChangePropertyAction 
+                                            TargetObject="{Binding ElementName=GroupDetailsLeaveGroupButton}" 
+                                            PropertyName="Visibility" 
+                                            Value="{Binding ElementName=LeaveGroupFlyoutButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                    </core:EventTriggerBehavior>
+                                </i:Interaction.Behaviors>-->
+                            </Button>
+                        </Grid>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
         </CommandBar>
     </Page.BottomAppBar>
     
@@ -99,6 +145,7 @@
                     
                     <!-- Pivotitem 1 - Konversationen -->
                     <PivotItem
+                        TabIndex="1"
                         Name="ConversationPivotItem"
                         x:Uid="GroupDetailsConversationPivotItem"
                         Style="{StaticResource PivotItemStyle}"
@@ -114,6 +161,7 @@
                     
                     <!-- Pivotitem 2 - Abstimmungen -->
                     <PivotItem
+                        TabIndex="2"
                         Name="BallotsPivotItem"
                         x:Uid="GroupDetailsBallotPivotItem"
                         Style="{StaticResource PivotItemStyle}"
@@ -129,6 +177,7 @@
                     
                     <!-- Pivotitem 3 - Gruppendetails -->
                     <PivotItem
+                        TabIndex="3"
                         Name="GroupDetailsPivotItem"
                         x:Uid="GroupDetailsGroupInfoPivotItem"
                         Style="{StaticResource PivotItemStyle}"
@@ -486,6 +535,7 @@
 
                     <!-- Pivotitem 4 - Events -->
                     <PivotItem
+                        TabIndex="4"
                         Name="EventsPivotItem"
                         x:Uid="GroupDetailsEventsPivotItem"
                         Style="{StaticResource PivotItemStyle}"

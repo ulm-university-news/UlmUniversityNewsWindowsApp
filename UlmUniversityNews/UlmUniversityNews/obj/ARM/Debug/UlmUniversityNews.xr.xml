@@ -116,6 +116,8 @@
     <RootPropertyPathName Name="IsSummerTermSelected" />
     <RootPropertyPathName Name="SelectedGroupType" />
     <RootPropertyPathName Name="GroupName" />
+    <RootPropertyPathName Name="HasLeaveOption" />
+    <RootPropertyPathName Name="LeaveGroupCommand" />
     <RootPropertyPathName Name="IsGroupParticipant" />
     <RootPropertyPathName Name="JoinGroupCommand" />
     <RootPropertyPathName Name="ActualWidth" />
@@ -304,6 +306,7 @@
       <RootProperty Name="Content" />
       <RootProperty Name="Style" />
       <RootProperty Name="Name" />
+      <RootProperty Name="TabIndex" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.FlyoutPresenter" />
     <RootType FullName="Windows.UI.Xaml.Controls.Control">

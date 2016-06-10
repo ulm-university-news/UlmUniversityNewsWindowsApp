@@ -258,8 +258,16 @@ namespace DataHandlingLayer.ViewModel
             }
             catch (ClientException ex)
             {
-                Debug.WriteLine("Errors occurred during search requests.");
-                displayError(ex.ErrorCode);
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound && SearchForIdEnabled)
+                {
+                    Debug.WriteLine("No group with this id found.");
+                    Groups.Clear();
+                }
+                else
+                {
+                    Debug.WriteLine("Errors occurred during search requests.");
+                    displayError(ex.ErrorCode);
+                }
             }
             finally
             {

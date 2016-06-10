@@ -75,6 +75,7 @@ namespace DataHandlingLayer.Exceptions
         public const int GroupMissingPassword = 4009;
         public const int GroupParticipantNotFound = 4010;
         public const int GroupAdminNotAllowedToExit = 4011;
+        public const int GroupAdminRightsTransferHasFailed = 4012;
 
         public const int ServerDatabaseFailure = 5000;
 

@@ -514,8 +514,8 @@ namespace DataHandlingLayer.Database
                                     Group_Id            INTEGER NOT NULL,
                                     BallotAdmin_User_Id INTEGER,
                                     PRIMARY KEY(Id),
-                                    FOREIGN KEY(Group_Id) REFERENCES ""Group""(Id),
-                                    FOREIGN KEY(BallotAdmin_User_Id) REFERENCES User(Id)
+                                    FOREIGN KEY(Group_Id) REFERENCES ""Group""(Id) ON DELETE CASCADE,
+                                    FOREIGN KEY(BallotAdmin_User_Id) REFERENCES User(Id) ON DELETE CASCADE
                             );";
             using (var statement = conn.Prepare(sql))
             {
@@ -534,7 +534,7 @@ namespace DataHandlingLayer.Database
                                         Text        TEXT NOT NULL,
                                         Ballot_Id   INTEGER NOT NULL,
                                         PRIMARY KEY(Id),
-                                        FOREIGN KEY(Ballot_Id) REFERENCES Ballot(Id)
+                                        FOREIGN KEY(Ballot_Id) REFERENCES Ballot(Id) ON DELETE CASCADE
                             );";
             using (var statement = conn.Prepare(sql))
             {
@@ -552,8 +552,8 @@ namespace DataHandlingLayer.Database
                             UserOption  (Option_Id  INTEGER NOT NULL,
                                         User_Id     INTEGER NOT NULL,
                                         PRIMARY KEY(Option_Id, User_Id),
-                                        FOREIGN KEY(Option_Id) REFERENCES ""Option""(Id),
-                                        FOREIGN KEY(User_Id) REFERENCES User(Id)
+                                        FOREIGN KEY(Option_Id) REFERENCES ""Option""(Id) ON DELETE CASCADE,
+                                        FOREIGN KEY(User_Id) REFERENCES User(Id) ON DELETE CASCADE
                             );";
             using (var statement = conn.Prepare(sql))
             {
@@ -617,8 +617,8 @@ namespace DataHandlingLayer.Database
                                             Group_Id                    INTEGER NOT NULL,
                                             ConversationAdmin_User_Id   INTEGER NOT NULL,
                                             PRIMARY KEY(Id),
-                                            FOREIGN KEY(Group_Id) REFERENCES ""Group""(Id),
-                                            FOREIGN KEY(ConversationAdmin_User_Id) REFERENCES User(Id)
+                                            FOREIGN KEY(Group_Id) REFERENCES ""Group""(Id) ON DELETE CASCADE,
+                                            FOREIGN KEY(ConversationAdmin_User_Id) REFERENCES User(Id) ON DELETE CASCADE
                             );";
             using (var statement = conn.Prepare(sql))
             {
@@ -638,8 +638,8 @@ namespace DataHandlingLayer.Database
                                                 Author_User_Id          INTEGER NOT NULL,
                                                 Message_Id              INTEGER NOT NULL,
                                                 PRIMARY KEY(MessageNumber, Conversation_Id),
-                                                FOREIGN KEY(Conversation_Id) REFERENCES Conversation(Id),
-                                                FOREIGN KEY(Author_User_Id) REFERENCES User(Id),
+                                                FOREIGN KEY(Conversation_Id) REFERENCES Conversation(Id) ON DELETE CASCADE,
+                                                FOREIGN KEY(Author_User_Id) REFERENCES User(Id) ON DELETE CASCADE,
                                                 FOREIGN KEY(Message_Id) REFERENCES Message(Id) ON DELETE CASCADE
                             );";
             using (var statement = conn.Prepare(sql))

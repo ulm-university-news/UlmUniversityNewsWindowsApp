@@ -315,6 +315,60 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Liefert die Ids aller lokal verwalteten Gruppen zurück.
+        /// </summary>
+        /// <returns>Eine Liste von Ids.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abruf fehlschlägt.</exception>
+        public List<int> GetLocalGroupIdentifiers()
+        {
+            List<int> identifiers = new List<int>();
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT Id 
+                            FROM ""Group"";";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            int id;
+                            while (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                id = Convert.ToInt32(stmt["Id"]);
+
+                                identifiers.Add(id);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetLocalGroupIdentifiers: SQLiteException occurred. Message is: {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetLocalGroupIdentifiers: Exception occurred. Message is: {0} and Stack Trace: {1}.",
+                            ex.Message, ex.StackTrace);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+
+            return identifiers;
+        }
+
+        /// <summary>
         /// Gibt alle Datensätze von Gruppen zurück, die das IsDirty Flag gesetzt haben.
         /// Liefert nur die Gruppendaten und keine Informationen über die Teilnehmer der Gruppe.
         /// </summary>

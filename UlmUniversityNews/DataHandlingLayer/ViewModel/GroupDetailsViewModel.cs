@@ -30,9 +30,13 @@ namespace DataHandlingLayer.ViewModel
         public int SelectedPivotItemIndex
         {
             get { return selectedPivotItemIndex; }
-            set { selectedPivotItemIndex = value; }
+            set
+            {
+                selectedPivotItemIndex = value;
+                checkCommandExecution();
+            }
         }
-
+        
         private Group selectedGroup;
         /// <summary>
         /// Die gewählte Gruppe, zu der Details angezeigt werden sollen.
@@ -51,6 +55,16 @@ namespace DataHandlingLayer.ViewModel
         {
             get { return groupParticipant; }
             set { this.setProperty(ref this.groupParticipant, value); }
+        }
+
+        private bool hasLeaveOption;
+        /// <summary>
+        /// Gibt an, ob der Nutzer die Möglichkeit hat die Gruppe zu verlassen.
+        /// </summary>
+        public bool HasLeaveOption
+        {
+            get { return hasLeaveOption; }
+            set { this.setProperty(ref this.hasLeaveOption, value); }
         }
 
         private string enteredPassword;
@@ -74,6 +88,16 @@ namespace DataHandlingLayer.ViewModel
             get { return joinGroupCommand; }
             set { joinGroupCommand = value; }
         }
+
+        private AsyncRelayCommand leaveGroupCommand;
+        /// <summary>
+        /// Befehl, der genutzt werden kann, um aus einer Gruppe auszutreten.
+        /// </summary>
+        public AsyncRelayCommand LeaveGroupCommand
+        {
+            get { return leaveGroupCommand; }
+            set { leaveGroupCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -88,11 +112,15 @@ namespace DataHandlingLayer.ViewModel
             groupController = new GroupController(this);
 
             IsGroupParticipant = false;
+            HasLeaveOption = false;
 
             // Erzeuge Befehle.
             JoinGroupCommand = new AsyncRelayCommand(
                 param => executeJoinGroupCommandAsync(),
                 param => canJoinGroup());
+            LeaveGroupCommand = new AsyncRelayCommand(
+                param => executeLeaveGroupCommandAsync(),
+                param => canLeaveGroup());
         }
 
         /// <summary>
@@ -173,6 +201,15 @@ namespace DataHandlingLayer.ViewModel
         private void checkCommandExecution()
         {
             JoinGroupCommand.OnCanExecuteChanged();
+            LeaveGroupCommand.OnCanExecuteChanged();
+            if (canLeaveGroup())
+            {
+                HasLeaveOption = true;
+            }
+            else
+            {
+                HasLeaveOption = false;
+            }
         }
 
         /// <summary>
@@ -223,6 +260,52 @@ namespace DataHandlingLayer.ViewModel
             catch (ClientException ex)
             {
                 Debug.WriteLine("Joining group has failed. Message is: {0}.", ex.Message);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zum Verlassen der Gruppe zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canLeaveGroup()
+        {
+            // Steht nur im Gruppendetails PivotItem zur Verfügung (Index 2).
+            if (SelectedGroup != null && 
+                IsGroupParticipant)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl zum Verlassen der Gruppe aus.
+        /// </summary>
+        private async Task executeLeaveGroupCommandAsync()
+        {
+            if (SelectedGroup == null)
+                return;
+
+            try
+            {
+                displayIndeterminateProgressIndicator("GroupDetailsLeaveGroupStatus");
+
+                await groupController.LeaveGroupAsync(SelectedGroup.Id);
+
+                if (_navService != null && _navService.CanGoBack())
+                {
+                    _navService.GoBack();
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("executeLeaveGroupCommandAsync: Leaving group failed.");
                 displayError(ex.ErrorCode);
             }
             finally
