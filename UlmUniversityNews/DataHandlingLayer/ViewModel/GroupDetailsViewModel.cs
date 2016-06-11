@@ -87,6 +87,16 @@ namespace DataHandlingLayer.ViewModel
             get { return conversationCollection; }
             set { this.setProperty(ref this.conversationCollection, value); }
         }
+
+        private ObservableCollection<Ballot> ballotCollection;
+        /// <summary>
+        /// Eine Menge von Ballot Objekten, die dieser Gruppe zugeordnet sind.
+        /// </summary>
+        public ObservableCollection<Ballot> BallotCollection
+        {
+            get { return ballotCollection; }
+            set { this.setProperty(ref this.ballotCollection, value); }
+        }
         #endregion Properties
 
         #region Commands

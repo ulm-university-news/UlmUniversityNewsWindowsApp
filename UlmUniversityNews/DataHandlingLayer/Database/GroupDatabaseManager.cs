@@ -954,5 +954,947 @@ namespace DataHandlingLayer.Database
                 }
             }
         }
+
+        // ******************************************** Konversationen ********************************************************************
+
+        /// <summary>
+        /// Speichert eine Konversation in den lokalen Datensätzen ab. Die Konversation
+        /// wird implizit verknüpft mit der zugehörigen Gruppe und dem Administrator. Es ist
+        /// deshalb Vorraussetzung für diese Methode, dass die Gruppe und der Administrator, d.h. 
+        /// der Teilnehmer der Gruppe mit den Admin-Rechten, bereits in den lokalen Datensätzen vorhanden sind.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der diese Konversation gehört.</param>
+        /// <param name="conversation">Das Objekt vom Typ Conversation mit den Daten der Konversation.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Speicherung fehlschlägt.</exception>
+        public void StoreConversation(int groupId, Conversation conversation)
+        {
+            if (conversation == null)
+            {
+                Debug.WriteLine("StoreConversation: No valid conversation passed to the method.");
+                return;
+            }
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string insertQuery = @"INSERT INTO Conversation (Id, Title, Closed, Group_Id, ConversationAdmin_User_Id) 
+                            VALUES (?, ?, ?, ?, ?);";
+
+                        using (var insertStmt = conn.Prepare(insertQuery))
+                        {
+                            insertStmt.Bind(1, conversation.Id);
+                            insertStmt.Bind(2, conversation.Title);
+
+                            if (conversation.IsClosed.HasValue)
+                                insertStmt.Bind(3, (conversation.IsClosed == true) ? 1 : 0);
+                            else
+                                insertStmt.Bind(3, 0);  // Setzte defaultmäßig auf closed = false.
+
+                            insertStmt.Bind(4, groupId);
+                            insertStmt.Bind(5, conversation.AdminId);
+
+                            if (insertStmt.Step() != SQLiteResult.DONE)
+                                Debug.WriteLine("StoreConversation: Failed to insert conversation with id {0}.", conversation.Id);
+                            else
+                                Debug.WriteLine("StoreConversation: Successfully inserted conversation with id {1}.", conversation.Id);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("StoreConversation: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("StoreConversation: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("StoreConversation: Mutex timeout.");
+                throw new DatabaseException("Timeout: Failed to get access to DB.");
+            }
+        }
+
+        /// <summary>
+        /// Aktualisiert die Konversation, zu welcher der übergebenen Datensatz gehört.
+        /// Ersetzt die alten Daten durch die im Objekt übergebenen Daten. Bei Änderungen
+        /// des Gruppenadministrators muss darauf geachtet werden, dass der Teilnehmer der Gruppe
+        /// bereits in den lokalen Datensätzen vorhanden ist.
+        /// </summary>
+        /// <param name="newConversation">Die neuen Daten der Konversation in Form eines Conversation Objekts.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Aktualisierung fehlschlägt.</exception>
+        public void UpdateConversation(Conversation newConversation)
+        {
+            if (newConversation == null)
+            {
+                Debug.WriteLine("UpdateConversation: No valid conversation object passed to the method.");
+                return;
+            }
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string updateQuery = @"UPDATE Conversation 
+                            SET Title=?, Closed=?, ConversationAdmin_User_Id=? 
+                            WHERE Id=?;";
+
+                        using (var updateStmt = conn.Prepare(updateQuery))
+                        {
+                            updateStmt.Bind(1, newConversation.Title);
+
+                            // Aktualisiere Closed nur, wenn der Wert gesetzt wurde.
+                            if (newConversation.IsClosed.HasValue)
+                                updateStmt.Bind(2, (newConversation.IsClosed == true) ? 1 : 0);
+
+                            updateStmt.Bind(3, newConversation.AdminId);
+                            updateStmt.Bind(4, newConversation.Id);
+
+                            if (updateStmt.Step() != SQLiteResult.DONE)
+                                Debug.WriteLine("UpdateConversation: Failed to update the conversation with id {0}.", newConversation.Id);
+                            else
+                                Debug.WriteLine("UpdateConversation: Successfully updated the conversation with id {0}.", newConversation.Id);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("UpdateConversation: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("UpdateConversation: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("UpdateConversation: Mutex timeout.");
+                throw new DatabaseException("UpdateConversation: Timeout: Failed to get access to DB.");
+            }
+        }
+
+        /// <summary>
+        /// Ruft die Konversation mit der angegebenen Id aus den lokalen Datensätzen ab. Die Konversation
+        /// wird mit der Information über die Anzahl ungelesener Nachrichten zurückgeliefert.
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation, die abgerufen werden soll.</param>
+        /// <param name="includingConvMessages">Gibt an, ob die zu dieser Konversation gehörenden Nachrichten
+        ///     ebenfalls abgerufen und in dem Ergebnisobjekt gespeichert werden sollen.</param>
+        /// <returns>Ein Objekt der Klasse Conversation mit den abgerufenen Daten.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abruf fehlschlägt.</exception>
+        public Conversation GetConversation(int conversationId, bool includingConvMessages)
+        {
+            Conversation conversation = null;
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT * 
+                            FROM Conversation 
+                            WHERE Id=?;";
+
+                        string determineUnreadMsgQuery = @"SELECT COUNT(*) AS amount 
+                            FROM ConversationMessage AS cm JOIN Message AS m ON cm.Message_Id=m.Id 
+                            WHERE cm.Conversation_Id=? AND m.Read=?;";
+
+                        string messagesQuery = @"SELECT * 
+                            FROM ConversationMessage AS cm JOIN Message AS m ON cm.Message_Id=m.Id 
+                            WHERE cm.Conversation_Id=?;";
+
+                        using (var determineUnreadMsgStmt = conn.Prepare(determineUnreadMsgQuery))
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, conversationId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                string title = stmt["Title"] as string;
+                                bool closed = false;
+                                if (stmt["Closed"] != null && (long)stmt["Closed"] == 1)
+                                    closed = true;
+                                int adminId = Convert.ToInt32(stmt["ConversationAdmin_User_Id"]);
+
+                                conversation = new Conversation()
+                                {
+                                    Id = conversationId,
+                                    Title = title,
+                                    IsClosed = closed,
+                                    AdminId = adminId
+                                };
+
+                                // Bestimme Anzahl ungelesener Nachrichten.
+                                determineUnreadMsgStmt.Bind(1, conversationId);
+                                determineUnreadMsgStmt.Bind(2, 0);      // read = false
+
+                                if (determineUnreadMsgStmt.Step() == SQLiteResult.ROW)
+                                {
+                                    int amountOfUnreadMsg = Convert.ToInt32(determineUnreadMsgStmt["amount"]);
+                                    conversation.AmountOfUnreadMessages = amountOfUnreadMsg;
+                                }
+
+                                if (includingConvMessages)
+                                {
+                                    List<ConversationMessage> convMsg = new List<ConversationMessage>();
+
+                                    using (var msgStmt = conn.Prepare(messagesQuery))
+                                    {
+                                        msgStmt.Bind(1, conversationId);
+
+                                        int msgNr, authorId, messageId;
+                                        string txt;
+                                        DateTimeOffset creationDate;
+                                        Priority msgPriority;
+                                        bool read;
+
+                                        while (msgStmt.Step() == SQLiteResult.ROW)
+                                        {
+                                            messageId = Convert.ToInt32(msgStmt["Id"]);
+                                            txt = msgStmt["Text"] as string;
+                                            creationDate = DatabaseManager.DateTimeFromSQLite(msgStmt["CreationDate"] as string);
+                                            msgPriority = (Priority)Enum.ToObject(typeof(Priority), msgStmt["Priority"]);
+                                            read = ((long)msgStmt["Read"] == 1) ? true : false;
+                                            msgNr = Convert.ToInt32(msgStmt["MessageNumber"]);
+                                            authorId = Convert.ToInt32(msgStmt["Author_User_Id"]);
+
+                                            ConversationMessage tmp = new ConversationMessage()
+                                            {
+                                                Id = messageId,
+                                                Text = txt,
+                                                CreationDate = creationDate,
+                                                ConversationId = conversationId,
+                                                MessageNumber = msgNr,
+                                                AuthorId = authorId,
+                                                MessagePriority = msgPriority,
+                                                Read = read
+                                            };
+
+                                            convMsg.Add(tmp);
+                                        }
+
+                                        // Füge dem Conversation Objekt hinzu.
+                                        conversation.ConversationMessages = convMsg;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetConversation: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetConversation: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("GetConversation: Mutex timeout.");
+                throw new DatabaseException("GetConversation: Timeout: Failed to get access to DB.");
+            }
+
+            return conversation;
+        }
+
+        /// <summary>
+        /// Fragt die Konversationen ab, die zu der Gruppe mit der angegebenen Id gespeichert sind.
+        /// Die Konversationen werden inklusive der Information über die Anzahl ungelesener Nachrichten
+        /// geladen.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Konversationen abgerufen werden sollen.</param>
+        /// <returns>Eine Liste mit Instanzen von Conversation. Die Liste kann auch leer sein.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn der Abruf fehlschlägt.</exception>
+        public List<Conversation> GetConversations(int groupId)
+        {
+            List<Conversation> conversations = new List<Conversation>();
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string getConversationsQuery = @"SELECT * 
+                            FROM Conversation 
+                            WHERE Group_Id=?;";
+
+                        string determineUnreadMsgQuery = @"SELECT COUNT(*) AS amount 
+                            FROM ConversationMessage AS cm JOIN Message AS m ON cm.Message_Id=m.Id 
+                            WHERE cm.Conversation_Id=? AND m.Read=?;";
+
+                        using (var getConvStmt = conn.Prepare(getConversationsQuery))
+                        using (var determineUnreadMsgStmt = conn.Prepare(determineUnreadMsgQuery))
+                        {
+                            // Frage Konversationen ab.
+                            getConvStmt.Bind(1, groupId);
+
+                            int convId, adminId;
+                            string title;
+                            bool closed;
+
+                            while (getConvStmt.Step() == SQLiteResult.ROW)
+                            {
+                                convId = Convert.ToInt32(getConvStmt["Id"]);
+                                title = getConvStmt["Title"] as string;
+                                adminId = Convert.ToInt32(getConvStmt["ConversationAdmin_User_Id"]);
+
+                                closed = false;
+                                if (getConvStmt["Closed"] != null && (long)getConvStmt["Closed"] == 1)
+                                    closed = true;
+
+                                Conversation tmp = new Conversation()
+                                {
+                                    Id = convId,
+                                    Title = title,
+                                    AdminId = adminId,
+                                    IsClosed = closed
+                                };
+
+                                // Bestimme Anzahl ungelesener Nachrichten für diese Konversation.
+                                determineUnreadMsgStmt.Bind(1, convId);
+                                determineUnreadMsgStmt.Bind(2, 0);  // read = false
+
+                                if (determineUnreadMsgStmt.Step() == SQLiteResult.ROW)
+                                {
+                                    int amoundOfUnreadMsg = Convert.ToInt32(determineUnreadMsgStmt["amount"]);
+
+                                    // Setzte Property in Conversation.
+                                    tmp.AmountOfUnreadMessages = amoundOfUnreadMsg;
+                                }
+
+                                // Setze stmt für nächsten Durchgang zurück.
+                                determineUnreadMsgStmt.Reset();
+
+                                // Füge Konversation der Liste hinzu.
+                                conversations.Add(tmp);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetConversations: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetConversations: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("GetConversations: Mutex timeout.");
+                throw new DatabaseException("GetConversations: Timeout: Failed to get access to DB.");
+            }
+
+            return conversations;
+        }
+
+        /// <summary>
+        /// Ruft alle lokal gespeicherten Konversationen ab. Die Konversationen werden
+        /// ohne die Informationen bezüglich ungelesener Nachrichten geladen.
+        /// </summary>
+        /// <returns>Eine Liste von Conversation Objekten. Die Liste kann auch leer sein.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abruf fehlschlägt.</exception>
+        public List<Conversation> GetAllConversations()
+        {
+            List<Conversation> conversations = new List<Conversation>();
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT * 
+                            FROM Conversation;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            int conversationId = Convert.ToInt32(stmt["Id"]);
+                            string title = stmt["Title"] as string;
+                            bool closed = false;
+                            if (stmt["Closed"] != null && (long)stmt["Closed"] == 1)
+                                closed = true;
+                            int adminId = Convert.ToInt32(stmt["ConversationAdmin_User_Id"]);
+
+                            Conversation conversation = new Conversation()
+                            {
+                                Id = conversationId,
+                                Title = title,
+                                IsClosed = closed,
+                                AdminId = adminId
+                            };
+
+                            conversations.Add(conversation);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetAllConversations: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetAllConversations: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("GetAllConversations: Mutex timeout.");
+                throw new DatabaseException("GetAllConversations: Timeout: Failed to get access to DB.");
+            }
+
+            return conversations;
+        }
+
+        /// <summary>
+        /// Löscht die Konversation mit der angegebenen Id aus den lokalen Datensätzen.
+        /// </summary>
+        /// <param name="conversationId">Die Id der zu löschenden Konversation.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Löschen fehlschlägt.</exception>
+        public void DeleteConversation(int conversationId)
+        {
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"DELETE 
+                            FROM Conversation 
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, conversationId);
+
+                            if (stmt.Step() != SQLiteResult.DONE)
+                                Debug.WriteLine("DeleteConversation: Failed to delete conversation with id {0}.", conversationId);
+                            else
+                                Debug.WriteLine("DeleteConversation: Successfully deleted conversation with id {0}.", conversationId);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("DeleteConversation: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("DeleteConversation: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("DeleteConversation: Mutex timeout.");
+                throw new DatabaseException("DeleteConversation: Timeout: Failed to get access to DB.");
+            }
+        }
+
+        // ************************************ Nachrichten in Konversationen *****************************************************************************
+
+        /// <summary>
+        /// Speichert die übergebene Konversationsnachricht in den lokalen Datensätzen ab.
+        /// </summary>
+        /// <param name="conversationMsg">Das ConversationMessage Objekt mit den Daten der Nachricht.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Speicherung fehlschlägt.</exception>
+        public void StoreConversationMessage(ConversationMessage conversationMsg)
+        {
+            if (conversationMsg == null)
+            {
+                Debug.WriteLine("StoreConversationMessage: No valid object passed to method.");
+                return;
+            }
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        // Starte eine Transaktion.
+                        using (var statement = conn.Prepare("BEGIN TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+
+                        string insertToMessageTableQuery = @"INSERT INTO Message (Id, Text, CreationDate, Priority, Read) 
+                            VALUES (?, ?, ?, ?, ?);";
+
+                        string insertToConvMsgTableQuery = @"INSERT INTO ConversationMessage (MessageNumber, Conversation_Id, 
+                            Author_User_Id, Message_Id) 
+                            VALUES (?, ?, ?, ?);";
+
+                        using (var insertToMsgStmt = conn.Prepare(insertToMessageTableQuery))
+                        using (var insertToConvMsgStmt = conn.Prepare(insertToConvMsgTableQuery))
+                        {
+                            // Füge zunächst in Message Tabelle ein.
+                            insertToMsgStmt.Bind(1, conversationMsg.Id);
+                            insertToMsgStmt.Bind(2, conversationMsg.Text);
+                            insertToMsgStmt.Bind(3, conversationMsg.CreationDate);
+                            insertToMsgStmt.Bind(4, conversationMsg.MessagePriority);
+                            insertToMsgStmt.Bind(5, 0); // Read auf false zu Beginn.
+
+                            if (insertToMsgStmt.Step() != SQLiteResult.DONE)
+                                Debug.WriteLine("StoreConversationMessage: Failed to store message part of conversation message with id {0}.", conversationMsg.Id);
+                            else
+                                Debug.WriteLine("StoreConversationMessage: Successfully stored message part of conversation msg with id {0}.", conversationMsg.Id);
+
+                            // Füge in Conversation Message Tabelle ein.
+                            insertToConvMsgStmt.Bind(1, conversationMsg.MessageNumber);
+                            insertToConvMsgStmt.Bind(2, conversationMsg.ConversationId);
+                            insertToConvMsgStmt.Bind(3, conversationMsg.AuthorId);
+                            insertToConvMsgStmt.Bind(4, conversationMsg.Id);
+
+                            if (insertToConvMsgStmt.Step() != SQLiteResult.DONE)
+                                Debug.WriteLine("StoreConversationMessage: Failed to store conv message part of conversation msg with id {0}.", conversationMsg.Id);
+                            else
+                                Debug.WriteLine("StoreConversationMessage: Successfully stored conv message part of conversation msg with id {0}.", conversationMsg.Id);
+                        }
+
+                        // Commit der Transaktion.
+                        using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("StoreConversationMessage: SQLiteException has occurred. Exception message is: {0}.",
+                            sqlEx.Message);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("StoreConversationMessage: Exception occurred. Msg is {0}.", ex.Message);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("StoreConversationMessage: Mutex timeout.");
+                throw new DatabaseException("StoreConversationMessage: Timeout: Failed to get access to DB.");
+            }
+        }
+
+        /// <summary>
+        /// Speichere eine Menge von Konversationsnachrichten via Bulk Insert in die lokale Datenbank ein.
+        /// </summary>
+        /// <param name="conversationMessages">Die Liste von Objekten der Klasse ConversationMessage.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Speicherung fehlschlägt.</exception>
+        public void BulkInsertConversationMessages(List<ConversationMessage> conversationMessages)
+        {
+            if (conversationMessages == null || conversationMessages.Count == 0)
+            {
+                Debug.WriteLine("BulkInsertConversationMessages: No data to store.");
+                return;
+            }
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string insertToMessageTableQuery = @"INSERT INTO Message (Id, Text, CreationDate, Priority, Read) 
+                            VALUES (?, ?, ?, ?, ?);";
+
+                        string insertToConvMsgTableQuery = @"INSERT INTO ConversationMessage (MessageNumber, Conversation_Id, 
+                            Author_User_Id, Message_Id) 
+                            VALUES (?, ?, ?, ?);";
+
+                        // Starte eine Transaktion.
+                        using (var statement = conn.Prepare("BEGIN TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+
+                        using (var insertToMsgStmt = conn.Prepare(insertToMessageTableQuery))
+                        using (var insertToConvMsgStmt = conn.Prepare(insertToConvMsgTableQuery))
+                        {
+                            foreach (ConversationMessage conversationMsg in conversationMessages)
+                            {
+                                // Füge zunächst in Message Tabelle ein.
+                                insertToMsgStmt.Bind(1, conversationMsg.Id);
+                                insertToMsgStmt.Bind(2, conversationMsg.Text);
+                                insertToMsgStmt.Bind(3, conversationMsg.CreationDate);
+                                insertToMsgStmt.Bind(4, conversationMsg.MessagePriority);
+                                insertToMsgStmt.Bind(5, 0); // Read auf false zu Beginn.
+
+                                insertToMsgStmt.Step();
+
+                                // Füge in Conversation Message Tabelle ein.
+                                insertToConvMsgStmt.Bind(1, conversationMsg.MessageNumber);
+                                insertToConvMsgStmt.Bind(2, conversationMsg.ConversationId);
+                                insertToConvMsgStmt.Bind(3, conversationMsg.AuthorId);
+                                insertToConvMsgStmt.Bind(4, conversationMsg.Id);
+
+                                insertToConvMsgStmt.Step();
+
+                                // Setze statements zurück für nächste Iteration.
+                                insertToMsgStmt.Reset();
+                                insertToConvMsgStmt.Reset();
+                            }
+                        }
+
+                        // Commit der Transaktion.
+                        using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                        {
+                            statement.Step();
+                            Debug.WriteLine("BulkInsertConversationMessages: Successfully inserted {0} conversation messages " + 
+                                "via bulk insert.", conversationMessages.Count);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("BulkInsertConversationMessages: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("BulkInsertConversationMessages: Exception occurred. Msg is {0}.", ex.Message);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("BulkInsertConversationMessages: Mutex timeout.");
+                throw new DatabaseException("BulkInsertConversationMessages: Timeout: Failed to get access to DB.");
+            }
+        }
+
+        /// <summary>
+        /// Fragt alle Konversationsnachrichten ab, die der Konversation mit der angegebenen Id zugeordnet sind.
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation, zu der die Nachrichten abgefragt werden sollen.</param>
+        /// <returns>Eine Liste von Objekten des Typs ConversationMessage.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abruf fehlschlägt.</exception>
+        public List<ConversationMessage> GetConversationMessages(int conversationId)
+        {
+            List<ConversationMessage> conversationMessages = new List<ConversationMessage>();
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT * 
+                            FROM ConversationMessage AS cm JOIN Message AS m ON cm.Message_Id=m.Id 
+                            WHERE cm.Conversation_Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            int msgId, authorId, msgNumber;
+                            string text;
+                            DateTimeOffset creationDate;
+                            Priority msgPriority;
+                            bool read;
+
+                            stmt.Bind(1, conversationId);
+
+                            while (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                msgId = Convert.ToInt32(stmt["Id"]);
+                                text = stmt["Text"] as string;
+                                creationDate = DatabaseManager.DateTimeFromSQLite(stmt["CreationDate"] as string);
+                                msgPriority = (Priority)Enum.ToObject(typeof(Priority), stmt["Priority"]);
+
+                                read = false;
+                                if (stmt["Read"] != null && (long)stmt["Read"] == 1)
+                                    read = true;
+
+                                msgNumber = Convert.ToInt32(stmt["MessageNumber"]);
+                                authorId = Convert.ToInt32(stmt["Author_User_Id"]);
+
+                                ConversationMessage tmp = new ConversationMessage()
+                                {
+                                    Id = msgId,
+                                    Text = text,
+                                    CreationDate = creationDate,
+                                    MessagePriority = msgPriority,
+                                    AuthorId = authorId,
+                                    ConversationId = conversationId,
+                                    MessageNumber = msgNumber,
+                                    Read = read
+                                };
+
+                                // Füge ConversationMessage der Liste hinzu.
+                                conversationMessages.Add(tmp);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetConversationMessages: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetConversationMessages: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("GetConversationMessages: Mutex timeout.");
+                throw new DatabaseException("GetConversationMessages: Timeout: Failed to get access to DB.");
+            }
+
+            return conversationMessages;
+        }
+
+        /// <summary>
+        /// Ruft zu den Konversationen, die der Gruppe mit der angegebenen Id zugeordnet sind, die Anzahl
+        /// ungelesener Nachrichten ab und speichert sie in einem Verzeichnis. Das Verzeichnis bildet ab
+        /// von der Id der Konversation auf die Anzahl der ungelesenen Nachrichten für exakt diese Konversation. 
+        /// Das Verzeichnis enthält nur Einträge bei denen die Anzahl ungelesener Nachrichten größer 0 ist. 
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Konversationen gehören sollen.</param>
+        /// <returns>Ein Verzeichnis, indem für jede Konversation der angegebenen Gruppe mit mehr als einer
+        /// ungelesenen Nachricht die Anzahl der ungelesenen Nachrichten gespeichert werden. Die Anzahl kann über die
+        /// Konversationen-Id als Schlüssel extrahiert werden.</returns>
+        public Dictionary<int, int> DetermineAmountOfUnreadConvMsgForGroup(int groupId)
+        {
+            Dictionary<int, int> amountOfUnreadMsgMap = new Dictionary<int, int>();
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT cm.Conversation_Id, COUNT(*) AS amount 
+                            FROM Conversation AS c JOIN ConversationMessage AS cm ON cm.Conversation_Id=c.Id
+                                JOIN Message AS m ON cm.Message_Id=m.Id
+                            WHERE c.Group_Id=? AND m.Read=? 
+                            GROUP BY cm.Conversation_Id;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, groupId);
+                            stmt.Bind(2, 0);    // read = false;
+
+                            while (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                int conversationId = Convert.ToInt32(stmt["Conversation_Id"]);
+                                int amountOfUnreadMsg = Convert.ToInt32(stmt["amount"]);
+
+                                // Speichere das Tupel im Verzeichnis.
+                                amountOfUnreadMsgMap.Add(conversationId, amountOfUnreadMsg);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("DetermineAmountOfUnreadConvMsgForGroup: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("DetermineAmountOfUnreadConvMsgForGroup: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("DetermineAmountOfUnreadConvMsgForGroup: Mutex timeout.");
+                throw new DatabaseException("DetermineAmountOfUnreadConvMsgForGroup: Timeout: Failed to get access to DB.");
+            }
+
+            return amountOfUnreadMsgMap;
+        }
+
+        /// <summary>
+        /// Löscht alle Konversationsnachrichten der Konversation, die durch die
+        /// angegebene Id identifiziert ist.
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation, zu der alle Nachrichten gelöscht werden sollen.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn das Löschen fehlschlägt.</exception>
+        public void DeleteConversationMessages(int conversationId)
+        {
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        // Einträge in ConversationMessage Tabelle werden durch
+                        // kaskadierendes Löschen automatisch entfernt.
+                        string query = @"DELETE FROM Message 
+                            WHERE Id IN (
+                                SELECT Message_Id AS Id
+                                FROM ConversationMessage 
+                                WHERE Conversation_Id=?
+                            );";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, conversationId);
+
+                            if (stmt.Step() != SQLiteResult.DONE)
+                                Debug.WriteLine("DeleteConversationMessages: Failed to delete conversation messages " +
+                                    "for conversation with id {0}.", conversationId);
+                            else
+                                Debug.WriteLine("DeleteConversationMessages: Successfully deleted conversation messages " + 
+                                    "for conversation with id {0}.", conversationId);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("DeleteConversationMessages: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("DeleteConversationMessages: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("DeleteConversationMessages: Mutex timeout.");
+                throw new DatabaseException("DeleteConversationMessages: Timeout: Failed to get access to DB.");
+            }
+        }
     }
 }

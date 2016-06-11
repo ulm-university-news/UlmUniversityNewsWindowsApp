@@ -70,6 +70,17 @@ namespace DataHandlingLayer.DataModel
             get { return conversationMessages; }
             set { conversationMessages = value; }
         }
+
+        private int amountOfUnreadMessages;
+        /// <summary>
+        /// Gibt an, wie viele ungelesene Nachrichten aktuell in der Konversation vorliegen.
+        /// </summary>
+        [JsonIgnore]
+        public int AmountOfUnreadMessages
+        {
+            get { return amountOfUnreadMessages; }
+            set { amountOfUnreadMessages = value; }
+        }
         #endregion Properties
 
         /// <summary>
