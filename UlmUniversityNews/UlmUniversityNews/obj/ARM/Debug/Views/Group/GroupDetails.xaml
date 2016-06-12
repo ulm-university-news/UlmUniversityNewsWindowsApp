@@ -24,6 +24,107 @@
         <valueconverter:ParticipantsListToStringConverter x:Key="ParticipantsListToStringConverter" />
         <valueconverter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <valueconverter:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <valueconverter:ListCountToVisibilityConverter x:Key="ListCountToVisibilityConverter" />
+        <valueconverter:ZeroIntegerToVisibilityConverter x:Key="ZeroIntegerToVisibilityConverter" />
+        <valueconverter:ConversationToIconPathConverter x:Key="ConversationToIconPathConverter" />
+
+        <!-- Layout eines Eintrages einer Konversations-Ressource in der Detailansicht einer Gruppe.-->
+        <DataTemplate x:Key="ConversationListItemStyle">
+            <!-- Margin ist angepasst an den des PivotItem (der PivotItem Margin wird implizit angewandt,
+                da sich die Auflistung innerhalb davon befindet.).-->
+            <Grid 
+                Background="{StaticResource UniUlmAccentColorListItemBackground}"
+                Margin="0,0,0,5">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <!-- Spalte für Icon-->
+                    <ColumnDefinition Width="*" />
+                    <!-- Spalte für restliche Information-->
+                </Grid.ColumnDefinitions>
+
+                <!-- Icon -->
+                <Image Source="{Binding Converter={StaticResource ConversationToIconPathConverter}}" 
+                       Grid.Column="0"
+                       Margin="5, 5, 0, 5"
+                       Height="70px"
+                       Width="70px"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+                <!-- TODO - remove hard coded sizes of icons-->
+
+                <!-- andere Informationen -->
+                <Grid Grid.Column="1" Margin="10,0,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <!-- Zeile für Name der Konversation und Icon für Anzahl ungelesener Nachrichten. -->
+                        <RowDefinition Height="*" />
+                        <!-- Zeile für Konversationsadmin -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Zeile 1 -->
+                    <!-- Anzeige für Name und Icon für ungelsesen Nachrichten -->
+                    <Grid Grid.Row="0" VerticalAlignment="Top" Margin="0, 7, 0, 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Name -->
+                        <TextBlock Grid.Column="0"
+                               VerticalAlignment="Top"
+                               HorizontalAlignment="Left"
+                               TextWrapping="NoWrap"
+                               TextTrimming="CharacterEllipsis"
+                               x:Name="ConversationTitle"
+                               Style="{StaticResource ListTextStyle}"
+                               FontWeight="Bold"
+                               Text="{Binding Title}"/>
+
+                        <!-- Anzahl ungelesener Nachrichten -->
+                        <Grid
+                            Grid.Column="1"
+                            x:Name="UnreadConversationMessagesIcon"
+                            Visibility="{Binding AmountOfUnreadMessages, FallbackValue=Collapsed, TargetNullValue=Collapsed, Converter={StaticResource ZeroIntegerToVisibilityConverter}}">
+                            <Ellipse 
+                                Fill="Gray" 
+                                Height="33px"
+                                Width="33px"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+                            <!-- Hintergrund der Anzeige der ungelesenen Nachrichten-->
+                            <TextBlock 
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                Foreground="White"
+                                FontSize="15"
+                                TextWrapping="NoWrap"
+                                TextAlignment="Center"
+                                Text="{Binding AmountOfUnreadMessages}"/>
+                        </Grid>
+                    </Grid>
+
+                    <!-- Zeile 2 -->
+                    <!-- Anzeige von Konversationsadmin -->
+                    <Grid Grid.Row="1"
+                          x:Name="ConversationAdmin"
+                          VerticalAlignment="Bottom"
+                          Margin="0, 0, 0, 7" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Typ -->
+                        <TextBlock Grid.Column="0" 
+                                   x:Name="AdminField" 
+                                   HorizontalAlignment="Left"
+                                   Style="{StaticResource ListTextStyle}"
+                                   Text="{Binding AdminName}"/>
+                    </Grid>
+
+                </Grid>
+            </Grid>
+        </DataTemplate>
     </Page.Resources>
 
     <!-- StatusBar -->
@@ -163,7 +264,47 @@
                             <common:HideablePivotItemBehavior x:Name="HidablePivotItemBehaviorElementConversations" Visible="{Binding IsGroupParticipant, UpdateSourceTrigger=PropertyChanged}" />
                         </i:Interaction.Behaviors>
 
-                        <!--TODO-->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Text, der angezeigt wird, wenn keine Konversationen vorhanden sind. -->
+                            <TextBlock
+                                Grid.Row="0"
+                                x:Name="NoConversationsInGroupInfo"
+                                x:Uid="GroupDetailsNoConversationsInGroupInfo"
+                                Style="{StaticResource UniversityNewsUlmStandardText}" 
+                                Visibility="{Binding ConversationCollection.Count, Converter={StaticResource ListCountToVisibilityConverter}}">
+                                    In dieser Gruppe sind noch keine Konversationen vorhanden.
+                            </TextBlock>
+
+                            <!-- Definiere Liste für Konversationen. -->
+                            <!-- Beachte, IsItemClickEnabled muss explizit aktiviert werden, sonst funktioniert das Binding auf das Command über das Behaviour nicht.-->
+                            <ListView
+                                Grid.Row="1"
+                                ItemTemplate="{StaticResource ConversationListItemStyle}"
+                                ItemsSource="{Binding ConversationCollection}"
+                                IsItemClickEnabled="True"
+                                HorizontalContentAlignment="Stretch"
+                                HorizontalAlignment="Stretch">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+
+                                <!-- Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
+                                <i:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="ItemClick">
+                                        <core:InvokeCommandAction Command="{Binding ConversationSelectedCommand}"
+                                                              InputConverter="{StaticResource ItemClickedConverter}" />
+                                    </core:EventTriggerBehavior>
+                                </i:Interaction.Behaviors>
+                            </ListView>
+                        </Grid>
+
                     </PivotItem>
                     
                     <!-- Pivotitem 2 - Abstimmungen -->
@@ -179,7 +320,20 @@
                             <common:HideablePivotItemBehavior x:Name="HidablePivotItemBehaviorElementBallots" Visible="{Binding IsGroupParticipant, UpdateSourceTrigger=PropertyChanged}" />
                         </i:Interaction.Behaviors>
 
+
+
+                        <!-- Text, der angezeigt wird, wenn keine Abstimmungen vorhanden sind. -->
+                        <TextBlock
+                                Grid.Row="0"
+                                x:Name="NoBallotsInGroupInfo"
+                                x:Uid="GroupDetailsNoBallotsInGroupInfo"
+                                Style="{StaticResource UniversityNewsUlmStandardText}" 
+                                Visibility="{Binding BallotCollection.Count, Converter={StaticResource ListCountToVisibilityConverter}}">
+                                    In dieser Gruppe sind noch keine Abstimmungen vorhanden.
+                        </TextBlock>
+
                         <!--TODO-->
+
                     </PivotItem>
                     
                     <!-- Pivotitem 3 - Gruppendetails -->

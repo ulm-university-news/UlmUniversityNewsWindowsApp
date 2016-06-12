@@ -77,6 +77,11 @@ namespace DataHandlingLayer.Exceptions
         public const int GroupAdminNotAllowedToExit = 4011;
         public const int GroupAdminRightsTransferHasFailed = 4012;
 
+        public const int ConversationNotFound = 4100;
+        public const int ConversationDataIncomplete = 4102;
+        public const int ConversationInvalidTitle = 4103;
+        public const int ConversationStorageFailedDueToMissingAdmin = 4104;
+
         public const int ServerDatabaseFailure = 5000;
 
         // Allgemeingültige Fehlercodes (von HTTP).

@@ -129,6 +129,17 @@ namespace DataHandlingLayer.ViewModel
             get { return editGroupCommand; }
             set { editGroupCommand = value; }
         }
+
+        private RelayCommand conversationSelectedCommand;
+        /// <summary>
+        /// Befehl, der ausgeführt wird, sobald eine Konversation angewählt wurde.
+        /// Wechsel auf die Detailansicht der Konversation.
+        /// </summary>
+        public RelayCommand ConversationSelectedCommand
+        {
+            get { return conversationSelectedCommand; }
+            set { conversationSelectedCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -155,6 +166,8 @@ namespace DataHandlingLayer.ViewModel
             EditGroupCommand = new RelayCommand(
                 param => executeEditGroupCommand(),
                 param => canEditGroup());
+            ConversationSelectedCommand = new RelayCommand(
+                param => executeConversationSelectedCommand(param));
         }
 
         /// <summary>
@@ -225,6 +238,41 @@ namespace DataHandlingLayer.ViewModel
             }
 
             checkCommandExecution();
+        }
+
+        /// <summary>
+        /// Lade die Konversationen der Gruppe.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <returns></returns>
+        public async Task LoadConversationsAsync(int groupId)
+        {
+            try
+            {
+                // TEST: Lade die Konversationen mal direkt vom Server.
+                List<Conversation> conversations = await groupController.GetConversationsAsync(
+                    groupId,
+                    false,
+                    false);
+
+                if (ConversationCollection == null)
+                    ConversationCollection = new ObservableCollection<Conversation>();
+
+                foreach (Conversation conversation in conversations)
+                {
+                    ConversationCollection.Add(conversation);
+                    
+                    if (conversation.ConversationMessages != null)
+                    {
+                        Debug.WriteLine("Test: The conversation has {0} messages.", conversation.ConversationMessages.Count);
+                    }
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("LoadConversationsAsync: Execution failed.");
+                displayError(ex.ErrorCode);
+            }
         }
 
         #region CommandFunctionality
@@ -378,6 +426,17 @@ namespace DataHandlingLayer.ViewModel
             {
                 _navService.Navigate("AddAndEditGroup", SelectedGroup.Id);
             }
+        }
+
+        /// <summary>
+        /// Führt den Befehl ConversationSelectedCommand aus. Stößt den Wechsel
+        /// auf die Detailansicht der Konversation aus.
+        /// </summary>
+        /// <param name="param">Die gewählte Konversation.</param>
+        private void executeConversationSelectedCommand(object param)
+        {
+            Debug.WriteLine("In ConversationSelected.");
+            // TODO
         }
         #endregion CommandFunctionality
 

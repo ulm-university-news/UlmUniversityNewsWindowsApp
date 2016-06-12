@@ -188,6 +188,7 @@
     <Compile Include="Converters\ChannelToDrawerMenuBackgroundConverter.cs" />
     <Compile Include="Converters\ChannelTypeEnumToComboBoxItemIndexConverter.cs" />
     <Compile Include="Converters\ChannelTypeToStringConverter.cs" />
+    <Compile Include="Converters\ConversationToIconPathConverter.cs" />
     <Compile Include="Converters\DateTimeToPureDateStringConverter.cs" />
     <Compile Include="Converters\DateTimeToPureTimeStringConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
@@ -406,6 +407,12 @@
     <Content Include="Assets\channelIcons\en-GB\ic_sport.scale-140.png" />
     <Content Include="Assets\channelIcons\en-GB\ic_sport.scale-180.png" />
     <Content Include="Assets\channelIcons\en-GB\ic_sport.scale-240.png" />
+    <Content Include="Assets\conversationIcons\conversation.png" />
+    <Content Include="Assets\conversationIcons\conversation_admin.png" />
+    <Content Include="Assets\conversationIcons\conversation_closed.png" />
+    <Content Include="Assets\conversationIcons\conversation_closed_admin.png" />
+    <Content Include="Assets\conversationIcons\conversation_closed_admin_white.png" />
+    <Content Include="Assets\conversationIcons\conversation_closed_white.png" />
     <Content Include="Assets\Drawer\feature.settings.png" />
     <Content Include="Assets\extIcons\appbar.door.enter.png" />
     <Content Include="Assets\extIcons\appbar.door.leave.png" />

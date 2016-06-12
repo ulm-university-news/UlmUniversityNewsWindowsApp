@@ -124,6 +124,12 @@ Assets\ChannelIcons_old\V_informatik.png
 Assets\ChannelIcons_old\V_mathe.png
 Assets\ChannelIcons_old\V_medicine.png
 Assets\ChannelIcons_old\V_science.png
+Assets\conversationIcons\conversation.png
+Assets\conversationIcons\conversation_admin.png
+Assets\conversationIcons\conversation_closed.png
+Assets\conversationIcons\conversation_closed_admin.png
+Assets\conversationIcons\conversation_closed_admin_white.png
+Assets\conversationIcons\conversation_closed_white.png
 Assets\Drawer\drawer_icon.png
 Assets\Drawer\feature.settings.png
 Assets\extIcons\appbar.door.enter.png

@@ -122,6 +122,8 @@
     <RootPropertyPathName Name="SelectedGroupType" />
     <RootPropertyPathName Name="GroupName" />
     <RootPropertyPathName Name="EditableGroup" />
+    <RootPropertyPathName Name="AdminName" />
+    <RootPropertyPathName Name="AmountOfUnreadMessages" />
     <RootPropertyPathName Name="HasLeaveOption" />
     <RootPropertyPathName Name="LeaveGroupCommand" />
     <RootPropertyPathName Name="IsGroupParticipant" />
@@ -130,6 +132,9 @@
     <RootPropertyPathName Name="EnteredPassword" />
     <RootPropertyPathName Name="SelectedGroup" />
     <RootPropertyPathName Name="Participants" />
+    <RootPropertyPathName Name="BallotCollection" />
+    <RootPropertyPathName Name="ConversationCollection" />
+    <RootPropertyPathName Name="ConversationSelectedCommand" />
     <RootPropertyPathName Name="SearchGroupsCommand" />
     <RootPropertyPathName Name="Groups" />
     <RootPropertyPathName Name="GroupSelectedCommand" />
@@ -608,6 +613,7 @@
     <RootType FullName="UlmUniversityNews.Views.Group.AddAndEditGroupDialog.AddAndEditGroup" />
     <RootType FullName="UlmUniversityNews.Converters.GroupToGroupAdminStringConverter" />
     <RootType FullName="UlmUniversityNews.Converters.ParticipantsListToStringConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.ConversationToIconPathConverter" />
     <RootType FullName="Windows.UI.Xaml.Controls.ContentDialog">
       <RootProperty Name="VerticalAlignment" />
       <RootProperty Name="Title" />

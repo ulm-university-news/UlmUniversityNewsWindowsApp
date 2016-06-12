@@ -1376,4 +1376,10 @@ date: </value>
   <data name="GroupDetailsLeaveGroupWarning.Text" xml:space="preserve">
     <value>Do you really want to leave the group?</value>
   </data>
+  <data name="GroupDetailsNoBallotsInGroupInfo.Text" xml:space="preserve">
+    <value>There are no ballots in this group yet.</value>
+  </data>
+  <data name="GroupDetailsNoConversationsInGroupInfo.Text" xml:space="preserve">
+    <value>There are no conversations in this group yet.</value>
+  </data>
 </root>

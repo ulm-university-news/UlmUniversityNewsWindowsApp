@@ -156,6 +156,8 @@ namespace DataHandlingLayer.Database
                     // Füge einen Dummy-Moderator ein, um Announcements mit fehlerhaften Referenz auf einen Autor
                     // im Notfall auf diesen Moderator abbilden zu können.
                     addDummyModerator(conn);
+                    // Füge Dummy-Nutzer ein.
+                    addDummyUser(conn);
 
                     // Erstelle Settings Tabellen.
                     createOrderOptionsTable(conn);
@@ -965,6 +967,40 @@ namespace DataHandlingLayer.Database
             catch(SQLiteException sqlEx)
             {
                 Debug.WriteLine("Adding the dummy moderator has failed. Message is {0}.", sqlEx.Message);
+            }
+        }
+
+        /// <summary>
+        /// Methode, um einen Dummy-Nutzer Datensatz in die User-Tabelle
+        /// einzügen. Dieser dient dazu fehlende Autorenreferenzen bei Messages abzufangen. 
+        /// Ebenso können fehlende Admin-Nutzer notfalls auf diesen Nutzer abgebildet werden.
+        /// </summary>
+        /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
+        private static void addDummyUser(SQLiteConnection conn)
+        {
+            try
+            {
+                string checkQuery = @"SELECT * FROM User WHERE Id=?;";
+                using (var checkStmt = conn.Prepare(checkQuery))
+                {
+                    checkStmt.Bind(1, 0);  // Prüfe auf einen Eintrag mit Id=0.
+
+                    if (checkStmt.Step() != SQLiteResult.ROW)
+                    {
+                        // Füge Dummy-Nutzer ein.
+                        string sql = @"INSERT INTO User (Id, Name) 
+                            VALUES (0, 'UnknownUser')";
+                        using (var statement = conn.Prepare(sql))
+                        {
+                            statement.Step();
+                            Debug.WriteLine("Inserted the dummy user object");
+                        }
+                    }
+                }
+            }
+            catch (SQLiteException sqlEx)
+            {
+                Debug.WriteLine("Adding the dummy user has failed. Message is {0}.", sqlEx.Message);
             }
         }
     }

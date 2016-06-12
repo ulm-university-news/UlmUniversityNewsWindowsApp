@@ -674,6 +674,123 @@ namespace DataHandlingLayer.Controller
 
             return updatedGroup;
         }
+
+        /// <summary>
+        /// Fragt zunächst für die Speicherung relevante Daten vom Server ab, z.B. die aktuellen
+        /// Teilnehmer, so dass die aktuellesten Daten vorhanden sind. Speichert anschließend die 
+        /// Konversation lokal ab.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, für die die Konversation gespeichert wird.</param>
+        /// <param name="conversation">Die Daten der Konversation in Form eines Objekts des Typs Conversation.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abruf der Informationen oder Speicherung
+        ///     fehlschlägt.</exception>
+        public async Task UpdateUserDataAndStoreConversationAsync(int groupId, Conversation conversation)
+        {
+            // Frage zunächst die Teilnehmer der Gruppe ab.
+            List<User> participants = await GetParticipantsOfGroupAsync(groupId, false);
+
+            // Speichere die fehlenden Nutzer ab.
+            userController.StoreUsersLocally(participants);
+
+            // Speichere nun Konversation lokal ab.
+            bool successful = StoreConversation(groupId, conversation);
+            if (!successful)
+            {
+                Debug.WriteLine("UpdateUserDataAndStoreConversationAsync: Still failed to store conversation.");
+                Debug.WriteLine("UpdateUserDataAndStoreConversationAsync: Trying to store conversation with dummy user admin.");
+                conversation.AdminId = 0;
+                successful = StoreConversation(groupId, conversation);
+                if (!successful)
+                    throw new ClientException(ErrorCodes.ConversationStorageFailedDueToMissingAdmin, "Couldn't store conversation due "
+                        + "to missing conversation administrator.");
+            }
+            
+        }
+
+        /// <summary>
+        /// Ruft die Konversationsnachrichten der angegebenen Konversation vom Server ab. Der Abruf
+        /// kann durch die Nachrichtennummer eingeschränkt werden. Es werden nur die Nachrichten abgerufen,
+        /// die eine höhere Nachrichtennummer haben, als die die angegeben wird.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Konversation gehört.</param>
+        /// <param name="conversationId">Die Id der Konversation, zu der die Nachrichten abgerufen werden sollen.</param>
+        /// <param name="messageNr">Die Nachrichtennummer, ab der die Nachrichten abgerufen werden sollen.</param>
+        /// <param name="withCaching">Gibt an, ob Caching für den Request erlaubt sein soll.</param>
+        /// <returns>Eine Liste von ConversationMessage Objekten.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abruf fehlschlägt.</exception>
+        public async Task<List<ConversationMessage>> GetConversationMessagesAsync(int groupId, int conversationId, int messageNr, bool withCaching)
+        {
+            List<ConversationMessage> conversationMessages = null;
+
+            string serverResponse = null;
+            try
+            {
+                serverResponse = await groupAPI.SendGetConversationMessagesRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    conversationId,
+                    messageNr,
+                    withCaching);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("GetConversationMessages: Request to server failed.");
+
+                // TODO case Conversation not found, group not found.
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            // Parsen der Serverantwort.
+            if (serverResponse != null)
+            {
+                conversationMessages = jsonParser.ParseConversationMessageListFromJson(serverResponse);
+            }
+
+            return conversationMessages;
+        }
+
+        /// <summary>
+        /// Ruft die Konversationen vom Server ab, die der angegebenen Gruppe zugeordnet sind.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Konversationen abgerufen werden sollen.</param>
+        /// <param name="includeSubresources">Gibt an, ob Subressourcen zu den Konversationen (wie z.B. ConversationMessages)
+        ///     ebenfalls abgefragt werden sollen.</param>
+        /// <param name="withCaching">Gibt an, ob Caching für diesen Request erlaubt sein soll.</param>
+        /// <returns>Eine Liste von Conversation Objekten.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn der Abruf fehlschlägt,
+        ///     oder der Request vom Server abgelehnt wird.</exception>
+        public async Task<List<Conversation>> GetConversationsAsync(int groupId, bool includeSubresources, bool withCaching)
+        {
+            List<Conversation> conversations = null;
+
+            string serverResponse = null;
+            try
+            {
+                serverResponse = await groupAPI.SendGetConversationsRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    includeSubresources,
+                    withCaching
+                    );
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("GetConversationsAsync: Request to server failed.");
+
+                // TODO case Conversation not found, group not found.
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            // Parse Liste aus Server Antwort.
+            if (serverResponse != null)
+            {
+                conversations = jsonManager.ParseConversationListFromJson(serverResponse);
+            }
+
+            return conversations;
+        }
         #endregion RemoteGroupMethods
 
         #region LocalGroupMethods
@@ -971,6 +1088,61 @@ namespace DataHandlingLayer.Controller
                 Debug.WriteLine("ChangeActiveStatusOfParticipant: Changing status of participant failed.");
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Liefert alle Konversationen zurück, die der Gruppe mit der angegebenen Id zugeordnet
+        /// sind. 
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Konversationen abgefraft werden sollen.</param>
+        /// <returns>Liefert eine Liste von Conversation Objekten.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn der Abruf fehlschlägt.</exception>
+        public List<Conversation> GetConversations(int groupId)
+        {
+            List<Conversation> conversations = null;
+            try
+            {
+                conversations = groupDBManager.GetConversations(groupId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetConversations: Retrieving conversation failed.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return conversations;
+        }
+
+        /// <summary>
+        /// Speichere die Konversation zu der angegebenen Gruppe in den lokalen Datensätzen ab.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Konversation gehört.</param>
+        /// <param name="conversation">Die Daten der Konversation als Objekt vom Typ Conversation.</param>
+        /// <returns>Liefert true, wenn die Speicherung erfolgreich ist. Liefert false, wenn Speicherung
+        ///     aufgrund fehlender Datensätze (z.B. Administrator-Nutzer) fehlschlägt.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Speicherung aufgrund eines
+        ///     Datenbankfehlers fehlschlägt.</exception>
+        public bool StoreConversation(int groupId, Conversation conversation)
+        {
+            try
+            {
+                // Prüfe zunächst, ob der Nutzer, der als Admin eingetragen ist, auch lokal gespeichert ist.
+                if (!userController.IsUserLocallyStored(conversation.AdminId))
+                {
+                    // Kann Konversation so nicht einfügen.
+                    return false;
+                }
+
+                // Füge Konversation ein.
+                groupDBManager.StoreConversation(groupId, conversation);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("StoreConversation: Storing conversation failed.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return true;
         }
         #endregion LocalGroupMethods
     }

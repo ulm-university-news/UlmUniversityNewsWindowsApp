@@ -11,7 +11,8 @@ namespace UlmUniversityNews.Converters
 {
     /// <summary>
     /// Bildet eine Instanz der Klasse Group auf einen Icon Pfad ab, der für diese Gruppe relevant ist.
-    /// Benötigt über den Parameter noch das Nutzerobjekt des aktuellen lokalen Nutzers.
+    /// Benötigt das Nutzerobjekt des aktuellen lokalen Nutzers, um prüfen zu können, ob es sich beim lokalen 
+    /// Nutzer um den Administrator handelt.
     /// </summary>
     public class GroupToIconPathConverter : IValueConverter
     {

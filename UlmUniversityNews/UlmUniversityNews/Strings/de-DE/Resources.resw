@@ -1377,4 +1377,10 @@ Nachricht am: </value>
   <data name="GroupDetailsLeaveGroupWarning.Text" xml:space="preserve">
     <value>Wollen Sie die Gruppe wirklich verlassen?</value>
   </data>
+  <data name="GroupDetailsNoBallotsInGroupInfo.Text" xml:space="preserve">
+    <value>In dieser Gruppe sind noch keine Abstimmungen vorhanden.</value>
+  </data>
+  <data name="GroupDetailsNoConversationsInGroupInfo.Text" xml:space="preserve">
+    <value>In dieser Gruppe sind noch keine Konversationen vorhanden.</value>
+  </data>
 </root>

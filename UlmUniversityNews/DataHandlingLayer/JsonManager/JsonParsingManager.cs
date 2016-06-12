@@ -583,6 +583,54 @@ namespace DataHandlingLayer.JsonManager
         }
         #endregion Group
 
+        #region Conversation
+        /// <summary>
+        /// Extrahiere eine Liste von Conversation Objekten aus dem übergebenen JSON Dokument.
+        /// </summary>
+        /// <param name="jsonString">Das zu parsende JSON-Dokument.</param>
+        /// <returns>Eine Liste von Instanzen von Conversation Objekten, oder null, falls
+        ///     die Umwandlung fehlschlägt.</returns>
+        public List<Conversation> ParseConversationListFromJson(string jsonString)
+        {
+            List<Conversation> conversations = null;
+            try
+            {
+                conversations = JsonConvert.DeserializeObject<List<Conversation>>(jsonString);
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine("ParseConversationListFromJson: Json parser error occurred. " +
+                    "Message is {0}.", ex.Message);
+            }
+
+            return conversations;
+        }
+        #endregion Conversation
+
+        #region ConversationMessage
+        /// <summary>
+        /// Extrahiert eine Liste von Instanzen der Klasse ConversationMessage aus dem übergebenen JSON Dokument.
+        /// </summary>
+        /// <param name="jsonString">Das zu parsende JSON-Dokument.</param>
+        /// <returns>Eine Liste von Instanzen von ConversationMessage Objekten, oder null, falls
+        ///     die Umwandlung fehlschlägt.</returns>
+        public List<ConversationMessage> ParseConversationMessageListFromJson(string jsonString)
+        {
+            List<ConversationMessage> convMsgs = null;
+            try
+            {
+                convMsgs = JsonConvert.DeserializeObject<List<ConversationMessage>>(jsonString);
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine("ParseConversationMessageListFromJson: Json parser error occurred. " +
+                    "Message is {0}.", ex.Message);
+            }
+
+            return convMsgs;
+        }
+        #endregion ConversationMessage
+
         ///// <summary>
         ///// Eine Hilfsmethode, die ein DateTimeOffset Objekt in das Format der koordinierten Weltzeit umwandelt und
         ///// als String zurückliefert. Diese Methode kann verwendet werden, um DateTimeOffset Objekte in ein

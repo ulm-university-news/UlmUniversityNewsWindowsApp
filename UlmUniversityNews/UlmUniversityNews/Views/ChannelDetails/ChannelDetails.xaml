@@ -352,7 +352,7 @@
                                 Grid.Row="0"
                                 x:Name="NoMessagesInChannelInfo"
                                 x:Uid="ChannelDetailsNoMessagesInChannelInfo"
-                                Style="{StaticResource BaseTextBlockStyle}" 
+                                Style="{StaticResource UniversityNewsUlmStandardText}" 
                                 Visibility="{Binding Announcements.Count, Converter={StaticResource ListCountToVisibilityConverter}}">
                                     In diesem Kanal sind noch keine Nachrichten vorhanden.
                             </TextBlock>

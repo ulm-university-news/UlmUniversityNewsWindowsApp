@@ -142,7 +142,11 @@ namespace UlmUniversityNews.Views.Group
             }
             else if (e.NavigationParameter != null && e.NavigationParameter.GetType() == typeof(int))
             {
-                await groupDetailsViewModel.LoadGroupFromLocalStorageAsync(Convert.ToInt32(e.NavigationParameter));
+                int groupId = Convert.ToInt32(e.NavigationParameter);
+                await groupDetailsViewModel.LoadGroupFromLocalStorageAsync(groupId);
+
+                // Lade Konversationen.
+                await groupDetailsViewModel.LoadConversationsAsync(groupId);
             }
         }
 

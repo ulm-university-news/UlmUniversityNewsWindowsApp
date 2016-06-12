@@ -399,6 +399,24 @@
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\channelIcons\en-GB\ic_sport.scale-240.png">
       <PackagePath>Assets\channelIcons\en-GB\ic_sport.scale-240.png</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\conversationIcons\conversation.png">
+      <PackagePath>Assets\conversationIcons\conversation.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\conversationIcons\conversation_admin.png">
+      <PackagePath>Assets\conversationIcons\conversation_admin.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\conversationIcons\conversation_closed.png">
+      <PackagePath>Assets\conversationIcons\conversation_closed.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\conversationIcons\conversation_closed_admin.png">
+      <PackagePath>Assets\conversationIcons\conversation_closed_admin.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\conversationIcons\conversation_closed_admin_white.png">
+      <PackagePath>Assets\conversationIcons\conversation_closed_admin_white.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\conversationIcons\conversation_closed_white.png">
+      <PackagePath>Assets\conversationIcons\conversation_closed_white.png</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\Drawer\feature.settings.png">
       <PackagePath>Assets\Drawer\feature.settings.png</PackagePath>
     </AppxPackagedFile>

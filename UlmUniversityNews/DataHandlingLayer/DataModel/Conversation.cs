@@ -60,11 +60,22 @@ namespace DataHandlingLayer.DataModel
             set { adminId = value; }
         }
 
+        private string adminName;
+        /// <summary>
+        /// Der Name des Konversationsadministrators.
+        /// </summary>
+        [JsonIgnore]
+        public string AdminName
+        {
+            get { return adminName; }
+            set { adminName = value; }
+        }
+        
         private List<ConversationMessage> conversationMessages;
         /// <summary>
         /// Die zu dieser Konversation gehörenden Nachrichten.
         /// </summary>
-        [JsonIgnore]
+        [JsonProperty("conversationMessages", NullValueHandling = NullValueHandling.Ignore)]
         public List<ConversationMessage> ConversationMessages
         {
             get { return conversationMessages; }
