@@ -79,17 +79,7 @@ namespace DataHandlingLayer.Database
         public static string DateTimeToSQLite(DateTimeOffset datetime)
         {
             string dateTimeFormat = string.Empty;
-            //if (datetime.Offset.TotalHours > 0)
-            //{
-            //    dateTimeFormat = "{0}/{1}/{2} {3}:{4}:{5}.{6} +{7}";
-            //}
-            //else
-            //{
-            //    dateTimeFormat = "{0}/{1}/{2} {3}:{4}:{5}.{6} -{7}";
-            //}
-            //string dateString = string.Format(dateTimeFormat, datetime.Month, datetime.Day, datetime.Year,
-            //   datetime.Hour, datetime.Minute, datetime.Second, datetime.Millisecond, datetime.Offset.ToString());
-
+            
             dateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffzzzz";
             CultureInfo cultureInfo = new CultureInfo("de-DE");
             string datetimeString = datetime.ToString(dateTimeFormat, cultureInfo);
@@ -104,14 +94,11 @@ namespace DataHandlingLayer.Database
         /// <returns>Objekt vom Typ DateTimeOffset.</returns>
         public static DateTimeOffset DateTimeFromSQLite(string datetime)
         {
-            // DateTimeFormatInfo fmt = new CultureInfo("de-de").DateTimeFormat;
             CultureInfo cultureInfo = new CultureInfo("de-DE");
             string dateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffzzzz";
             DateTimeOffset dateTimeObject = DateTimeOffset.ParseExact(datetime, dateTimeFormat, cultureInfo);
 
             return dateTimeObject;
-
-            // return DateTimeOffset.Parse(datetime, fmt);
         }
 
         /// <summary>

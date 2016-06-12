@@ -322,5 +322,62 @@ namespace DataHandlingLayer.API
                 serverAccessToken,
                 "/group/" + groupId.ToString() + "/conversation/" + conversationId.ToString());
         }
+
+        // ******************* Requests bezüglich Konversationsnachrichten *****************************************
+
+        /// <summary>
+        /// Sende einen Request zum Anlegen einer neuen Nachricht in der angegebenen Konversation an den Server.
+        /// Die Nachrichten einer Konversation werden an alle Teilnehmer der Gruppe verteilt. Der Anfrager muss
+        /// Teilnehmer der Gruppe sein, um den Request absetzen zu können.
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Nutzers.</param>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <param name="conversationId">Die Id der Konversation.</param>
+        /// <param name="jsonContent">Die Daten der neuen Nachricht in Form eines JSON-Dokuments.</param>
+        /// <returns>Die Antwort des Servers in Form eines Strings. Hier die erzeugte Konversationsnachricht.</returns>
+        /// <exception cref="APIException">Wenn der Request fehlschlägt, oder vom Server abgelehnt wurde.</exception>
+        public async Task<string> SendCreateConversationMessageRequest(string serverAccessToken, int groupId,
+            int conversationId, string jsonContent)
+        {
+            string serverResponse = await base.SendHttpPostRequestWithJsonBodyAsync(
+                serverAccessToken,
+                jsonContent,
+                "/group/" + groupId.ToString() + "/conversation/" + conversationId.ToString() + "/message",
+                null);
+
+            return serverResponse;
+        }
+
+        /// <summary>
+        /// Sende einen Request zum Abfragen aller Nachrichten, die zu der spezifizierten Konversation
+        /// gehören, an den Server. Die Abfrage kann durch die Nachrichtennummer beschränkt werden.
+        /// Der Anfrager muss Teilnehmer der Gruppe sein, um die Anfrage ausführen
+        /// zu können.
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Nutzers.</param>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Konversation gehört.</param>
+        /// <param name="conversationId">Die Id der Konversation, zu der die Nachrichten abgefragt werden sollen.</param>
+        /// <param name="messageNr">Die Nachrichtennummer, ab der die Nachrichten abgefragt werden sollen. Dadurch kann die 
+        ///     Abfrage eingeschränkt werden. Es werden nur Nachrichten abgerufen, die eine größere Nachrichtennummer als die angegebene
+        ///     besitzen.</param>
+        /// <param name="withCaching">Gibt an, ob Caching für diesen Request zugelassen sein soll.</param>
+        /// <returns>Die Antwort des Servers als String. Hier eine Menge von Konversationsnachrichten.</returns>
+        /// <exception cref="APIException">Wenn der Request fehlschlägt, oder vom Server abgelehnt wurde.</exception>
+        public async Task<string> SendGetConversationMessagesRequest(string serverAccessToken, int groupId,
+            int conversationId, int messageNr, bool withCaching)
+        {
+            Dictionary<string, string> urlParams = new Dictionary<string, string>();
+            urlParams.Add("messageNr", messageNr.ToString());
+
+            string serverResponse = await base.SendHttpGetRequestAsync(
+                serverAccessToken,
+                "/group/" + groupId.ToString() + "/conversation/" + conversationId.ToString() + "/message",
+                urlParams,
+                withCaching);
+
+            return serverResponse;
+        }
+
+
     }
 }
