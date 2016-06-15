@@ -244,16 +244,14 @@ namespace DataHandlingLayer.ViewModel
         /// Lade die Konversationen der Gruppe.
         /// </summary>
         /// <param name="groupId">Die Id der Gruppe.</param>
-        /// <returns></returns>
         public async Task LoadConversationsAsync(int groupId)
         {
             try
             {
-                // TEST: Lade die Konversationen mal direkt vom Server.
-                List<Conversation> conversations = await groupController.GetConversationsAsync(
-                    groupId,
-                    false,
-                    false);
+                // Lade die Konversationen aus der Datenbank.
+                List<Conversation> conversations = await Task.Run(() => groupController.GetConversations(groupId));
+
+                // TODO sortieren
 
                 if (ConversationCollection == null)
                     ConversationCollection = new ObservableCollection<Conversation>();
@@ -261,17 +259,52 @@ namespace DataHandlingLayer.ViewModel
                 foreach (Conversation conversation in conversations)
                 {
                     ConversationCollection.Add(conversation);
-                    
-                    if (conversation.ConversationMessages != null)
-                    {
-                        Debug.WriteLine("Test: The conversation has {0} messages.", conversation.ConversationMessages.Count);
-                    }
                 }
+
+                // Test: Führe Synchronisation durch.
+                await SynchronizeConversations();
             }
             catch (ClientException ex)
             {
                 Debug.WriteLine("LoadConversationsAsync: Execution failed.");
                 displayError(ex.ErrorCode);
+            }
+        }
+
+        /// <summary>
+        /// Stößt eine Synchronisation der Konversationsressourcen dieser Gruppe mit dem Server an.
+        /// Aktualisiert anschließend die Anzeige.
+        /// </summary>
+        public async Task SynchronizeConversations()
+        {
+            if (SelectedGroup == null)
+                return;
+
+            try
+            {
+                displayIndeterminateProgressIndicator();
+                // Führe Synchronisation durch.
+                await Task.Run(() => groupController.SynchronizeConversationsWithServerAsync(SelectedGroup.Id));
+
+                // Aktualisere Anzeige. Rufe synchronisierte Daten ab.
+                List<Conversation> conversations = await Task.Run(() => groupController.GetConversations(SelectedGroup.Id));
+
+                // TODO Sortieren.
+
+                ConversationCollection.Clear();
+                foreach (Conversation conv in conversations)
+                {
+                    ConversationCollection.Add(conv);
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("SynchronizeConversations: Execution failed.");
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
             }
         }
 

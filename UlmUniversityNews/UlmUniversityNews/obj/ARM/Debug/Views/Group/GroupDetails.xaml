@@ -252,7 +252,7 @@
                        SelectedIndex="{Binding SelectedPivotItemIndex, Mode=TwoWay}">
                     
                     <!-- Pivotitem 1 - Konversationen -->
-                    <PivotItem
+                    <PivotItem                      
                         TabIndex="1"
                         Name="ConversationPivotItem"
                         x:Uid="GroupDetailsConversationPivotItem"

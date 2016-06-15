@@ -597,7 +597,7 @@ namespace DataHandlingLayer.Database
         /// <param name="groupId">Die Id der Gruppe.</param>
         /// <returns>Eine Liste von Instanzen der Klasse User. Die Liste kann auch leer sein.</returns>
         /// <exception cref="DatabaseException">Wirft DatabaseException, wenn die Abfrage fehlschlägt.</exception>
-        public List<User> GetParticipantsOfGroup(int groupId)
+        public List<User> GetActiveParticipantsOfGroup(int groupId)
         {
             List<User> participants = new List<User>();
 
@@ -651,6 +651,73 @@ namespace DataHandlingLayer.Database
             }
             
             return participants;
+        }
+
+        /// <summary>
+        /// Ruft alle für die Gruppe gespeicherten Teilnehmer ab, d.h. inaktive und aktive Teilnehmer.
+        /// Die Teilnehmer werden in einem Lookup-Verzeichnis zurückgeliefert.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Teilnehmer abgerufen werden sollen.</param>
+        /// <returns>Ein Verzeichnis, welches Objekte vom Typ User in einem Verzeichnis verfügbar macht.
+        ///     Die Objekte sind im Verzeichnis über die Ids der Nutzer abrufbar.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abruf fehlschlägt.</exception>
+        public Dictionary<int, User> GetAllParticipantsOfGroup(int groupId)
+        {
+            Dictionary<int, User> participantDictionary = new Dictionary<int, User>();
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT * 
+                            FROM User as U JOIN UserGroup AS UG ON U.Id=UG.User_Id 
+                            WHERE UG.Group_Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, groupId);
+
+                            while (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                User tmp = new User()
+                                {
+                                    Id = Convert.ToInt32(stmt["Id"]),
+                                    Name = stmt["Name"] as string,
+                                };
+
+                                participantDictionary.Add(tmp.Id, tmp);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetAllParticipantsOfGroup: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetAllParticipantsOfGroup: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("GetAllParticipantsOfGroup: Mutex timeout.");
+                throw new DatabaseException("GetAllParticipantsOfGroup: Timeout: Failed to get access to DB.");
+            }
+
+            return participantDictionary;
         }
 
         /// <summary>
@@ -1030,16 +1097,114 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Speichere eine Menge von Konversationen in der lokalen Datenbank ab.
+        /// Die Einträge dürfen nicht bereits lokal gespeichert sein, sonst schlägt die Operation fehl.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, der die Konversationen zugeordnet werden.</param>
+        /// <param name="conversations">Die Menge an zu speichernden Konversationen.</param>
+        /// <exception cref="DatabaseManager">Wirft DatabaseException, wenn Speicherung fehlschlägt.</exception>
+        public void BulkInsertConversations(int groupId, List<Conversation> conversations)
+        {
+            if (conversations == null || conversations.Count == 0)
+            {
+                Debug.WriteLine("BulkInsertConversations: No valid data passed to the method.");
+                return;
+            }
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string insertQuery = @"INSERT INTO Conversation (Id, Title, Closed, Group_Id, ConversationAdmin_User_Id) 
+                            VALUES (?, ?, ?, ?, ?);";
+
+                        // Starte eine Transaktion.
+                        using (var statement = conn.Prepare("BEGIN TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+
+                        using (var insertStmt = conn.Prepare(insertQuery))
+                        {
+                            foreach (Conversation conversation in conversations)
+                            {
+                                insertStmt.Bind(1, conversation.Id);
+                                insertStmt.Bind(2, conversation.Title);
+
+                                if (conversation.IsClosed.HasValue)
+                                    insertStmt.Bind(3, (conversation.IsClosed == true) ? 1 : 0);
+                                else
+                                    insertStmt.Bind(3, 0);  // Setzte defaultmäßig auf closed = false.
+
+                                insertStmt.Bind(4, groupId);
+                                insertStmt.Bind(5, conversation.AdminId);
+
+                                // Führe insert aus.
+                                insertStmt.Step();
+
+                                // Setze Statement für nächste Iteration zurück.
+                                insertStmt.Reset();
+                            }
+                        }
+
+                        // Commit der Transaktion.
+                        using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                        {
+                            statement.Step();
+                            Debug.WriteLine("BulkInsertConversations: Successfully inserted {0} conversations  " +
+                                "via bulk insert.", conversations.Count);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("BulkInsertConversations: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("BulkInsertConversations: Exception occurred. Msg is {0}.", ex.Message);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("BulkInsertConversations: Mutex timeout.");
+                throw new DatabaseException("BulkInsertConversations: Timeout: Failed to get access to DB.");
+            }
+        }
+
+        /// <summary>
         /// Aktualisiert die Konversation, zu welcher der übergebenen Datensatz gehört.
         /// Ersetzt die alten Daten durch die im Objekt übergebenen Daten. Bei Änderungen
         /// des Gruppenadministrators muss darauf geachtet werden, dass der Teilnehmer der Gruppe
         /// bereits in den lokalen Datensätzen vorhanden ist.
         /// </summary>
-        /// <param name="newConversation">Die neuen Daten der Konversation in Form eines Conversation Objekts.</param>
+        /// <param name="updatedConversation">Die neuen Daten der Konversation in Form eines Conversation Objekts.</param>
         /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Aktualisierung fehlschlägt.</exception>
-        public void UpdateConversation(Conversation newConversation)
+        public void UpdateConversation(Conversation updatedConversation)
         {
-            if (newConversation == null)
+            if (updatedConversation == null)
             {
                 Debug.WriteLine("UpdateConversation: No valid conversation object passed to the method.");
                 return;
@@ -1061,19 +1226,19 @@ namespace DataHandlingLayer.Database
 
                         using (var updateStmt = conn.Prepare(updateQuery))
                         {
-                            updateStmt.Bind(1, newConversation.Title);
+                            updateStmt.Bind(1, updatedConversation.Title);
 
                             // Aktualisiere Closed nur, wenn der Wert gesetzt wurde.
-                            if (newConversation.IsClosed.HasValue)
-                                updateStmt.Bind(2, (newConversation.IsClosed == true) ? 1 : 0);
+                            if (updatedConversation.IsClosed.HasValue)
+                                updateStmt.Bind(2, (updatedConversation.IsClosed == true) ? 1 : 0);
 
-                            updateStmt.Bind(3, newConversation.AdminId);
-                            updateStmt.Bind(4, newConversation.Id);
+                            updateStmt.Bind(3, updatedConversation.AdminId);
+                            updateStmt.Bind(4, updatedConversation.Id);
 
                             if (updateStmt.Step() != SQLiteResult.DONE)
-                                Debug.WriteLine("UpdateConversation: Failed to update the conversation with id {0}.", newConversation.Id);
+                                Debug.WriteLine("UpdateConversation: Failed to update the conversation with id {0}.", updatedConversation.Id);
                             else
-                                Debug.WriteLine("UpdateConversation: Successfully updated the conversation with id {0}.", newConversation.Id);
+                                Debug.WriteLine("UpdateConversation: Successfully updated the conversation with id {0}.", updatedConversation.Id);
                         }
                     }
                     catch (SQLiteException sqlEx)
@@ -1096,6 +1261,80 @@ namespace DataHandlingLayer.Database
             {
                 Debug.WriteLine("UpdateConversation: Mutex timeout.");
                 throw new DatabaseException("UpdateConversation: Timeout: Failed to get access to DB.");
+            }
+        }
+
+        /// <summary>
+        /// Führt eine Aktualisierung der Konversationen in der Datenbank aus.
+        /// </summary>
+        /// <param name="updatedConversations">Die Menge der Konversationen, die neue Daten 
+        ///     für die Aktualisierung beinhalten.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Aktualisierung fehlschlägt.</exception>
+        public void UpdateConversations(List<Conversation> updatedConversations)
+        {
+            if (updatedConversations == null && updatedConversations.Count == 0)
+            {
+                Debug.WriteLine("UpdateConversations: No valid data passed to the method.");
+                return;
+            }
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string updateQuery = @"UPDATE Conversation 
+                            SET Title=?, Closed=?, ConversationAdmin_User_Id=? 
+                            WHERE Id=?;";
+
+                        using (var updateStmt = conn.Prepare(updateQuery))
+                        {
+                            foreach (Conversation updatedConversation in updatedConversations)
+                            {
+                                updateStmt.Bind(1, updatedConversation.Title);
+
+                                // Aktualisiere Closed nur, wenn der Wert gesetzt wurde.
+                                if (updatedConversation.IsClosed.HasValue)
+                                    updateStmt.Bind(2, (updatedConversation.IsClosed == true) ? 1 : 0);
+
+                                updateStmt.Bind(3, updatedConversation.AdminId);
+                                updateStmt.Bind(4, updatedConversation.Id);
+
+                                if (updateStmt.Step() != SQLiteResult.DONE)
+                                    Debug.WriteLine("UpdateConversations: Failed to update the conversation with id {0}.", updatedConversation.Id);
+                                else
+                                    Debug.WriteLine("UpdateConversations: Successfully updated the conversation with id {0}.", updatedConversation.Id);
+
+                                // Setze Statement zurück für nächste Iteration.
+                                updateStmt.Reset();
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("UpdateConversations: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("UpdateConversations: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("UpdateConversations: Mutex timeout.");
+                throw new DatabaseException("UpdateConversations: Timeout: Failed to get access to DB.");
             }
         }
 
@@ -1123,7 +1362,7 @@ namespace DataHandlingLayer.Database
                     try
                     {
                         string query = @"SELECT * 
-                            FROM Conversation 
+                            FROM Conversation AS C JOIN User as U ON C.ConversationAdmin_User_Id=U.Id
                             WHERE Id=?;";
 
                         string determineUnreadMsgQuery = @"SELECT COUNT(*) AS amount 
@@ -1146,13 +1385,15 @@ namespace DataHandlingLayer.Database
                                 if (stmt["Closed"] != null && (long)stmt["Closed"] == 1)
                                     closed = true;
                                 int adminId = Convert.ToInt32(stmt["ConversationAdmin_User_Id"]);
+                                string adminName = stmt["Name"] as string;  // Frage Name des Administrators direkt mit ab.
 
                                 conversation = new Conversation()
                                 {
                                     Id = conversationId,
                                     Title = title,
                                     IsClosed = closed,
-                                    AdminId = adminId
+                                    AdminId = adminId,
+                                    AdminName = adminName
                                 };
 
                                 // Bestimme Anzahl ungelesener Nachrichten.
@@ -1188,7 +1429,7 @@ namespace DataHandlingLayer.Database
                                             read = ((long)msgStmt["Read"] == 1) ? true : false;
                                             msgNr = Convert.ToInt32(msgStmt["MessageNumber"]);
                                             authorId = Convert.ToInt32(msgStmt["Author_User_Id"]);
-
+                                            
                                             ConversationMessage tmp = new ConversationMessage()
                                             {
                                                 Id = messageId,
@@ -1259,7 +1500,7 @@ namespace DataHandlingLayer.Database
                     try
                     {
                         string getConversationsQuery = @"SELECT * 
-                            FROM Conversation 
+                            FROM Conversation AS C JOIN User AS U ON C.ConversationAdmin_User_Id=U.Id
                             WHERE Group_Id=?;";
 
                         string determineUnreadMsgQuery = @"SELECT COUNT(*) AS amount 
@@ -1275,12 +1516,14 @@ namespace DataHandlingLayer.Database
                             int convId, adminId;
                             string title;
                             bool closed;
+                            string adminName;
 
                             while (getConvStmt.Step() == SQLiteResult.ROW)
                             {
                                 convId = Convert.ToInt32(getConvStmt["Id"]);
                                 title = getConvStmt["Title"] as string;
                                 adminId = Convert.ToInt32(getConvStmt["ConversationAdmin_User_Id"]);
+                                adminName = getConvStmt["Name"] as string;
 
                                 closed = false;
                                 if (getConvStmt["Closed"] != null && (long)getConvStmt["Closed"] == 1)
@@ -1291,7 +1534,8 @@ namespace DataHandlingLayer.Database
                                     Id = convId,
                                     Title = title,
                                     AdminId = adminId,
-                                    IsClosed = closed
+                                    IsClosed = closed,
+                                    AdminName = adminName
                                 };
 
                                 // Bestimme Anzahl ungelesener Nachrichten für diese Konversation.
@@ -1360,7 +1604,7 @@ namespace DataHandlingLayer.Database
                     try
                     {
                         string query = @"SELECT * 
-                            FROM Conversation;";
+                            FROM Conversation AS C JOIN User AS U ON C.ConversationAdmin_User_Id=U.Id;";
 
                         using (var stmt = conn.Prepare(query))
                         {
@@ -1370,13 +1614,15 @@ namespace DataHandlingLayer.Database
                             if (stmt["Closed"] != null && (long)stmt["Closed"] == 1)
                                 closed = true;
                             int adminId = Convert.ToInt32(stmt["ConversationAdmin_User_Id"]);
+                            string adminName = stmt["Name"] as string;
 
                             Conversation conversation = new Conversation()
                             {
                                 Id = conversationId,
                                 Title = title,
                                 IsClosed = closed,
-                                AdminId = adminId
+                                AdminId = adminId,
+                                AdminName = adminName                                
                             };
 
                             conversations.Add(conversation);
@@ -1505,8 +1751,8 @@ namespace DataHandlingLayer.Database
                             // Füge zunächst in Message Tabelle ein.
                             insertToMsgStmt.Bind(1, conversationMsg.Id);
                             insertToMsgStmt.Bind(2, conversationMsg.Text);
-                            insertToMsgStmt.Bind(3, conversationMsg.CreationDate);
-                            insertToMsgStmt.Bind(4, conversationMsg.MessagePriority);
+                            insertToMsgStmt.Bind(3, DatabaseManager.DateTimeToSQLite(conversationMsg.CreationDate));
+                            insertToMsgStmt.Bind(4, (int)conversationMsg.MessagePriority);
                             insertToMsgStmt.Bind(5, 0); // Read auf false zu Beginn.
 
                             if (insertToMsgStmt.Step() != SQLiteResult.DONE)
@@ -1571,9 +1817,10 @@ namespace DataHandlingLayer.Database
         /// <summary>
         /// Speichere eine Menge von Konversationsnachrichten via Bulk Insert in die lokale Datenbank ein.
         /// </summary>
+        /// <param name="conversationId">Die Id der Konversation, zu der die Nachrichten gehören.</param>
         /// <param name="conversationMessages">Die Liste von Objekten der Klasse ConversationMessage.</param>
         /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Speicherung fehlschlägt.</exception>
-        public void BulkInsertConversationMessages(List<ConversationMessage> conversationMessages)
+        public void BulkInsertConversationMessages(int conversationId, List<ConversationMessage> conversationMessages)
         {
             if (conversationMessages == null || conversationMessages.Count == 0)
             {
@@ -1591,12 +1838,36 @@ namespace DataHandlingLayer.Database
                 {
                     try
                     {
+                        string getHighestMsgNr = @"SELECT MAX(MessageNumber) AS maxMsgNr 
+                            FROM ConversationMessage 
+                            WHERE Conversation_Id=?;";
+
                         string insertToMessageTableQuery = @"INSERT INTO Message (Id, Text, CreationDate, Priority, Read) 
                             VALUES (?, ?, ?, ?, ?);";
 
                         string insertToConvMsgTableQuery = @"INSERT INTO ConversationMessage (MessageNumber, Conversation_Id, 
                             Author_User_Id, Message_Id) 
                             VALUES (?, ?, ?, ?);";
+
+                        // Frage zunächst die höchste Nachrichtennummer ab.
+                        using (var stmt = conn.Prepare(getHighestMsgNr))
+                        {
+                            stmt.Bind(1, conversationId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                int highestNr = Convert.ToInt32(stmt["maxMsgNr"]);
+
+                                // Reduziere die Liste an zu speichernden Nachrichten auf die, die noch nicht lokal gespeichert sind.
+                                // Also die, die eine höhere Nachrichtennummer als die bisher höchste haben.
+                                Debug.WriteLine("BulkInsertConversationMessages: Reducing the messages to the ones with msgNr higher than {0}. The "+ 
+                                    "current amount of messages is {1}.", highestNr, conversationMessages.Count);
+
+                                conversationMessages = conversationMessages.Where(item => item.MessageNumber > highestNr).ToList<ConversationMessage>();
+
+                                Debug.WriteLine("BulkInsertConversationMessages: Reduced to a size of {0}.", conversationMessages.Count);
+                            }
+                        }
 
                         // Starte eine Transaktion.
                         using (var statement = conn.Prepare("BEGIN TRANSACTION"))
@@ -1612,8 +1883,8 @@ namespace DataHandlingLayer.Database
                                 // Füge zunächst in Message Tabelle ein.
                                 insertToMsgStmt.Bind(1, conversationMsg.Id);
                                 insertToMsgStmt.Bind(2, conversationMsg.Text);
-                                insertToMsgStmt.Bind(3, conversationMsg.CreationDate);
-                                insertToMsgStmt.Bind(4, conversationMsg.MessagePriority);
+                                insertToMsgStmt.Bind(3, DatabaseManager.DateTimeToSQLite(conversationMsg.CreationDate));
+                                insertToMsgStmt.Bind(4, (int)conversationMsg.MessagePriority);
                                 insertToMsgStmt.Bind(5, 0); // Read auf false zu Beginn.
 
                                 insertToMsgStmt.Step();
@@ -1637,7 +1908,7 @@ namespace DataHandlingLayer.Database
                         {
                             statement.Step();
                             Debug.WriteLine("BulkInsertConversationMessages: Successfully inserted {0} conversation messages " + 
-                                "via bulk insert.", conversationMessages.Count);
+                                "via bulk insert into conversation with id {1}.", conversationMessages.Count, conversationId);
                         }
                     }
                     catch (SQLiteException sqlEx)

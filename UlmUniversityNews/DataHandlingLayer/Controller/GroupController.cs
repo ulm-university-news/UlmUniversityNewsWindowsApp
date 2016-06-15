@@ -674,7 +674,9 @@ namespace DataHandlingLayer.Controller
 
             return updatedGroup;
         }
+        #endregion RemoteGroupMethods
 
+        #region RemoteConversationMethods
         /// <summary>
         /// Fragt zunächst für die Speicherung relevante Daten vom Server ab, z.B. die aktuellen
         /// Teilnehmer, so dass die aktuellesten Daten vorhanden sind. Speichert anschließend die 
@@ -704,7 +706,7 @@ namespace DataHandlingLayer.Controller
                     throw new ClientException(ErrorCodes.ConversationStorageFailedDueToMissingAdmin, "Couldn't store conversation due "
                         + "to missing conversation administrator.");
             }
-            
+
         }
 
         /// <summary>
@@ -791,7 +793,119 @@ namespace DataHandlingLayer.Controller
 
             return conversations;
         }
-        #endregion RemoteGroupMethods
+
+        /// <summary>
+        /// Synchronisiert die lokalen Konversations-Ressourcen mit denen, die auf
+        /// dem Server gespeichert sind. So kann man die Datensätze zwischen Client und Server
+        /// wieder auf einen Stand bringen.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, für die die Datensätze synchronisiert werden sollen.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Synchronisation fehlschlägt.</exception>
+        public async Task SynchronizeConversationsWithServerAsync(int groupId)
+        {
+            // Frage zunächst die neuesten Konversationsdaten vom Server ab.
+            List<Conversation> referenceList = await GetConversationsAsync(groupId, true, false);
+
+            // Frage lokale Datensätze ab.
+            List<Conversation> currentList = GetConversations(groupId);
+
+            // Füge neue Konversationen hinzu, oder aktualisiere die aktuellen falls notwendig.
+            List<Conversation> updatableConversations = new List<Conversation>();
+            List<Conversation> newConversations = new List<Conversation>();
+            foreach (Conversation refConversation in referenceList)
+            {
+                bool isStored = false;
+
+                for (int i = 0; i < currentList.Count; i++)
+                {
+                    if (currentList[i].Id == refConversation.Id)
+                    {
+                        isStored = true;
+                        // Aktualisiere.
+                        updatableConversations.Add(refConversation);
+                        break;
+                    }
+                }
+
+                if (!isStored)
+                {
+                    // Hinzufügen.
+                    newConversations.Add(refConversation);
+                }
+            }
+
+            // Markiere Konversationen als gelöscht, wenn sie auf dem Server nicht mehr vorhanden sind.
+            foreach (Conversation currentConv in currentList)
+            {
+                bool isStored = false;
+
+                foreach (Conversation referenceConv in referenceList)
+                {
+                    if (referenceConv.Id == currentConv.Id)
+                    {
+                        isStored = true;
+                        break;
+                    }
+                }
+
+                if (!isStored)
+                {
+                    // Markiere als gelöscht (setze auf closed).
+                    currentConv.IsClosed = true;
+                    // Führe Markierung durch Aktualisierung aus.
+                    updatableConversations.Add(currentConv);
+                }
+            }
+
+            try
+            {
+                groupDBManager.BulkInsertConversations(groupId, newConversations);
+                groupDBManager.UpdateConversations(updatableConversations);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("SynchronizeConversationsWithServerAsync: Failed to update or insert conversations.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            // Führe noch eine Aktualisierung der Nachrichten aus.
+            foreach(Conversation conv in updatableConversations)
+            {
+                if (conv.ConversationMessages != null && conv.ConversationMessages.Count > 0)
+                {
+                    // Führe Methode aus zur Aktualisierung der Nachrichten aus.
+                    try
+                    {
+                        // Die Methode fügt nur die Nachrichten hinzu, die noch nicht lokal gespeichert sind.
+                        StoreConversationMessages(groupId, conv.Id, conv.ConversationMessages);
+                    } catch(ClientException ex)
+                    {
+                        Debug.WriteLine("SynchronizeConversationsWithServerAsync: Failed to update messages " + 
+                            "for conversation with id {0}. Msg is {1}.", conv.Id, ex.Message);
+                        // Werfe keinen Fehler. Nachrichten können jederzeit nachgeladen werden.
+                    }
+                }
+            }
+            foreach (Conversation conv in newConversations)
+            {
+                if (conv.ConversationMessages != null && conv.ConversationMessages.Count > 0)
+                {
+                    // Führe Methode aus zur Aktualisierung der Nachrichten aus.
+                    try
+                    {
+                        // Die Methode fügt nur die Nachrichten hinzu, die noch nicht lokal gespeichert sind.
+                        StoreConversationMessages(groupId, conv.Id, conv.ConversationMessages);
+                    }
+                    catch (ClientException ex)
+                    {
+                        Debug.WriteLine("SynchronizeConversationsWithServerAsync: Failed to update messages " +
+                            "for conversation with id {0}. Msg is {1}.", conv.Id, ex.Message);
+                        // Werfe keinen Fehler. Nachrichten können jederzeit nachgeladen werden.
+                    }
+                }
+            }
+        }
+        #endregion RemoteConversationMethods
 
         #region LocalGroupMethods
         /// <summary>
@@ -948,7 +1062,7 @@ namespace DataHandlingLayer.Controller
             List<User> participants = null;
             try
             {
-                participants = groupDBManager.GetParticipantsOfGroup(groupId);
+                participants = groupDBManager.GetActiveParticipantsOfGroup(groupId);
             }
             catch (DatabaseException ex)
             {
@@ -957,6 +1071,30 @@ namespace DataHandlingLayer.Controller
             }
 
             return participants;
+        }
+
+        /// <summary>
+        /// Ruft ein Verzeichnis mit den Daten aller Teilnehmer der angegebenen Gruppe ab, d.h. inaktive und
+        /// aktive Teilnehmer. In dem Verzeichnis können die einzelnen Nutzerdatensätze über die Ids der Teilnehmer
+        /// abgerufen werden.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu dem das Verzeichnis abgerufen werden soll.</param>
+        /// <returns>Ein Verzeichnis, welches Objekte vom Typ User auf deren Id abbildet.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abruf fehlschlägt.</exception>
+        public Dictionary<int, User> GetParticipantsLookupDirectory(int groupId)
+        {
+            Dictionary<int, User> participantDictionary = null;
+            try
+            {
+                participantDictionary = groupDBManager.GetAllParticipantsOfGroup(groupId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetParticipantsLookupDirectory: The retrieval of the directory has failed.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return participantDictionary;
         }
 
         /// <summary>
@@ -1089,7 +1227,9 @@ namespace DataHandlingLayer.Controller
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
         }
+        #endregion LocalGroupMethods
 
+        #region LocalConversationMethods
         /// <summary>
         /// Liefert alle Konversationen zurück, die der Gruppe mit der angegebenen Id zugeordnet
         /// sind. 
@@ -1144,6 +1284,72 @@ namespace DataHandlingLayer.Controller
 
             return true;
         }
-        #endregion LocalGroupMethods
+
+        /// <summary>
+        /// Speichert die übergebene Konversationsnachricht in den lokalen Datensätzen ab.
+        /// </summary>
+        /// <param name="conversationMsg">Die Daten der ConversationMessage, in Form eines ConversationMessage Objekts.</param>
+        /// <returns>Liefert true, wenn Speicherung erfolgreich war. Liefert false, wenn Speicherung aufgrund fehlender
+        ///     Referenzen fehlgeschlagen ist (z.B. fehlender Nutzer, der als Autor eingetragen ist).</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Speicherung aufgrund eines unerwarteten
+        ///     Fehlers fehlschlägt.</exception>
+        public bool StoreConversationMessage(ConversationMessage conversationMsg)
+        {
+            try
+            {
+                int authorId = conversationMsg.AuthorId;
+                if (!userController.IsUserLocallyStored(authorId))
+                {
+                    Debug.WriteLine("StoreConversationMessage: Cannot store conversation message without author reference.");
+                    return false;
+                }
+
+                groupDBManager.StoreConversationMessage(conversationMsg);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("StoreConversationMessage: Failed to store conversation message.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Speichert die übergebene Menge von Konversationsnachrichten in den lokalen Datensätzen ab.
+        /// Dabei werden Nachrichten nicht erneut gespeichert, wenn sie lokal schon vorhanden sind.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der diese Nachrichten gehören.</param>
+        /// <param name="conversationId">Die Id der Konversation, zu der die Nachrichten abgespeichert werden sollen.</param>
+        /// <param name="conversationMessages">Die übergebene Menge von zu speichernden Konversationsnachrichten.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Speicherung fehlschlägt.</exception>
+        public void StoreConversationMessages(int groupId, int conversationId, List<ConversationMessage> conversationMessages)
+        {
+            // Prüfe zunächst, ob alle Autoren lokal vorhanden sind.
+            Dictionary<int, User> participantDirectory = GetParticipantsLookupDirectory(groupId);
+
+            foreach(ConversationMessage convMsg in conversationMessages)
+            {
+                if (!participantDirectory.ContainsKey(convMsg.AuthorId))
+                {
+                    // Bilde hier nur auf den Dummy Nutzer ab.
+                    Debug.WriteLine("StoreConversationMessages: No participant with id {0} stored for the group. " + 
+                        "Need to map to the dummy user.");
+                    convMsg.AuthorId = 0;
+                }
+            }
+
+            // Speichere Nachrichten lokal ab.
+            try
+            {
+                groupDBManager.BulkInsertConversationMessages(conversationId, conversationMessages);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("StoreConversationMessages: Couldn't store conversation messages.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+        #endregion LocalConversationMethods
     }
 }
