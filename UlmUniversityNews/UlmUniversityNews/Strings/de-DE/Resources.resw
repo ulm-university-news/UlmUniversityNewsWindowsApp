@@ -1383,6 +1383,12 @@ Nachricht am: </value>
   <data name="GroupDetailsNoConversationsInGroupInfo.Text" xml:space="preserve">
     <value>In dieser Gruppe sind noch keine Konversationen vorhanden.</value>
   </data>
+  <data name="ConversationDetailsMessageInputBox.PlaceholderText" xml:space="preserve">
+    <value>Nachricht eingeben</value>
+  </data>
+  <data name="ConversationDetailsSendMessageButton.Label" xml:space="preserve">
+    <value>senden</value>
+  </data>
   <data name="GroupDetailsDeleteGroupButton.Label" xml:space="preserve">
     <value>löschen</value>
   </data>

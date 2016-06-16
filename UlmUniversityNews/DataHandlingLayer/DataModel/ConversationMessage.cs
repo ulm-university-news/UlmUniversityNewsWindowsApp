@@ -27,6 +27,16 @@ namespace DataHandlingLayer.DataModel
             set { authorUser = value; }
         }
 
+        private string authorName;
+        /// <summary>
+        /// Der Name des Autors der Nachricht.
+        /// </summary>
+        public string AuthorName
+        {
+            get { return authorName; }
+            set { this.setProperty(ref this.authorName, value); }
+        }
+        
         private int conversationId;
         /// <summary>
         /// Die Id der Konversation, zu der die Konversationsnachricht gehört.
@@ -36,7 +46,18 @@ namespace DataHandlingLayer.DataModel
         {
             get { return conversationId; }
             set { conversationId = value; }
-        }   
+        }
+
+        private bool isLatestMessage = false;
+        /// <summary>
+        /// Gibt an, ob diese Nachricht die aktuellste Nachricht in der Konversation ist.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsLatestMessage
+        {
+            get { return isLatestMessage; }
+            set { this.setProperty(ref this.isLatestMessage, value); }
+        }
         #endregion Properties
 
         /// <summary>

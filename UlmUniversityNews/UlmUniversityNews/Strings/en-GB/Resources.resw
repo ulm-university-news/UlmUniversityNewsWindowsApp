@@ -1382,6 +1382,12 @@ date: </value>
   <data name="GroupDetailsNoConversationsInGroupInfo.Text" xml:space="preserve">
     <value>There are no conversations in this group yet.</value>
   </data>
+  <data name="ConversationDetailsMessageInputBox.PlaceholderText" xml:space="preserve">
+    <value>Enter message</value>
+  </data>
+  <data name="ConversationDetailsSendMessageButton.Label" xml:space="preserve">
+    <value>send</value>
+  </data>
   <data name="GroupDetailsDeleteGroupButton.Label" xml:space="preserve">
     <value>delete</value>
   </data>

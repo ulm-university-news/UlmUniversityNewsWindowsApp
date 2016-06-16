@@ -118,6 +118,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Group\ConversationDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Group\GroupDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -248,6 +252,9 @@
     </Compile>
     <Compile Include="Views\Group\AddAndEditGroupDialog\AddAndEditGroup.xaml.cs">
       <DependentUpon>AddAndEditGroup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Group\ConversationDetails.xaml.cs">
+      <DependentUpon>ConversationDetails.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Group\GroupDetails.xaml.cs">
       <DependentUpon>GroupDetails.xaml</DependentUpon>

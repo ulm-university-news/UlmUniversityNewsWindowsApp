@@ -320,6 +320,7 @@ namespace UlmUniversityNews
             NavigationService.RegisterPage("AddAndEditGroup", typeof(Views.Group.AddAndEditGroupDialog.AddAndEditGroup));
             NavigationService.RegisterPage("SearchGroups", typeof(Views.Group.SearchGroups));
             NavigationService.RegisterPage("GroupDetails", typeof(Views.Group.GroupDetails));
+            NavigationService.RegisterPage("ConversationDetails", typeof(Views.Group.ConversationDetails));
         }
 
         /// <summary>

@@ -1026,6 +1026,9 @@
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Group\AddAndEditGroupDialog\AddAndEditGroup.xbf">
       <PackagePath>Views\Group\AddAndEditGroupDialog\AddAndEditGroup.xbf</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Group\ConversationDetails.xbf">
+      <PackagePath>Views\Group\ConversationDetails.xbf</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Group\GroupDetails.xbf">
       <PackagePath>Views\Group\GroupDetails.xbf</PackagePath>
     </AppxPackagedFile>

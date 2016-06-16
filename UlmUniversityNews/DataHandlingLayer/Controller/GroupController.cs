@@ -1365,11 +1365,35 @@ namespace DataHandlingLayer.Controller
             }
             catch (DatabaseException ex)
             {
-                Debug.WriteLine("GetConversations: Retrieving conversation failed.");
+                Debug.WriteLine("GetConversations: Retrieving conversations failed.");
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
 
             return conversations;
+        }
+
+        /// <summary>
+        /// Ruft die Konversation mit der angegebenen Id ab.
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation, die abgerufen werden soll.</param>
+        /// <param name="includingConversationMessages">Gibt an, ob die Konversationsnachrichten dieser Konversation
+        ///     mit geladen werden sollen.</param>
+        /// <returns>Ein Objekt vom Typ Conversation. </returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abruf fehlschlägt.</exception>
+        public Conversation GetConversation(int conversationId, bool includingConversationMessages)
+        {
+            Conversation conv = null;
+            try
+            {
+                conv = groupDBManager.GetConversation(conversationId, includingConversationMessages);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetConversation: Retrieving conversation failed.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return conv;
         }
 
         /// <summary>

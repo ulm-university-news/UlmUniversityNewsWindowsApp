@@ -316,6 +316,7 @@ Views\ChannelDetails\ChannelDetails.xbf
 Views\ChannelDetails\ChannelSettings.xbf
 Views\ChannelSearch\ChannelSearch.xbf
 Views\Group\AddAndEditGroupDialog\AddAndEditGroup.xbf
+Views\Group\ConversationDetails.xbf
 Views\Group\GroupDetails.xbf
 Views\Group\SearchGroups.xbf
 Views\Homescreen\Homescreen.xbf

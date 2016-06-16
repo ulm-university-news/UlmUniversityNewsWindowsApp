@@ -99,6 +99,7 @@
     <Compile Include="Controller\ChannelController.cs" />
     <Compile Include="Controller\GroupController.cs" />
     <Compile Include="Controller\IncrementalAnnouncementLoaderController.cs" />
+    <Compile Include="Controller\IncrementalConversationMessagesLoader.cs" />
     <Compile Include="Controller\LoginController.cs" />
     <Compile Include="Controller\ModeratorController.cs" />
     <Compile Include="Controller\PushNotificationController.cs" />
@@ -163,6 +164,7 @@
     <Compile Include="ViewModel\ChannelDetailsViewModel.cs" />
     <Compile Include="ViewModel\ChannelEnumerationBaseViewModel.cs" />
     <Compile Include="ViewModel\ChannelSettingsViewModel.cs" />
+    <Compile Include="ViewModel\ConversationDetailsViewModel.cs" />
     <Compile Include="ViewModel\DialogBaseViewModel.cs" />
     <Compile Include="ViewModel\GroupDetailsViewModel.cs" />
     <Compile Include="ViewModel\HomescreenViewModel.cs" />

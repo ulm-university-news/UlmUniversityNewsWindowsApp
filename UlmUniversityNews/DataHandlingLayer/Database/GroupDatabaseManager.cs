@@ -184,13 +184,13 @@ namespace DataHandlingLayer.Database
 
                         string queryParticipants = @"SELECT * 
                             FROM UserGroup AS ug JOIN User AS u ON ug.User_Id=u.Id
-                            WHERE ug.Group_Id=?;";
+                            WHERE ug.Group_Id=? ANd ug.Active=?;";
 
                         using (var getParticipantsStmt = conn.Prepare(queryParticipants))
                         using (var getGroupStmt = conn.Prepare(getGroupQuery))
                         {
                             getGroupStmt.Bind(1, id);
-
+                            
                             if (getGroupStmt.Step() == SQLiteResult.ROW)
                             {
                                 group = new Group()
@@ -210,6 +210,7 @@ namespace DataHandlingLayer.Database
 
                             // Lade Teilnehmer der Gruppe.
                             getParticipantsStmt.Bind(1, id);
+                            getParticipantsStmt.Bind(2, 1);     // Nur aktive Teilnehmer.
 
                             List<User> participants = new List<User>();
                             while (getParticipantsStmt.Step() == SQLiteResult.ROW)
@@ -1365,7 +1366,7 @@ namespace DataHandlingLayer.Database
                     {
                         string query = @"SELECT * 
                             FROM Conversation AS C JOIN User as U ON C.ConversationAdmin_User_Id=U.Id
-                            WHERE Id=?;";
+                            WHERE C.Id=?;";
 
                         string determineUnreadMsgQuery = @"SELECT COUNT(*) AS amount 
                             FROM ConversationMessage AS cm JOIN Message AS m ON cm.Message_Id=m.Id 
@@ -1970,6 +1971,7 @@ namespace DataHandlingLayer.Database
                     {
                         string query = @"SELECT * 
                             FROM ConversationMessage AS cm JOIN Message AS m ON cm.Message_Id=m.Id 
+                                JOIN User AS u ON cm.Author_User_Id=u.Id
                             WHERE cm.Conversation_Id=?;";
 
                         using (var stmt = conn.Prepare(query))
@@ -1979,6 +1981,7 @@ namespace DataHandlingLayer.Database
                             DateTimeOffset creationDate;
                             Priority msgPriority;
                             bool read;
+                            string authorName;
 
                             stmt.Bind(1, conversationId);
 
@@ -1988,6 +1991,7 @@ namespace DataHandlingLayer.Database
                                 text = stmt["Text"] as string;
                                 creationDate = DatabaseManager.DateTimeFromSQLite(stmt["CreationDate"] as string);
                                 msgPriority = (Priority)Enum.ToObject(typeof(Priority), stmt["Priority"]);
+                                authorName = (string)stmt["Name"];
 
                                 read = false;
                                 if (stmt["Read"] != null && (long)stmt["Read"] == 1)
@@ -2005,7 +2009,8 @@ namespace DataHandlingLayer.Database
                                     AuthorId = authorId,
                                     ConversationId = conversationId,
                                     MessageNumber = msgNumber,
-                                    Read = read
+                                    Read = read,
+                                    AuthorName = authorName
                                 };
 
                                 // Füge ConversationMessage der Liste hinzu.
@@ -2033,6 +2038,109 @@ namespace DataHandlingLayer.Database
             {
                 Debug.WriteLine("GetConversationMessages: Mutex timeout.");
                 throw new DatabaseException("GetConversationMessages: Timeout: Failed to get access to DB.");
+            }
+
+            return conversationMessages;
+        }
+
+        /// <summary>
+        /// Holt die angegebene Anzahl an aktuellesten Konversationsnachrichten aus der Datenbank. Die aktuellesten
+        /// Konversationsnachrichten sind dabei diejenigen, die zeitlich gesehen zuletzt gesendet wurden. Über den Offset 
+        /// kann angegeben werden, dass die angegebene Anzahl an Konversationsnachrichten übersprungen werden soll. Das ist für das 
+        /// inkrementelle Laden von älteren Konversationsnachrichten wichtig.
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation, aus der die Nachrichten abgerufen werden sollen.</param>
+        /// <param name="number">Die Anzahl an Nachrichten, die abgerufen werden soll.</param>
+        /// <param name="offset">Der Offset, der angibt wie viele der neusten Konversationsnachrichten übersprungen werden sollen.</param>
+        /// <returns>Eine Liste von ConversationMessage Objekten.</param>
+        /// <exception cref="DatbaseException">Wirft DatabaseException, wenn der Abfruf der Konversationsnachrichten fehlschlägt.</exception>
+        public List<ConversationMessage> GetLastestConversationMessages(int conversationId, int number, int offset)
+        {
+            List<ConversationMessage> conversationMessages = new List<ConversationMessage>();
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT * 
+                            FROM Message AS m JOIN ConversationMessage AS cm ON m.Id=cm.Message_Id 
+                                JOIN User AS u ON cm.Author_User_Id=u.Id
+                            WHERE Conversation_Id=? 
+                            ORDER BY cm.MessageNumber DESC 
+                            LIMIT ? OFFSET ?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            int msgId, authorId, msgNumber;
+                            string text;
+                            DateTimeOffset creationDate;
+                            Priority msgPriority;
+                            bool read;
+                            string authorName;
+
+                            stmt.Bind(1, conversationId);
+                            stmt.Bind(2, number);
+                            stmt.Bind(3, offset);
+
+                            while (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                msgId = Convert.ToInt32(stmt["Id"]);
+                                text = stmt["Text"] as string;
+                                creationDate = DatabaseManager.DateTimeFromSQLite(stmt["CreationDate"] as string);
+                                msgPriority = (Priority)Enum.ToObject(typeof(Priority), stmt["Priority"]);
+                                authorName = (string)stmt["Name"];
+
+                                read = false;
+                                if (stmt["Read"] != null && (long)stmt["Read"] == 1)
+                                    read = true;
+
+                                msgNumber = Convert.ToInt32(stmt["MessageNumber"]);
+                                authorId = Convert.ToInt32(stmt["Author_User_Id"]);
+
+                                ConversationMessage tmp = new ConversationMessage()
+                                {
+                                    Id = msgId,
+                                    Text = text,
+                                    CreationDate = creationDate,
+                                    MessagePriority = msgPriority,
+                                    AuthorId = authorId,
+                                    ConversationId = conversationId,
+                                    MessageNumber = msgNumber,
+                                    Read = read,
+                                    AuthorName = authorName
+                                };
+
+                                // Füge ConversationMessage der Liste hinzu.
+                                conversationMessages.Add(tmp);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetLastestConversationMessages: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetLastestConversationMessages: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("GetLastestConversationMessages: Mutex timeout.");
+                throw new DatabaseException("GetLastestConversationMessages: Timeout: Failed to get access to DB.");
             }
 
             return conversationMessages;

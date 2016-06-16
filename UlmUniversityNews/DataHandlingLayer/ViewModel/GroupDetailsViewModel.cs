@@ -536,11 +536,14 @@ namespace DataHandlingLayer.ViewModel
         /// Führt den Befehl ConversationSelectedCommand aus. Stößt den Wechsel
         /// auf die Detailansicht der Konversation aus.
         /// </summary>
-        /// <param name="param">Die gewählte Konversation.</param>
-        private void executeConversationSelectedCommand(object param)
+        /// <param name="selectedConversation">Die gewählte Konversation.</param>
+        private void executeConversationSelectedCommand(object selectedConversation)
         {
-            Debug.WriteLine("In ConversationSelected.");
-            // TODO
+            Conversation conversation = selectedConversation as Conversation;
+            if (conversation != null)
+            {
+                _navService.Navigate("ConversationDetails", conversation.Id);
+            }
         }
 
         /// <summary>

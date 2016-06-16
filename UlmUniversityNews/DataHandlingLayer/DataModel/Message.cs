@@ -15,7 +15,7 @@ namespace DataHandlingLayer.DataModel
     /// hat eine eindeutige Id sowie eine Nummer bezüglich der Ressource zu der sie gehört. 
     /// Der Inhalt einer Nachricht ist eine normale Zeichenfolge.
     /// </summary>
-    public class Message : ModelValidatorBase
+    public class Message : PropertyChangedNotifier
     {
         #region Properties
         private int id;

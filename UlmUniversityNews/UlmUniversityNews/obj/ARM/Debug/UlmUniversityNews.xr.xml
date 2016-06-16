@@ -122,6 +122,11 @@
     <RootPropertyPathName Name="SelectedGroupType" />
     <RootPropertyPathName Name="GroupName" />
     <RootPropertyPathName Name="EditableGroup" />
+    <RootPropertyPathName Name="IsLatestMessage" />
+    <RootPropertyPathName Name="AuthorName" />
+    <RootPropertyPathName Name="EnteredMessage" />
+    <RootPropertyPathName Name="ConversationMessages" />
+    <RootPropertyPathName Name="SelectedConversation" />
     <RootPropertyPathName Name="AdminName" />
     <RootPropertyPathName Name="AmountOfUnreadMessages" />
     <RootPropertyPathName Name="HasLeaveOption" />
@@ -301,6 +306,7 @@
       <RootProperty Name="X2" />
       <RootProperty Name="Margin" />
       <RootProperty Name="Style" />
+      <RootProperty Name="Visibility" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Shapes.Shape">
       <RootProperty Name="Stretch" />
@@ -459,6 +465,7 @@
       <RootProperty Name="RenderTransformOrigin" />
       <RootProperty Name="RenderTransform" />
       <RootProperty Name="Margin" />
+      <RootProperty Name="IsTapEnabled" />
       <RootEvent Name="ItemClick" />
       <RootEvent Name="Loaded" />
     </RootType>
@@ -555,6 +562,7 @@
       <RootProperty Name="TextWrapping" />
       <RootProperty Name="AcceptsReturn" />
       <RootProperty Name="MaxLength" />
+      <RootProperty Name="PlaceholderText" />
       <RootProperty Name="HorizontalAlignment" />
       <RootProperty Name="VerticalAlignment" />
       <RootProperty Name="MinHeight" />
@@ -615,6 +623,7 @@
       <RootProperty Name="Margin" />
     </RootType>
     <RootType FullName="UlmUniversityNews.Views.Group.AddAndEditGroupDialog.AddAndEditGroup" />
+    <RootType FullName="UlmUniversityNews.Views.Group.ConversationDetails" />
     <RootType FullName="UlmUniversityNews.Converters.GroupToGroupAdminStringConverter" />
     <RootType FullName="UlmUniversityNews.Converters.ParticipantsListToStringConverter" />
     <RootType FullName="UlmUniversityNews.Converters.ConversationToIconPathConverter" />
