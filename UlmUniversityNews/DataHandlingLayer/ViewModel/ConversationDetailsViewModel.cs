@@ -2,6 +2,7 @@
 using DataHandlingLayer.ErrorMapperInterface;
 using DataHandlingLayer.NavigationService;
 using DataHandlingLayer.Controller;
+using DataHandlingLayer.CommandRelays;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using DataHandlingLayer.DataModel;
 using DataHandlingLayer.Exceptions;
 using System.Diagnostics;
+using DataHandlingLayer.DataModel.Enums;
 
 namespace DataHandlingLayer.ViewModel
 {
@@ -56,6 +58,15 @@ namespace DataHandlingLayer.ViewModel
         #endregion Properties
 
         #region Commands
+        private AsyncRelayCommand sendMessageCommand;
+        /// <summary>
+        /// Befehl zum Senden einer Konversationsnachricht.
+        /// </summary>
+        public AsyncRelayCommand SendMessageCommand
+        {
+            get { return sendMessageCommand; }
+            set { sendMessageCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -66,7 +77,13 @@ namespace DataHandlingLayer.ViewModel
         public ConversationDetailsViewModel(INavigationService navService, IErrorMapper errorMapper)
             : base(navService, errorMapper)
         {
-            groupController = new GroupController();
+            groupController = new GroupController(this);
+
+            // Erzeuge Befehle.
+            SendMessageCommand = new AsyncRelayCommand(
+                param => executeSendMessageCommandAsync(),
+                param => canSendMessage()
+                );
         }
 
         /// <summary>
@@ -99,6 +116,8 @@ namespace DataHandlingLayer.ViewModel
                 Debug.WriteLine("LoadSelectedConversationAsync: Failed to load selected conversation.");
                 displayError(ex.ErrorCode);
             }
+
+            checkCommandExecution();
         }
 
         /// <summary>
@@ -119,5 +138,70 @@ namespace DataHandlingLayer.ViewModel
                 displayError(ex.ErrorCode);
             }
         }
+
+        #region CommandFunctionality
+        /// <summary>
+        /// Hilfsfunktion, welche die Prüfung der Ausführbarkeit der Befehle anstößt.
+        /// </summary>
+        private void checkCommandExecution()
+        {
+            SendMessageCommand.OnCanExecuteChanged();
+        }
+
+        /// <summary>
+        /// Prüft, ob der Befehl zum Senden einer Konversationsnachricht aktuell zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canSendMessage()
+        {
+            if (SelectedConversation != null)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl zum Senden einer Konversationsnachricht aus.
+        /// </summary>
+        /// <returns></returns>
+        private async Task executeSendMessageCommandAsync()
+        {
+            if (SelectedConversation == null)
+                return;
+
+            try
+            {
+                displayIndeterminateProgressIndicator();
+
+                string messageContent = EnteredMessage;
+                Priority priority = Priority.NORMAL;
+
+                User localUser = groupController.GetLocalUser();
+
+                // Wenn es eine Tutoriumsgruppe ist und der Nutzer Tutor ist, dann sende mit Priorität hoch.
+                Group group = groupController.GetGroup(SelectedConversation.GroupId);
+                if (group.Type == GroupType.TUTORIAL && group.GroupAdmin == localUser.Id)
+                {
+                    Debug.WriteLine("executeSendMessageCommandAsync: Set message priority to high.");
+                    priority = Priority.HIGH;
+                }
+
+                await groupController.SendConversationMessageAsync(
+                    group.Id, 
+                    SelectedConversation.Id, 
+                    messageContent, 
+                    priority);
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("executeSendMessageCommandAsync: Failed to send message.");
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
+        }
+        #endregion CommandFunctionality
     }
 }

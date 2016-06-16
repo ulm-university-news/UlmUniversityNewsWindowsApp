@@ -1406,4 +1406,10 @@ date: </value>
   <data name="GroupDetailsSynchronizeConversationStatus" xml:space="preserve">
     <value>Synchronizing conversations.</value>
   </data>
+  <data name="VE_ConversationMessageTextIsNullValidationError" xml:space="preserve">
+    <value>Please enter a message.</value>
+  </data>
+  <data name="VE_ConversationMessageTextLengthValidationError" xml:space="preserve">
+    <value>The message is too long. Please make sure your messages don't exceed a length of 500 characters.</value>
+  </data>
 </root>

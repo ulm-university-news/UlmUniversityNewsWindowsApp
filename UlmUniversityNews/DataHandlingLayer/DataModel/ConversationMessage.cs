@@ -47,7 +47,7 @@ namespace DataHandlingLayer.DataModel
             get { return conversationId; }
             set { conversationId = value; }
         }
-
+        
         private bool isLatestMessage = false;
         /// <summary>
         /// Gibt an, ob diese Nachricht die aktuellste Nachricht in der Konversation ist.
@@ -87,5 +87,31 @@ namespace DataHandlingLayer.DataModel
             this.authorUser = authorId;
             this.conversationId = conversationId;
         }
+
+        #region ValidationRules
+        /// <summary>
+        /// Validiert die Eigenschaft "Text" der ConversationMessage Instanz.
+        /// </summary>
+        public void ValidateTextProperty()
+        {
+            if (Text == null)
+            {
+                SetValidationError("Text", "VE_ConversationMessageTextIsNullValidationError");
+            }
+            else if (!checkStringRange(0, 100, Text))
+            {
+                SetValidationError("Text", "VE_ConversationMessageTextLengthValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Methode, welche die Validierung aller Properties anstößt, 
+        /// für die Validierungsregeln definiert sind.
+        /// </summary>
+        public override void ValidateAll()
+        {
+            ValidateTextProperty();
+        }
+        #endregion ValidationRules
     }
 }

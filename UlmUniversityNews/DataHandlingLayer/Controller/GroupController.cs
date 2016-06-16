@@ -1024,6 +1024,74 @@ namespace DataHandlingLayer.Controller
 
             Debug.WriteLine("SynchronizeConversationsWithServerAsync. Finished.");
         }
+
+        /// <summary>
+        /// Erstelle eine neue Konversationsnachricht. Sendet einen Request an den Server,
+        /// um die Nachricht anzulegen. Der Server verteilt die Nachricht dann an alle Teilnehmer.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Konversation gehört.</param>
+        /// <param name="conversationId">Die Id der Konversation, in der die Nachricht verschickt werden soll.</param>
+        /// <param name="content">Der Inhalt der Nachricht.</param>
+        /// <param name="messagePriority">Die Priorität der Nachricht.</param>
+        /// <returns>Liefert true, wenn die Nachricht angelegt wurde. Liefert false, wenn die Validierung der Nachrichtendaten
+        ///     fehlschlägt.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Request fehlschlägt oder vom Server abgelehnt 
+        ///     wird, oder die Speicherung der Nachricht fehlschlägt.</exception>
+        public async Task<bool> SendConversationMessageAsync(int groupId, int conversationId, string content, Priority messagePriority)
+        {
+            User localUser = getLocalUser();
+
+            // Erstelle zunächst Conversation-Objekt.
+            ConversationMessage message = new ConversationMessage()
+            {
+                Text = content,
+                MessagePriority = messagePriority,
+                AuthorId = localUser.Id
+            };
+
+            // Führe Validierung aus. Breche ab bei Validierungsfehler.
+            clearValidationErrors();
+            message.ClearValidationErrors();
+            message.ValidateAll();
+            if (message.HasValidationErrors())
+            {
+                reportValidationErrors(message.GetValidationErrors());
+                return false;
+            }
+
+            // Parse Nachricht zu Json.
+            string jsonContent = jsonParser.ParseConversationMessageToJson(message);
+
+            // Setze Request an den Server ab.
+            string serverResponse = null;
+            try
+            {
+                serverResponse = await groupAPI.SendCreateConversationMessageRequest(
+                    localUser.ServerAccessToken,
+                    groupId,
+                    conversationId,
+                    jsonContent);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("SendConversationMessageAsync: Request to create conversation message failed.");
+
+                // TODO: Fälle: GroupNotFound, ConversationNotFound.
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            // Parse Serverantwort.
+            if (serverResponse != null)
+            {
+                ConversationMessage convMsg = jsonParser.ParseConversationMessageFromJson(serverResponse);
+
+                // Speichere die Nachricht ab.
+                StoreConversationMessage(convMsg);
+            }
+
+            return true;
+        }
         #endregion RemoteConversationMethods
 
         #region LocalGroupMethods

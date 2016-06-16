@@ -1389,6 +1389,7 @@ namespace DataHandlingLayer.Database
                                     closed = true;
                                 int adminId = Convert.ToInt32(stmt["ConversationAdmin_User_Id"]);
                                 string adminName = stmt["Name"] as string;  // Frage Name des Administrators direkt mit ab.
+                                int groupId = Convert.ToInt32(stmt["Group_Id"]);
 
                                 conversation = new Conversation()
                                 {
@@ -1396,7 +1397,8 @@ namespace DataHandlingLayer.Database
                                     Title = title,
                                     IsClosed = closed,
                                     AdminId = adminId,
-                                    AdminName = adminName
+                                    AdminName = adminName,
+                                    GroupId = groupId
                                 };
 
                                 // Bestimme Anzahl ungelesener Nachrichten.
@@ -1527,6 +1529,7 @@ namespace DataHandlingLayer.Database
                                 title = getConvStmt["Title"] as string;
                                 adminId = Convert.ToInt32(getConvStmt["ConversationAdmin_User_Id"]);
                                 adminName = getConvStmt["Name"] as string;
+                                groupId = Convert.ToInt32(getConvStmt["Group_Id"]);
 
                                 closed = false;
                                 if (getConvStmt["Closed"] != null && (long)getConvStmt["Closed"] == 1)
@@ -1538,7 +1541,8 @@ namespace DataHandlingLayer.Database
                                     Title = title,
                                     AdminId = adminId,
                                     IsClosed = closed,
-                                    AdminName = adminName
+                                    AdminName = adminName,
+                                    GroupId = groupId
                                 };
 
                                 // Bestimme Anzahl ungelesener Nachrichten für diese Konversation.
@@ -1618,6 +1622,7 @@ namespace DataHandlingLayer.Database
                                 closed = true;
                             int adminId = Convert.ToInt32(stmt["ConversationAdmin_User_Id"]);
                             string adminName = stmt["Name"] as string;
+                            int groupId = Convert.ToInt32(stmt["Group_Id"]);
 
                             Conversation conversation = new Conversation()
                             {
@@ -1625,7 +1630,8 @@ namespace DataHandlingLayer.Database
                                 Title = title,
                                 IsClosed = closed,
                                 AdminId = adminId,
-                                AdminName = adminName                                
+                                AdminName = adminName,
+                                GroupId = groupId                                
                             };
 
                             conversations.Add(conversation);

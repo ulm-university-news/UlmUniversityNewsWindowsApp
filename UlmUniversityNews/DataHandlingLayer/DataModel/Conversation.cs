@@ -60,6 +60,17 @@ namespace DataHandlingLayer.DataModel
             set { adminId = value; }
         }
 
+        private int groupId;
+        /// <summary>
+        /// Die Id der Gruppe, zu der die Konversation zugeordnet ist.
+        /// </summary>
+        [JsonIgnore]
+        public int GroupId
+        {
+            get { return groupId; }
+            set { groupId = value; }
+        }
+
         private string adminName;
         /// <summary>
         /// Der Name des Konversationsadministrators.

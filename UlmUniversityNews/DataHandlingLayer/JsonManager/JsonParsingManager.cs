@@ -629,6 +629,49 @@ namespace DataHandlingLayer.JsonManager
 
             return convMsgs;
         }
+
+        /// <summary>
+        /// Wandle die Konversationsnachricht in ein JSON-Dokument um.
+        /// </summary>
+        /// <param name="message">Das Objekt vom Typ ConversationMessage, das umgewandelt werden soll.</param>
+        /// <returns>Das JSON-Dokument als String, oder null, falls die Umwandlung fehlschlägt.</returns>
+        public string ParseConversationMessageToJson(ConversationMessage message)
+        {
+            string messageJson = null;
+            try
+            {
+                messageJson = JsonConvert.SerializeObject(message);
+            }
+            catch (JsonException jsonEx)
+            {
+                Debug.WriteLine("ParseConversationMessageToJson: Json parser error occurred. " +
+                    "Message is {0}.", jsonEx.Message);
+            }
+
+            return messageJson;
+        }
+
+        /// <summary>
+        /// Extrahiere Konversationsnachricht aus dem übergebenen JSON-Dokument.
+        /// </summary>
+        /// <param name="jsonString">Das übergebene JSON-Dokument.</param>
+        /// <returns>Ein Objekt der Klasse ConversationMessage, oder null, falls das 
+        ///     Objekt nicht extrahiert werden konnte.</returns>
+        public ConversationMessage ParseConversationMessageFromJson(string jsonString)
+        {
+            ConversationMessage convMessage = null;
+            try
+            {
+                convMessage = JsonConvert.DeserializeObject<ConversationMessage>(jsonString);
+            }
+            catch (JsonException jsonEx)
+            {
+                Debug.WriteLine("ParseConversationMessageFromJson: Json parser error occurred. " +
+                    "Message is {0}.", jsonEx.Message);
+            }
+
+            return convMessage;
+        }
         #endregion ConversationMessage
 
         ///// <summary>

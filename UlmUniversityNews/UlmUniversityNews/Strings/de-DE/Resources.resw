@@ -1407,4 +1407,10 @@ Nachricht am: </value>
   <data name="GroupDetailsSynchronizeConversationStatus" xml:space="preserve">
     <value>Synchronisiere Konversationen</value>
   </data>
+  <data name="VE_ConversationMessageTextIsNullValidationError" xml:space="preserve">
+    <value>Bitte geben Sie eine Nachricht ein.</value>
+  </data>
+  <data name="VE_ConversationMessageTextLengthValidationError" xml:space="preserve">
+    <value>Die eingegebene Nachricht ist zu lang. Bitte achten Sie darauf, dass Ihre Nachrichten nicht die Länge von 500 Zeichen überschreiten.</value>
+  </data>
 </root>
