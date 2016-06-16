@@ -21,6 +21,11 @@ namespace DataHandlingLayer.ViewModel
         /// Eine Referenz auf eine Instanz der GroupController Klasse.
         /// </summary>
         private GroupController groupController;
+
+        /// <summary>
+        /// Eine Referenz auf den lokalen Nutzer.
+        /// </summary>
+        private User localUser;
         #endregion Fields
 
         #region Properties
@@ -34,6 +39,20 @@ namespace DataHandlingLayer.ViewModel
             set
             {
                 selectedPivotItemIndex = value;
+                checkCommandExecution();
+            }
+        }
+
+        private string selectedPitvotItemName;
+        /// <summary>
+        /// Der Name des gwählten Pivotelements.
+        /// </summary>
+        public string SelectedPivotItemName
+        {
+            get { return selectedPitvotItemName; }
+            set
+            {
+                selectedPitvotItemName = value;
                 checkCommandExecution();
             }
         }
@@ -140,6 +159,16 @@ namespace DataHandlingLayer.ViewModel
             get { return conversationSelectedCommand; }
             set { conversationSelectedCommand = value; }
         }
+
+        private AsyncRelayCommand synchronizeDataCommand;
+        /// <summary>
+        /// Befehl zum Synchronisieren der angezeigten Daten mit dem Server.
+        /// </summary>
+        public AsyncRelayCommand SynchronizeDataCommand
+        {
+            get { return synchronizeDataCommand; }
+            set { synchronizeDataCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -156,6 +185,8 @@ namespace DataHandlingLayer.ViewModel
             IsGroupParticipant = false;
             HasLeaveOption = false;
 
+            localUser = groupController.GetLocalUser();
+
             // Erzeuge Befehle.
             JoinGroupCommand = new AsyncRelayCommand(
                 param => executeJoinGroupCommandAsync(),
@@ -168,6 +199,9 @@ namespace DataHandlingLayer.ViewModel
                 param => canEditGroup());
             ConversationSelectedCommand = new RelayCommand(
                 param => executeConversationSelectedCommand(param));
+            SynchronizeDataCommand = new AsyncRelayCommand(
+                param => executeSynchronizeDataCommandAsync(),
+                param => canSynchronizeData());
         }
 
         /// <summary>
@@ -262,7 +296,7 @@ namespace DataHandlingLayer.ViewModel
                 }
 
                 // Test: Führe Synchronisation durch.
-                await SynchronizeConversations();
+                // await SynchronizeConversations();
             }
             catch (ClientException ex)
             {
@@ -326,6 +360,7 @@ namespace DataHandlingLayer.ViewModel
                 HasLeaveOption = false;
             }
             EditGroupCommand.RaiseCanExecuteChanged();
+            SynchronizeDataCommand.OnCanExecuteChanged();
         }
 
         /// <summary>
@@ -371,6 +406,9 @@ namespace DataHandlingLayer.ViewModel
                         Debug.WriteLine("The new selected group is: {0}.", SelectedGroup.Name);
 
                     IsGroupParticipant = true;
+
+                    // Lade Konversationsdaten.
+                    await LoadConversationsAsync(SelectedGroup.Id);
                 }
             }
             catch (ClientException ex)
@@ -437,11 +475,10 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
         private bool canEditGroup()
         {
-            User localUser = groupController.GetLocalUser();
             // Nur möglich für Administrator von Gruppe. Außerdem nur auf dem "Details" Pivot Item.
             if (SelectedGroup != null &&
                 localUser.Id == SelectedGroup.GroupAdmin && 
-                SelectedPivotItemIndex == 2)
+                SelectedPivotItemName == "GroupDetailsPivotItem")
             {
                 return true;
             }
@@ -470,6 +507,63 @@ namespace DataHandlingLayer.ViewModel
         {
             Debug.WriteLine("In ConversationSelected.");
             // TODO
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zum Synchronisieren der Daten 
+        /// aktuell zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canSynchronizeData()
+        {
+            if (SelectedGroup != null && IsGroupParticipant)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl zum Aktualisieren der Daten aus.
+        /// </summary>
+        private async Task executeSynchronizeDataCommandAsync()
+        {
+            if (SelectedGroup == null)
+                return;
+
+            try
+            {
+                switch (SelectedPivotItemName)
+                {
+                    case "ConversationPivotItem":
+                        displayIndeterminateProgressIndicator("GroupDetailsSynchronizeConversationStatus");
+
+                        await SynchronizeConversations();
+
+                        // Lade Teilnehmer-Informationen erneut, da diese durch die Synchronisation möglicherweise 
+                        // geändert wurden.
+                        List<User> participants = groupController.GetActiveParticipantsOfGroup(SelectedGroup.Id);
+                        SelectedGroup.Participants = participants;
+
+                        break;
+                    case "BallotPivotItem":
+                        break;
+                    case "GroupDetailsPivotItem":
+                        break;
+                    case "EventsPivotItem":
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("executeSynchronizeDataCommandAsync: Synchronization of the data has failed.");
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
         }
         #endregion CommandFunctionality
 

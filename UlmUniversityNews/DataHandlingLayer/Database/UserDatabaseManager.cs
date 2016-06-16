@@ -28,6 +28,7 @@ namespace DataHandlingLayer.Database
         /// <returns>Liefert true, wenn der Datensatz existiert, ansonsten false.</returns>
         public bool IsUserStored(int userId)
         {
+            Stopwatch sw = Stopwatch.StartNew();
             bool isStored = false;
 
             // Frage das Mutex Objekt ab.
@@ -71,6 +72,9 @@ namespace DataHandlingLayer.Database
                     }
                 }
             }
+
+            sw.Stop();
+            Debug.WriteLine("IsUserStored: Required time: {0}.", sw.Elapsed.TotalMilliseconds);
 
             return isStored;
         }
@@ -218,6 +222,76 @@ namespace DataHandlingLayer.Database
             {
                 Debug.WriteLine("Couldn't get access to database. Time out.");
                 throw new DatabaseException("Could not get access to the database.");
+            }
+        }
+
+        /// <summary>
+        /// Aktualisiert die Nutzerdatensätze in der Datenbank. Die zu 
+        /// überarbeitenden Datensätze werden mit den neuen Daten als Paremter übergeben.
+        /// </summary>
+        /// <param name="users">Die Menge an zu aktualisierenden Nutzer. Liste von Objekten des
+        ///     Typ User.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Aktualisierung fehlschlägt.</exception>
+        public void UpdateUsers(List<User> users)
+        {
+            if (users == null || users.Count == 0)
+            {
+                Debug.WriteLine("UpdateUsers: No valid users passed to the update method.");
+                return;
+            }
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"UPDATE User 
+                            SET Name=?, OldName=Name 
+                            WHERE Name<>? AND Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            foreach (User user in users)
+                            {
+                                stmt.Bind(1, user.Name);
+                                stmt.Bind(2, user.Name);
+                                stmt.Bind(2, user.Id);
+
+                                if (stmt.Step() != SQLiteResult.DONE)
+                                    Debug.WriteLine("UpdateUsers: Failed to update user with id {0}.", user.Id);
+                                else
+                                    Debug.WriteLine("UpdateUsers: Successfully updated user with id {0}.", user.Id);
+
+                                // Zurücksetzen für nächste Iteration.
+                                stmt.Reset();
+                            }                           
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("UpdateUsers: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("UpdateUsers: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("UpdateUsers: Mutex timeout.");
+                throw new DatabaseException("UpdateUsers: Timeout: Failed to get access to DB.");
             }
         }
 

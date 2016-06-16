@@ -689,6 +689,7 @@ namespace DataHandlingLayer.Database
                                 {
                                     Id = Convert.ToInt32(stmt["Id"]),
                                     Name = stmt["Name"] as string,
+                                    Active = ((long)stmt["Active"] == 1) ? true : false
                                 };
 
                                 participantDictionary.Add(tmp.Id, tmp);

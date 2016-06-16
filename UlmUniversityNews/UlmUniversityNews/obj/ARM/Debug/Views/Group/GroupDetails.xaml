@@ -144,6 +144,13 @@
         <CommandBar x:Name="ChannelSettingsCommandBar"
 						Foreground="{StaticResource UNUCommandBarButtonColor}"
 						Background="{StaticResource UniUlmMainBackgroundColor}">
+            <AppBarButton
+                x:Name="GroupDetailsSynchronizeButton"
+                x:Uid="GroupDetailsSynchronizeButton"
+                Icon="Sync"
+                Label="synchronisieren"
+                Visibility="{Binding IsGroupParticipant, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding SynchronizeDataCommand}"/>
             <AppBarButton x:ConnectionId='1' 
                 x:Name="GroupDetailsJoinGroupButton"
                 x:Uid="GroupDetailsJoinGroupButton"
@@ -185,14 +192,6 @@
                                 Style="{StaticResource FlyoutSingleButtonStyle}"
                                 Content="Verlassen"
                                 Command="{Binding LeaveGroupCommand}">
-                                <!--<i:Interaction.Behaviors>
-                                    <core:EventTriggerBehavior EventName="IsEnabledChanged">
-                                        <core:ChangePropertyAction 
-                                            TargetObject="{Binding ElementName=GroupDetailsLeaveGroupButton}" 
-                                            PropertyName="Visibility" 
-                                            Value="{Binding ElementName=LeaveGroupFlyoutButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                    </core:EventTriggerBehavior>
-                                </i:Interaction.Behaviors>-->
                             </Button>
                         </Grid>
                     </Flyout>
@@ -229,7 +228,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- Drawer Icon -->
-            <Image x:ConnectionId='2' x:Name="DrawerIcon" 
+            <Image x:ConnectionId='3' x:Name="DrawerIcon" 
 					   Grid.Column="0"
 					   Style="{StaticResource DrawerIconStyle}"
 					                              />
@@ -246,8 +245,9 @@
 
             <!-- Inhalt der Seite -->
             <Grid x:Name="MainFragment" Background="{StaticResource MainFragmentBackgroundColor}">
-                <Pivot x:Name="GroupDetailsPivot"
+                <Pivot x:ConnectionId='2' x:Name="GroupDetailsPivot"
                        x:Uid="GroupDetailsPivot"
+                                                                            
                        HeaderTemplate="{StaticResource PivotItemHeaderStyle}"
                        SelectedIndex="{Binding SelectedPivotItemIndex, Mode=TwoWay}">
                     

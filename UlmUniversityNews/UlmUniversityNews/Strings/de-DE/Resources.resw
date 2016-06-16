@@ -1383,4 +1383,10 @@ Nachricht am: </value>
   <data name="GroupDetailsNoConversationsInGroupInfo.Text" xml:space="preserve">
     <value>In dieser Gruppe sind noch keine Konversationen vorhanden.</value>
   </data>
+  <data name="GroupDetailsSynchronizeButton.Label" xml:space="preserve">
+    <value>aktuali-sieren</value>
+  </data>
+  <data name="GroupDetailsSynchronizeConversationStatus" xml:space="preserve">
+    <value>Synchronisiere Konversationen</value>
+  </data>
 </root>

@@ -221,5 +221,21 @@ namespace UlmUniversityNews.Views.Group
         {
             await GroupDetailsPasswordEntryDialog.ShowAsync();
         }
+
+        /// <summary>
+        /// Behandelt Änderung des aktiven Pivotelements.
+        /// </summary>
+        /// <param name="sender">Die Ereignisquelle.</param>
+        /// <param name="e">Die Ereignisparameter.</param>
+        private void GroupDetailsPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Pivot pivotElement = this.GroupDetailsPivot;
+            PivotItem selectedItem = pivotElement.SelectedItem as PivotItem;
+
+            if (selectedItem != null)
+            {
+                groupDetailsViewModel.SelectedPivotItemName = selectedItem.Name;
+            }
+        }
     }
 }

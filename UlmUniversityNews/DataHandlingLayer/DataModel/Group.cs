@@ -142,7 +142,7 @@ namespace DataHandlingLayer.DataModel
         public int NumberOfUnreadMessages
         {
             get { return numberOfUnreadMessages; }
-            set { numberOfUnreadMessages = value; }
+            set { this.setProperty(ref this.numberOfUnreadMessages, value); }
         }
 
         private List<User> participants;
@@ -153,7 +153,7 @@ namespace DataHandlingLayer.DataModel
         public List<User> Participants
         {
             get { return participants; }
-            set { participants = value; }
+            set { this.setProperty(ref this.participants, value); }
         }
 
         #endregion Properties

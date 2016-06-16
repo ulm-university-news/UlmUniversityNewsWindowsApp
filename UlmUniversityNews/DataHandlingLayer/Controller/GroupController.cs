@@ -322,7 +322,33 @@ namespace DataHandlingLayer.Controller
 
                 return false;
             }
-            
+
+            // Frage noch Konversationen-Daten ab.
+            try
+            {
+                List<Conversation> conversations = await GetConversationsAsync(groupId, true, false);
+                groupDBManager.BulkInsertConversations(groupId, conversations);
+
+                foreach (Conversation conversation in conversations)
+                {
+                    StoreConversationMessages(groupId, conversation.Id, conversation.ConversationMessages);
+                }
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("JoinGroupAsync: Failed to store the conversation data.");
+                Debug.WriteLine("JoinGroupAsync: error msg is {0}.", ex.Message);
+                // Werfe hier keinen Fehler an Aufrufer. Daten können später einfach nachgeladen werden.
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("JoinGroupAsync: Failed to retrieve the conversation data.");
+                Debug.WriteLine("JoinGroupAsync: error msg is {0}.", ex.Message);
+                // Werfe hier keinen Fehler an Aufrufer. Daten können später einfach nachgeladen werden.
+            }
+
+            // TODO: Frage noch die Abstimmungsdaten ab.
+
             return true;
         }
 
@@ -674,6 +700,58 @@ namespace DataHandlingLayer.Controller
 
             return updatedGroup;
         }
+
+        /// <summary>
+        /// Snychronisiert die lokalen Teilnehmerdaten der Gruppe mit der angegebenen Id mit den
+        /// Daten vom Server. 
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, für die die Teilnehmerdaten aktualisiert werden sollen.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Aktualisierung fehlschlägt.</exception>
+        public async Task SynchronizeGroupParticipantsAsync(int groupId)
+        {
+            Debug.WriteLine("SynchronizeGroupParticipantsAsync: Start synchronisation.");
+            Stopwatch sw = Stopwatch.StartNew();
+
+            // Frage zunächst die neuesten Teilnehmer-Informationen vom Server ab.
+            List<User> participants = await GetParticipantsOfGroupAsync(groupId, false);
+
+            // Synchronisiere die lokalen Nutzerdatensätze.
+            userController.AddOrUpdateUsers(participants);
+
+            Dictionary<int, User> participantsDirectory = GetParticipantsLookupDirectory(groupId);
+            // Aktualisiere die Teilnehmerdaten bezüglich der lokalen Gruppe.
+            foreach (User participant in participants)
+            {
+                
+                if (!participantsDirectory.ContainsKey(participant.Id) && participant.Active)
+                {
+                    // Füge den Teilnehmer der Gruppe hinzu.
+                    AddParticipantToGroup(groupId, participant);
+                    Debug.WriteLine("SynchronizeGroupParticipantsAsync: Need to add participant with user id {0} " + 
+                        "to the group with id {1}.", participant.Id, groupId);
+                }
+                else
+                {
+                    User currentParticipant = participantsDirectory[participant.Id];
+                    if (!currentParticipant.Active && participant.Active)
+                    {
+                        ChangeActiveStatusOfParticipant(groupId, participant.Id, true);
+                        Debug.WriteLine("SynchronizeGroupParticipantsAsync: Need to set participant with user id {0} " + 
+                            "as an active participant again for group with id {1}.", participant.Id, groupId);
+                    }
+
+                    if (currentParticipant.Active && !participant.Active)
+                    {
+                        ChangeActiveStatusOfParticipant(groupId, participant.Id, false);
+                        Debug.WriteLine("SynchronizeGroupParticipantsAsync: Need to set participant with user id {0} " + 
+                            "inactive in group with id {1}.", participant.Id, groupId);
+                    }
+                }            
+            }
+
+            sw.Stop();
+            Debug.WriteLine("SynchronizeGroupParticipantsAsync: Finished. Required time: {0}.", sw.Elapsed.TotalMilliseconds);
+        }
         #endregion RemoteGroupMethods
 
         #region RemoteConversationMethods
@@ -803,9 +881,13 @@ namespace DataHandlingLayer.Controller
         /// <exception cref="ClientException">Wirft ClientException, wenn Synchronisation fehlschlägt.</exception>
         public async Task SynchronizeConversationsWithServerAsync(int groupId)
         {
+            Debug.WriteLine("SynchronizeConversationsWithServerAsync: Start synchronisation.");
+            // Synchronisiere die lokalen Teilnehmerdaten, so dass es dort keine Probleme gibt.
+            await SynchronizeGroupParticipantsAsync(groupId);
+
             // Frage zunächst die neuesten Konversationsdaten vom Server ab.
             List<Conversation> referenceList = await GetConversationsAsync(groupId, true, false);
-
+            
             // Frage lokale Datensätze ab.
             List<Conversation> currentList = GetConversations(groupId);
 
@@ -831,6 +913,7 @@ namespace DataHandlingLayer.Controller
                 {
                     // Hinzufügen.
                     newConversations.Add(refConversation);
+                    Debug.WriteLine("SynchronizeConversationsWithServerAsync: Need to add conversation with id {0}.", refConversation.Id);                  
                 }
             }
 
@@ -854,6 +937,7 @@ namespace DataHandlingLayer.Controller
                     currentConv.IsClosed = true;
                     // Führe Markierung durch Aktualisierung aus.
                     updatableConversations.Add(currentConv);
+                    Debug.WriteLine("SynchronizeConversationsWithServerAsync: Conversation with id {0} seems to be deleted on the server.", currentConv.Id);
                 }
             }
 
@@ -904,6 +988,8 @@ namespace DataHandlingLayer.Controller
                     }
                 }
             }
+
+            Debug.WriteLine("SynchronizeConversationsWithServerAsync. Finished.");
         }
         #endregion RemoteConversationMethods
 

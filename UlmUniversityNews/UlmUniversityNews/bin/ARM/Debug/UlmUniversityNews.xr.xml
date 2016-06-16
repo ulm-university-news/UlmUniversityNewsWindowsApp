@@ -127,6 +127,7 @@
     <RootPropertyPathName Name="HasLeaveOption" />
     <RootPropertyPathName Name="LeaveGroupCommand" />
     <RootPropertyPathName Name="IsGroupParticipant" />
+    <RootPropertyPathName Name="SynchronizeDataCommand" />
     <RootPropertyPathName Name="JoinGroupCommand" />
     <RootPropertyPathName Name="ActualWidth" />
     <RootPropertyPathName Name="EnteredPassword" />
@@ -442,6 +443,7 @@
       <RootProperty Name="Items" />
       <RootProperty Name="HeaderTemplate" />
       <RootProperty Name="SelectedIndex" />
+      <RootEvent Name="SelectionChanged" />
       <RootMethod Name="GetSlideInAnimationGroup" />
       <RootMethod Name="SetSlideInAnimationGroup" />
     </RootType>
