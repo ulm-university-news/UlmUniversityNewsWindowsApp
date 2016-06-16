@@ -752,6 +752,39 @@ namespace DataHandlingLayer.Controller
             sw.Stop();
             Debug.WriteLine("SynchronizeGroupParticipantsAsync: Finished. Required time: {0}.", sw.Elapsed.TotalMilliseconds);
         }
+
+        /// <summary>
+        /// Lösche die Gruppe aus dem System. Setzt einen Request zum Löschen der Gruppe an den Server ab.
+        /// Löscht die Gruppe aus den lokalen Datensätzen.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, die gelöscht werden soll.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Löschung fehlschlägt.</exception>
+        public async Task DeleteGroupAsync(int groupId)
+        {
+            // Setze Request zum Löschen der Gruppe an den Server ab.
+            try
+            {
+                await groupAPI.SendDeleteGroupRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId);
+
+                Debug.WriteLine("DeleteGroupAsync: Successfully deleted group on the server.");
+            }
+            catch (APIException ex)
+            {
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    // Gruppe wohl schon gelöscht.
+                    DeleteGroupLocally(groupId);
+                    return;
+                }
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            // Lösche die Gruppe lokal. Löscht automatisch alle mit der Gruppe verknüpften Daten mit.
+            DeleteGroupLocally(groupId);
+        }
         #endregion RemoteGroupMethods
 
         #region RemoteConversationMethods

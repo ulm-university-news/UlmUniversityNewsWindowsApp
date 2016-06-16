@@ -87,6 +87,16 @@ namespace DataHandlingLayer.ViewModel
             set { this.setProperty(ref this.hasLeaveOption, value); }
         }
 
+        private bool hasDeleteOption;
+        /// <summary>
+        /// Gibt an, ob der Nutzer die Möglichkeit hat die Gruppe zu löschen.
+        /// </summary>
+        public bool HasDeleteOption
+        {
+            get { return hasDeleteOption; }
+            set { this.setProperty(ref this.hasDeleteOption, value); }
+        }
+        
         private string enteredPassword;
         /// <summary>
         /// Das vom Nutzer eingegebene Passwort.
@@ -169,6 +179,16 @@ namespace DataHandlingLayer.ViewModel
             get { return synchronizeDataCommand; }
             set { synchronizeDataCommand = value; }
         }
+
+        private AsyncRelayCommand deleteGroupCommand;
+        /// <summary>
+        /// Befehl zum Löschen der Gruppe.
+        /// </summary>
+        public AsyncRelayCommand DeleteGroupCommand
+        {
+            get { return deleteGroupCommand; }
+            set { deleteGroupCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -202,6 +222,9 @@ namespace DataHandlingLayer.ViewModel
             SynchronizeDataCommand = new AsyncRelayCommand(
                 param => executeSynchronizeDataCommandAsync(),
                 param => canSynchronizeData());
+            DeleteGroupCommand = new AsyncRelayCommand(
+                param => executeDeleteGroupAsync(),
+                param => canDeleteGroup());
         }
 
         /// <summary>
@@ -284,19 +307,21 @@ namespace DataHandlingLayer.ViewModel
             {
                 // Lade die Konversationen aus der Datenbank.
                 List<Conversation> conversations = await Task.Run(() => groupController.GetConversations(groupId));
-
-                // TODO sortieren
-
-                if (ConversationCollection == null)
-                    ConversationCollection = new ObservableCollection<Conversation>();
-
-                foreach (Conversation conversation in conversations)
+                if (conversations != null)
                 {
-                    ConversationCollection.Add(conversation);
-                }
+                    // TODO sortieren
 
-                // Test: Führe Synchronisation durch.
-                // await SynchronizeConversations();
+                    if (ConversationCollection == null)
+                        ConversationCollection = new ObservableCollection<Conversation>();
+
+                    foreach (Conversation conversation in conversations)
+                    {
+                        ConversationCollection.Add(conversation);
+                    }
+
+                    // Test: Führe Synchronisation durch.
+                    // await SynchronizeConversations();
+                }
             }
             catch (ClientException ex)
             {
@@ -361,6 +386,15 @@ namespace DataHandlingLayer.ViewModel
             }
             EditGroupCommand.RaiseCanExecuteChanged();
             SynchronizeDataCommand.OnCanExecuteChanged();
+            DeleteGroupCommand.OnCanExecuteChanged();
+            if (canDeleteGroup())
+            {
+                HasDeleteOption = true;
+            }
+            else
+            {
+                HasDeleteOption = false;
+            }
         }
 
         /// <summary>
@@ -558,6 +592,51 @@ namespace DataHandlingLayer.ViewModel
             catch (ClientException ex)
             {
                 Debug.WriteLine("executeSynchronizeDataCommandAsync: Synchronization of the data has failed.");
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zum Löschen der Gruppe aktuell zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canDeleteGroup()
+        {
+            if (SelectedGroup != null && 
+                localUser.Id == SelectedGroup.GroupAdmin && 
+                SelectedPivotItemName == "GroupDetailsPivotItem")
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl DeleteGroupCommand aus. Stößt die Löschung
+        /// der Gruppe an.
+        /// </summary>
+        private async Task executeDeleteGroupAsync()
+        {
+            if (SelectedGroup == null)
+                return;
+
+            try
+            {
+                displayIndeterminateProgressIndicator("GroupDetailsDeleteGroupStatus");
+
+                await groupController.DeleteGroupAsync(SelectedGroup.Id);
+
+                if (_navService.CanGoBack())
+                    _navService.GoBack();
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("executeDeleteGroupAsync: Failed to delete the group.");
                 displayError(ex.ErrorCode);
             }
             finally

@@ -145,6 +145,45 @@
 						Foreground="{StaticResource UNUCommandBarButtonColor}"
 						Background="{StaticResource UniUlmMainBackgroundColor}">
             <AppBarButton
+                x:Name="GroupDetailsDeleteGroupButton"
+                x:Uid="GroupDetailsDeleteGroupButton"
+                Icon="Delete"
+                Label="löschen"
+                Visibility="{Binding HasDeleteOption, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <AppBarButton.Flyout>
+                    <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}">
+                        <Grid
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Warnhinweis bezüglich Gruppe löschen. -->
+                            <TextBlock 
+                                Grid.Row="0"
+                                x:Name="DeleteGroupWarning"
+                                x:Uid="GroupDetailsDeleteGroupWarning"
+                                Style="{StaticResource TextInFlyoutsStyle}" >
+                                Wollen Sie die Gruppe wirklich löschen?
+                            </TextBlock>
+
+                            <!-- Verlassen Button-->
+                            <Button
+                                Grid.Row="1"
+                                x:Name="DeleteGroupFlyoutButton"
+                                x:Uid="GroupDetailsDeleteGroupFlyoutButton"
+                                Style="{StaticResource FlyoutSingleButtonStyle}"
+                                Content="Löschen"
+                                Command="{Binding DeleteGroupCommand}">
+                            </Button>
+                        </Grid>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+
+            <AppBarButton
                 x:Name="GroupDetailsSynchronizeButton"
                 x:Uid="GroupDetailsSynchronizeButton"
                 Icon="Sync"

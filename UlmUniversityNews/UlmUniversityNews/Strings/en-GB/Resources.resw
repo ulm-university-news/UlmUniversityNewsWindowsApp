@@ -1382,6 +1382,18 @@ date: </value>
   <data name="GroupDetailsNoConversationsInGroupInfo.Text" xml:space="preserve">
     <value>There are no conversations in this group yet.</value>
   </data>
+  <data name="GroupDetailsDeleteGroupButton.Label" xml:space="preserve">
+    <value>delete</value>
+  </data>
+  <data name="GroupDetailsDeleteGroupFlyoutButton.Content" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="GroupDetailsDeleteGroupStatus" xml:space="preserve">
+    <value>Deleting group</value>
+  </data>
+  <data name="GroupDetailsDeleteGroupWarning.Text" xml:space="preserve">
+    <value>Do you really want to delete the group? This cannot be undone.</value>
+  </data>
   <data name="GroupDetailsSynchronizeButton.Label" xml:space="preserve">
     <value>sync</value>
   </data>

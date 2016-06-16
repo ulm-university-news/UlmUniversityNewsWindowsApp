@@ -224,7 +224,8 @@ namespace DataHandlingLayer.Database
                             }
 
                             // Füge Teilnehmerliste der Gruppe hinzu.
-                            group.Participants = participants;
+                            if (group != null)
+                                group.Participants = participants;
                         }
                     }
                     catch (SQLiteException sqlEx)

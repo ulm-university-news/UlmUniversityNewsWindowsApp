@@ -1383,6 +1383,18 @@ Nachricht am: </value>
   <data name="GroupDetailsNoConversationsInGroupInfo.Text" xml:space="preserve">
     <value>In dieser Gruppe sind noch keine Konversationen vorhanden.</value>
   </data>
+  <data name="GroupDetailsDeleteGroupButton.Label" xml:space="preserve">
+    <value>löschen</value>
+  </data>
+  <data name="GroupDetailsDeleteGroupFlyoutButton.Content" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="GroupDetailsDeleteGroupStatus" xml:space="preserve">
+    <value>Lösche Gruppe</value>
+  </data>
+  <data name="GroupDetailsDeleteGroupWarning.Text" xml:space="preserve">
+    <value>Wollen Sie die Gruppe wirklich löschen? Das kann nicht rückgängig gemacht werden.</value>
+  </data>
   <data name="GroupDetailsSynchronizeButton.Label" xml:space="preserve">
     <value>aktuali-sieren</value>
   </data>
