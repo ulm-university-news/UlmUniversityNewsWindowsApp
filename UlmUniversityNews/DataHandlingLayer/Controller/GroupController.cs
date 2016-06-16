@@ -1493,6 +1493,25 @@ namespace DataHandlingLayer.Controller
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
         }
+
+        /// <summary>
+        /// Markiert die Konversationsnachrichten der angegebenen Konversation als gelesen.
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation, für die die Nachrichten als
+        ///     gelesen markiert werden sollen.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Markierung fehlschlägt.</exception>
+        public void MarkConversationMessagesAsRead(int conversationId)
+        {
+            try
+            {
+                groupDBManager.MarkConversationMessagesAsRead(conversationId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("MarkConversationMessagesAsRead: Couldn't mark messages as read.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
         #endregion LocalConversationMethods
     }
 }

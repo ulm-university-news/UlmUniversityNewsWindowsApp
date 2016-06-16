@@ -100,5 +100,24 @@ namespace DataHandlingLayer.ViewModel
                 displayError(ex.ErrorCode);
             }
         }
+
+        /// <summary>
+        /// Markiere die Nachrichten dieser Konversation als gelesen.
+        /// </summary>
+        public void MarkConversationMessagesAsRead()
+        {
+            if (SelectedConversation == null)
+                return;
+
+            try
+            {
+                groupController.MarkConversationMessagesAsRead(SelectedConversation.Id);
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("MarkConversationMessagesAsRead: Failed to mark conversation messages as read.");
+                displayError(ex.ErrorCode);
+            }
+        }
     }
 }

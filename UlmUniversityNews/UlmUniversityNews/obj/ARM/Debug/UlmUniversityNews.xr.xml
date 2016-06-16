@@ -465,7 +465,6 @@
       <RootProperty Name="RenderTransformOrigin" />
       <RootProperty Name="RenderTransform" />
       <RootProperty Name="Margin" />
-      <RootProperty Name="IsTapEnabled" />
       <RootEvent Name="ItemClick" />
       <RootEvent Name="Loaded" />
     </RootType>

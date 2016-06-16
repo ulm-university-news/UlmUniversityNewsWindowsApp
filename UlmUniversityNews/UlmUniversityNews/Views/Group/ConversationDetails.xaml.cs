@@ -83,6 +83,8 @@ namespace UlmUniversityNews.Views.Group
         /// serialisierbarer Zustand.</param>
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
+            // Markiere ConversationMessages als gelesen.
+            conversationDetailsViewModel.MarkConversationMessagesAsRead();
         }
 
         #region NavigationHelper-Registrierung

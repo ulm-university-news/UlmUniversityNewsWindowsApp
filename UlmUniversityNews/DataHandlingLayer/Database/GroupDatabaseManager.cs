@@ -2217,6 +2217,64 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Markiert Konversationsnachrichten der Konversation, die durch die angegebene Id 
+        /// identifieziert wird, als gelesen.
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation, für die die Nachrichten
+        ///     als gelsen markiert werden sollen.</param>
+        public void MarkConversationMessagesAsRead(int conversationId)
+        {
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"UPDATE Message 
+                                        SET Read=? 
+                                        WHERE Id IN (
+                                            SELECT Message_Id As Id
+                                            FROM ConversationMessage
+                                            WHERE Conversation_Id=?
+                                        );";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, 1);    // 1 = true
+                            stmt.Bind(2, conversationId);
+
+                            if (stmt.Step() != SQLiteResult.DONE)
+                                Debug.WriteLine("MarkConversationMessagesAsRead: Couldn't reset 'read' flag on conversation messages.");
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("MarkConversationMessagesAsRead: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("MarkConversationMessagesAsRead: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("MarkConversationMessagesAsRead: Mutex timeout.");
+                throw new DatabaseException("MarkConversationMessagesAsRead: Timeout: Failed to get access to DB.");
+            }
+        }
+
+        /// <summary>
         /// Löscht alle Konversationsnachrichten der Konversation, die durch die
         /// angegebene Id identifiziert ist.
         /// </summary>
