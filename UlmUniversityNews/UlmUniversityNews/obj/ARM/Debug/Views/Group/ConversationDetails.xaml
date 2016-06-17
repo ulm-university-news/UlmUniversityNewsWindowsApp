@@ -156,11 +156,26 @@
 					   Style="{StaticResource DrawerIconStyle}"
 					                              />
 
-            <!-- Drawer Text -->
-            <TextBlock Grid.Column="1"
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <!-- Drawer Text -->
+                <TextBlock Grid.Column="0"
 						   x:Uid="ConversationDetailsConversationTitle"
 						   Style="{StaticResource DrawerTextStyle}"
 						   Text="{Binding SelectedConversation.Title}" />
+                
+                <!-- Conversation closed hint -->
+                <TextBlock Grid.Column="1"
+                           x:Uid="ConversationDetailsConverstionClosedHint"
+                           Style="{StaticResource DrawerTextStyle}"
+                           Visibility="{Binding SelectedConversation.IsClosed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                           Text=""/>
+            </Grid>
+            
         </Grid>
 
         <!--Inhalt der Seite und Inhalt des Drawer Menü-->

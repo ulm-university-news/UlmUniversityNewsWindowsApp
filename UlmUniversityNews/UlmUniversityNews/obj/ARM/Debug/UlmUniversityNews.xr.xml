@@ -129,6 +129,7 @@
     <RootPropertyPathName Name="EnteredMessage" />
     <RootPropertyPathName Name="ConversationMessages" />
     <RootPropertyPathName Name="SelectedConversation" />
+    <RootPropertyPathName Name="IsClosed" />
     <RootPropertyPathName Name="AdminName" />
     <RootPropertyPathName Name="AmountOfUnreadMessages" />
     <RootPropertyPathName Name="HasLeaveOption" />

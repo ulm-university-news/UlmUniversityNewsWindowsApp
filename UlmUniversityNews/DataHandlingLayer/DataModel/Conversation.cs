@@ -13,7 +13,7 @@ namespace DataHandlingLayer.DataModel
     /// Die Nachrichten werden an alle Teilnehmer verteilt. Konversationen bündeln Nachrichten unter einem bestimmten 
     /// Thema (Title).
     /// </summary>
-    public class Conversation
+    public class Conversation : PropertyChangedNotifier
     {
         #region Properties
         private int id;
@@ -35,7 +35,7 @@ namespace DataHandlingLayer.DataModel
         public string Title
         {
             get { return title; }
-            set { title = value; }
+            set { this.setProperty(ref this.title, value); }
         }
 
         private bool? isClosed;
@@ -46,7 +46,7 @@ namespace DataHandlingLayer.DataModel
         public bool? IsClosed
         {
             get { return isClosed; }
-            set { isClosed = value; }
+            set { this.setProperty(ref this.isClosed, value); }
         }
 
         private int adminId;
@@ -57,7 +57,7 @@ namespace DataHandlingLayer.DataModel
         public int AdminId
         {
             get { return adminId; }
-            set { adminId = value; }
+            set { this.setProperty(ref this.adminId, value); }
         }
 
         private int groupId;
@@ -79,7 +79,7 @@ namespace DataHandlingLayer.DataModel
         public string AdminName
         {
             get { return adminName; }
-            set { adminName = value; }
+            set { this.setProperty(ref this.adminName, value); }
         }
         
         private List<ConversationMessage> conversationMessages;
@@ -101,7 +101,7 @@ namespace DataHandlingLayer.DataModel
         public int AmountOfUnreadMessages
         {
             get { return amountOfUnreadMessages; }
-            set { amountOfUnreadMessages = value; }
+            set { this.setProperty(ref this.amountOfUnreadMessages, value); }
         }
         #endregion Properties
 

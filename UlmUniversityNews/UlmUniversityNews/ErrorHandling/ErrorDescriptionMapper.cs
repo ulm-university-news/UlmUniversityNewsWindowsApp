@@ -149,6 +149,21 @@ namespace UlmUniversityNews.ErrorHandling
                 case ErrorCodes.GroupAdminRightsTransferHasFailed:
                     errorDescription = loader.GetString("ApplicationErrorGroupAdminRightsTransferHasFailedError");
                     break;
+                case ErrorCodes.ConversationNotFound:
+                    errorDescription = loader.GetString("ApplicationErrorConversationNotFoundError");
+                    break;
+                case ErrorCodes.ConversationDataIncomplete:
+                    errorDescription = loader.GetString("ApplicationErrorConversationDataIncompleteError");
+                    break;
+                case ErrorCodes.ConversationInvalidTitle:
+                    errorDescription = loader.GetString("ApplicationErrorConversationInvalidTitleError");
+                    break;
+                case ErrorCodes.ConversationStorageFailedDueToMissingAdmin:
+                    errorDescription = loader.GetString("ApplicationErrorConversationStorageFailedDueToMissingAdminError");
+                    break;
+                case ErrorCodes.ConversationIsClosed:
+                    errorDescription = loader.GetString("ApplicationErrorConversationIsClosedError");
+                    break;
                 case ErrorCodes.BadRequest:
                     errorDescription = loader.GetString("ApplicationErrorBadRequestError");;
                     break;

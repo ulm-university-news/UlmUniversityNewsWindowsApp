@@ -47,6 +47,7 @@ namespace UlmUniversityNews.PushNotifications
         public event EventHandler<AnnouncementReceivedEventArgs> ReceivedAnnouncement;
         public event EventHandler<ChannelDeletedEventArgs> ChannelDeleted;
         public event EventHandler<ChannelChangedEventArgs> ChannelChanged;
+        public event EventHandler<ConversationMessageNewEventArgs> ReceivedConversationMessage;
         #endregion Events
 
         /// <summary>
@@ -215,25 +216,20 @@ namespace UlmUniversityNews.PushNotifications
                 {
                     case PushType.ANNOUNCEMENT_NEW:
                         // Sende Event an Listener.
-                        if (ReceivedAnnouncement != null)
-                        {
-                            // Sende ReceivedAnnouncement Event mit Kanal-Id des betroffenen Kanals.
-                            ReceivedAnnouncement(this, new AnnouncementReceivedEventArgs(pushMsg.Id1));
-                        }
+                        // Sende ReceivedAnnouncement Event mit Kanal-Id des betroffenen Kanals.
+                        ReceivedAnnouncement?.Invoke(this, new AnnouncementReceivedEventArgs(pushMsg.Id1));
                         break;
                     case PushType.CHANNEL_DELETED:
-                        if (ChannelDeleted != null)
-                        {
-                            // Sende ChannelDeleted Event mit Kanal-Id des betroffenen Kanals.
-                            ChannelDeleted(this, new ChannelDeletedEventArgs(pushMsg.Id1));
-                        }
+                        // Sende ChannelDeleted Event mit Kanal-Id des betroffenen Kanals.
+                        ChannelDeleted?.Invoke(this, new ChannelDeletedEventArgs(pushMsg.Id1));
                         break;
                     case PushType.CHANNEL_CHANGED:
-                        if (ChannelChanged != null)
-                        {
-                            // Sende ChannelDeleted Event mit Kanal-Id des betroffenen Kanals.
-                            ChannelChanged(this, new ChannelChangedEventArgs(pushMsg.Id1));
-                        }
+                        // Sende ChannelDeleted Event mit Kanal-Id des betroffenen Kanals.
+                        ChannelChanged?.Invoke(this, new ChannelChangedEventArgs(pushMsg.Id1));
+                        break;
+                    case PushType.CONVERSATION_MESSAGE_NEW:
+                        // Sende ReceivedConverstionMessage Event.
+                        ReceivedConversationMessage?.Invoke(this, new ConversationMessageNewEventArgs(pushMsg.Id1, pushMsg.Id2));
                         break;
                     default:
                         break;
@@ -249,16 +245,21 @@ namespace UlmUniversityNews.PushNotifications
         ///     die Benutzerbenachrichtigung durchgeführt wird.</param>
         private void performUserNotification(PushMessage pushMsg)
         {
-            // Benachrichtige abhängig vom Typ der Push-Nachricht.
-            switch (pushMsg.PushType)
-            {
-                case PushType.ANNOUNCEMENT_NEW:
-                    // Ermittle Überschrift und Ressourcen-Schlüssel für Nachrichteninhalt.
-                    string headline = pushController.GetUserNotificationHeadline(pushMsg);
-                    string resourceKey = pushController.GetUserNotificationContentLocalizationKey(pushMsg);
-                    showToastNotification(headline, resourceKey);
-                    break;
-            }
+            // Ermittle Überschrift und Ressourcen-Schlüssel für Nachrichteninhalt.
+            string headline = pushController.GetUserNotificationHeadline(pushMsg);
+            string resourceKey = pushController.GetUserNotificationContentLocalizationKey(pushMsg);
+            showToastNotification(headline, resourceKey);
+
+            //// Benachrichtige abhängig vom Typ der Push-Nachricht.
+            //switch (pushMsg.PushType)
+            //{
+            //    case PushType.ANNOUNCEMENT_NEW:
+
+            //        break;
+            //    case PushType.CONVERSATION_MESSAGE_NEW:
+
+            //        break;
+            //}
         }
 
         /// <summary>

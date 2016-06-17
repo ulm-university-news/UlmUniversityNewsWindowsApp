@@ -19,6 +19,11 @@ namespace DataHandlingLayer.Controller
         /// Eine Instanz der ChannelController Klasse.
         /// </summary>
         private ChannelController channelController;
+
+        /// <summary>
+        /// Eine Instanz der GroupController Klasse.
+        /// </summary>
+        private GroupController groupController;
         #endregion Fields
 
         /// <summary>
@@ -28,6 +33,7 @@ namespace DataHandlingLayer.Controller
             : base()
         {
             channelController = new ChannelController();
+            groupController = new GroupController();
         }
 
         /// <summary>
@@ -91,6 +97,7 @@ namespace DataHandlingLayer.Controller
                 case PushType.CONVERSATION_DELETED:
                     break;
                 case PushType.CONVERSATION_MESSAGE_NEW:
+                    handledSuccessfully = await handleConversationMessageNewPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.BALLOT_NEW:
                     break;
@@ -162,6 +169,13 @@ namespace DataHandlingLayer.Controller
                     notificationRequired = checkNotificationRequiredForNewAnnouncement(appSettings, channelId);
                     break;
                 case PushType.CONVERSATION_MESSAGE_NEW:
+                    // Prüfe Anwendungseinstellungen ab. Soll der Nutzer über die eingetroffene Konversationsnachricht informiert werden?
+                    int groupId = pm.Id1;
+                    int conversationId = pm.Id2;
+                    Debug.WriteLine("It will be checked whether the user needs to be notified about the received conversation message" +
+                        " for the group with id {0} and the conversation with id {1}.", groupId, conversationId);
+
+                    notificationRequired = checkNotificationRequiredForConversationMessage(appSettings, groupId, conversationId);
                     break;
                 case PushType.CHANNEL_DELETED:
                     // Informieren bei Kanal-Löschung.
@@ -192,6 +206,11 @@ namespace DataHandlingLayer.Controller
                     // Id1 ist die Kanal-Id in diesem Kontext.
                     headline = getChannelName(msg.Id1);
                     break;
+                case PushType.CONVERSATION_MESSAGE_NEW:
+                    string groupName = getGroupName(msg.Id1);
+                    string conversationTitle = getConversationTitle(msg.Id2);
+                    headline = groupName + " -> " + conversationTitle;
+                    break;
             }
 
             return headline;
@@ -217,6 +236,9 @@ namespace DataHandlingLayer.Controller
                 case PushType.CHANNEL_DELETED:
                     localizationKey = "PushNotificationReceivedChannelDeleted";
                     break;
+                case PushType.CONVERSATION_MESSAGE_NEW:
+                    localizationKey = "PushNotificationReceivedConversationMessageNew";
+                    break;
             }
 
             return localizationKey;
@@ -233,10 +255,10 @@ namespace DataHandlingLayer.Controller
         private bool checkNotificationRequiredForNewAnnouncement(AppSettings appSettings, int channelId)
         {
             bool notificationRequired = false;
+                        
+            DataHandlingLayer.DataModel.Enums.NotificationSetting settings;
 
             // Hole den Kanal und entscheide abhängig von den Einstellungen.
-            DataHandlingLayer.DataModel.Enums.NotificationSetting settings;
-            
             Channel affectedChannel = channelController.GetChannel(channelId);
             if (affectedChannel.AnnouncementNotificationSetting
                 != DataHandlingLayer.DataModel.Enums.NotificationSetting.APPLICATION_DEFAULT)
@@ -281,6 +303,66 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Prüft im Falle einer eingegangenen ConversationMessage, ob der Nutzer benachrichtigt werden soll.
+        /// Die Entscheidung wird abhängig von den Anwendungseinstellungen, oder falls definiert, abhängig
+        /// von den gruppenspezifischen Einstellungen getroffen.
+        /// </summary>
+        /// <param name="appSettings">Die aktuell gültigen Anwendungseinstellungen</param>
+        /// <param name="groupId">Die Id der betroffenen Gruppe, zu der die Konversation gehört.</param>
+        /// <param name="conversationId">Die Id der betroffenen Konversation.</param>
+        /// <returns>Liefert true, wenn der Nutzer benachrichtigt werden soll, ansonsten false.</returns>
+        private bool checkNotificationRequiredForConversationMessage(AppSettings appSettings, int groupId, int conversationId)
+        {
+            bool notificationRequired = false;
+
+            DataHandlingLayer.DataModel.Enums.NotificationSetting settings;
+
+            // Hole die Gruppe und prüfe die Einstellungen.
+            Group affectedGroup = groupController.GetGroup(groupId);
+            if (affectedGroup.GroupNotificationSetting != 
+                DataModel.Enums.NotificationSetting.APPLICATION_DEFAULT)
+            {
+                Debug.WriteLine("Take group specific settings.");
+
+                settings = affectedGroup.GroupNotificationSetting;
+            }
+            else
+            {
+                Debug.WriteLine("Take application specific settings.");
+
+                settings = appSettings.MsgNotificationSetting;
+            }
+
+            switch (settings)
+            {
+                case DataModel.Enums.NotificationSetting.ANNOUNCE_PRIORITY_HIGH:
+                    // Prüfe, ob die eingegangene Nachricht die Priorität hoch hatte.
+                    ConversationMessage lastMessage = groupController.GetLastConversationMessage(conversationId);
+                    if (lastMessage != null)
+                    {
+                        if (lastMessage.MessagePriority == Priority.HIGH)
+                        {
+                            notificationRequired = true;
+                        }
+                    }
+                    break;
+                case DataModel.Enums.NotificationSetting.ANNOUNCE_ALL:
+                    notificationRequired = true;
+                    break;
+                case DataModel.Enums.NotificationSetting.ANNOUNCE_NONE:
+                    notificationRequired = false;
+                    break;
+                default:
+                    Debug.WriteLine("No cases match, will return false.");
+                    notificationRequired = false;
+                    break;
+            }
+
+            Debug.WriteLine("The result of whether the user will be notified is {0}.", notificationRequired);
+            return notificationRequired;
+        }
+
+        /// <summary>
         /// Gibt den Namen des Kanals zurück, der die angegebene Id besitzt.
         /// </summary>
         /// <param name="channelId">Die Id des Kanals.</param>
@@ -291,7 +373,9 @@ namespace DataHandlingLayer.Controller
             try
             {
                 Channel affectedChannel = channelController.GetChannel(channelId);
-                channelName = affectedChannel.Name;
+
+                if (affectedChannel != null)
+                    channelName = affectedChannel.Name;
             }
             catch (ClientException ex)
             {
@@ -300,6 +384,54 @@ namespace DataHandlingLayer.Controller
             }
 
             return channelName;
+        }
+
+        /// <summary>
+        /// Gib den Titel der Konversation zurück, der die angegebene Id besitzt.
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation.</param>
+        /// <returns>Der Titel der Konversation.</returns>
+        private string getConversationTitle(int conversationId)
+        {
+            string conversationTitle = string.Empty;
+            try
+            {
+                Conversation conversation = groupController.GetConversation(conversationId, false);
+                
+                if (conversation != null)
+                    conversationTitle = conversation.Title;
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("getConversationTitle: Couldn't extract conversation title.");
+                Debug.WriteLine("Msg is: {0}.", ex.Message);
+            }
+
+            return conversationTitle;
+        }
+
+        /// <summary>
+        /// Gibt den Namen der Gruppe zurück, die durch die Id eindeutig identifiziert ist.
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        private string getGroupName(int groupId)
+        {
+            string groupName = string.Empty;
+            try
+            {
+                Group group = groupController.GetGroup(groupId);
+
+                if (group != null)
+                    groupName = group.Name;
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("getGroupName: Couldn't extract group name.");
+                Debug.WriteLine("Msg is: {0}.", ex.Message);
+            }
+
+            return groupName;
         }
 
         /// <summary>
@@ -336,7 +468,7 @@ namespace DataHandlingLayer.Controller
             }
             catch(ClientException ex)
             {
-                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund sind.
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
                 Debug.WriteLine("Handling of Announcement_New push message failed. Message is {0}.", ex.Message);
                 return false;
             }
@@ -379,7 +511,7 @@ namespace DataHandlingLayer.Controller
             }
             catch (ClientException ex)
             {
-                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund sind.
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
                 Debug.WriteLine("Handling of Channel_Changed push message failed. Message is {0}.", ex.Message);
                 return false;
             }
@@ -404,7 +536,7 @@ namespace DataHandlingLayer.Controller
             }
             catch (ClientException ex)
             {
-                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund sind.
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
                 Debug.WriteLine("Handling of Channel_Deleted push message failed. Message is {0}.", ex.Message);
                 return false;
             }
@@ -445,7 +577,7 @@ namespace DataHandlingLayer.Controller
             }
             catch (ClientException ex)
             {
-                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund sind.
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
                 Debug.WriteLine("Handling of Moderator_Added push message failed. Message is {0}.", ex.Message);
                 return false;
             }
@@ -473,7 +605,7 @@ namespace DataHandlingLayer.Controller
             }
             catch (ClientException ex)
             {
-                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund sind.
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
                 Debug.WriteLine("Handling of Moderator_Removed push message failed. Message is {0}.", ex.Message);
                 return false;
             }
@@ -485,6 +617,60 @@ namespace DataHandlingLayer.Controller
         {
             // TODO
             return false;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Push Nachricht vom Typ CONVERSATION_MESSAGE_NEW. Ruft die
+        /// empfange Nachricht vom Server ab und speichert sie in den lokalen Datensätzen ab.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private async Task<bool> handleConversationMessageNewPushMsgAsync(PushMessage msg)
+        {
+            // Extrahiere Parameter.
+            int groupId = msg.Id1;
+            int conversationId = msg.Id2;
+
+            try
+            {
+                // Frage höchste Nachrichtennummer für Kanal ab.
+                int highestMsgNr = groupController.GetHighestMessageNumberOfConversation(conversationId);
+
+                // Frage Nachrichten ab.
+                List<ConversationMessage> messages = await groupController.GetConversationMessagesAsync(
+                    groupId,
+                    conversationId,
+                    highestMsgNr,
+                    false);
+
+                if (messages != null)
+                {
+                    if (messages.Count == 1)
+                    {
+                        bool successful = groupController.StoreConversationMessage(messages.First());
+                        if (!successful)
+                        {
+                            Debug.WriteLine("handleConversationMessageNewPushMsgAsync: Trying to retrieve the missing data.");
+                            // Versuche Nachricht mit Abruf der notwendigen Daten zu speichern.
+                            await groupController.SynchronizeGroupParticipantsAsync(groupId);
+                            groupController.StoreConversationMessage(messages.First());
+                        }
+                    }
+                    else
+                    {
+                        // Speichere die Nachrichten ab.
+                        groupController.StoreConversationMessages(groupId, conversationId, messages);
+                    }
+                }
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of ConversationMessageNew push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
         }
     }
 }

@@ -404,6 +404,38 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
+        /// <summary>
+        /// Aktualisiere die Werte für die noch ungelesenen Konversationsnachrichten in jeder Konversation aus 
+        /// der "ConversationCollection" Liste.
+        /// </summary>
+        public async Task UpdateNumberOfUnreadConversationMessagesAsync()
+        {
+            if (SelectedGroup == null)
+                return;
+
+            // Rufe Verzeichnis mit Informationen über die ungelesenen Nachrichten ab.
+            Dictionary<int, int> unreadMessagesMap =
+                await Task.Run(() => groupController.GetAmountOfUnreadConversationMessagesForGroup(SelectedGroup.Id));
+
+            if (unreadMessagesMap != null)
+            {
+                // Aktualisiere Anzeige.
+                foreach (Conversation conversation in ConversationCollection)
+                {
+                    if (unreadMessagesMap.ContainsKey(conversation.Id))
+                    {
+                        // Speichere Wert aus Verzeichnis als neuen Wert für die ungelesenen Nachrichten.
+                        conversation.AmountOfUnreadMessages = unreadMessagesMap[conversation.Id];
+                    }
+                    else
+                    {
+                        // Keine ungelesenen Nachrichten.
+                        conversation.AmountOfUnreadMessages = 0;
+                    }
+                }
+            }
+        }
+
         #region CommandFunctionality
         /// <summary>
         /// Hilfsmethode, welche die Prüfung der Ausführbarkeit von Befehlen

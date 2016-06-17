@@ -89,11 +89,14 @@ namespace DataHandlingLayer.Database
 
         /// <summary>
         /// Aktualisiert den Datensatz der Gruppe. Es werden die Daten aus dem
-        /// übergebenen Objekt übernommen.
+        /// übergebenen Objekt übernommen. Aktualisiert die Benachrichtigungsoptionen
+        /// für diese Gruppe nur, wenn es explizit geforder wird.
         /// </summary>
         /// <param name="updatedGroup">Das Gruppenobjekt mit den aktualisierten Daten.</param>
+        /// <param name="updateNotificationSettings">Gibt an, ob die Benachrichtigungsoptionen geändert werden sollen.
+        ///     Wird das nicht gesetzt, so werden die Benachrichtigungsoptionen bei der Aktualisierung ignoriert.</param>
         /// <exception cref="DatabaseException">Wirft DatabaseException wenn Aktualisierung fehlschlägt.</exception>
-        public void UpdateGroup(Group updatedGroup)
+        public void UpdateGroup(Group updatedGroup, bool updateNotificationSettings)
         {
             if (updatedGroup == null)
             {
@@ -111,32 +114,65 @@ namespace DataHandlingLayer.Database
                 {
                     try
                     {
-                        string query = @"UPDATE ""Group"" 
+                        if (updateNotificationSettings)
+                        {
+                            string query = @"UPDATE ""Group"" 
                             SET Name=?, Description=?, Type=?, CreationDate=?, ModificationDate=?,
-                            Term=?, Deleted=?, GroupAdmin_User_Id=?, NotificationSettings_NotifierId=?, IsDirty=? 
+                            Term=?, Deleted=?, GroupAdmin_User_Id=?, IsDirty=?, NotificationSettings_NotifierId=? 
                             WHERE Id=?;";
 
-                        using (var updateStmt = conn.Prepare(query))
-                        {
-                            updateStmt.Bind(1, updatedGroup.Name);
-                            updateStmt.Bind(2, updatedGroup.Description);
-                            updateStmt.Bind(3, (int) updatedGroup.Type);
-                            updateStmt.Bind(4, DatabaseManager.DateTimeToSQLite(updatedGroup.CreationDate));
-                            updateStmt.Bind(5, DatabaseManager.DateTimeToSQLite(updatedGroup.ModificationDate));
-                            updateStmt.Bind(6, updatedGroup.Term);
-                            updateStmt.Bind(7, (updatedGroup.Deleted) ? 1 : 0);
-                            updateStmt.Bind(8, updatedGroup.GroupAdmin);
-                            updateStmt.Bind(9, (int) updatedGroup.GroupNotificationSetting);
-                            // IsDirty:
-                            updateStmt.Bind(10, 1); // Änderung am Datensatz, daher Dirty = true.
+                            using (var updateStmt = conn.Prepare(query))
+                            {
+                                updateStmt.Bind(1, updatedGroup.Name);
+                                updateStmt.Bind(2, updatedGroup.Description);
+                                updateStmt.Bind(3, (int)updatedGroup.Type);
+                                updateStmt.Bind(4, DatabaseManager.DateTimeToSQLite(updatedGroup.CreationDate));
+                                updateStmt.Bind(5, DatabaseManager.DateTimeToSQLite(updatedGroup.ModificationDate));
+                                updateStmt.Bind(6, updatedGroup.Term);
+                                updateStmt.Bind(7, (updatedGroup.Deleted) ? 1 : 0);
+                                updateStmt.Bind(8, updatedGroup.GroupAdmin);
+                                // IsDirty:
+                                updateStmt.Bind(9, 1); // Änderung am Datensatz, daher Dirty = true.
 
-                            updateStmt.Bind(11, updatedGroup.Id);
+                                // NotificationSettings.
+                                updateStmt.Bind(10, (int)updatedGroup.GroupNotificationSetting);
 
-                            if (updateStmt.Step() != SQLiteResult.DONE)
-                                Debug.WriteLine("Failed to update the group with id {0}.", updatedGroup.Id);
-                            else
-                                Debug.WriteLine("Successfully updated the group with id {0}.", updatedGroup.Id);
+                                updateStmt.Bind(11, updatedGroup.Id);
+
+                                if (updateStmt.Step() != SQLiteResult.DONE)
+                                    Debug.WriteLine("Failed to update the group with id {0}.", updatedGroup.Id);
+                                else
+                                    Debug.WriteLine("Successfully updated the group with id {0}.", updatedGroup.Id);
+                            }
                         }
+                        else
+                        {
+                            string query = @"UPDATE ""Group"" 
+                            SET Name=?, Description=?, Type=?, CreationDate=?, ModificationDate=?,
+                            Term=?, Deleted=?, GroupAdmin_User_Id=?, IsDirty=? 
+                            WHERE Id=?;";
+
+                            using (var updateStmt = conn.Prepare(query))
+                            {
+                                updateStmt.Bind(1, updatedGroup.Name);
+                                updateStmt.Bind(2, updatedGroup.Description);
+                                updateStmt.Bind(3, (int)updatedGroup.Type);
+                                updateStmt.Bind(4, DatabaseManager.DateTimeToSQLite(updatedGroup.CreationDate));
+                                updateStmt.Bind(5, DatabaseManager.DateTimeToSQLite(updatedGroup.ModificationDate));
+                                updateStmt.Bind(6, updatedGroup.Term);
+                                updateStmt.Bind(7, (updatedGroup.Deleted) ? 1 : 0);
+                                updateStmt.Bind(8, updatedGroup.GroupAdmin);
+                                // IsDirty:
+                                updateStmt.Bind(9, 1); // Änderung am Datensatz, daher Dirty = true.
+
+                                updateStmt.Bind(10, updatedGroup.Id);
+
+                                if (updateStmt.Step() != SQLiteResult.DONE)
+                                    Debug.WriteLine("Failed to update the group with id {0}.", updatedGroup.Id);
+                                else
+                                    Debug.WriteLine("Successfully updated the group with id {0}.", updatedGroup.Id);
+                            }
+                        }                       
                     }
                     catch (SQLiteException sqlEx)
                     {

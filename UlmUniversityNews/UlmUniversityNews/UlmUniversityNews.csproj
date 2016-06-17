@@ -234,6 +234,7 @@
     <Compile Include="PushNotifications\EventArgClasses\AnnouncementReceivedEventArgs.cs" />
     <Compile Include="PushNotifications\EventArgClasses\ChannelChangedEventArgs.cs" />
     <Compile Include="PushNotifications\EventArgClasses\ChannelDeletedEventArgs.cs" />
+    <Compile Include="PushNotifications\EventArgClasses\ConversationMessageNewEventArgs.cs" />
     <Compile Include="PushNotifications\PushNotificationManager.cs" />
     <Compile Include="Views\About\AboutUniversityNews.xaml.cs">
       <DependentUpon>AboutUniversityNews.xaml</DependentUpon>

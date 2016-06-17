@@ -81,6 +81,7 @@ namespace DataHandlingLayer.Exceptions
         public const int ConversationDataIncomplete = 4102;
         public const int ConversationInvalidTitle = 4103;
         public const int ConversationStorageFailedDueToMissingAdmin = 4104;
+        public const int ConversationIsClosed = 4105;
 
         public const int ServerDatabaseFailure = 5000;
 

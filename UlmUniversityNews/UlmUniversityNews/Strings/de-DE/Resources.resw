@@ -1324,7 +1324,7 @@ Nachricht am: </value>
     <value>Anzeigen</value>
   </data>
   <data name="ApplicationErrorGroupAdminNotAllowedToExitError" xml:space="preserve">
-    <value>Sie sind der Administrator dieser Gruppe. Der Administrator der Gruppe kann die Gruppe nicht verlassen, wenn kein anderer Teilnehmer die Position des Administrators übernehmen kann.</value>
+    <value>Sie sind der Administrator dieser Gruppe. Der Administrator der Gruppe kann die Gruppe nicht verlassen, wenn kein anderer Teilnehmer die Position des Administrators übernehmen kann. Sie könnten die Gruppe stattdessen löschen.</value>
   </data>
   <data name="ApplicationErrorGroupAdminRightsTransferHasFailedError" xml:space="preserve">
     <value>Die Übertragung der Administrationsrechte an einen anderen Nutzer ist fehlgeschlagen. Die Aktion "Gruppe verlassen" wurde abgebrochen. Bitte versuchen Sie es erneut.</value>
@@ -1421,5 +1421,26 @@ Nachricht am: </value>
   </data>
   <data name="GroupDetailsParticipantRemovedHint.Text" xml:space="preserve">
     <value>(inaktiv)</value>
+  </data>
+  <data name="ApplicationErrorConversationDataIncompleteError" xml:space="preserve">
+    <value>Die Erzeugung der Konversation ist fehlgeschlagen aufgrund fehlender Daten. Bitte prüfen Sie Ihre Eingaben.</value>
+  </data>
+  <data name="ApplicationErrorConversationInvalidTitleError" xml:space="preserve">
+    <value>Der eingegebene Titel der Konversation wurde vom Server als ungültig abgelehnt. Bitte prüfen Sie Ihre Eingaben.</value>
+  </data>
+  <data name="ApplicationErrorConversationIsClosedError" xml:space="preserve">
+    <value>Die Konversation ist geschlossen. Es kann keine Aktion für eine geschlossene Konversation ausgeführt werden.</value>
+  </data>
+  <data name="ApplicationErrorConversationNotFoundError" xml:space="preserve">
+    <value>Die angegebene Konversation konnte auf dem Server nicht lokalisiert werden. Wahrscheinlich wurde die Ressource auf dem Server gelöscht.</value>
+  </data>
+  <data name="ApplicationErrorConversationStorageFailedDueToMissingAdminError" xml:space="preserve">
+    <value>Die Informationen über den Administrator der Konversation fehlen in den lokalen Datensätzen. Speichern der Konversation fehlgeschlagen.</value>
+  </data>
+  <data name="ConversationDetailsConverstionClosedHint.Text" xml:space="preserve">
+    <value>(geschlossen)</value>
+  </data>
+  <data name="PushNotificationReceivedConversationMessageNew" xml:space="preserve">
+    <value>Neue Konversationsnachricht erhalten</value>
   </data>
 </root>

@@ -529,7 +529,8 @@ namespace DataHandlingLayer.Controller
         /// <summary>
         /// Führt Aktualisierung der Gruppe aus. Es wird ermittelt welche Properties eine Aktualisierung 
         /// erhalten haben. Die Aktualisierungen werden an den Server übermittelt, der die Aktualisierung auf
-        /// dem Serverdatensatz ausführt und die Teilnehmer über die Änderung informiert.
+        /// dem Serverdatensatz ausführt und die Teilnehmer über die Änderung informiert. Aktualisiert lokal jedoch
+        /// nicht die Benachrichtigungseinstellungen für die Gruppe. Hierfür gibt es eine separate Funktion.
         /// </summary>
         /// <param name="oldGroup">Der Datensatz der Gruppe vor der Aktualisierung.</param>
         /// <param name="newGroup">Der Datensatz mit aktualisierten Daten.</param>
@@ -629,10 +630,10 @@ namespace DataHandlingLayer.Controller
                 }
 
                 // Notification settings bleiben unverändert.
-                updatedGroup.GroupNotificationSetting = oldGroup.GroupNotificationSetting;
+                // updatedGroup.GroupNotificationSetting = oldGroup.GroupNotificationSetting;
 
                 // Speichere neuen Datensatz ab.
-                groupDBManager.UpdateGroup(updatedGroup);
+                groupDBManager.UpdateGroup(updatedGroup, false);
             }
             catch (DatabaseException ex)
             {
@@ -1077,6 +1078,29 @@ namespace DataHandlingLayer.Controller
                 Debug.WriteLine("SendConversationMessageAsync: Request to create conversation message failed.");
 
                 // TODO: Fälle: GroupNotFound, ConversationNotFound, Conversation Locked.
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    Debug.WriteLine("SendConversationMessageAsync: Group seems to be deleted on the server.");
+                    // Markiere die Gruppe lokal als gelöscht.
+                    MarkGroupAsDeleted(groupId);
+                }
+
+                if (ex.ErrorCode == ErrorCodes.ConversationNotFound)
+                {
+                    Debug.WriteLine("SendConversationMessageAsync: Conversation seems to be deleted on the server.");
+                    // Markiere Conversation lokal als geschlossen.
+                    MarkConversationAsClosed(conversationId);
+                }
+
+                // Wenn Konversation geschlossen ist, erhält man User Forbidden.
+                if (ex.ErrorCode == ErrorCodes.UserForbidden)
+                {
+                    Debug.WriteLine("SendConversationMessageAsync: Cannot send message into a conversation that is closed.");
+                    // Markiere Conversation als geschlossen.
+                    MarkConversationAsClosed(conversationId);
+                    // Wandle Status Code um.
+                    ex.ErrorCode = ErrorCodes.ConversationIsClosed;
+                }
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -1247,7 +1271,14 @@ namespace DataHandlingLayer.Controller
         {
             try
             {
-                groupDBManager.StoreGroup(group);
+                if (!groupDBManager.IsGroupStored(group.Id))
+                {
+                    groupDBManager.StoreGroup(group);
+                }
+                else
+                {
+                    Debug.WriteLine("StoreGroupLocally: Group is already locally stored.");
+                }
             }
             catch (DatabaseException ex)
             {
@@ -1451,6 +1482,58 @@ namespace DataHandlingLayer.Controller
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
         }
+
+        /// <summary>
+        /// Aktualisiert die Benachrichtigungseinstellungen für die angegebene Gruppe.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, für die die Benachrichtigungseinstellungen geändert werden sollen.</param>
+        /// <param name="newSetting">Die neu gewählte Einstellung.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Änderung fehlschlägt.</exception>
+        public void ChangeNotificationSettingsForGroup(int groupId, NotificationSetting newSetting)
+        {
+            try
+            {
+                // Frage Daten ab.
+                Group group = GetGroup(groupId);
+
+                // Setze neue Einstellungen.
+                group.GroupNotificationSetting = newSetting;
+
+                // Speichere neue Einstellungen.
+                groupDBManager.UpdateGroup(group, true);
+
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("ChangeNotificationSettingsForGroup: Failed to change notification settings of group.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Markiert eine Gruppe lokal als gelöscht. 
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, die lokal als gelöscht markiert werden soll.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn das Markieren fehlschlägt.</exception>
+        public void MarkGroupAsDeleted(int groupId)
+        {
+            try
+            {
+                Group group = GetGroup(groupId);
+
+                // Setze Deleted Flag.
+                group.Deleted = true;
+
+                // Speichere Datensatz ab.
+                groupDBManager.UpdateGroup(group, false);
+
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("MarkGroupAsDeleted: Failed to mark group as deleted. Msg is {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
         #endregion LocalGroupMethods
 
         #region LocalConversationMethods
@@ -1574,6 +1657,30 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Markiert die angegebene Konversation als gelöscht. 
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Aktion fehlschlägt.</exception>
+        public void MarkConversationAsClosed(int conversationId)
+        {
+            try
+            {
+                Conversation conv = GetConversation(conversationId, false);
+
+                // Setze Closed Flag.
+                conv.IsClosed = true;
+
+                // Aktualisiere Datensatz.
+                groupDBManager.UpdateConversation(conv);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("MarkConversationAsClosed: The conversation couldn't be closed.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Speichert die übergebene Menge von Konversationsnachrichten in den lokalen Datensätzen ab.
         /// Dabei werden Nachrichten nicht erneut gespeichert, wenn sie lokal schon vorhanden sind.
         /// </summary>
@@ -1633,6 +1740,57 @@ namespace DataHandlingLayer.Controller
             }
 
             return conversationMessages;
+        }
+
+        /// <summary>
+        /// Gibt die Konversationsnachricht für die angegebene Konversation zurück, die zuletzt empfangen wurde.
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation.</param>
+        /// <returns>Ein Objekt vom Typ ConversationMessage, oder null, wenn keine Nachricht in der Konversation existiert.</returns>
+        public ConversationMessage GetLastConversationMessage(int conversationId)
+        {
+            ConversationMessage lastReceivedConversationMessage = null;
+
+            try
+            {
+                List<ConversationMessage> messages = groupDBManager.GetLastestConversationMessages(conversationId, 1, 0);
+                if (messages != null && messages.Count == 1)
+                {
+                    lastReceivedConversationMessage = messages[0];
+                }
+            }
+            catch (DatabaseException ex)
+            {
+                // Gebe Exception nicht an den Aufrufer weiter.
+                Debug.WriteLine("Retrieval of converstion message has failed. Message is {0}.", ex.Message);
+            }
+
+            return lastReceivedConversationMessage;
+        }
+
+        /// <summary>
+        /// Ermittelte die Anzahl an ungelesenen Konversationsnachrichten für die Gruppe,
+        /// die durch die angegebene Id eindeutig identifiziert ist. Gibt ein Verzeichnis zurück, indem mit der Konversations-Id
+        /// als Schlüssel die Anzahl an ungelesenen Konversationsnachrichten ermittelt werden kann.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, für die die Informationen abgerufen werden sollen.</param>
+        /// <returns>Verzeichnis, indem die Anzahl an ungelesenen ConversationMessages für jede Konversation 
+        ///     gespeichert ist. Die Konversationen-Id dient als Schlüssel.</returns>
+        public Dictionary<int, int> GetAmountOfUnreadConversationMessagesForGroup(int groupId)
+        {
+            Dictionary<int, int> unreadMsgDictionary = null;
+            try
+            {
+                unreadMsgDictionary = groupDBManager.DetermineAmountOfUnreadConvMsgForGroup(groupId);
+            }
+            catch (DatabaseException ex)
+            {
+                // Gebe DatabaseException nicht an Aufrufer weiter.
+                // Seite kann ohne diese Information angezeigt werden.
+                Debug.WriteLine("Could not retrieve amount of unread conversation messages for group with id {0}. " + 
+                    "Message is {1}.", groupId, ex.Message);
+            }
+            return unreadMsgDictionary;
         }
 
         /// <summary>

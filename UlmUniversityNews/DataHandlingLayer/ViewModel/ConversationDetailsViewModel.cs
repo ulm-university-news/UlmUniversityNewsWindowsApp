@@ -192,7 +192,7 @@ namespace DataHandlingLayer.ViewModel
         /// Lädt fehlende Nachrichten aus den lokalen Datensätzen nach. Reine offline Funktionalität, d.h.
         /// kein Request an den Server.
         /// </summary>
-        private void updateConversationMessagesCollection()
+        public void UpdateConversationMessagesCollection()
         {
             // Die bisher neuste Nachricht ist jetzt nicht mehr die aktuellste.
             ConversationMessage currentFrontMessage = ConversationMessages.FirstOrDefault<ConversationMessage>();
@@ -243,7 +243,7 @@ namespace DataHandlingLayer.ViewModel
                         withCaching);
 
                     // Aktualisiere noch die Anzeige.
-                    updateConversationMessagesCollection();
+                    UpdateConversationMessagesCollection();
                 }
             }
             catch (ClientException ex)
@@ -328,12 +328,17 @@ namespace DataHandlingLayer.ViewModel
                     EnteredMessage = "";
 
                     // Aktualisere die Anzeige.
-                    updateConversationMessagesCollection();
+                    UpdateConversationMessagesCollection();
                 }
                 
             }
             catch (ClientException ex)
             {
+                if (ex.ErrorCode == ErrorCodes.ConversationIsClosed)
+                {
+                    SelectedConversation.IsClosed = true;
+                }
+
                 Debug.WriteLine("executeSendMessageCommandAsync: Failed to send message.");
                 displayError(ex.ErrorCode);
             }

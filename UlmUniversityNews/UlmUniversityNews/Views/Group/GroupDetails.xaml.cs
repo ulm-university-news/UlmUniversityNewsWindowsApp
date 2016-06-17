@@ -17,6 +17,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using DataHandlingLayer.ViewModel;
 using System.Diagnostics;
+using UlmUniversityNews.PushNotifications;
+using Windows.ApplicationModel.Core;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -148,6 +150,9 @@ namespace UlmUniversityNews.Views.Group
                 // Lade Konversationen.
                 await groupDetailsViewModel.LoadConversationsAsync(groupId);
             }
+
+            // Registriere Seite für relevante Push Notification Events.
+            subscribeToPushManagerEvents();
         }
 
         /// <summary>
@@ -163,6 +168,9 @@ namespace UlmUniversityNews.Views.Group
             // Speichere Pivot-Index zwischen, so dass man ihn beim nächsten Aufruf der Seite wieder aktiv setzen kann.
             if (e.PageState != null && GroupDetailsPivot != null)
                 e.PageState["PivotIndex"] = GroupDetailsPivot.SelectedIndex;
+
+            // Deregistriere alle Push Notification Events.
+            unsubscribeFromPushManagerEvents();
         }
 
         #region NavigationHelper-Registrierung
@@ -191,6 +199,48 @@ namespace UlmUniversityNews.Views.Group
         }
 
         #endregion
+
+        #region PushNotificationManagerEvents
+        /// <summary>
+        /// Abonniere für die GroupDetails relevante Events, die vom PushNotificationManager bereitgestellt werden.
+        /// Beim Empfangen dieser Events wird die GroupDetails View ihren Zustand aktualisieren.
+        /// </summary>
+        private void subscribeToPushManagerEvents()
+        {
+            // Registriere PushNotification Events, die für die GroupDetails View von Interesse sind.
+            PushNotificationManager pushManager = PushNotificationManager.GetInstance();
+            pushManager.ReceivedConversationMessage += PushManager_ReceivedConversationMessage;
+        }
+
+        /// <summary>
+        /// Deabonniere alle Events des PushNotificationManager, für die sich die View registriert hat.
+        /// </summary>
+        private void unsubscribeFromPushManagerEvents()
+        {
+            // Deregistriere PushNotification Events, die für die GroupDetails View von Interesse sind.
+            PushNotificationManager pushManager = PushNotificationManager.GetInstance();
+            pushManager.ReceivedConversationMessage -= PushManager_ReceivedConversationMessage;
+        }
+
+        /// <summary>
+        /// Event-Handler, der ausgeführt wird, wenn vom PushNotificationManager ein
+        /// ReceivedAnnouncement-Event verschickt wird.
+        /// </summary>
+        /// <param name="sender">Der Sender des Events, d.h. hier der PushNotificationManager.</param>
+        /// <param name="e">Eventparameter.</param>
+        private async void PushManager_ReceivedConversationMessage(object sender, PushNotifications.EventArgClasses.ConversationMessageNewEventArgs e)
+        {
+            if (groupDetailsViewModel != null)
+            {
+                // Ausführung auf UI-Thread abbilden.
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                    {
+                        await groupDetailsViewModel.UpdateNumberOfUnreadConversationMessagesAsync();
+                    });
+            }
+        }
+        #endregion PushNotificationManagerEvents
 
         /// <summary>
         /// Behandelt Klick Events für das Drawer-Layout. Das Menü wird mittels eines Klicks

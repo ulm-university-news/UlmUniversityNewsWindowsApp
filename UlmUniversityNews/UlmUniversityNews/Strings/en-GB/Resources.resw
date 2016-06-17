@@ -1323,7 +1323,7 @@ date: </value>
     <value>Show</value>
   </data>
   <data name="ApplicationErrorGroupAdminNotAllowedToExitError" xml:space="preserve">
-    <value>You are the administrator of the group. The administrator cannot leave the group if no other participant can take over this position.</value>
+    <value>You are the administrator of the group. The administrator cannot leave the group if no other participant can take over this position. The group can be deleted instead.</value>
   </data>
   <data name="ApplicationErrorGroupAdminRightsTransferHasFailedError" xml:space="preserve">
     <value>The transfer of the administrator rights to another participant has failed. The action "leave group" is aborted. Please try again.</value>
@@ -1420,5 +1420,26 @@ date: </value>
   </data>
   <data name="GroupDetailsParticipantRemovedHint.Text" xml:space="preserve">
     <value>(inactive)</value>
+  </data>
+  <data name="ApplicationErrorConversationDataIncompleteError" xml:space="preserve">
+    <value>There is missing data that prevents the creation of the conversation. Please check your input.</value>
+  </data>
+  <data name="ApplicationErrorConversationInvalidTitleError" xml:space="preserve">
+    <value>The entered title for the conversation was rejected by the server. Please check your input.</value>
+  </data>
+  <data name="ApplicationErrorConversationIsClosedError" xml:space="preserve">
+    <value>The conversation is closed. It is not possible to perform any action on a closed conversation.</value>
+  </data>
+  <data name="ApplicationErrorConversationNotFoundError" xml:space="preserve">
+    <value>The requested conversation could not be found on the server. The resource has probably been deleted.</value>
+  </data>
+  <data name="ApplicationErrorConversationStorageFailedDueToMissingAdminError" xml:space="preserve">
+    <value>The administrator information is missing in the local datasets. Couldn't store the conversation.</value>
+  </data>
+  <data name="ConversationDetailsConverstionClosedHint.Text" xml:space="preserve">
+    <value>(closed)</value>
+  </data>
+  <data name="PushNotificationReceivedConversationMessageNew" xml:space="preserve">
+    <value>Received new conversation message</value>
   </data>
 </root>
