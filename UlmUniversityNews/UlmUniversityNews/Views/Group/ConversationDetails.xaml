@@ -118,8 +118,15 @@
                 x:Name="ConversationDetailsSendMessageButton"
                 x:Uid="ConversationDetailsSendMessageButton"
                 Icon="Send"
-                Label="senden" />
-            <!-- TODO command button -->
+                Label="senden"
+                Command="{Binding SendMessageCommand}"/>
+            <AppBarButton 
+                x:Name="ConversationDetailsSynchronizeButton"
+                x:Uid="ConversationDetailsSynchronizeButton"
+                Icon="Sync"
+                Label="aktualisieren"
+                Command="{Binding SynchronizeMessagesCommand}"
+                />
         </CommandBar>
     </Page.BottomAppBar>
 
@@ -214,6 +221,8 @@
                         <TextBlock 
                             Grid.Row="1"
                             x:Name="ConversationMessageDetailsTextValidationError"
+                            Margin="19, 10, 19, 10"
+                            Style="{StaticResource UniversityNewsUlmStandardErrorText}"
                             Visibility="{Binding ElementName=ConversationMessageDetailsTextValidationError, Path=Text, Converter={StaticResource StringToVisibilityConverter}}"
                             Text="{Binding ValidationMessages[Text], TargetNullValue='', FallbackValue='', Converter={StaticResource ValidationMessageOnLocalizedStringConverter}}"
                             />

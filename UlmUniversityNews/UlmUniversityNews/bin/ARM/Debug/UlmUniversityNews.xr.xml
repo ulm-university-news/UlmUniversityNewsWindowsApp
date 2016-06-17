@@ -124,6 +124,8 @@
     <RootPropertyPathName Name="EditableGroup" />
     <RootPropertyPathName Name="IsLatestMessage" />
     <RootPropertyPathName Name="AuthorName" />
+    <RootPropertyPathName Name="SynchronizeMessagesCommand" />
+    <RootPropertyPathName Name="SendMessageCommand" />
     <RootPropertyPathName Name="EnteredMessage" />
     <RootPropertyPathName Name="ConversationMessages" />
     <RootPropertyPathName Name="SelectedConversation" />
@@ -135,6 +137,7 @@
     <RootPropertyPathName Name="SynchronizeDataCommand" />
     <RootPropertyPathName Name="HasDeleteOption" />
     <RootPropertyPathName Name="DeleteGroupCommand" />
+    <RootPropertyPathName Name="DeleteGroupLocallyCommand" />
     <RootPropertyPathName Name="JoinGroupCommand" />
     <RootPropertyPathName Name="ActualWidth" />
     <RootPropertyPathName Name="EnteredPassword" />
@@ -143,6 +146,7 @@
     <RootPropertyPathName Name="BallotCollection" />
     <RootPropertyPathName Name="ConversationCollection" />
     <RootPropertyPathName Name="ConversationSelectedCommand" />
+    <RootPropertyPathName Name="IsRemovedFromGroup" />
     <RootPropertyPathName Name="SearchGroupsCommand" />
     <RootPropertyPathName Name="Groups" />
     <RootPropertyPathName Name="GroupSelectedCommand" />

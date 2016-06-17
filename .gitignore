@@ -5,3 +5,9 @@
 /UlmUniversityNews/packages/WPtoolkit.4.2013.06.11
 /UlmUniversityNews/DataHandlingLayer/Common/PropertyChangedListeningObservableCollection.cs
 /UlmUniversityNews/UlmUniversityNews/Common/CustomUserControl
+
+*.suo
+*.user
+_ReSharper.*
+bin
+obj

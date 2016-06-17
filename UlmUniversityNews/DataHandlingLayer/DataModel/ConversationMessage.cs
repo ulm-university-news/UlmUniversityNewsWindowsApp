@@ -98,7 +98,10 @@ namespace DataHandlingLayer.DataModel
             {
                 SetValidationError("Text", "VE_ConversationMessageTextIsNullValidationError");
             }
-            else if (!checkStringRange(0, 100, Text))
+            else if (!checkStringRange(
+                Constants.Constants.MinConversationMsgLength,
+                Constants.Constants.MaxConversationMsgLength,
+                Text))
             {
                 SetValidationError("Text", "VE_ConversationMessageTextLengthValidationError");
             }

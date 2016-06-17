@@ -145,6 +145,14 @@
 						Foreground="{StaticResource UNUCommandBarButtonColor}"
 						Background="{StaticResource UniUlmMainBackgroundColor}">
             <AppBarButton
+                x:Name="GroupDetailsDeleteGroupLocallyButton"
+                x:Uid="GroupDetailsDeleteGroupLocallyButton"
+                Icon="Delete"
+                Label="lösche lokal"
+                Visibility="{Binding ElementName=GroupDetailsDeleteGroupLocallyButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding DeleteGroupLocallyCommand}"
+                />
+            <AppBarButton
                 x:Name="GroupDetailsDeleteGroupButton"
                 x:Uid="GroupDetailsDeleteGroupButton"
                 Icon="Delete"
@@ -272,11 +280,26 @@
 					   Style="{StaticResource DrawerIconStyle}"
 					   Tapped="DrawerIcon_Tapped" />
 
-            <!-- Drawer Text -->
-            <TextBlock Grid.Column="1"
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <!-- Drawer Text -->
+                <TextBlock Grid.Column="0"
 						   x:Uid="GroupDetailsDrawerText"
 						   Style="{StaticResource DrawerTextStyle}"
 						   Text="{Binding SelectedGroup.Name, TargetNullValue='Gruppendetails', FallbackValue='Gruppendetails'}" />
+                
+                <!-- Teilnehmer entfernt Hinweis -->
+                <TextBlock Grid.Column="1"
+                           x:Uid="GroupDetailsParticipantRemovedHint"
+                           Style="{StaticResource DrawerTextStyle}"
+                           Text=""
+                           Visibility="{Binding IsRemovedFromGroup, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            </Grid>
+            
         </Grid>
 
         <!--Inhalt der Seite und Inhalt des Drawer Menü-->

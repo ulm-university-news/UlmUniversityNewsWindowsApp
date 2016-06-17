@@ -77,6 +77,18 @@ namespace DataHandlingLayer.ViewModel
             set { this.setProperty(ref this.groupParticipant, value); }
         }
 
+        private bool removedFromGroup;
+        /// <summary>
+        /// Gibt an, ob der Nutzer von der Gruppe entfernt wurde. In diesem
+        /// Fall ist der Nutzer nicht selbstständig ausgetreten, sondern wurde
+        /// vom Gruppenadministrator entfernt. Dieser Fall muss dem Nutzer angezeigt werden.
+        /// </summary>
+        public bool IsRemovedFromGroup
+        {
+            get { return removedFromGroup; }
+            set { this.setProperty(ref this.removedFromGroup, value); }
+        }
+
         private bool hasLeaveOption;
         /// <summary>
         /// Gibt an, ob der Nutzer die Möglichkeit hat die Gruppe zu verlassen.
@@ -189,6 +201,14 @@ namespace DataHandlingLayer.ViewModel
             get { return deleteGroupCommand; }
             set { deleteGroupCommand = value; }
         }
+
+        private RelayCommand deleteGroupLocallyCommand;
+        // Befehl zum Löschen der Gruppe aus den lokalen Datensätzen.
+        public RelayCommand DeleteGroupLocallyCommand
+        {
+            get { return deleteGroupLocallyCommand; }
+            set { deleteGroupLocallyCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -225,6 +245,9 @@ namespace DataHandlingLayer.ViewModel
             DeleteGroupCommand = new AsyncRelayCommand(
                 param => executeDeleteGroupAsync(),
                 param => canDeleteGroup());
+            DeleteGroupLocallyCommand = new RelayCommand(
+                param => executeDeleteGroupLocallyCommand(),
+                param => canDeleteGroupLocally());
         }
 
         /// <summary>
@@ -286,7 +309,21 @@ namespace DataHandlingLayer.ViewModel
                 Group loadedGroup = await Task.Run(() => groupController.GetGroup(groupId));
                 Debug.WriteLine("Loaded group is: " + loadedGroup.Name);
 
-                SelectedGroup = loadedGroup;               
+                SelectedGroup = loadedGroup;  
+                
+                if (SelectedGroup != null)
+                {
+                    if (groupController.IsActiveParticipant(loadedGroup.Id, groupController.GetLocalUser().Id))
+                    {
+                        IsRemovedFromGroup = false;
+                        Debug.WriteLine("LoadGroupFromLocalStorageAsync: local user still active in this group.");
+                    }
+                    else
+                    {
+                        IsRemovedFromGroup = true;
+                        Debug.WriteLine("LoadGroupFromLocalStorageAsync: local user seems to be removed from this group.");
+                    }
+                }
             }
             catch (ClientException ex)
             {
@@ -395,6 +432,7 @@ namespace DataHandlingLayer.ViewModel
             {
                 HasDeleteOption = false;
             }
+            DeleteGroupLocallyCommand.RaiseCanExecuteChanged();
         }
 
         /// <summary>
@@ -464,7 +502,8 @@ namespace DataHandlingLayer.ViewModel
         {
             // Steht nur im Gruppendetails PivotItem zur Verfügung (Index 2).
             if (SelectedGroup != null && 
-                IsGroupParticipant)
+                IsGroupParticipant && 
+                !IsRemovedFromGroup)
             {
                 return true;
             }
@@ -512,6 +551,7 @@ namespace DataHandlingLayer.ViewModel
             // Nur möglich für Administrator von Gruppe. Außerdem nur auf dem "Details" Pivot Item.
             if (SelectedGroup != null &&
                 localUser.Id == SelectedGroup.GroupAdmin && 
+                !IsRemovedFromGroup &&
                 SelectedPivotItemName == "GroupDetailsPivotItem")
             {
                 return true;
@@ -553,7 +593,9 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
         private bool canSynchronizeData()
         {
-            if (SelectedGroup != null && IsGroupParticipant)
+            if (SelectedGroup != null && 
+                IsGroupParticipant && 
+                !IsRemovedFromGroup)
                 return true;
 
             return false;
@@ -579,6 +621,19 @@ namespace DataHandlingLayer.ViewModel
                         // Lade Teilnehmer-Informationen erneut, da diese durch die Synchronisation möglicherweise 
                         // geändert wurden.
                         List<User> participants = groupController.GetActiveParticipantsOfGroup(SelectedGroup.Id);
+                        // Prüfe, ob lokaler Nutzer noch in der Liste ist.
+                        User localUser = groupController.GetLocalUser();
+                        int listIndex = participants.FindIndex(item => item.Id == localUser.Id);
+                        if (listIndex >= 0)
+                        {
+                            IsRemovedFromGroup = false;
+                        }
+                        else
+                        {
+                            Debug.WriteLine("executeSynchronizeDataCommandAsync: Participant now seems to be removed from the group.");
+                            IsRemovedFromGroup = true;
+                            checkCommandExecution();
+                        }
                         SelectedGroup.Participants = participants;
 
                         break;
@@ -610,7 +665,8 @@ namespace DataHandlingLayer.ViewModel
         private bool canDeleteGroup()
         {
             if (SelectedGroup != null && 
-                localUser.Id == SelectedGroup.GroupAdmin && 
+                localUser.Id == SelectedGroup.GroupAdmin &&
+                !IsRemovedFromGroup && 
                 SelectedPivotItemName == "GroupDetailsPivotItem")
             {
                 return true;
@@ -645,6 +701,42 @@ namespace DataHandlingLayer.ViewModel
             finally
             {
                 hideIndeterminateProgressIndicator();
+            }
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zum Löschen der Gruppe aus den lokalen Datensätzen aktuell
+        /// zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canDeleteGroupLocally()
+        {
+            if (SelectedGroup != null && 
+                IsGroupParticipant && 
+                IsRemovedFromGroup)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl zum lokalen Löschen der Gruppe aus.
+        /// </summary>
+        private void executeDeleteGroupLocallyCommand()
+        {
+            try
+            {
+                groupController.DeleteGroupLocally(SelectedGroup.Id);
+
+                if (_navService.CanGoBack())
+                    _navService.GoBack();
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("executeDeleteGroupLocallyCommand: Failed to delete group locally.");
+                displayError(ex.ErrorCode);
             }
         }
         #endregion CommandFunctionality

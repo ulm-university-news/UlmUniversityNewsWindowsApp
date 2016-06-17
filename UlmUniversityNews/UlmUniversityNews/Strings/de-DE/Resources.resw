@@ -1413,4 +1413,13 @@ Nachricht am: </value>
   <data name="VE_ConversationMessageTextLengthValidationError" xml:space="preserve">
     <value>Die eingegebene Nachricht ist zu lang. Bitte achten Sie darauf, dass Ihre Nachrichten nicht die Länge von 500 Zeichen überschreiten.</value>
   </data>
+  <data name="ConversationDetailsSynchronizeButton.Label" xml:space="preserve">
+    <value>synchro-nisieren</value>
+  </data>
+  <data name="GroupDetailsDeleteGroupLocallyButton.Label" xml:space="preserve">
+    <value>lösche lokal</value>
+  </data>
+  <data name="GroupDetailsParticipantRemovedHint.Text" xml:space="preserve">
+    <value>(inaktiv)</value>
+  </data>
 </root>

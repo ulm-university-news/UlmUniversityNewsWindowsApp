@@ -1957,11 +1957,14 @@ namespace DataHandlingLayer.Database
 
         /// <summary>
         /// Fragt alle Konversationsnachrichten ab, die der Konversation mit der angegebenen Id zugeordnet sind.
+        /// Die Abfrage kann durch den Nachrichtennummer Parameter eingeschränkt werden, so dass nur Nachrichten mit
+        /// einer höhreren Nachrichtennummer als der angegebenen abgerufen werden.
         /// </summary>
         /// <param name="conversationId">Die Id der Konversation, zu der die Nachrichten abgefragt werden sollen.</param>
+        /// <param name="messageNr">Die Nachrichtennummer, aber der die Nachrichten abgerufen werden sollen.</param>
         /// <returns>Eine Liste von Objekten des Typs ConversationMessage.</returns>
         /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abruf fehlschlägt.</exception>
-        public List<ConversationMessage> GetConversationMessages(int conversationId)
+        public List<ConversationMessage> GetConversationMessages(int conversationId, int messageNr)
         {
             List<ConversationMessage> conversationMessages = new List<ConversationMessage>();
 
@@ -1978,7 +1981,7 @@ namespace DataHandlingLayer.Database
                         string query = @"SELECT * 
                             FROM ConversationMessage AS cm JOIN Message AS m ON cm.Message_Id=m.Id 
                                 JOIN User AS u ON cm.Author_User_Id=u.Id
-                            WHERE cm.Conversation_Id=?;";
+                            WHERE cm.Conversation_Id=? AND cm.MessageNumber > ?;";
 
                         using (var stmt = conn.Prepare(query))
                         {
@@ -1990,6 +1993,7 @@ namespace DataHandlingLayer.Database
                             string authorName;
 
                             stmt.Bind(1, conversationId);
+                            stmt.Bind(2, messageNr);
 
                             while (stmt.Step() == SQLiteResult.ROW)
                             {
@@ -2220,6 +2224,67 @@ namespace DataHandlingLayer.Database
             }
 
             return amountOfUnreadMsgMap;
+        }
+
+        /// <summary>
+        /// Bestimmt die aktuell höchste Nachrichtennummer, die für die angegebene Konversation in den 
+        /// lokalen Datensätzen gespeichert ist.
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation, für die die höchste Nachrichtennummer 
+        ///     gespeichert werden soll.</param>
+        /// <returns>Die aktuell höchste Nachrichtennummer.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abfruf fehlschlägt.</exception>
+        public int GetHighestConversationMessageNumber(int conversationId)
+        {
+            int highestMsgNr = 0;
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT MAX (MessageNumber) AS maxNr
+                            FROM ConversationMessage 
+                            WHERE Conversation_Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, conversationId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                highestMsgNr = Convert.ToInt32(stmt["maxNr"]);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetHighestConversationMessageNumber: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetHighestConversationMessageNumber: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("GetHighestConversationMessageNumber: Mutex timeout.");
+                throw new DatabaseException("GetHighestConversationMessageNumber: Timeout: Failed to get access to DB.");
+            }
+
+            return highestMsgNr;
         }
 
         /// <summary>

@@ -51,6 +51,9 @@ namespace DataHandlingLayer.Constants
         public const int MinGroupNameLength = 3;
         public const int MaxGroupDescriptionLength = 500;
 
+        public const int MinConversationMsgLength = 0;
+        public const int MaxConversationMsgLength = 500;
+
         // Patterns
         public const string TermPattern = @"^[W,S][0-9]{4}$";
         public const string UserNamePattern = @"^[-_a-zA-Z0-9]+$";

@@ -44,7 +44,27 @@ namespace DataHandlingLayer.ViewModel
             get { return selectedConversation; }
             set { this.setProperty(ref this.selectedConversation, value); }
         }
-        
+
+        private Group correspondingGroup;
+        /// <summary>
+        /// Die Gruppeninstanz, zu der die Konversation gehört.
+        /// </summary>
+        public Group CorrespondingGroup
+        {
+            get { return correspondingGroup; }
+            set { this.setProperty(ref this.correspondingGroup, value); }
+        }
+
+        private bool activeParticipant;
+        /// <summary>
+        /// Gibt an, ob der lokale Nutzer noch ein aktiver Teilnehmer der Gruppe ist.
+        /// </summary>
+        public bool IsActiveParticipant
+        {
+            get { return activeParticipant; }
+            set { this.setProperty(ref this.activeParticipant, value); }
+        }
+
         private IncrementalLoadingCollection<IncrementalConversationMessagesLoader, ConversationMessage> conversationMessages;
         /// <summary>
         /// Collection mit den Nachrichten der Konversation. Die Nachrichten können abhängig vom Zustand
@@ -67,6 +87,16 @@ namespace DataHandlingLayer.ViewModel
             get { return sendMessageCommand; }
             set { sendMessageCommand = value; }
         }
+
+        private AsyncRelayCommand synchronizeMessagesCommand;
+        /// <summary>
+        /// Befehl zum Synchronisieren der Nachrichten mit dem Server.
+        /// </summary>
+        public AsyncRelayCommand SynchronizeMessagesCommand
+        {
+            get { return synchronizeMessagesCommand; }
+            set { synchronizeMessagesCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -84,6 +114,9 @@ namespace DataHandlingLayer.ViewModel
                 param => executeSendMessageCommandAsync(),
                 param => canSendMessage()
                 );
+            SynchronizeMessagesCommand = new AsyncRelayCommand(
+                param => executeSynchronizeMessagesCommand(),
+                param => canSynchronizeMessages());
         }
 
         /// <summary>
@@ -109,6 +142,18 @@ namespace DataHandlingLayer.ViewModel
                     ConversationMessages = new IncrementalLoadingCollection<IncrementalConversationMessagesLoader, ConversationMessage>(
                         SelectedConversation.Id,
                         numberOfItems);
+
+                    // Lade noch die zugehörige Gruppeninstanz und prüfe den Active-Zustand des lokalen Nutzers.
+                    CorrespondingGroup = await Task.Run(() => groupController.GetGroup(SelectedConversation.GroupId));
+                    User localUser = groupController.GetLocalUser();
+                    if (groupController.IsActiveParticipant(SelectedConversation.GroupId, localUser.Id))
+                    {
+                        IsActiveParticipant = true;
+                    }
+                    else
+                    {
+                        IsActiveParticipant = false;
+                    }
                 }
             }
             catch (ClientException ex)
@@ -118,6 +163,9 @@ namespace DataHandlingLayer.ViewModel
             }
 
             checkCommandExecution();
+
+            // Führe noch einen Aktualisierungsrequest im Hintergrund aus.
+            await synchronizeConversationMessages(true, false);
         }
 
         /// <summary>
@@ -139,6 +187,77 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
+        /// <summary>
+        /// Hilfsmethode zur Aktualisierung der ConversationMessage Collection.
+        /// Lädt fehlende Nachrichten aus den lokalen Datensätzen nach. Reine offline Funktionalität, d.h.
+        /// kein Request an den Server.
+        /// </summary>
+        private void updateConversationMessagesCollection()
+        {
+            // Die bisher neuste Nachricht ist jetzt nicht mehr die aktuellste.
+            ConversationMessage currentFrontMessage = ConversationMessages.FirstOrDefault<ConversationMessage>();
+            if (currentFrontMessage != null)
+                currentFrontMessage.IsLatestMessage = false;
+
+            // Lade die Konversationen in die Collection.
+            // Bestimme zunächst die höchste Nachrichtennummer in der Collection.
+            int highestMessageNr = 0;
+            if (ConversationMessages != null && ConversationMessages.Count > 0)
+                highestMessageNr = ConversationMessages.Max(item => item.MessageNumber);
+
+            Debug.WriteLine("updateConversationMessagesCollection: The current max message nr is: {0}.", highestMessageNr);
+
+            // Rufe die Nachrichten ab.
+            List<ConversationMessage> messages = groupController.GetConversationMessages(SelectedConversation.Id, highestMessageNr);
+            foreach (ConversationMessage message in messages)
+            {
+                ConversationMessages.Insert(0, message);
+            }
+
+            // Setze neue aktuellste Nachricht.
+            currentFrontMessage = ConversationMessages.FirstOrDefault<ConversationMessage>();
+            if (currentFrontMessage != null)
+                currentFrontMessage.IsLatestMessage = true;
+        }
+
+        /// <summary>
+        /// Führt eine Synchronisation der Konversationsnachrichten mit dem Server aus.
+        /// Es wird ein Request an den Server geschickt und die neusten Nachrichten abgerufen.
+        /// Die Anzeige wird aktualisiert falls notwendig.
+        /// </summary>
+        /// <param name="withCaching">Gibt an, ob Caching bei dem Request erlaubt sein soll.</param>
+        /// <param name="reportErrors">Gibt an, ob möglicherweise auftretende Fehler dem Nutzer angezeigt werden sollen.</param>
+        private async Task synchronizeConversationMessages(bool withCaching, bool reportErrors)
+        {
+            try
+            {
+                displayIndeterminateProgressIndicator();
+
+                if (SelectedConversation != null && 
+                    SelectedConversation.IsClosed.HasValue && 
+                    SelectedConversation.IsClosed.Value == false)
+                {
+                    await groupController.SynchronizeConversationMessagesWithServer(
+                        SelectedConversation.GroupId,
+                        SelectedConversation.Id,
+                        withCaching);
+
+                    // Aktualisiere noch die Anzeige.
+                    updateConversationMessagesCollection();
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("synchronizeConversationMessages: Failed to synchronize conversation messages.");
+                if (reportErrors)
+                    displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
+        }
+
         #region CommandFunctionality
         /// <summary>
         /// Hilfsfunktion, welche die Prüfung der Ausführbarkeit der Befehle anstößt.
@@ -146,6 +265,7 @@ namespace DataHandlingLayer.ViewModel
         private void checkCommandExecution()
         {
             SendMessageCommand.OnCanExecuteChanged();
+            SynchronizeMessagesCommand.OnCanExecuteChanged();
         }
 
         /// <summary>
@@ -154,7 +274,8 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
         private bool canSendMessage()
         {
-            if (SelectedConversation != null)
+            if (SelectedConversation != null &&
+                IsActiveParticipant)
                 return true;
 
             return false;
@@ -174,23 +295,42 @@ namespace DataHandlingLayer.ViewModel
                 displayIndeterminateProgressIndicator();
 
                 string messageContent = EnteredMessage;
+                // Setze Wert auf null, wenn keine Nachricht eingegeben wurde.
+                if (messageContent != null && 
+                    messageContent.Trim() == string.Empty)
+                {
+                    messageContent = null;
+                }
+                   
                 Priority priority = Priority.NORMAL;
 
                 User localUser = groupController.GetLocalUser();
 
-                // Wenn es eine Tutoriumsgruppe ist und der Nutzer Tutor ist, dann sende mit Priorität hoch.
-                Group group = groupController.GetGroup(SelectedConversation.GroupId);
-                if (group.Type == GroupType.TUTORIAL && group.GroupAdmin == localUser.Id)
+                if (CorrespondingGroup != null)
                 {
-                    Debug.WriteLine("executeSendMessageCommandAsync: Set message priority to high.");
-                    priority = Priority.HIGH;
+                    // Wenn es eine Tutoriumsgruppe ist und der Nutzer Tutor ist, dann sende mit Priorität hoch.
+                    if (CorrespondingGroup.Type == GroupType.TUTORIAL && CorrespondingGroup.GroupAdmin == localUser.Id)
+                    {
+                        Debug.WriteLine("executeSendMessageCommandAsync: Set message priority to high.");
+                        priority = Priority.HIGH;
+                    }
                 }
 
-                await groupController.SendConversationMessageAsync(
-                    group.Id, 
+                bool successful = await groupController.SendConversationMessageAsync(
+                    SelectedConversation.GroupId, 
                     SelectedConversation.Id, 
                     messageContent, 
                     priority);
+
+                if (successful)
+                {
+                    // Setze Textfeld zurück.
+                    EnteredMessage = "";
+
+                    // Aktualisere die Anzeige.
+                    updateConversationMessagesCollection();
+                }
+                
             }
             catch (ClientException ex)
             {
@@ -201,6 +341,28 @@ namespace DataHandlingLayer.ViewModel
             {
                 hideIndeterminateProgressIndicator();
             }
+        }
+
+        /// <summary>
+        /// Prüft, ob der Befehl zur Synchronisation von Nachrichten aktuell zur Verfügung steht. 
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canSynchronizeMessages()
+        {
+            if (SelectedConversation != null &&
+                IsActiveParticipant)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl SynchronizeMessagesCommand aus.
+        /// </summary>
+        private async Task executeSynchronizeMessagesCommand()
+        {
+            // Führe Synchronisation der Nachrichten durch.
+            await synchronizeConversationMessages(false, true);
         }
         #endregion CommandFunctionality
     }

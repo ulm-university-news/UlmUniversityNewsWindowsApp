@@ -1076,7 +1076,7 @@ namespace DataHandlingLayer.Controller
             {
                 Debug.WriteLine("SendConversationMessageAsync: Request to create conversation message failed.");
 
-                // TODO: Fälle: GroupNotFound, ConversationNotFound.
+                // TODO: Fälle: GroupNotFound, ConversationNotFound, Conversation Locked.
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -1086,11 +1086,48 @@ namespace DataHandlingLayer.Controller
             {
                 ConversationMessage convMsg = jsonParser.ParseConversationMessageFromJson(serverResponse);
 
-                // Speichere die Nachricht ab.
-                StoreConversationMessage(convMsg);
+                int highestMessageNr = GetHighestMessageNumberOfConversation(conversationId);
+                if (highestMessageNr + 1 != convMsg.MessageNumber)
+                {
+                    Debug.WriteLine("SendConversationMessageAsync: Seems there are more new messages on the server.");
+                    List<ConversationMessage> conversationMessages = await GetConversationMessagesAsync(groupId, conversationId, highestMessageNr, false);
+                    // Speichere die Nachrichten ab.
+                    StoreConversationMessages(groupId, conversationId, conversationMessages);
+                }
+                else
+                {
+                    // Speichere die Nachricht ab.
+                    StoreConversationMessage(convMsg);
+                }
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Führt eine Synchronisation der Konversationsnachrichten mit dem Server durch.
+        /// Schickt einen Request an den Server, um die neuesten Nachrichten abzurufen und speichert diese lokal ab.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Konversation gehört.</param>
+        /// <param name="conversationId">Die Id der Konversation, für die die Synchronisation ausgeführt werden soll.</param>
+        /// <param name="withCaching">Gibt an, ob Caching bei diesem Request erlaubt sein soll.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Fehler bei der Synchronisation auftritt.</exception>
+        public async Task SynchronizeConversationMessagesWithServer(int groupId, int conversationId, bool withCaching)
+        {
+            int highestMessageNr = GetHighestMessageNumberOfConversation(conversationId);
+            List<ConversationMessage> messages = await GetConversationMessagesAsync(
+                groupId,
+                conversationId,
+                highestMessageNr,
+                withCaching);
+
+            if (messages != null && messages.Count > 0)
+            {
+                await Task.Run(() => StoreConversationMessages(
+                    groupId,
+                    conversationId,
+                    messages));
+            }
         }
         #endregion RemoteConversationMethods
 
@@ -1497,7 +1534,8 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
-        /// Speichert die übergebene Konversationsnachricht in den lokalen Datensätzen ab.
+        /// Speichert die übergebene Konversationsnachricht in den lokalen Datensätzen ab. Dabei wird die
+        /// Nachricht nicht erneut gespeichert, wenn sie lokal schon vorhanden ist.
         /// </summary>
         /// <param name="conversationMsg">Die Daten der ConversationMessage, in Form eines ConversationMessage Objekts.</param>
         /// <returns>Liefert true, wenn Speicherung erfolgreich war. Liefert false, wenn Speicherung aufgrund fehlender
@@ -1515,7 +1553,16 @@ namespace DataHandlingLayer.Controller
                     return false;
                 }
 
-                groupDBManager.StoreConversationMessage(conversationMsg);
+                int highestMessageNr = GetHighestMessageNumberOfConversation(conversationMsg.ConversationId);
+                if (highestMessageNr != conversationMsg.MessageNumber)
+                {
+                    groupDBManager.StoreConversationMessage(conversationMsg);
+                }
+                else
+                {
+                    Debug.WriteLine("StoreConversationMessage: Conversation message seems to be already stored.");
+                }
+               
             }
             catch (DatabaseException ex)
             {
@@ -1563,6 +1610,32 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Holt die Konversationsnachrichten für die angegebene Konversation aus den lokalen Datensätzen.
+        /// Die Anfrage kann durch die Nachrichtennummer eingeschränkt werden. Es werden nur Nachrichten 
+        /// zurück geliefert, die eine höhere Nachrichtennummer haben, als die angegebene.
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation, zu der die Nachrichten lokal abgefragt werden sollen.</param>
+        /// <param name="messageNr">Die Nachrichtennummer, ab der die Nachrichten abgerufen werden sollen.</param>
+        /// <returns>Eine Liste von ConversationMessage Objekten.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abruf fehlschlägt.</exception>
+        public List<ConversationMessage> GetConversationMessages(int conversationId, int messageNr)
+        {
+            List<ConversationMessage> conversationMessages = null;
+
+            try
+            {
+                conversationMessages = groupDBManager.GetConversationMessages(conversationId, messageNr);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetConversationMessages: Failed to retrieve conversation messages.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return conversationMessages;
+        }
+
+        /// <summary>
         /// Markiert die Konversationsnachrichten der angegebenen Konversation als gelesen.
         /// </summary>
         /// <param name="conversationId">Die Id der Konversation, für die die Nachrichten als
@@ -1579,6 +1652,30 @@ namespace DataHandlingLayer.Controller
                 Debug.WriteLine("MarkConversationMessagesAsRead: Couldn't mark messages as read.");
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Bestimmt die aktuell höchste Nachrichtennummer, die einer Nachricht der angegebenen Konversation in den lokalen Datensätzen
+        /// zugeordnet ist. 
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation, für die die höchste Nachrichtennummer ermittelt werden soll.</param>
+        /// <returns>Die aktuell höchste Nachrichtennummer.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abfruf fehlschlägt.</exception>
+        public int GetHighestMessageNumberOfConversation(int conversationId)
+        {
+            int highestNumber = 0;
+
+            try
+            {
+                highestNumber = groupDBManager.GetHighestConversationMessageNumber(conversationId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetHighestMessageNumberOfConversation: The highest message number could not be extracted.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return highestNumber;
         }
         #endregion LocalConversationMethods
     }
