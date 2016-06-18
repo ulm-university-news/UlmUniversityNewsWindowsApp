@@ -352,6 +352,11 @@ C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsA
 C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Group\ConversationDetails.xbf
 C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Group\ConversationDetails.xaml
 C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Group\ConversationDetails.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Group\GroupSettings.xbf
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Group\GroupSettings.g.i.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Group\GroupSettings.g.cs
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Group\GroupSettings.xaml
+C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\Views\Group\GroupSettings.xbf
 C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\layout.resfiles
 C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\layout.resfiles.intermediate
 C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\obj\ARM\Debug\SQLitePCL\Resources.resfiles

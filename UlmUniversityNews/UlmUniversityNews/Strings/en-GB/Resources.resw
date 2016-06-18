@@ -1442,4 +1442,22 @@ date: </value>
   <data name="PushNotificationReceivedConversationMessageNew" xml:space="preserve">
     <value>Received new conversation message</value>
   </data>
+  <data name="GroupDetailsGroupSettingsButton.Label" xml:space="preserve">
+    <value>settings</value>
+  </data>
+  <data name="GroupSettingsDeletedHint.Text" xml:space="preserve">
+    <value>(deleted)</value>
+  </data>
+  <data name="GroupSettingsHeadline.Text" xml:space="preserve">
+    <value>Group settings</value>
+  </data>
+  <data name="GroupSettingsNotificationSettingsDescription.Text" xml:space="preserve">
+    <value>The settings defined here override the global notification settings for this specific group. If the default option is chosen, the globally defined notification settings will be applied for this group.</value>
+  </data>
+  <data name="GroupSettingsNotificationSettingsHeader.Text" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="GroupSettingsSaveButton.Label" xml:space="preserve">
+    <value>save</value>
+  </data>
 </root>

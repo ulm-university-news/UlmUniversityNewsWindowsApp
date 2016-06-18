@@ -132,13 +132,14 @@
     <RootPropertyPathName Name="IsClosed" />
     <RootPropertyPathName Name="AdminName" />
     <RootPropertyPathName Name="AmountOfUnreadMessages" />
-    <RootPropertyPathName Name="HasLeaveOption" />
-    <RootPropertyPathName Name="LeaveGroupCommand" />
     <RootPropertyPathName Name="IsGroupParticipant" />
+    <RootPropertyPathName Name="ChangeToGroupSettingsCommand" />
     <RootPropertyPathName Name="SynchronizeDataCommand" />
     <RootPropertyPathName Name="HasDeleteOption" />
     <RootPropertyPathName Name="DeleteGroupCommand" />
     <RootPropertyPathName Name="DeleteGroupLocallyCommand" />
+    <RootPropertyPathName Name="HasLeaveOption" />
+    <RootPropertyPathName Name="LeaveGroupCommand" />
     <RootPropertyPathName Name="JoinGroupCommand" />
     <RootPropertyPathName Name="ActualWidth" />
     <RootPropertyPathName Name="EnteredPassword" />
@@ -641,6 +642,7 @@
       <RootProperty Name="Content" />
     </RootType>
     <RootType FullName="UlmUniversityNews.Views.Group.GroupDetails" />
+    <RootType FullName="UlmUniversityNews.Views.Group.GroupSettings" />
     <RootType FullName="UlmUniversityNews.Views.Group.SearchGroups" />
     <RootType FullName="UlmUniversityNews.Views.Homescreen.Homescreen" />
     <RootType FullName="UlmUniversityNews.Views.Login.LoginPage" />

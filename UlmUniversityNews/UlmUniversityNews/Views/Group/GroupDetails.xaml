@@ -190,7 +190,6 @@
                     </Flyout>
                 </AppBarButton.Flyout>
             </AppBarButton>
-
             <AppBarButton
                 x:Name="GroupDetailsSynchronizeButton"
                 x:Uid="GroupDetailsSynchronizeButton"
@@ -199,6 +198,13 @@
                 Visibility="{Binding IsGroupParticipant, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding SynchronizeDataCommand}"/>
             <AppBarButton 
+                x:Name="GroupDetailsGroupSettingsButton"
+                x:Uid="GroupDetailsGroupSettingsButton"
+                Icon="Setting"
+                Label="einstellungen"
+                Visibility="{Binding ElementName=GroupDetailsGroupSettingsButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding ChangeToGroupSettingsCommand}"/>
+            <AppBarButton 
                 x:Name="GroupDetailsJoinGroupButton"
                 x:Uid="GroupDetailsJoinGroupButton"
                 Icon="Favorite"
@@ -206,44 +212,6 @@
                 Visibility="{Binding IsGroupParticipant, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='inverse'}"
                 Click="GroupDetailsJoinGroupButton_Click"
                 />
-            <AppBarButton
-                x:Name="GroupDetailsLeaveGroupButton"
-                x:Uid="GroupDetailsLeaveGroupButton"
-                Icon="UnFavorite"
-                Label="verlassen"
-                Visibility="{Binding HasLeaveOption, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <AppBarButton.Flyout>
-                    <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}">
-                        <Grid
-                            VerticalAlignment="Stretch"
-                            HorizontalAlignment="Stretch">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-
-                            <!-- Warnhinweis bezüglich Gruppe verlassen. -->
-                            <TextBlock 
-                                Grid.Row="0"
-                                x:Name="LeaveGroupWarning"
-                                x:Uid="GroupDetailsLeaveGroupWarning"
-                                Style="{StaticResource TextInFlyoutsStyle}" >
-                                Wollen Sie die Gruppe wirklich verlassen?
-                            </TextBlock>
-
-                            <!-- Verlassen Button-->
-                            <Button
-                                Grid.Row="1"
-                                x:Name="LeaveGroupFlyoutButton"
-                                x:Uid="GroupDetailsLeaveGroupFlyoutButton"
-                                Style="{StaticResource FlyoutSingleButtonStyle}"
-                                Content="Verlassen"
-                                Command="{Binding LeaveGroupCommand}">
-                            </Button>
-                        </Grid>
-                    </Flyout>
-                </AppBarButton.Flyout>
-            </AppBarButton>
             <AppBarButton 
                 x:Name="GroupDetailsEditGroupButton"
                 x:Uid="GroupDetailsEditGroupButton"
@@ -251,6 +219,48 @@
                 Label="bearbeiten"
                 Visibility="{Binding ElementName=GroupDetailsEditGroupButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding EditGroupCommand}"/>
+            
+            <!-- Secondary commands -->
+            <CommandBar.SecondaryCommands>
+                <AppBarButton
+                x:Name="GroupDetailsLeaveGroupButton"
+                x:Uid="GroupDetailsLeaveGroupButton"
+                Icon="UnFavorite"
+                Label="verlassen"
+                Visibility="{Binding HasLeaveOption, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <AppBarButton.Flyout>
+                        <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}">
+                            <Grid
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Warnhinweis bezüglich Gruppe verlassen. -->
+                                <TextBlock 
+                                Grid.Row="0"
+                                x:Name="LeaveGroupWarning"
+                                x:Uid="GroupDetailsLeaveGroupWarning"
+                                Style="{StaticResource TextInFlyoutsStyle}" >
+                                Wollen Sie die Gruppe wirklich verlassen?
+                                </TextBlock>
+
+                                <!-- Verlassen Button-->
+                                <Button
+                                Grid.Row="1"
+                                x:Name="LeaveGroupFlyoutButton"
+                                x:Uid="GroupDetailsLeaveGroupFlyoutButton"
+                                Style="{StaticResource FlyoutSingleButtonStyle}"
+                                Content="Verlassen"
+                                Command="{Binding LeaveGroupCommand}">
+                                </Button>
+                            </Grid>
+                        </Flyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
+            </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
     

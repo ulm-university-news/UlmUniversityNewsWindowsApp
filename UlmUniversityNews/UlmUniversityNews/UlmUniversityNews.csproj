@@ -126,6 +126,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Group\GroupSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Group\SearchGroups.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -259,6 +263,9 @@
     </Compile>
     <Compile Include="Views\Group\GroupDetails.xaml.cs">
       <DependentUpon>GroupDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Group\GroupSettings.xaml.cs">
+      <DependentUpon>GroupSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Group\SearchGroups.xaml.cs">
       <DependentUpon>SearchGroups.xaml</DependentUpon>

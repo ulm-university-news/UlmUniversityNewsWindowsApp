@@ -209,6 +209,16 @@ namespace DataHandlingLayer.ViewModel
             get { return deleteGroupLocallyCommand; }
             set { deleteGroupLocallyCommand = value; }
         }
+
+        private RelayCommand changeSettingsCommand;
+        /// <summary>
+        /// Befehl zum Ändern der Gruppeneinstellungen (bezüglich Benachrichtigungen).
+        /// </summary>
+        public RelayCommand ChangeToGroupSettingsCommand
+        {
+            get { return changeSettingsCommand; }
+            set { changeSettingsCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -248,6 +258,9 @@ namespace DataHandlingLayer.ViewModel
             DeleteGroupLocallyCommand = new RelayCommand(
                 param => executeDeleteGroupLocallyCommand(),
                 param => canDeleteGroupLocally());
+            ChangeToGroupSettingsCommand = new RelayCommand(
+                param => executeChangeToGroupSettingsCommand(),
+                param => canChangeToGroupSettings());
         }
 
         /// <summary>
@@ -465,6 +478,7 @@ namespace DataHandlingLayer.ViewModel
                 HasDeleteOption = false;
             }
             DeleteGroupLocallyCommand.RaiseCanExecuteChanged();
+            ChangeToGroupSettingsCommand.RaiseCanExecuteChanged();
         }
 
         /// <summary>
@@ -769,6 +783,33 @@ namespace DataHandlingLayer.ViewModel
             {
                 Debug.WriteLine("executeDeleteGroupLocallyCommand: Failed to delete group locally.");
                 displayError(ex.ErrorCode);
+            }
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Wechsel auf die Gruppeneinstellungen aktuell möglich ist.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canChangeToGroupSettings()
+        {
+            if (SelectedGroup != null && 
+                IsGroupParticipant && 
+                !IsRemovedFromGroup)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl ChangeToGroupSettingsCommand aus. Wechselt auf die Gruppeneinstellungs-Seite.
+        /// </summary>
+        private void executeChangeToGroupSettingsCommand()
+        {
+            if (SelectedGroup != null)
+            {
+                _navService.Navigate("GroupSettings", SelectedGroup.Id);
             }
         }
         #endregion CommandFunctionality

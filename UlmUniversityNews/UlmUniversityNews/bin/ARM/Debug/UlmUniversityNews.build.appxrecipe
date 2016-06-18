@@ -1032,6 +1032,9 @@
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Group\GroupDetails.xbf">
       <PackagePath>Views\Group\GroupDetails.xbf</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Group\GroupSettings.xbf">
+      <PackagePath>Views\Group\GroupSettings.xbf</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Group\SearchGroups.xbf">
       <PackagePath>Views\Group\SearchGroups.xbf</PackagePath>
     </AppxPackagedFile>

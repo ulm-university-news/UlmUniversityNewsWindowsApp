@@ -1443,4 +1443,22 @@ Nachricht am: </value>
   <data name="PushNotificationReceivedConversationMessageNew" xml:space="preserve">
     <value>Neue Konversationsnachricht erhalten</value>
   </data>
+  <data name="GroupDetailsGroupSettingsButton.Label" xml:space="preserve">
+    <value>einstel-lungen</value>
+  </data>
+  <data name="GroupSettingsDeletedHint.Text" xml:space="preserve">
+    <value>(gelöscht)</value>
+  </data>
+  <data name="GroupSettingsHeadline.Text" xml:space="preserve">
+    <value>Gruppeneinstellungen</value>
+  </data>
+  <data name="GroupSettingsNotificationSettingsDescription.Text" xml:space="preserve">
+    <value>Hier können Sie für diese Gruppe spezifische Benachrichtigungseinstellungen festlegen, welche die globalen Einstellungen überschreiben. Wenn Sie Default wählen, werden für die Gruppe die globalen Benachrichtigungseinstellungen verwendet.</value>
+  </data>
+  <data name="GroupSettingsNotificationSettingsHeader.Text" xml:space="preserve">
+    <value>Benachrichtigungen</value>
+  </data>
+  <data name="GroupSettingsSaveButton.Label" xml:space="preserve">
+    <value>speichern</value>
+  </data>
 </root>
