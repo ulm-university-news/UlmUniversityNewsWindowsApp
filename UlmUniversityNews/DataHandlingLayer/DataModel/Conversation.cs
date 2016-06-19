@@ -112,5 +112,38 @@ namespace DataHandlingLayer.DataModel
         {
 
         }
+
+        #region ValidationRules
+        /// <summary>
+        /// Validiert die Eigenschaft "Title" der Klasse Conversation.
+        /// </summary>
+        public void ValidateTitleProperty()
+        {
+            if (Title == null)
+            {
+                SetValidationError("Title", "VE_ConversationTitleIsNullValidationError");
+            }
+            else if (!checkStringFormat(Constants.Constants.GroupNamePattern, Title))
+            {
+                SetValidationError("Title", "VE_ConversationTitleFormatInvalidValidationError");
+            }
+            else if (!checkStringRange(
+                Constants.Constants.MinConversationTitleLength,
+                Constants.Constants.MaxConversationTitleLength,
+                Title))
+            {
+                SetValidationError("Title", "VE_ConversationTitleLengthInvalidValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Stößt die Validierung aller Eigenschaften an,
+        /// für die eine Validierungsregel definiert wurde.
+        /// </summary>
+        public override void ValidateAll()
+        {
+            ValidateTitleProperty();
+        }
+        #endregion ValidationRules
     }
 }

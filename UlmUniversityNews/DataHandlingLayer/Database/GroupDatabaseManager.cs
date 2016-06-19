@@ -1109,7 +1109,7 @@ namespace DataHandlingLayer.Database
                             if (insertStmt.Step() != SQLiteResult.DONE)
                                 Debug.WriteLine("StoreConversation: Failed to insert conversation with id {0}.", conversation.Id);
                             else
-                                Debug.WriteLine("StoreConversation: Successfully inserted conversation with id {1}.", conversation.Id);
+                                Debug.WriteLine("StoreConversation: Successfully inserted conversation with id {0}.", conversation.Id);
                         }
                     }
                     catch (SQLiteException sqlEx)

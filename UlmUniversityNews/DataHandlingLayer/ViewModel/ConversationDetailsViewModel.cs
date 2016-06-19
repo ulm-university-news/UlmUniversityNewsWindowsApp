@@ -97,6 +97,16 @@ namespace DataHandlingLayer.ViewModel
             get { return synchronizeMessagesCommand; }
             set { synchronizeMessagesCommand = value; }
         }
+
+        private RelayCommand switchToEditConversationDialogCommand;
+        /// <summary>
+        /// Befehl zum Wechseln auf den Dialog zur Bearbeitung der Konversation.
+        /// </summary>
+        public RelayCommand SwitchToEditConversationDialogCommand
+        {
+            get { return switchToEditConversationDialogCommand; }
+            set { switchToEditConversationDialogCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -112,11 +122,13 @@ namespace DataHandlingLayer.ViewModel
             // Erzeuge Befehle.
             SendMessageCommand = new AsyncRelayCommand(
                 param => executeSendMessageCommandAsync(),
-                param => canSendMessage()
-                );
+                param => canSendMessage());
             SynchronizeMessagesCommand = new AsyncRelayCommand(
                 param => executeSynchronizeMessagesCommand(),
                 param => canSynchronizeMessages());
+            SwitchToEditConversationDialogCommand = new RelayCommand(
+                param => executeSwitchToEditConversationDialogCommand(),
+                param => canSwitchToEditConversationDialog());
         }
 
         /// <summary>
@@ -266,6 +278,7 @@ namespace DataHandlingLayer.ViewModel
         {
             SendMessageCommand.OnCanExecuteChanged();
             SynchronizeMessagesCommand.OnCanExecuteChanged();
+            SwitchToEditConversationDialogCommand.RaiseCanExecuteChanged();
         }
 
         /// <summary>
@@ -275,7 +288,9 @@ namespace DataHandlingLayer.ViewModel
         private bool canSendMessage()
         {
             if (SelectedConversation != null &&
-                IsActiveParticipant)
+                IsActiveParticipant && 
+                SelectedConversation.IsClosed.HasValue && 
+                SelectedConversation.IsClosed.Value == false)
                 return true;
 
             return false;
@@ -368,6 +383,34 @@ namespace DataHandlingLayer.ViewModel
         {
             // Führe Synchronisation der Nachrichten durch.
             await synchronizeConversationMessages(false, true);
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zum Wechsel auf den Bearbeitungsdialog aktuell zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canSwitchToEditConversationDialog()
+        {
+            User localUser = groupController.GetLocalUser();
+
+            if (SelectedConversation != null &&
+                CorrespondingGroup != null &&  
+                SelectedConversation.AdminId == localUser.Id)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Befehl zum Wechsel auf den Änderungsdialog für Konversationen ausführen.
+        /// </summary>
+        private void executeSwitchToEditConversationDialogCommand()
+        {
+            string parameterString = 
+                "navParam?groupId=" + CorrespondingGroup.Id + "?conversationId=" + SelectedConversation.Id; ;
+            _navService.Navigate("AddAndEditConversation", parameterString);
         }
         #endregion CommandFunctionality
     }

@@ -53,6 +53,8 @@ namespace DataHandlingLayer.Constants
 
         public const int MinConversationMsgLength = 0;
         public const int MaxConversationMsgLength = 500;
+        public const int MinConversationTitleLength = 3;
+        public const int MaxConversationTitleLength = 45;
 
         // Patterns
         public const string TermPattern = @"^[W,S][0-9]{4}$";

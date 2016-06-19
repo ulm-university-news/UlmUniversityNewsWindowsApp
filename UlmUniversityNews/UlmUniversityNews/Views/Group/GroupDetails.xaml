@@ -204,6 +204,14 @@
                 Label="einstellungen"
                 Visibility="{Binding ElementName=GroupDetailsGroupSettingsButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding ChangeToGroupSettingsCommand}"/>
+            <AppBarButton
+                x:Name="GroupDetailsAddConversationButton"
+                x:Uid="GroupDetailsAddConversationButton"
+                Icon="Add"
+                Label="hinzufügen"
+                Visibility="{Binding ElementName=GroupDetailsAddConversationButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding ChangeToAddConversationDialog}"
+                />
             <AppBarButton 
                 x:Name="GroupDetailsJoinGroupButton"
                 x:Uid="GroupDetailsJoinGroupButton"

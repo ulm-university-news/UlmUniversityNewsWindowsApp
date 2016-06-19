@@ -1461,4 +1461,49 @@ Nachricht am: </value>
   <data name="GroupSettingsSaveButton.Label" xml:space="preserve">
     <value>speichern</value>
   </data>
+  <data name="AddAndEditConversationAddConversationButton.Label" xml:space="preserve">
+    <value>anlegen</value>
+  </data>
+  <data name="AddAndEditConversationAddConversationStatus" xml:space="preserve">
+    <value>Füge Konversation hinzu</value>
+  </data>
+  <data name="AddAndEditConversationAddDialogTitle.Text" xml:space="preserve">
+    <value>Konversation anlegen</value>
+  </data>
+  <data name="AddAndEditConversationCloseConversationWarning.Text" xml:space="preserve">
+    <value>Wenn Sie diese Konversation schließen, können dort keine weiteren Nachrichten gesendet werden. Möchten Sie die Konversation wirklich schließen?</value>
+  </data>
+  <data name="AddAndEditConversationCreateConversationDesc.Text" xml:space="preserve">
+    <value>Hier können Sie neue Konversationen erstellen. Konversationen sind Gruppenchats, die unter einem bestimmten Thema laufen. Geben Sie den Titel Ihrer Konversation an.</value>
+  </data>
+  <data name="AddAndEditConversationEditConversationButton.Label" xml:space="preserve">
+    <value>speichern</value>
+  </data>
+  <data name="AddAndEditConversationEditConversationDesc.Text" xml:space="preserve">
+    <value>Sie können die Daten der Konversation ändern. Es kann ein neuer Titel festgelegt werden oder die Konversation kann geschlossen werden.</value>
+  </data>
+  <data name="AddAndEditConversationEditConversationStatus" xml:space="preserve">
+    <value>Ändere Konversation</value>
+  </data>
+  <data name="AddAndEditConversationIsClosedCheckBox.Content" xml:space="preserve">
+    <value>Konversation schließen</value>
+  </data>
+  <data name="AddAndEditConversationIsClosedHint.Text" xml:space="preserve">
+    <value>(geschlossen)</value>
+  </data>
+  <data name="AddAndEditConversationTitleInputBox.Header" xml:space="preserve">
+    <value>Titel *</value>
+  </data>
+  <data name="GroupDetailsAddConversationButton.Label" xml:space="preserve">
+    <value>hinzufügen</value>
+  </data>
+  <data name="VE_ConversationTitleFormatInvalidValidationError" xml:space="preserve">
+    <value>Der Titel entspricht nicht dem geforderten Format. Bitte stellen Sie sicher dass der Titel keine Sonderzeichen enthält außer - , ? , ! , oder _.</value>
+  </data>
+  <data name="VE_ConversationTitleIsNullValidationError" xml:space="preserve">
+    <value>Bitte geben Sie einen Titel für die Konversation an.</value>
+  </data>
+  <data name="VE_ConversationTitleLengthInvalidValidationError" xml:space="preserve">
+    <value>Bitte stellen Sie sicher, dass der Titel mindestens 3 und maximal 45 Zeichen umfasst.</value>
+  </data>
 </root>

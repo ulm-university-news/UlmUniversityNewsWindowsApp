@@ -1460,4 +1460,49 @@ date: </value>
   <data name="GroupSettingsSaveButton.Label" xml:space="preserve">
     <value>save</value>
   </data>
+  <data name="AddAndEditConversationAddConversationButton.Label" xml:space="preserve">
+    <value>create conversation</value>
+  </data>
+  <data name="AddAndEditConversationAddConversationStatus" xml:space="preserve">
+    <value>Adding conversation</value>
+  </data>
+  <data name="AddAndEditConversationAddDialogTitle.Text" xml:space="preserve">
+    <value>Add conversation</value>
+  </data>
+  <data name="AddAndEditConversationCloseConversationWarning.Text" xml:space="preserve">
+    <value>If you close the conversation, no more messages can be sent. Do you really want to close the conversation?</value>
+  </data>
+  <data name="AddAndEditConversationCreateConversationDesc.Text" xml:space="preserve">
+    <value>You can create a new conversation. Conversations are group chats about a certain topic. Please provide the title of your conversation.</value>
+  </data>
+  <data name="AddAndEditConversationEditConversationButton.Label" xml:space="preserve">
+    <value>save</value>
+  </data>
+  <data name="AddAndEditConversationEditConversationDesc.Text" xml:space="preserve">
+    <value>You can change the conversation's data here. The title can be changed or the conversation can be closed.</value>
+  </data>
+  <data name="AddAndEditConversationEditConversationStatus" xml:space="preserve">
+    <value>Changing conversation</value>
+  </data>
+  <data name="AddAndEditConversationIsClosedCheckBox.Content" xml:space="preserve">
+    <value>Close conversation</value>
+  </data>
+  <data name="AddAndEditConversationIsClosedHint.Text" xml:space="preserve">
+    <value>(closed)</value>
+  </data>
+  <data name="AddAndEditConversationTitleInputBox.Header" xml:space="preserve">
+    <value>Title *</value>
+  </data>
+  <data name="GroupDetailsAddConversationButton.Label" xml:space="preserve">
+    <value>add</value>
+  </data>
+  <data name="VE_ConversationTitleFormatInvalidValidationError" xml:space="preserve">
+    <value>The title does not match the required format. Please make sure the title does not contain special characters despite - , ? , ! or _ characters.</value>
+  </data>
+  <data name="VE_ConversationTitleIsNullValidationError" xml:space="preserve">
+    <value>Please provide a title for the conversation.</value>
+  </data>
+  <data name="VE_ConversationTitleLengthInvalidValidationError" xml:space="preserve">
+    <value>Please make sure the title contains at least 3 characters and a maximum of 45 characters.</value>
+  </data>
 </root>

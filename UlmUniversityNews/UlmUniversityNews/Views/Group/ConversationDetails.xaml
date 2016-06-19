@@ -114,18 +114,27 @@
         <CommandBar x:Name="ChannelSettingsCommandBar"
 						Foreground="{StaticResource UNUCommandBarButtonColor}"
 						Background="{StaticResource UUNConversationColor}">
-            <AppBarButton
-                x:Name="ConversationDetailsSendMessageButton"
-                x:Uid="ConversationDetailsSendMessageButton"
-                Icon="Send"
-                Label="senden"
-                Command="{Binding SendMessageCommand}"/>
             <AppBarButton 
                 x:Name="ConversationDetailsSynchronizeButton"
                 x:Uid="ConversationDetailsSynchronizeButton"
                 Icon="Sync"
                 Label="aktualisieren"
                 Command="{Binding SynchronizeMessagesCommand}"
+                />
+            <AppBarButton 
+                x:Name="ConversationDetailsEditConversationButton"
+                x:Uid="ConversationDetailsEditConversationButton"
+                Icon="Edit"
+                Label="bearbeiten"
+                Visibility="{Binding ElementName=ConversationDetailsEditConversationButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding SwitchToEditConversationDialogCommand}"
+                />
+            <AppBarButton
+                x:Name="ConversationDetailsSendMessageButton"
+                x:Uid="ConversationDetailsSendMessageButton"
+                Icon="Send"
+                Label="senden"
+                Command="{Binding SendMessageCommand}"
                 />
         </CommandBar>
     </Page.BottomAppBar>

@@ -585,6 +585,48 @@ namespace DataHandlingLayer.JsonManager
 
         #region Conversation
         /// <summary>
+        /// Parse ein Objekt der Klasse Conversation zu einem JSON Dokument.
+        /// </summary>
+        /// <param name="conversation">Die umzuwandelnde Conversation Instanz.</param>
+        /// <returns>Das JSON Dokument als String, oder null, falls die Umwandlung fehlgeschlagen ist.</returns>
+        public string ParseConversationToJson(Conversation conversation)
+        {
+            string jsonString = null;
+            try
+            {
+                jsonString = JsonConvert.SerializeObject(conversation);
+            }
+            catch (JsonException jsonEx)
+            {
+                Debug.WriteLine("ParseConversationToJson: Failed to parse conversation to json.");
+                Debug.WriteLine("ParseConversationToJson: Msg is {0}.", jsonEx.Message);
+            }
+
+            return jsonString;
+        }
+
+        /// <summary>
+        /// Extrahiere ein Objekt vom Typ Conversation aus dem übergebenen JSON-Dokument.
+        /// </summary>
+        /// <param name="jsonString">Das JSON-Dokument.</param>
+        /// <returns>Eine Instanz der Klasse Conversation, oder null, falls die Umwandlung fehlschlägt.</returns>
+        public Conversation ParseConversationFromJson(string jsonString)
+        {
+            Conversation conversation = null;
+            try
+            {
+                conversation = JsonConvert.DeserializeObject<Conversation>(jsonString);
+            }
+            catch (JsonException jsonEx)
+            {
+                Debug.WriteLine("ParseConversationFromJson: Failed to parse conversation from json.");
+                Debug.WriteLine("ParseConversationFromJson: Msg is {0}.", jsonEx.Message);
+            }
+
+            return conversation;
+        }
+
+        /// <summary>
         /// Extrahiere eine Liste von Conversation Objekten aus dem übergebenen JSON Dokument.
         /// </summary>
         /// <param name="jsonString">Das zu parsende JSON-Dokument.</param>

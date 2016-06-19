@@ -114,6 +114,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Group\AddAndEditConversationDialog\AddAndEditConversation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Group\AddAndEditGroupDialog\AddAndEditGroup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -254,6 +258,9 @@
     </Compile>
     <Compile Include="Views\ChannelSearch\ChannelSearch.xaml.cs">
       <DependentUpon>ChannelSearch.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Group\AddAndEditConversationDialog\AddAndEditConversation.xaml.cs">
+      <DependentUpon>AddAndEditConversation.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Group\AddAndEditGroupDialog\AddAndEditGroup.xaml.cs">
       <DependentUpon>AddAndEditGroup.xaml</DependentUpon>

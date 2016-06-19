@@ -790,6 +790,212 @@ namespace DataHandlingLayer.Controller
 
         #region RemoteConversationMethods
         /// <summary>
+        /// Erzeugt eine neue Konversation. Es wird ein Request an den Server abgesetzt, um die 
+        /// Konversation auf dem Server anzulegen. Ist das Anlegen erfolgreich, wird auch lokal
+        /// eine Kopie der Konversation angelegt.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, in der eine neue Konversation angelegt werden soll.</param>
+        /// <param name="newConversation">Das Objekt mit den Daten der neuen Konversation.</param>
+        /// <returns>Liefert true, wenn das Anlegen erfolgreich war. Liefert false, wenn das Anlegen aufgrund
+        ///     fehlender Daten oder sonstigen Validierungsfehlern nicht ausgeführt werden konnte.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn das Anlegen fehlschlägt, oder 
+        ///     vom Server abgelehnt wurde.</exception>
+        public async Task<bool> CreateConversationAsync(int groupId, Conversation newConversation)
+        {
+            if (newConversation == null)
+                return false;
+
+            // Führe Validierung der Daten durch.
+            clearValidationErrors();
+            newConversation.ClearValidationErrors();
+            newConversation.ValidateAll();
+            if (newConversation.HasValidationErrors())
+            {
+                reportValidationErrors(newConversation.GetValidationErrors());
+                return false;
+            }
+
+            // Parse Konversation zu JSON.
+            string jsonContent = jsonManager.ParseConversationToJson(newConversation);
+            if (jsonContent == null)
+            {
+                Debug.WriteLine("CreateConversationAsync: Failed to create a json object.");
+                return false;
+            }
+
+            // Setze Request an den Server ab.
+            string serverResponse = null;
+            try
+            {
+                serverResponse = await groupAPI.SendCreateConversationRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    jsonContent);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("CreateConversationAsync: Request failed. Error code is {0}.", ex.ErrorCode);
+
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    Debug.WriteLine("CreateConversationAsync: Request failed due to group not found.");
+                    MarkGroupAsDeleted(groupId);
+                }
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            if (serverResponse != null)
+            {
+                // Extrahiere Conversation aus der Serverantwort.
+                Conversation createdConv = jsonManager.ParseConversationFromJson(serverResponse);
+
+                if (createdConv != null)
+                {
+                    // Speichere die Konversation noch lokal ab.
+                    bool successful = StoreConversation(groupId, createdConv);
+                    if (!successful)
+                        await UpdateUserDataAndStoreConversationAsync(groupId, createdConv);
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Führe eine Aktualisierung der Konversationsdaten durch. Es wird ein Request an den Server 
+        /// abgesetzt, um die Daten der Konversation zu aktualisieren. Ist dieser erfolgreich, so werden die 
+        /// Daten auch lokal aktualisiert.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Konversation gehört.</param>
+        /// <param name="oldConversation">Das Conversation Objekt vor der Aktualisierung.</param>
+        /// <param name="newConversation">Das Conversation Objekt nach der Aktualisierung.</param>
+        /// <returns>Liefer true, wenn die Aktualisierung erfolgreich war. Liefert false, wenn die Konversation 
+        ///     aufgrund einer fehlenden Datenvalidierung nicht aktualisiert werden konnte.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Aktualisierung fehlschlägt oder 
+        ///     vom Server abgelehnt wurde.</exception>
+        public async Task<bool> UpdateConversationAsync(int groupId, Conversation oldConversation, Conversation newConversation)
+        {
+            if (oldConversation == null || newConversation == null)
+                return false;
+
+            // Führe Validierung der neuen Daten durch.
+            clearValidationErrors();
+            newConversation.ClearValidationErrors();
+            newConversation.ValidateAll();
+            if (newConversation.HasValidationErrors())
+            {
+                reportValidationErrors(newConversation.GetValidationErrors());
+                return false;
+            }
+
+            // Erstelle ein Objekt für die Aktualisierung, welches die Daten enthält, die aktualisiert werden müssen.
+            Conversation updatableConversationObj = prepareUpdatableConversationInstance(oldConversation, newConversation);
+
+            if (updatableConversationObj == null)
+            {
+                // Keine Aktualisierung notwendig.
+                return false;
+            }
+
+            // Erstelle JSON Dokument für die Aktualisierung.
+            string jsonContent = jsonManager.ParseConversationToJson(updatableConversationObj);
+            if (jsonContent == null)
+            {
+                Debug.WriteLine("UpdateConversationAsync: Failed to create json document.");
+                return false;
+            }
+
+            // Setze Request an den Server ab.
+            string serverResponse = null;
+            try
+            {
+                serverResponse = await groupAPI.SendUpdateConversationRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    oldConversation.Id,
+                    jsonContent);
+            }
+            catch (APIException ex)
+            {
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    Debug.WriteLine("UpdateConversationAsync: Group not found on server. Group probably deleted.");
+                    // Behandlung von Not Found. Gruppe wahrscheinlich gelöscht.
+                    MarkGroupAsDeleted(groupId);
+                }
+
+                // Bilde ab auf ClientException.
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            if (serverResponse != null)
+            {
+                // Parse Server Antwort.
+                Conversation updatedConv = jsonManager.ParseConversationFromJson(serverResponse);
+
+                if (updatedConv != null)
+                {
+                    // Aktualisiere lokalen Datensatz.
+                    bool successful = UpdateConversation(groupId, updatedConv);
+                    if (!successful)
+                    {
+                        Debug.WriteLine("UpdateConversationAsync: Failed to update group locally. Trying to fix it by synchronizing participants info.");
+                        await SynchronizeGroupParticipantsAsync(groupId);
+
+                        // Versuche es erneut. Diesmal ohne Fehlerbehandlung.
+                        successful = UpdateConversation(groupId, updatedConv);
+                        if (!successful)
+                            throw new ClientException(ErrorCodes.LocalDatabaseException, "Couldn't update conversation.");
+                    }
+                }
+
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Bereitet ein Objekt vom Typ Conversation vor, welches alle Properties enthält, die sich geändert haben.
+        /// Die Methode bekommt eine alte Version eines Conversation Objekts und eine neue Version und ermittelt 
+        /// dann die Properties, die eine Aktualisierung erhalten haben und schreibt diese in eine neue Conversation
+        /// Instanz. Die von der Methode zurückgelieferte Conversation Instanz kann dann direkt für die Aktualisierung auf
+        /// dem Server verwendet werden. Achtung: Hat sich überhaupt keine Property geändert, so gibt die Methode null zurück.        
+        /// </summary>
+        /// <param name="oldConversation">Das Conversation Objekt vor der Aktualisierung.</param>
+        /// <param name="newConversation">Das Channel Objekt mit den aktuellen Werten.</param>
+        /// <returns>Ein Objekt der Klasse Conversation, bei dem die Properties, die sich geändert haben, mit den
+        ///     aktualisierten Werten gefüllt sind.</returns>
+        private Conversation prepareUpdatableConversationInstance(Conversation oldConversation, Conversation newConversation)
+        {
+            bool hasChanged = false;
+            Conversation updatedConversation = new Conversation();
+
+            // Vergleiche Properties.
+            if (oldConversation.Title != newConversation.Title)
+            {
+                hasChanged = true;
+                updatedConversation.Title = newConversation.Title;
+            }
+
+            if (newConversation.IsClosed.HasValue && 
+                oldConversation.IsClosed != newConversation.IsClosed)
+            {
+                hasChanged = true;
+                updatedConversation.IsClosed = newConversation.IsClosed;
+            }
+
+            // Prüfe, ob sich überhaupt eine Property geändert hat.
+            if (!hasChanged)
+            {
+                Debug.WriteLine("No Property of conversation has been updated. Method will return null.");
+                updatedConversation = null;
+            }
+
+            return updatedConversation;
+        }
+
+        /// <summary>
         /// Fragt zunächst für die Speicherung relevante Daten vom Server ab, z.B. die aktuellen
         /// Teilnehmer, so dass die aktuellesten Daten vorhanden sind. Speichert anschließend die 
         /// Konversation lokal ab.
@@ -1597,6 +1803,13 @@ namespace DataHandlingLayer.Controller
         {
             try
             {
+                // Prüfe, ob Gruppe lokal vorhanden ist.
+                if (!groupDBManager.IsGroupStored(groupId))
+                {
+                    // Kann Konversation so nicht einfügen.
+                    return false;
+                }
+
                 // Prüfe zunächst, ob der Nutzer, der als Admin eingetragen ist, auch lokal gespeichert ist.
                 if (!userController.IsUserLocallyStored(conversation.AdminId))
                 {
@@ -1650,6 +1863,38 @@ namespace DataHandlingLayer.Controller
             catch (DatabaseException ex)
             {
                 Debug.WriteLine("StoreConversationMessage: Failed to store conversation message.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Aktualisiert den Datensatz der angegebenen Konversation in den lokalen Datensätzen.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der diese Konversation gehört.</param>
+        /// <param name="updatedConversation">Objekt vom Typ Conversation mit den aktualisierten Daten der Konversation.</param>
+        /// <returns>Liefert true, wenn die Aktualisierung erfolgreich war. Liefert false, wenn die Aktualisierung aufgrund
+        ///     fehlender Daten (z.B. lokaler Nutzerdatensatz des Admin) nicht durchgeführt werden kann.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Aktualisierung aufgrund eines
+        ///     unerwarteten Fehlers fehlschlägt.</exception>
+        public bool UpdateConversation(int groupId, Conversation updatedConversation)
+        {
+            try
+            {
+                if (!userController.IsUserLocallyStored(updatedConversation.AdminId) || 
+                    !IsActiveParticipant(groupId, updatedConversation.AdminId))
+                {
+                    // Fehlende Daten.
+                    Debug.WriteLine("UpdateConversation: Cannot perform update due to missing reference data.");
+                    return false;
+                }
+
+                groupDBManager.UpdateConversation(updatedConversation);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("UpdateConversation: Failed to update the conversation.");
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
 

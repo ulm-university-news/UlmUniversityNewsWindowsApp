@@ -219,6 +219,16 @@ namespace DataHandlingLayer.ViewModel
             get { return changeSettingsCommand; }
             set { changeSettingsCommand = value; }
         }
+
+        private RelayCommand changeToAddConversationDialog;
+        /// <summary>
+        /// Befehl zum Wechsel auf den Dialog zum Hinzufügen einer neuen Konversation.
+        /// </summary>
+        public RelayCommand ChangeToAddConversationDialog
+        {
+            get { return changeToAddConversationDialog; }
+            set { changeToAddConversationDialog = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -261,6 +271,9 @@ namespace DataHandlingLayer.ViewModel
             ChangeToGroupSettingsCommand = new RelayCommand(
                 param => executeChangeToGroupSettingsCommand(),
                 param => canChangeToGroupSettings());
+            ChangeToAddConversationDialog = new RelayCommand(
+                param => executeChangeToAddConversationDialog(),
+                param => canChangeToAddConversationDialog());
         }
 
         /// <summary>
@@ -479,6 +492,7 @@ namespace DataHandlingLayer.ViewModel
             }
             DeleteGroupLocallyCommand.RaiseCanExecuteChanged();
             ChangeToGroupSettingsCommand.RaiseCanExecuteChanged();
+            ChangeToAddConversationDialog.RaiseCanExecuteChanged();
         }
 
         /// <summary>
@@ -811,6 +825,31 @@ namespace DataHandlingLayer.ViewModel
             {
                 _navService.Navigate("GroupSettings", SelectedGroup.Id);
             }
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zum Wechsel auf den Dialog zur Erstellung
+        /// neuer Konversationen aktuell zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canChangeToAddConversationDialog()
+        {
+            if (SelectedGroup != null && 
+                !SelectedGroup.Deleted && 
+                SelectedPivotItemName == "ConversationPivotItem")
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl zum Wechseln auf den Dialog zur Erstellung neuer Konversationen aus.
+        /// </summary>
+        private void executeChangeToAddConversationDialog()
+        {
+            _navService.Navigate("AddAndEditConversation", SelectedGroup.Id);
         }
         #endregion CommandFunctionality
 

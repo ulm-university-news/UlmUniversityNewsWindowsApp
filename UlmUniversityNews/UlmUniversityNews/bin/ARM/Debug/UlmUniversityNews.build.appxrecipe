@@ -1023,6 +1023,9 @@
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\ChannelSearch\ChannelSearch.xbf">
       <PackagePath>Views\ChannelSearch\ChannelSearch.xbf</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Group\AddAndEditConversationDialog\AddAndEditConversation.xbf">
+      <PackagePath>Views\Group\AddAndEditConversationDialog\AddAndEditConversation.xbf</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\bin\ARM\Debug\Views\Group\AddAndEditGroupDialog\AddAndEditGroup.xbf">
       <PackagePath>Views\Group\AddAndEditGroupDialog\AddAndEditGroup.xbf</PackagePath>
     </AppxPackagedFile>
