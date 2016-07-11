@@ -40,15 +40,9 @@ namespace PushNotificationManagerBackground
             // Soll der Nutzer benachrichtigt werden?
             if(handledSuccessfully && pushController.IsUserNotificationRequired(pm))
             {
-                // Benachrichtige abhängig vom Typ der Push-Nachricht.
-                switch(pm.PushType)
-                {
-                    case PushType.ANNOUNCEMENT_NEW:
-                        string headline = pushController.GetUserNotificationHeadline(pm);
-                        string resourceKey = pushController.GetUserNotificationContentLocalizationKey(pm);
-                        showToastNotification(headline, resourceKey);
-                        break;
-                }
+                string headline = pushController.GetUserNotificationHeadline(pm);
+                string resourceKey = pushController.GetUserNotificationContentLocalizationKey(pm);
+                showToastNotification(headline, resourceKey);
             }
 
             Debug.WriteLine("Finished background task.");
@@ -79,32 +73,7 @@ namespace PushNotificationManagerBackground
             var toastNotifier = ToastNotificationManager.CreateToastNotifier();
             toastNotifier.Show(toast);
         }
-
-        ///// <summary>
-        ///// Zeige den Text in einer ToastNotification an, um den Nutzer über ein Ereignis zu informieren.
-        ///// </summary>
-        ///// <param name="text">Der anzuzeigende Text.</param>
-        //private void showToastNotification(string text)
-        //{
-        //    // Für den Anfang, sende nur eine ToastNotification mit dem Typ der PushNachricht und mache weiter nichts.
-        //    var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);
-
-        //    // Setze das Icon.
-        //    // var toastImageAttributes = toastDescriptor.GetElementsByTagName("image");
-        //    //toastImageAttributes[0].Attributes[1].NodeValue = "ms-appx:///PushNotificationManagerBackground/ToastIcon/AppLogoUni-106-106.png";
-
-        //    // ((XmlElement)toastImageAttributes[0]).SetAttribute("src", "ms-appdata:///local/AppLogoUni-50-50.scale-100.png");
-        //    // ((XmlElement)toastImageAttributes[0]).SetAttribute("alt", "UUNLogo");
-
-        //    // Setze den Text.
-        //    var txtNodes = toastDescriptor.GetElementsByTagName("text");
-        //    txtNodes[0].AppendChild(toastDescriptor.CreateTextNode(text));
-
-        //    var toast = new ToastNotification(toastDescriptor);
-        //    var toastNotifier = ToastNotificationManager.CreateToastNotifier();
-        //    toastNotifier.Show(toast);
-        //}
-
+        
         /// <summary>
         /// Behandelt den Abbruch der Hintergrundaufgabe.
         /// </summary>

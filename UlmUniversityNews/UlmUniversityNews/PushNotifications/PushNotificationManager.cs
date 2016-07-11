@@ -1,16 +1,11 @@
 ﻿using DataHandlingLayer.Controller;
 using DataHandlingLayer.DataModel;
 using DataHandlingLayer.DataModel.Enums;
-using DataHandlingLayer.Exceptions;
-using DataHandlingLayer.ViewModel;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using UlmUniversityNews.PushNotifications.EventArgClasses;
-using Windows.Data.Xml.Dom;
 using Windows.Networking.PushNotifications;
 using Windows.Phone.Devices.Notification;
 using Windows.UI.Notifications;
@@ -127,10 +122,6 @@ namespace UlmUniversityNews.PushNotifications
         public bool IsInitialized()
         {
             if(_pushChannel != null && _pushChannel.Uri != string.Empty){
-
-                //// Registriere nur den Event Handler neu.
-                //_pushChannel.PushNotificationReceived += _pushChannel_PushNotificationReceived;
-
                 Debug.WriteLine("The push channel seems to be initialized.");
                 return true;
             }
@@ -150,20 +141,6 @@ namespace UlmUniversityNews.PushNotifications
             }
             return channelURI;
         }
-
-        ///// <summary>
-        ///// Schaltet den Empfang von Push Notifications innerhalb der App aus.
-        ///// Diese Methode kann verwendet werden, um zu verhindern, dass die App weiterhin Push Notifications entgegen nimmt, wenn 
-        ///// die Anwendung im Suspended Zustand ist.
-        ///// </summary>
-        //public void SuspendAppPushNotificationManager()
-        //{
-        //    if(_pushChannel != null)
-        //    {
-        //        Debug.WriteLine("Unsubscribe in app push notifcation event handler.");
-        //        _pushChannel.PushNotificationReceived -= _pushChannel_PushNotificationReceived;
-        //    }
-        //}
 
         /// <summary>
         /// Handler Methode, die das PushNotificationReceived Event behandelt. Bei einer eingehenden Push Nachricht wird dieses Event gefeuert
@@ -249,17 +226,6 @@ namespace UlmUniversityNews.PushNotifications
             string headline = pushController.GetUserNotificationHeadline(pushMsg);
             string resourceKey = pushController.GetUserNotificationContentLocalizationKey(pushMsg);
             showToastNotification(headline, resourceKey);
-
-            //// Benachrichtige abhängig vom Typ der Push-Nachricht.
-            //switch (pushMsg.PushType)
-            //{
-            //    case PushType.ANNOUNCEMENT_NEW:
-
-            //        break;
-            //    case PushType.CONVERSATION_MESSAGE_NEW:
-
-            //        break;
-            //}
         }
 
         /// <summary>
