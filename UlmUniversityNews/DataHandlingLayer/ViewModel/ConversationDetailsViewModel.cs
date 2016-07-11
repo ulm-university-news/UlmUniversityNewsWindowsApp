@@ -256,6 +256,24 @@ namespace DataHandlingLayer.ViewModel
 
                     // Aktualisiere noch die Anzeige.
                     UpdateConversationMessagesCollection();
+
+                    if (groupController.HasUnresolvedAuthors(SelectedConversation.Id))
+                    {
+                        Debug.WriteLine("Start resolving author references for conversation {0}.", SelectedConversation.Id);
+                        // Auflösung der fehlenden Referenzen notwendig.
+                        bool resolvedAuthors = await groupController.ResolveMissingAuthorReferencesAsync(SelectedConversation.GroupId, SelectedConversation.Id);
+
+                        if (resolvedAuthors)
+                        {
+                            // Aktualisiere die Autoren-Referenzen.
+                            List<ConversationMessage> updatableMessages = ConversationMessages.Where(item => item.AuthorId == 0).ToList<ConversationMessage>();
+                            foreach (ConversationMessage updatableMessage in updatableMessages)
+                            {
+                                ConversationMessage tmp = groupController.GetConversationMessage(updatableMessage.Id);
+                                updatableMessage.AuthorName = tmp.AuthorName;
+                            }
+                        }
+                    }
                 }
             }
             catch (ClientException ex)

@@ -2090,6 +2090,100 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Ruft die Konversationsnachricht ab, die durch die angegebene Id eindeutig identifiziert ist.
+        /// </summary>
+        /// <param name="messageId">Die eindeutige Id der Nachricht.</param>
+        /// <returns>Liefert ein Objekt der Klasse ConversationMessage zurück.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abruf fehlschlägt.</exception>
+        public ConversationMessage GetConversationMessage(int messageId)
+        {
+            ConversationMessage conversationMessage = null;
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT * 
+                            FROM ConversationMessage AS cm JOIN Message AS m ON cm.Message_Id=m.Id 
+                                JOIN User AS u ON cm.Author_User_Id=u.Id
+                            WHERE cm.Message_Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, messageId);
+
+                            int msgId, authorId, msgNumber, conversationId;
+                            string text;
+                            DateTimeOffset creationDate;
+                            Priority msgPriority;
+                            bool read;
+                            string authorName;
+
+                            while (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                msgId = Convert.ToInt32(stmt["Id"]);
+                                text = stmt["Text"] as string;
+                                creationDate = DatabaseManager.DateTimeFromSQLite(stmt["CreationDate"] as string);
+                                msgPriority = (Priority)Enum.ToObject(typeof(Priority), stmt["Priority"]);
+                                authorName = (string)stmt["Name"];
+
+                                read = false;
+                                if (stmt["Read"] != null && (long)stmt["Read"] == 1)
+                                    read = true;
+
+                                msgNumber = Convert.ToInt32(stmt["MessageNumber"]);
+                                authorId = Convert.ToInt32(stmt["Author_User_Id"]);
+                                conversationId = Convert.ToInt32(stmt["Conversation_Id"]);
+
+                                ConversationMessage tmp = new ConversationMessage()
+                                {
+                                    Id = msgId,
+                                    Text = text,
+                                    CreationDate = creationDate,
+                                    MessagePriority = msgPriority,
+                                    AuthorId = authorId,
+                                    ConversationId = conversationId,
+                                    MessageNumber = msgNumber,
+                                    Read = read,
+                                    AuthorName = authorName
+                                };
+
+                                conversationMessage = tmp;
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetConversationMessage: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetConversationMessage: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("GetConversationMessage: Mutex timeout.");
+                throw new DatabaseException("GetConversationMessage: Timeout: Failed to get access to DB.");
+            }
+
+            return conversationMessage;
+        }
+
+        /// <summary>
         /// Holt die angegebene Anzahl an aktuellesten Konversationsnachrichten aus der Datenbank. Die aktuellesten
         /// Konversationsnachrichten sind dabei diejenigen, die zeitlich gesehen zuletzt gesendet wurden. Über den Offset 
         /// kann angegeben werden, dass die angegebene Anzahl an Konversationsnachrichten übersprungen werden soll. Das ist für das 
@@ -2321,6 +2415,225 @@ namespace DataHandlingLayer.Database
             }
 
             return highestMsgNr;
+        }
+
+        /// <summary>
+        /// Prüft, ob es für die angegebene Konversation Nachrichten gibt, die über keinen Autor 
+        /// verfügen (Autor-Referenz nicht auflösbar).
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation, für die die Prüfung ausgeführt werden soll.</param>
+        /// <returns>Liefert true, wenn solche Nachrichten existieren, ansonsten false.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Überprüfung fehlschlägt.</exception>
+        public bool HasUnresolvedAuthors(int conversationId)
+        {
+            bool hasUnresolvedAuthors = false;
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT COUNT(*) AS amount 
+                            FROM ConversationMessage 
+                            WHERE Conversation_Id=? AND Author_User_Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, conversationId);
+                            stmt.Bind(2, 0);        // Dummy user mit Id 0.
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                int amount = Convert.ToInt32(stmt["amount"]);
+                                if (amount > 0)
+                                {
+                                    hasUnresolvedAuthors = true;
+                                }
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("HasUnresolvedAuthors: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("HasUnresolvedAuthors: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("HasUnresolvedAuthors: Mutex timeout.");
+                throw new DatabaseException("HasUnresolvedAuthors: Timeout: Failed to get access to DB.");
+            }
+
+            return hasUnresolvedAuthors;
+        }
+
+        /// <summary>
+        /// Liefert alle Konversationsnachrichten der angegebenen Konversation zurück, für die kein
+        /// Autor festgelegt ist.
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation, für die die Nachrichten abgerufen werden sollen.</param>
+        /// <returns>Eine Liste von Konversationsnachrichten. Die Liste kann auch leer sein.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abruf fehlschlägt.</exception>
+        public List<ConversationMessage> GetConversationMessagesWithUnresolvedAuthors(int conversationId)
+        {
+            List<ConversationMessage> messages = new List<ConversationMessage>();
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT * 
+                            FROM ConversationMessage AS cm JOIN Message AS m ON cm.Message_Id=m.Id 
+                                JOIN User AS u ON u.Id=cm.Author_User_Id 
+                            WHERE cm.Conversation_Id=? AND Author_User_Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, conversationId);
+                            stmt.Bind(2, 0);    // Dummy user mit ID 0.
+
+                            int msgId, authorId, msgNumber;
+                            string text;
+                            DateTimeOffset creationDate;
+                            Priority msgPriority;
+                            bool read;
+                            string authorName;
+
+                            while (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                msgId = Convert.ToInt32(stmt["Id"]);
+                                text = stmt["Text"] as string;
+                                creationDate = DatabaseManager.DateTimeFromSQLite(stmt["CreationDate"] as string);
+                                msgPriority = (Priority)Enum.ToObject(typeof(Priority), stmt["Priority"]);
+                                authorName = (string)stmt["Name"];
+
+                                read = false;
+                                if (stmt["Read"] != null && (long)stmt["Read"] == 1)
+                                    read = true;
+
+                                msgNumber = Convert.ToInt32(stmt["MessageNumber"]);
+                                authorId = Convert.ToInt32(stmt["Author_User_Id"]);
+
+                                ConversationMessage tmp = new ConversationMessage()
+                                {
+                                    Id = msgId,
+                                    Text = text,
+                                    CreationDate = creationDate,
+                                    MessagePriority = msgPriority,
+                                    AuthorId = authorId,
+                                    ConversationId = conversationId,
+                                    MessageNumber = msgNumber,
+                                    Read = read,
+                                    AuthorName = authorName
+                                };
+
+                                // Füge ConversationMessage der Liste hinzu.
+                                messages.Add(tmp);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetConversationMessagesWithUnresolvedAuthors: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetConversationMessagesWithUnresolvedAuthors: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("GetConversationMessagesWithUnresolvedAuthors: Mutex timeout.");
+                throw new DatabaseException("GetConversationMessagesWithUnresolvedAuthors: Timeout: Failed to get access to DB.");
+            }
+
+            return messages;
+        }
+
+        /// <summary>
+        /// Aktualisiert die Autorenreferenz der Nachricht mit der angegebenen Id.
+        /// </summary>
+        /// <param name="messageId">Die Id der Konversationsnachricht.</param>
+        /// <param name="authorId">Die Id des neuen Autors.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Aktualisierung fehlschlägt.</exception>
+        public void UpdateAuthorReferenceOfConversationMessage(int messageId, int authorId)
+        {
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"UPDATE ConversationMessage 
+                            SET Author_User_Id=? 
+                            WHERE Message_Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, authorId);
+                            stmt.Bind(2, messageId);
+
+                            if (stmt.Step() == SQLiteResult.DONE)
+                                Debug.WriteLine("UpdateAuthorReferenceOfConversationMessage: Successfully updated author for message with id {0}. " + 
+                                    "New author is {1}.", messageId, authorId);
+                            else
+                                Debug.WriteLine("UpdateAuthorReferenceOfConversationMessage: Failed to update author for message with id {0}.", messageId);
+     
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("UpdateAuthorReferenceOfConversationMessage: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("UpdateAuthorReferenceOfConversationMessage: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("UpdateAuthorReferenceOfConversationMessage: Mutex timeout.");
+                throw new DatabaseException("UpdateAuthorReferenceOfConversationMessage: Timeout: Failed to get access to DB.");
+            }
         }
 
         /// <summary>

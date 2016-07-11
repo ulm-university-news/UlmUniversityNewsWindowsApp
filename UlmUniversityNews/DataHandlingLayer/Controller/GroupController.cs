@@ -1359,6 +1359,59 @@ namespace DataHandlingLayer.Controller
                     messages));
             }
         }
+
+        /// <summary>
+        /// Löst fehlende Referenzen bezüglich des Autors bei Konversationsnachrichten für die
+        /// angegebene Konversation auf. Fragt die entsprechenden Informationen vom Server ab.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Konversation gehört.</param>
+        /// <param name="conversationId">Die Id der Konversation.</param>
+        /// <returns>Liefert true, wenn fehlende Referenzen aufgelöst werden konnten, ansonsten false.</returns>
+        public async Task<bool> ResolveMissingAuthorReferencesAsync(int groupId, int conversationId)
+        {
+            bool resolvedCorrectly = false;
+
+            List<ConversationMessage> messageList;
+            try
+            {
+                messageList = groupDBManager.GetConversationMessagesWithUnresolvedAuthors(conversationId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("ResolveMissingAuthorReferencesAsync: Failed to retrieve conversation messages.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            if (messageList != null && messageList.Count > 0)
+            {
+                // Erstens, bringe Daten zu Gruppenmitgliedern auf den neuesten Stand.
+                await SynchronizeGroupParticipantsAsync(groupId);
+
+                // Zweitens, frage die Konversationsnachrichten für die Konversation vom Server ab.
+                List<ConversationMessage> referenceList = await GetConversationMessagesAsync(groupId, conversationId, 0, false);
+
+                // Drittens, Referenzen aktualisieren.
+                foreach (ConversationMessage message in messageList)
+                {
+                    ConversationMessage referenceMessage = referenceList.Find(x => x.Id == message.Id);
+
+                    // Führe Aktualisierung durch.
+                    try
+                    {
+                        groupDBManager.UpdateAuthorReferenceOfConversationMessage(message.Id, referenceMessage.AuthorId);
+                    }
+                    catch (DatabaseException ex)
+                    {
+                        Debug.WriteLine("ResolveMissingAuthorReferencesAsync: Failed to update author reference.");
+                        throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+                    }
+                }
+
+                resolvedCorrectly = true;
+            }
+
+            return resolvedCorrectly;
+        }
         #endregion RemoteConversationMethods
 
         #region LocalGroupMethods
@@ -2014,6 +2067,28 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Ruft die Konversationsnachricht ab, die durch die angegebene Id eindeutig identifiziert ist.
+        /// </summary>
+        /// <param name="messageId">Die Id der Nachricht.</param>
+        /// <returns>Liefert ein Objekt der Klasse ConversationMessage zurück.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abruf fehlschlägt.</exception>
+        public ConversationMessage GetConversationMessage(int messageId)
+        {
+            ConversationMessage convMessage = null;
+            try
+            {
+                convMessage = groupDBManager.GetConversationMessage(messageId);
+            } 
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetConversationMessage: Failed to get the conversation message with the specified id {0}.", messageId);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return convMessage;
+        }
+
+        /// <summary>
         /// Ermittelte die Anzahl an ungelesenen Konversationsnachrichten für die Gruppe,
         /// die durch die angegebene Id eindeutig identifiziert ist. Gibt ein Verzeichnis zurück, indem mit der Konversations-Id
         /// als Schlüssel die Anzahl an ungelesenen Konversationsnachrichten ermittelt werden kann.
@@ -2079,6 +2154,30 @@ namespace DataHandlingLayer.Controller
             }
 
             return highestNumber;
+        }
+
+        /// <summary>
+        /// Prüft, ob es für die angegebene Konversation Nachrichten gibt, die keine
+        /// gültige Autorenreferenz besitzen.
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation.</param>
+        /// <returns>Liefert true, wenn solche Nachrichten exisitieren, ansonsten false.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Prüfung fehlschlägt.</exception>
+        public bool HasUnresolvedAuthors(int conversationId)
+        {
+            bool hasUnresolvedAuthors = false;
+
+            try
+            {
+                hasUnresolvedAuthors = groupDBManager.HasUnresolvedAuthors(conversationId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("HasUnresolvedAuthors: Failed to dermine whether conversation has messages with unresolved authors.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return hasUnresolvedAuthors;
         }
         #endregion LocalConversationMethods
     }
