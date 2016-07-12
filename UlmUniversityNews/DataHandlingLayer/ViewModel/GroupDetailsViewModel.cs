@@ -397,14 +397,13 @@ namespace DataHandlingLayer.ViewModel
         /// Stößt eine Synchronisation der Konversationsressourcen dieser Gruppe mit dem Server an.
         /// Aktualisiert anschließend die Anzeige.
         /// </summary>
-        public async Task SynchronizeConversations()
+        public async Task SynchronizeConversationsAsync()
         {
             if (SelectedGroup == null)
                 return;
 
             try
             {
-                displayIndeterminateProgressIndicator();
                 // Führe Synchronisation durch.
                 await Task.Run(() => groupController.SynchronizeConversationsWithServerAsync(SelectedGroup.Id));
 
@@ -424,9 +423,32 @@ namespace DataHandlingLayer.ViewModel
                 Debug.WriteLine("SynchronizeConversations: Execution failed.");
                 displayError(ex.ErrorCode);
             }
-            finally
+        }
+
+        /// <summary>
+        /// Stößt eine Synchronisation der Gruppendaten dieser Gruppe mit dem Server an.
+        /// Aktualisiert anschließend die Anzeige.
+        /// </summary>
+        public async Task SynchronizeGroupInformationAsync()
+        {
+            if (SelectedGroup == null)
+                return;
+
+            try
             {
-                hideIndeterminateProgressIndicator();
+                // Synchronisiere Daten.
+                await Task.Run(() => groupController.SynchronizeGroupDetailsWithServerAsync(SelectedGroup.Id));
+
+                // Rufe synchronisierte Daten ab.
+                Group group = groupController.GetGroup(SelectedGroup.Id);
+
+                // Aktualisiere Anzeige.
+                updateViewRelatedGroupProperties(SelectedGroup, group);
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("SynchronizeGroupInformationAsync: Failed to synchronize group info.");
+                displayError(ex.ErrorCode);
             }
         }
 
@@ -459,6 +481,30 @@ namespace DataHandlingLayer.ViewModel
                         conversation.AmountOfUnreadMessages = 0;
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Aktualisiert die für die View relevanten Eigenschaften der Gruppeninstanzen.
+        /// Führt somit eine Aktualisierung der Anzeige aus.
+        /// Muss im UI-Thread ausgeführt werden.
+        /// </summary>
+        /// <param name="oldGroup">Das derzeit an die View gebundenen Gruppen Objekt.</param>
+        /// <param name="newGroup">Das Gruppen Objekt mit den aktuellen Daten.</param>
+        private void updateViewRelatedGroupProperties(Group oldGroup, Group newGroup)
+        {
+            oldGroup.Name = newGroup.Name;
+            oldGroup.Description = newGroup.Description;
+            oldGroup.Term = newGroup.Term;
+            oldGroup.CreationDate = newGroup.CreationDate;
+            oldGroup.ModificationDate = newGroup.ModificationDate;
+            oldGroup.GroupAdmin = newGroup.GroupAdmin;
+            oldGroup.Participants = newGroup.Participants;
+
+            if (oldGroup.Deleted != newGroup.Deleted)
+            {
+                oldGroup.Deleted = newGroup.Deleted;
+                checkCommandExecution();
             }
         }
 
@@ -675,37 +721,37 @@ namespace DataHandlingLayer.ViewModel
                 {
                     case "ConversationPivotItem":
                         displayIndeterminateProgressIndicator("GroupDetailsSynchronizeConversationStatus");
-
-                        await SynchronizeConversations();
-
-                        // Lade Teilnehmer-Informationen erneut, da diese durch die Synchronisation möglicherweise 
-                        // geändert wurden.
-                        List<User> participants = groupController.GetActiveParticipantsOfGroup(SelectedGroup.Id);
-                        // Prüfe, ob lokaler Nutzer noch in der Liste ist.
-                        User localUser = groupController.GetLocalUser();
-                        int listIndex = participants.FindIndex(item => item.Id == localUser.Id);
-                        if (listIndex >= 0)
-                        {
-                            IsRemovedFromGroup = false;
-                        }
-                        else
-                        {
-                            Debug.WriteLine("executeSynchronizeDataCommandAsync: Participant now seems to be removed from the group.");
-                            IsRemovedFromGroup = true;
-                            checkCommandExecution();
-                        }
-                        SelectedGroup.Participants = participants;
-
+                        await SynchronizeConversationsAsync();
                         break;
                     case "BallotPivotItem":
                         break;
                     case "GroupDetailsPivotItem":
+                        displayIndeterminateProgressIndicator("GroupDetailsSynchronizeGroupDetailsStatus");
+                        await SynchronizeGroupInformationAsync();
                         break;
                     case "EventsPivotItem":
                         break;
                     default:
                         break;
                 }
+
+                // Lade Teilnehmer-Informationen erneut, da diese durch die Synchronisation möglicherweise 
+                // geändert wurden.
+                List<User> participants = groupController.GetActiveParticipantsOfGroup(SelectedGroup.Id);
+                // Prüfe, ob lokaler Nutzer noch in der Liste ist.
+                User localUser = groupController.GetLocalUser();
+                int listIndex = participants.FindIndex(item => item.Id == localUser.Id);
+                if (listIndex >= 0)
+                {
+                    IsRemovedFromGroup = false;
+                }
+                else
+                {
+                    Debug.WriteLine("executeSynchronizeDataCommandAsync: Participant now seems to be removed from the group.");
+                    IsRemovedFromGroup = true;
+                    checkCommandExecution();
+                }
+                SelectedGroup.Participants = participants;
             }
             catch (ClientException ex)
             {

@@ -1505,4 +1505,7 @@ date: </value>
   <data name="VE_ConversationTitleLengthInvalidValidationError" xml:space="preserve">
     <value>Please make sure the title contains at least 3 characters and a maximum of 45 characters.</value>
   </data>
+  <data name="GroupDetailsSynchronizeGroupDetailsStatus" xml:space="preserve">
+    <value>Synchronizing group details</value>
+  </data>
 </root>

@@ -1506,4 +1506,7 @@ Nachricht am: </value>
   <data name="VE_ConversationTitleLengthInvalidValidationError" xml:space="preserve">
     <value>Bitte stellen Sie sicher, dass der Titel mindestens 3 und maximal 45 Zeichen umfasst.</value>
   </data>
+  <data name="GroupDetailsSynchronizeGroupDetailsStatus" xml:space="preserve">
+    <value>Synchronisiere Gruppeninformationen</value>
+  </data>
 </root>

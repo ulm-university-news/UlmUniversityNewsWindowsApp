@@ -1233,6 +1233,47 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Prüft, ob die Daten der Gruppe noch aktuell sind. Vergleicht die Daten mit 
+        /// den vom Server abgefragten aktuellsten Daten. Wenn Änderungen bestehen, dann werden
+        /// die lokalen Datensätze aktualisiert. 
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe für die die Synchronisation durchgeführt werden soll.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Synchronisation fehlgeschlagen ist.</exception>
+        public async Task SynchronizeGroupDetailsWithServerAsync(int groupId)
+        {
+            Debug.WriteLine("SynchronizeGroupDetailsWithServerAsync: Start synchronisation.");
+            // Synchronisiere die lokalen Teilnehmerdaten.
+            await SynchronizeGroupParticipantsAsync(groupId);
+
+            // Hole neuste Gruppendaten vom Server.
+            Group referenceGroup = await GetGroupAsync(groupId, false);
+
+            // Hole Gruppendaten aus lokalen Datenstätzen.
+            Group localGroup = GetGroup(groupId);
+
+            if (localGroup.ModificationDate.CompareTo(referenceGroup.ModificationDate) < 0)
+            {
+                Debug.WriteLine("SynchronizeGroupDetailsWithServerAsync: Need to update local group data for group with id {0}.", groupId);
+
+                try
+                {
+                    groupDBManager.UpdateGroup(referenceGroup, false);
+                }
+                catch (DatabaseException ex)
+                {
+                    Debug.WriteLine("Failed to update the group with id {0}.", groupId);
+                    throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+                }
+            }
+            else
+            {
+                Debug.WriteLine("SynchronizeGroupDetailsWithServerAsync: No need to update the group.");
+            }
+
+            Debug.WriteLine("SynchronizeGroupDetailsWithServerAsync: Finished synchronisation.");
+        }
+
+        /// <summary>
         /// Erstelle eine neue Konversationsnachricht. Sendet einen Request an den Server,
         /// um die Nachricht anzulegen. Der Server verteilt die Nachricht dann an alle Teilnehmer.
         /// </summary>

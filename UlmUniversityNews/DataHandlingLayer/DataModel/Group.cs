@@ -42,7 +42,7 @@ namespace DataHandlingLayer.DataModel
         public string Description
         {
             get { return description; }
-            set { description = value; }
+            set { this.setProperty(ref this.description, value); }
         }
 
         private GroupType groupType;
@@ -53,7 +53,7 @@ namespace DataHandlingLayer.DataModel
         public GroupType Type
         {
             get { return groupType; }
-            set { groupType = value; }
+            set { this.setProperty(ref this.groupType, value); }
         }
 
         private DateTimeOffset creationDate;
@@ -64,7 +64,7 @@ namespace DataHandlingLayer.DataModel
         public DateTimeOffset CreationDate
         {
             get { return creationDate; }
-            set { creationDate = value; }
+            set { this.setProperty(ref this.creationDate, value); }
         }
 
         private DateTimeOffset modificationDate;
@@ -75,7 +75,7 @@ namespace DataHandlingLayer.DataModel
         public DateTimeOffset ModificationDate
         {
             get { return modificationDate; }
-            set { modificationDate = value; }
+            set { this.setProperty(ref this.modificationDate, value); }
         }
 
         private string term;
@@ -108,7 +108,7 @@ namespace DataHandlingLayer.DataModel
         public int GroupAdmin
         {
             get { return groupAdmin; }
-            set { groupAdmin = value; }
+            set { this.setProperty(ref this.groupAdmin, value); }
         }
 
         private NotificationSetting groupNotificationSetting;
@@ -130,7 +130,7 @@ namespace DataHandlingLayer.DataModel
         public bool Deleted
         {
             get { return deleted; }
-            set { deleted = value; }
+            set { this.setProperty(ref this.deleted, value); }
         }
 
         private int numberOfUnreadMessages;
