@@ -2755,5 +2755,729 @@ namespace DataHandlingLayer.Database
                 throw new DatabaseException("DeleteConversationMessages: Timeout: Failed to get access to DB.");
             }
         }
+
+        // ********************************** Abstimmungen ********************************************************************************************
+
+        /// <summary>
+        /// Speichert eine Abstimmung in den lokalen Datensätzen ab. 
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe der die Abstimmung zugeordnet wird.</param>
+        /// <param name="ballot">Die Daten der neuen Abstimmung in Form eines Ballot Objekts.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException falls Speicherung fehlschlägt.</exception>
+        public void StoreBallot(int groupId, Ballot ballot)
+        {
+            if (ballot == null)
+            {
+                Debug.WriteLine("StoreBallot: No valid data passed to the method.");
+                return;
+            }
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"INSERT INTO Ballot (Id, Title, Description, Closed, MultipleChoice, Public, 
+                            Group_Id, BallotAdmin_User_Id) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, ballot.Id);
+                            stmt.Bind(2, ballot.Title);
+                            stmt.Bind(3, ballot.Description);
+
+                            if (ballot.IsClosed.HasValue)
+                                stmt.Bind(4, (ballot.IsClosed == true) ? 1 : 0);
+                            else
+                                stmt.Bind(4, 0);    // Setze Closed auf false.
+
+                            if (ballot.IsMultipleChoice.HasValue)
+                                stmt.Bind(5, (ballot.IsMultipleChoice == true) ? 1 : 0);
+                            else
+                                stmt.Bind(5, 0);    // Setze MultipleChoice auf false.
+
+                            if (ballot.HasPublicVotes.HasValue)
+                                stmt.Bind(6, (ballot.HasPublicVotes == true) ? 1 : 0);
+                            else
+                                stmt.Bind(6, 0);    // Setze Public auf false.
+
+                            stmt.Bind(7, groupId);
+                            stmt.Bind(8, ballot.AdminId);
+
+                            if (stmt.Step() == SQLiteResult.DONE)
+                                Debug.WriteLine("StoreBallot: Successfully inserted ballot with id {0} for group with id {1}.",
+                                    ballot.Id, groupId);
+                            else
+                                Debug.WriteLine("StoreBallot: Failed to insert ballot with id {0} for group with id {1}.",
+                                    ballot.Id, groupId);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("StoreBallot: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("StoreBallot: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("StoreBallot: Mutex timeout.");
+                throw new DatabaseException("StoreBallot: Timeout: Failed to get access to DB.");
+            }
+        }
+
+        /// <summary>
+        /// Fügt eine Menge von Abstimmungsobjekten einer bestimmten Gruppe den lokalen Datensätzen hinzu.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe der die Abstimmungen zugeordnet sind.</param>
+        /// <param name="ballots">Liste von Objekten der Klasse Ballot, die hinzugefügt werden sollen.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Speicherung fehlschlägt.</exception>
+        public void BulkInsertBallots(int groupId, List<Ballot> ballots)
+        {
+            if (ballots == null || ballots.Count() > 0)
+            {
+                Debug.WriteLine("BulkInsertBallots: No valid data passed to the method.");
+                return;
+            }
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"INSERT INTO Ballot (Id, Title, Description, Closed, MultipleChoice, Public, 
+                            Group_Id, BallotAdmin_User_Id) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+
+                        // Starte eine Transaktion.
+                        using (var statement = conn.Prepare("BEGIN TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            foreach (Ballot ballot in ballots)
+                            {
+                                stmt.Bind(1, ballot.Id);
+                                stmt.Bind(2, ballot.Title);
+                                stmt.Bind(3, ballot.Description);
+
+                                if (ballot.IsClosed.HasValue)
+                                    stmt.Bind(4, (ballot.IsClosed == true) ? 1 : 0);
+                                else
+                                    stmt.Bind(4, 0);    // Setze Closed auf false.
+
+                                if (ballot.IsMultipleChoice.HasValue)
+                                    stmt.Bind(5, (ballot.IsMultipleChoice == true) ? 1 : 0);
+                                else
+                                    stmt.Bind(5, 0);    // Setze MultipleChoice auf false.
+
+                                if (ballot.HasPublicVotes.HasValue)
+                                    stmt.Bind(6, (ballot.HasPublicVotes == true) ? 1 : 0);
+                                else
+                                    stmt.Bind(6, 0);    // Setze Public auf false.
+
+                                stmt.Bind(7, groupId);
+                                stmt.Bind(8, ballot.AdminId);
+
+                                stmt.Step();
+
+                                // Statement zurücksetzen für nächste Iteration.
+                                stmt.Reset();
+                            }
+                        }
+
+                        // Commit der Transaktion.
+                        using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                        {
+                            statement.Step();
+                            Debug.WriteLine("BulkInsertBallots: Successfully inserted {0} ballots  " +
+                                "via bulk insert.", ballots.Count);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("BulkInsertBallots: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("BulkInsertBallots: Exception occurred. Msg is {0}.", ex.Message);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("BulkInsertBallots: Mutex timeout.");
+                throw new DatabaseException("BulkInsertBallots: Timeout: Failed to get access to DB.");
+            }
+        }
+
+        /// <summary>
+        /// Frage Abstimmung aus den lokalen Datensätzen ab. Es können auch Subresourcen der Abstimmung
+        /// in die Abfrage eingeschlossen werden.
+        /// </summary>
+        /// <param name="ballotId">Die Id der Abstimmung, die abgefragt werden soll.</param>
+        /// <param name="includingSubresources">Gibt an, ob die Subresourcen der Abstimmung (Options und Votes) beim Abruf 
+        ///     mit abgerufen werden sollen.</param>
+        /// <returns>Liefert ein Objekt vom Typ Ballot zurück.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abruf fehlschlägt.</exception>
+        public Ballot GetBallot(int ballotId, bool includingSubresources)
+        {
+            Ballot ballot = null;
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT * 
+                            FROM Ballot AS b JOIN User AS u ON b.BallotAdmin_User_Id=u.Id 
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, ballotId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                string title = (string)stmt["Title"];
+                                string description = (string)stmt["Description"];
+                                bool closed = ((long)stmt["Closed"] == 1) ? true : false;
+                                bool multipleChoice = ((long)stmt["MultipleChoice"] == 1) ? true : false;
+                                bool publicVotes = ((long)stmt["Public"] == 1) ? true : false;
+                                int groupId = Convert.ToInt32(stmt["GroupId"]);
+                                int adminId = Convert.ToInt32(stmt["BallotAdmin_User_Id"]);
+                                string adminName = (string)stmt["Name"];
+
+                                ballot = new Ballot()
+                                {
+                                    Id = ballotId,
+                                    Title = title,
+                                    Description = description,
+                                    IsClosed = closed,
+                                    IsMultipleChoice = multipleChoice,
+                                    HasPublicVotes = publicVotes,
+                                    AdminId = adminId,
+                                    AdminName = adminName
+                                };
+
+                                if (includingSubresources)
+                                {
+                                    string getOptionsQuery = @"SELECT * 
+                                        FROM ""Option""
+                                        WHERE Ballot_Id=?;";
+
+                                    string getVotesQuery = @"SELECT User_Id 
+                                        FROM UserOption 
+                                        WHERE Option_Id=?;";
+
+                                    using (var getOptionsStmt = conn.Prepare(getOptionsQuery))
+                                    using (var getVotesStmt = conn.Prepare(getVotesQuery))
+                                    {
+                                        List<Option> optionsList = new List<Option>();
+
+                                        getOptionsStmt.Bind(1, ballotId);
+
+                                        while (getOptionsStmt.Step() == SQLiteResult.ROW)
+                                        {
+                                            int optionId = Convert.ToInt32(getOptionsStmt["Id"]);
+                                            string text = (string)getOptionsStmt["Text"];
+
+                                            Option tmp = new Option()
+                                            {
+                                                Id = optionId,
+                                                Text = text
+                                            };
+
+                                            // Frage Abstimmungsergebnisse für diese Option ab.
+                                            List<int> voters = new List<int>();
+                                            getVotesStmt.Bind(1, optionId);
+
+                                            while (getVotesStmt.Step() == SQLiteResult.ROW)
+                                            {
+                                                voters.Add(Convert.ToInt32(getVotesStmt["User_Id"]));
+                                            }
+
+                                            // Füge der Option hinzu.
+                                            tmp.VoterIds = voters;
+
+                                            // Setze Statement zurück für nächste Iteration.
+                                            getVotesStmt.Reset();
+
+                                            // Füge Option der Liste hinzu.
+                                            optionsList.Add(tmp);
+                                        }
+                                        // Füge Options der Abstimmung hinzu.
+                                        ballot.Options = optionsList;
+                                    }                                    
+                                } // Ende if includeSubresources
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetBallot: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetBallot: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("GetBallot: Mutex timeout.");
+                throw new DatabaseException("GetBallot: Timeout: Failed to get access to DB.");
+            }
+
+            return ballot;
+        }
+
+        /// <summary>
+        /// Liefert die Abstimmungen zurück, die der Gruppe mit der angegebenen Id zugeordnet sind.
+        /// Die Abstimmungen werden ohne Informationen bezüglich der Subresourcen zurück geliefert.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, für die die Abstimmungen abgefragt werden sollen.</param>
+        /// <returns>Eine Liste von Instanzen der Klasse Ballot. Die Liste kann auch leer sein.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abruf fehlschlägt.</exception>
+        public List<Ballot> GetBallots(int groupId)
+        {
+            List<Ballot> ballots = new List<Ballot>();
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT * 
+                            FROM Ballot AS b JOIN User AS u ON b.BallotAdmin_User_Id=u.Id 
+                            WHERE b.Group_Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, groupId);
+
+                            string title, description, adminName;
+                            bool closed, multipleChoice, publicVotes;
+                            int ballotId, adminId;
+
+                            while (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                ballotId = Convert.ToInt32(stmt["Id"]);
+                                title = (string)stmt["Title"];
+                                description = (string)stmt["Description"];
+                                closed = ((long)stmt["Closed"] == 1) ? true : false;
+                                multipleChoice = ((long)stmt["MultipleChoice"] == 1) ? true : false;
+                                publicVotes = ((long)stmt["Public"] == 1) ? true : false;
+                                groupId = Convert.ToInt32(stmt["GroupId"]);
+                                adminId = Convert.ToInt32(stmt["BallotAdmin_User_Id"]);
+                                adminName = (string)stmt["Name"];
+
+                                Ballot ballot = new Ballot()
+                                {
+                                    Id = ballotId,
+                                    Title = title,
+                                    Description = description,
+                                    IsClosed = closed,
+                                    IsMultipleChoice = multipleChoice,
+                                    HasPublicVotes = publicVotes,
+                                    AdminId = adminId,
+                                    AdminName = adminName
+                                };
+
+                                ballots.Add(ballot);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetBallots: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetBallots: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("GetBallots: Mutex timeout.");
+                throw new DatabaseException("GetBallots: Timeout: Failed to get access to DB.");
+            }
+
+            return ballots;
+        }
+
+        /// <summary>
+        /// Aktualisiert den zur Abstimmung gehörenden Datensatz. Es werden
+        /// nur die Eigenschaften Title, Description, IsClosed und AdminId aktualisiert.
+        /// </summary>
+        /// <param name="newBallot">Das Abstimmungsobjekt mit den aktualisierten Daten.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Aktualisierung fehlschlägt.</exception>
+        public void UpdateBallot(Ballot newBallot)
+        {
+            if (newBallot == null)
+            {
+                Debug.WriteLine("UpdateBallot: No valid data passed to the method.");
+                return;
+            }
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"UPDATE Ballot 
+                            SET Title=?, Description=?, Closed=?, BallotAdmin_User_Id=? 
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, newBallot.Title);
+                            stmt.Bind(2, newBallot.Description);
+                            stmt.Bind(3, (newBallot.IsClosed) == true ? 1 : 0);
+                            stmt.Bind(3, newBallot.AdminId);
+
+                            if (stmt.Step() == SQLiteResult.DONE)
+                                Debug.WriteLine("UpdateBallot: Successfully updated the ballot with id {0}.", newBallot.Id);
+                            else
+                                Debug.WriteLine("UpdateBallot: Failed to update the ballot with id {0}.", newBallot.Id);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("UpdateBallot: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("UpdateBallot: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("UpdateBallot: Mutex timeout.");
+                throw new DatabaseException("UpdateBallot: Timeout: Failed to get access to DB.");
+            }
+        }
+
+        /// <summary>
+        /// Löscht die Abstimmung mit der angegebenen Id aus den lokalen Datensätzen. 
+        /// </summary>
+        /// <param name="ballotId">Die Id der Abstimmung, die gelöscht werden soll. </param>
+        public void DeleteBallot(int ballotId)
+        {
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"DELETE FROM Ballot 
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, ballotId);
+
+                            if (stmt.Step() == SQLiteResult.DONE)
+                                Debug.WriteLine("DeleteBallot: Successfully deleted the ballot with id {0}.", ballotId);
+                            else
+                                Debug.WriteLine("DeleteBallot: Failed to delete ballot with id {0}.", ballotId);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("DeleteBallot: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("DeleteBallot: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("DeleteBallot: Mutex timeout.");
+                throw new DatabaseException("DeleteBallot: Timeout: Failed to get access to DB.");
+            }
+        }
+
+        /// <summary>
+        /// Fügt eine Abstimmungsoption zu der Abstimmung hinzu, die über die angegebene Id eindeutig identifiziert ist.
+        /// Die Abstimmungsoption kann einschließlich der Abstimmungsergebnisse gespeichert werden.
+        /// </summary>
+        /// <param name="ballotId">Die Id der Abstimmung, zu der die Abstimmungsoption hinzugefügt werden soll.</param>
+        /// <param name="option">Die Daten der Abstimmungsoption in Form eines Objekts der Klasse Option.</param>
+        /// <param name="includingVoters">Gibt an, ob Abstimmungsergebnisse zu dieser Option ebenfalls abgespeichert werden sollen.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abstimmungsoption nicht hinzugefügt werden konnte.</exception>
+        public void InsertOption(int ballotId, Option option, bool includingVoters)
+        {
+            if (option == null)
+            {
+                Debug.WriteLine("InsertOption: No valid data passed to the method.");
+                return;
+            }
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"INSERT INTO ""Option"" (Id, Text, Ballot_Id) 
+                            VALUES (?, ?, ?);";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, option.Id);
+                            stmt.Bind(2, option.Text);
+                            stmt.Bind(3, ballotId);
+
+                            if (stmt.Step() == SQLiteResult.DONE)
+                                Debug.WriteLine("InsertOption: Successfully inserted option with id {0} for ballot with id {1}.", option.Id, ballotId);
+                            else
+                                Debug.WriteLine("InsertOption: Failed to insert option with id {0} for ballot with id {1}.", option.Id, ballotId);
+
+                            if (includingVoters && option.VoterIds != null)
+                            {
+                                string votersQuery = @"INSERT INTO UserOption (Option_Id, User_Id) 
+                                    VALUES (?, ?);";
+
+                                using (var votersStmt = conn.Prepare(votersQuery))
+                                {
+                                    foreach (int voterId in option.VoterIds)
+                                    {
+                                        votersStmt.Bind(1, option.Id);
+                                        votersStmt.Bind(2, voterId);
+
+                                        votersStmt.Step();
+
+                                        // Statement zurücksetzen für nächste Iteration.
+                                        votersStmt.Reset();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("InsertOption: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("InsertOption: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("InsertOption: Mutex timeout.");
+                throw new DatabaseException("InsertOption: Timeout: Failed to get access to DB.");
+            }
+        }
+
+        /// <summary>
+        /// Speichere die Kombination aus Nutzer-Id und Optionen-Id in den lokalen Datensätzen ab.
+        /// Der Nutzer hat somit für die spezifizierte Abstimmungsoption abgestimmt.
+        /// </summary>
+        /// <param name="optionId">Die Id der Abstimmungsoption für die der Nutzer abstimmt.</param>
+        /// <param name="userId">Die Id des Nutzers, der abstimmt.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Speicherung fehlschlägt.</exception>
+        public void AddVote(int optionId, int userId)
+        {
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"INSERT INTO UserOption (Option_Id, User_Id) 
+                            VALUES (?, ?);";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, optionId);
+                            stmt.Bind(2, userId);
+
+                            if (stmt.Step() == SQLiteResult.DONE)
+                                Debug.WriteLine("AddVote: Successfully added vote from user with id {0} for option with id {1}.", userId, optionId);
+                            else
+                                Debug.WriteLine("AddVote: Failed to add vote from user with id {0} for option with id {1}.", userId, optionId);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("AddVote: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("AddVote: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("AddVote: Mutex timeout.");
+                throw new DatabaseException("AddVote: Timeout: Failed to get access to DB.");
+            }
+        }
+
+        /// <summary>
+        /// Entfernt die Abbildung von Nutzer-Id auf Optionen-Id. Der Nutzer hat somit nicht mehr
+        /// für die spezifizierte Abstimmungsoption abgestimmt. 
+        /// </summary>
+        /// <param name="optionId">Die Id der Abstimmungsoption, für die der Nutzer zukünftig nicht mehr abgestimmt hat.</param>
+        /// <param name="userId">Die Id des Nutzers.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Löschen fehlschlägt.</exception>
+        public void DeleteVote(int optionId, int userId)
+        {
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"DELETE FROM UserOption 
+                            WHERE Option_Id=? AND User_Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, optionId);
+                            stmt.Bind(2, userId);
+
+                            if (stmt.Step() == SQLiteResult.DONE)
+                                Debug.WriteLine("DeleteVote: Successfully removed vote from user with id {0} for option with id {1}.", userId, optionId);
+                            else
+                                Debug.WriteLine("DeleteVote: Failed to remove vote from user with id {0} for option with id {1}.", userId, optionId);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("DeleteVote: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("DeleteVote: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("DeleteVote: Mutex timeout.");
+                throw new DatabaseException("DeleteVote: Timeout: Failed to get access to DB.");
+            }
+        }
+
     }
 }

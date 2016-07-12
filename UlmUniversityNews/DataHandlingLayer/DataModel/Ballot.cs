@@ -12,7 +12,7 @@ namespace DataHandlingLayer.DataModel
     /// Eine Abstimmung kann mehrere Abstimmungsoptionen haben, für die die Teilnehmer der Gruppe
     /// abstimmen können.
     /// </summary>
-    public class Ballot
+    public class Ballot : PropertyChangedNotifier
     {
         #region Properties
         private int id;
@@ -57,6 +57,16 @@ namespace DataHandlingLayer.DataModel
         {
             get { return adminId; }
             set { adminId = value; }
+        }
+
+        private string adminName;
+        /// <summary>
+        /// Der Name des Administrators der Abstimmung.
+        /// </summary>
+        public string AdminName
+        {
+            get { return adminName; }
+            set { adminName = value; }
         }
 
         private bool? isClosed;

@@ -12,7 +12,7 @@ namespace DataHandlingLayer.DataModel
     /// Eine Abstimmungsoption stellt eine Wahlmöglichkeit einer Abstimmung dar. Abstimmungsoptionen
     /// werden mit den entsprechenden Nutzern verknüpft, die für diese Option abgestimmt haben.
     /// </summary>
-    public class Option
+    public class Option : PropertyChangedNotifier
     {
         #region Properties
         private int id;
