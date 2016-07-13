@@ -229,6 +229,16 @@ namespace DataHandlingLayer.ViewModel
             get { return changeToAddConversationDialog; }
             set { changeToAddConversationDialog = value; }
         }
+
+        private RelayCommand ballotSelectedCommand;
+        /// <summary>
+        /// Befehl, der ausgeführt wird sobald eine Abstimmung in der View gewählt wurde.
+        /// </summary>
+        public RelayCommand BallotSelectedCommand
+        {
+            get { return ballotSelectedCommand; }
+            set { ballotSelectedCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -274,6 +284,9 @@ namespace DataHandlingLayer.ViewModel
             ChangeToAddConversationDialog = new RelayCommand(
                 param => executeChangeToAddConversationDialog(),
                 param => canChangeToAddConversationDialog());
+            BallotSelectedCommand = new RelayCommand(
+                param => executeBallotSectedCommand(param));
+
         }
 
         /// <summary>
@@ -298,9 +311,14 @@ namespace DataHandlingLayer.ViewModel
                     {
                         Debug.WriteLine("User seems to be an active participant of the group.");
                         IsGroupParticipant = true;
+
                         // Frage noch die Teilnehmer ab.
                         List<User> participants = await Task.Run(() => groupController.GetActiveParticipantsOfGroup(loadedGroup.Id));
                         loadedGroup.Participants = participants;
+
+                        // Lade die Konversationen und Abstimmungen.
+                        await LoadConversationsAsync(loadedGroup.Id);
+                        await LoadBallotsAsync(loadedGroup.Id);
                     }
                     else
                     {
@@ -389,6 +407,36 @@ namespace DataHandlingLayer.ViewModel
             catch (ClientException ex)
             {
                 Debug.WriteLine("LoadConversationsAsync: Execution failed.");
+                displayError(ex.ErrorCode);
+            }
+        }
+
+        /// <summary>
+        /// Lade die Abstimmungen der Gruppe.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        public async Task LoadBallotsAsync(int groupId)
+        {
+            try
+            {
+                // Lade die lokal gespeicherten Abstimmungen.
+                List<Ballot> ballots = await Task.Run(() => groupController.GetBallots(groupId));
+                if (ballots != null)
+                {
+                    // TODO sortieren 
+
+                    if (BallotCollection == null)
+                        BallotCollection = new ObservableCollection<Ballot>();
+
+                    foreach (Ballot ballot in ballots)
+                    {
+                        BallotCollection.Add(ballot);
+                    }
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("LoadBallotsAsync: Loading failed.");
                 displayError(ex.ErrorCode);
             }
         }
@@ -680,12 +728,12 @@ namespace DataHandlingLayer.ViewModel
 
         /// <summary>
         /// Führt den Befehl ConversationSelectedCommand aus. Stößt den Wechsel
-        /// auf die Detailansicht der Konversation aus.
+        /// auf die Detailansicht der Konversation an.
         /// </summary>
-        /// <param name="selectedConversation">Die gewählte Konversation.</param>
-        private void executeConversationSelectedCommand(object selectedConversation)
+        /// <param name="selectedItem">Der gewählte Listeneintrag. Hier die gewählte Konversation.</param>
+        private void executeConversationSelectedCommand(object selectedItem)
         {
-            Conversation conversation = selectedConversation as Conversation;
+            Conversation conversation = selectedItem as Conversation;
             if (conversation != null)
             {
                 _navService.Navigate("ConversationDetails", conversation.Id);
@@ -896,6 +944,17 @@ namespace DataHandlingLayer.ViewModel
         private void executeChangeToAddConversationDialog()
         {
             _navService.Navigate("AddAndEditConversation", SelectedGroup.Id);
+        }
+
+        /// <summary>
+        /// Führt den Befehl BallotSelectedCommand aus. Stößt den Wechsel
+        /// auf die Detailansicht der Abstimmung an. 
+        /// </summary>
+        /// <param name="selectedItem">Der gewählte Listeintrag. Hier die gewählte Abstimmung.</param>
+        private void executeBallotSectedCommand(object selectedItem)
+        {
+            Ballot ballot = selectedItem as Ballot;
+            // TODO
         }
         #endregion CommandFunctionality
 

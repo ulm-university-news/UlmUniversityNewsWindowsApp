@@ -282,14 +282,6 @@ namespace DataHandlingLayer.Controller
             catch (APIException ex)
             {
                 Debug.WriteLine("JoinGroupAsync: Failed to join group. Msg is: {0}.", ex.Message);
-
-                //if (ex.ErrorCode == ErrorCodes.GroupIncorrectPassword)
-                //{
-                //    // TODO - Validation error "password incorrect"
-
-                //    return false;
-                //}
-
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
 
@@ -347,7 +339,19 @@ namespace DataHandlingLayer.Controller
                 // Werfe hier keinen Fehler an Aufrufer. Daten können später einfach nachgeladen werden.
             }
 
-            // TODO: Frage noch die Abstimmungsdaten ab.
+            // Frage noch die Abstimmungsdaten ab.
+            try
+            {
+                List<Ballot> ballots = await GetBallotsAsync(groupId, true, false);
+                Debug.WriteLine("JoinGroupAsync: Ballots is: {0}.", ballots);
+                StoreBallots(groupId, ballots);
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("JoinGroupAsync: Failed to retrieve or store the ballot data.");
+                Debug.WriteLine("JoinGroupAsync: error msg is {0} and error code is {1}.", ex.Message, ex.ErrorCode);
+                // Werfe hier keinen Fehler an Aufrufer. Daten können später einfach nachgeladen werden.
+            }
 
             return true;
         }
@@ -479,13 +483,14 @@ namespace DataHandlingLayer.Controller
                 {
                     // Kann Gruppe einfach entfernen.
                     DeleteGroupLocally(groupId);
+                    
                     return;
                 }
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
 
-            // Entferne die Gruppe aus den lokalen Datensätzen.
+            // Entferne die Gruppe aus den lokalen Datensätzen. Zugehörige Daten werden kaskadierend gelöscht.
             DeleteGroupLocally(groupId);
         }
 
@@ -511,7 +516,12 @@ namespace DataHandlingLayer.Controller
             }
             catch (APIException ex)
             {
-                // TODO - Behandlung Gruppe nicht gefunden.
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    Debug.WriteLine("GetParticipantsOfGroup: Group with id {0} seems to be deleted.", groupId);
+                    // Markiere Gruppe lokal als gelöscht.
+                    MarkGroupAsDeleted(groupId);
+                }
 
                 Debug.WriteLine("GetParticipantsOfGroup: Request to server failed.");
                 // Abbilden auf ClientException.
@@ -614,7 +624,9 @@ namespace DataHandlingLayer.Controller
             {
                 if (ex.ErrorCode == ErrorCodes.GroupNotFound)
                 {
-                    // TODO
+                    Debug.WriteLine("UpdateGroupAsync: Group seems to be deleted from the server.");
+                    // Markiere Gruppe lokal als gelöscht.
+                    MarkGroupAsDeleted(oldGroup.Id);
                 }
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
@@ -1455,6 +1467,102 @@ namespace DataHandlingLayer.Controller
         }
         #endregion RemoteConversationMethods
 
+        #region RemoteBallotMethods
+        /// <summary>
+        /// Ruft die Abstimmungen vom Server ab, die der Gruppe mit der angegebenen Id zugeordnet sind. Die Abstimmungen
+        /// können einschließlich zugehöriger Subressourcen abgefragt werden (Options und Votes). 
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Abstimmungen abgefragt werden sollen.</param>
+        /// <param name="includingSubresources">Gibt an, ob die Subressourcen der einzelnen Abstimmungen ebenfalls abgefragt werden sollen.</param>
+        /// <param name="withCaching">Gibt an, ob Caching bei diesem Request zugelassen werden soll. </param>
+        /// <returns>Eine Liste von Objekten des Typs Ballot.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Request fehlschlägt, oder vom Server abgelehnt wird.</exception>
+        public async Task<List<Ballot>> GetBallotsAsync(int groupId, bool includingSubresources, bool withCaching)
+        {
+            List<Ballot> ballots = new List<Ballot>();
+            
+            string serverResponse;
+            try
+            {
+                serverResponse = await groupAPI.SendGetBallotsRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    includingSubresources,
+                    withCaching);
+            }   
+            catch (APIException ex)
+            {
+                Debug.WriteLine("GetBallotsAsync: Request failed. Error code is {0}.", ex.ErrorCode);
+
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    Debug.WriteLine("GetBallotsAsync: Group not found.");
+                    // Markiere Gruppe lokal als gelöscht.
+                    MarkGroupAsDeleted(groupId);
+                }
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }        
+
+            // Parse Liste von Ballots aus Serverantwort.
+            if (serverResponse != null)
+            {
+                ballots = jsonManager.ParseBallotListFromJson(serverResponse);
+            }
+
+            return ballots;
+        }
+
+        /// <summary>
+        /// Ruft die Abstimmungsoptionen zu einer bestimmten Abstimmung vom Server ab. Die Abstimmungsoptionen können einschließlich
+        /// zugehöriger Subressourcen (Votes) abgerufen werden. 
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die betroffene Abstimmung gehört.</param>
+        /// <param name="ballotId">Die Id der Abstimmung, zu der die Abstimmungsoptionen abgefragt werden sollen.</param>
+        /// <param name="includingSubresources">Gibt an, ob die zugehörigen Subressourcen ebenfalls abgefragt werden sollen.</param>
+        /// <param name="withCaching">Gibt an, ob Caching bei diesem Request zugelassen werden soll.</param>
+        /// <returns>Eine Liste von Instanzen der Klasse Option.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, falls Request fehlschlägt oder vom Server abgelehnt wurde.</exception>
+        public async Task<List<Option>> GetOptionsForBallotAsync(int groupId, int ballotId, bool includingSubresources, bool withCaching)
+        {
+            List<Option> options = new List<Option>();
+
+            string serverResponse;
+            try
+            {
+                serverResponse = await groupAPI.SendGetOptionsRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    ballotId,
+                    includingSubresources,
+                    withCaching);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("GetOptionsForBallotAsync: Request failed. Error code is {0}.", ex.ErrorCode);
+
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    Debug.WriteLine("GetBallotsAsync: Group not found.");
+                    // Markiere Gruppe lokal als gelöscht.
+                    MarkGroupAsDeleted(groupId);
+                }
+
+                // TODO - Ballot not found
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            // Parse Liste von Options aus Serverantwort.
+            if (serverResponse != null)
+            {
+                options = jsonManager.ParseOptionListFromJson(serverResponse);
+            }
+
+            return options;
+        }
+        #endregion RemoteBallotMethods
+
         #region LocalGroupMethods
         /// <summary>
         /// Liefert alle lokal gehaltenen Datensätze von Gruppen-Ressourcen zurück.
@@ -1594,6 +1702,14 @@ namespace DataHandlingLayer.Controller
         /// <exception cref="ClientException">Wirft ClientException, wenn Löschvorgang fehlschlägt.</exception>
         public void DeleteGroupLocally(int groupId)
         {
+            // Frage Konversationen von Gruppe ab.
+            List<Conversation> delConversations = GetConversations(groupId);
+            // Lösche alle Nachrichten manuell. Nachrichten werden durch kaskadierendes Löschen nicht vollständig gelöscht. 
+            foreach (Conversation conversation in delConversations)
+            {
+                DeleteConversationMessages(conversation.Id);
+            }
+
             try
             {
                 groupDBManager.DeleteGroup(groupId);
@@ -2198,6 +2314,23 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Löscht alle Konversationsnachrichten der angegebenen Konversation.
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation.</param>
+        public void DeleteConversationMessages(int conversationId)
+        {
+            try
+            {
+                groupDBManager.DeleteConversationMessages(conversationId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("DeleteConversationMessages: Failed to delete messages of conversation with id {0}.", conversationId);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Prüft, ob es für die angegebene Konversation Nachrichten gibt, die keine
         /// gültige Autorenreferenz besitzen.
         /// </summary>
@@ -2221,5 +2354,117 @@ namespace DataHandlingLayer.Controller
             return hasUnresolvedAuthors;
         }
         #endregion LocalConversationMethods
+
+        #region LocalBallotMethods
+        /// <summary>
+        /// Speichert die Abstimmung in den lokalen Datensätzen ab.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, der die Abstimmung zugeordnet ist.</param>
+        /// <param name="ballot">Die zu speichernde Abstimmung in Form eines Ballot Objekts.</param>
+        /// <returns>Liefert true, falls Speicherung erfolgreich, liefert false, falls Speicherung aufgrund fehlender
+        ///     Referenzen (z.B. fehlender Nutzerdatensatz in der Datenbank) nicht ausgeführt werden konnte.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn bei der Speicherung ein unerwarteter Fehler auftritt.</exception>
+        public bool StoreBallot(int groupId, Ballot ballot)
+        {
+            bool insertedSuccessfully = false;
+            bool fulfillsConstraints = true;
+
+            try
+            {
+                if (groupDBManager.IsGroupStored(groupId) && !groupDBManager.IsBallotStored(ballot.Id))
+                {
+                    if (ballot.Options != null)
+                    {
+                        Dictionary<int, bool> userStoredStatus = new Dictionary<int, bool>();
+
+                        foreach (Option option in ballot.Options)
+                        {
+                            // Falls Voter gesetzt, so müssen diese geprüft werden.
+                            if (option.VoterIds != null)
+                            {
+                                foreach (int voter in option.VoterIds)
+                                {
+                                    if (!userStoredStatus.ContainsKey(voter))
+                                    {
+                                        userStoredStatus.Add(voter, userController.IsUserLocallyStored(voter));
+                                    }
+                                }
+                            }
+                        }
+
+                        // Prüfe, ob alle Bedingungen für Insert erfüllt sind.
+                        foreach (bool status in userStoredStatus.Values)
+                        {
+                            if (!status)
+                            {
+                                Debug.WriteLine("StoreBallot: There are missing users. Cannot insert ballot.");
+                                fulfillsConstraints = false;
+                            }
+                        }
+
+                        if (fulfillsConstraints)
+                        {
+                            // Speichere Abstimmung ab.
+                            groupDBManager.StoreBallot(groupId, ballot);
+                            insertedSuccessfully = true;
+                        }
+                    }
+                }
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("StoreBallot: Storing failed. Message is {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return insertedSuccessfully;
+        }
+
+        /// <summary>
+        /// Speichert eine Menge von Abstimmungen, die zu derselben Gruppe gehören, in den lokalen Datensätzen ab. Diese Methode
+        /// führt keine nennenswerten Prüfungen vor der Einfügeoperation durch. Inkonsistente oder
+        /// widersprüchliche Datensätze können daher zu einem Abbruch der Methode führen.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, der die Abstimmungen zugeordnet werden.</param>
+        /// <param name="ballots">Liste von Abstimmungen, die lokal gespeichert werden sollen.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Speicherung fehlschlägt.</exception>
+        public void StoreBallots(int groupId, List<Ballot> ballots)
+        {
+            try
+            {
+                if (groupDBManager.IsGroupStored(groupId))
+                {
+                    groupDBManager.BulkInsertBallots(groupId, ballots);
+                }
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("StoreBallots: Storing failed. Message is {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Fragt die Abstimmungen aus den lokalen Datensätzen ab, die der Gruppe mit der spezifizierten Id zugeordnet sind.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, der die Abstimmungen zugeordnet sind.</param>
+        /// <returns>Eine Liste von Objekten des Typs Ballot.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abruf fehlschlägt.</exception>
+        public List<Ballot> GetBallots(int groupId)
+        {
+            List<Ballot> ballots = null;
+            try
+            {
+                ballots = groupDBManager.GetBallots(groupId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetBallots: Failed to retrieve ballots from local datasets.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return ballots;
+        }
+        #endregion LocalBallotMethods
     }
 }

@@ -2759,7 +2759,8 @@ namespace DataHandlingLayer.Database
         // ********************************** Abstimmungen ********************************************************************************************
 
         /// <summary>
-        /// Speichert eine Abstimmung in den lokalen Datensätzen ab. 
+        /// Speichert eine Abstimmung in den lokalen Datensätzen ab. Falls gesetzt werden auch die
+        /// Subresourcen Options und Votes direkt in die lokalen Datenbank übernommen.
         /// </summary>
         /// <param name="groupId">Die Id der Gruppe der die Abstimmung zugeordnet wird.</param>
         /// <param name="ballot">Die Daten der neuen Abstimmung in Form eines Ballot Objekts.</param>
@@ -2782,50 +2783,118 @@ namespace DataHandlingLayer.Database
                 {
                     try
                     {
-                        string query = @"INSERT INTO Ballot (Id, Title, Description, Closed, MultipleChoice, Public, 
+                        string insertBallotQuery = @"INSERT INTO Ballot (Id, Title, Description, Closed, MultipleChoice, Public, 
                             Group_Id, BallotAdmin_User_Id) 
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 
-                        using (var stmt = conn.Prepare(query))
+                        string insertOptionQuery = @"INSERT INTO Option (Id, Text, Ballot_Id) 
+                            VALUES (?, ?, ?);";
+
+                        string addVotersQuery = @"INSERT INTO UserOption (Option_Id, User_Id) 
+                            VALUES (?, ?);";
+
+                        // Starte eine Transaktion.
+                        using (var statement = conn.Prepare("BEGIN TRANSACTION"))
                         {
-                            stmt.Bind(1, ballot.Id);
-                            stmt.Bind(2, ballot.Title);
-                            stmt.Bind(3, ballot.Description);
+                            statement.Step();
+                        }
+
+                        using (var addVoteStmt = conn.Prepare(addVotersQuery))
+                        using (var insertOptionStmt = conn.Prepare(insertOptionQuery))
+                        using (var insertBallotStmt = conn.Prepare(insertBallotQuery))
+                        {
+                            insertBallotStmt.Bind(1, ballot.Id);
+                            insertBallotStmt.Bind(2, ballot.Title);
+                            insertBallotStmt.Bind(3, ballot.Description);
 
                             if (ballot.IsClosed.HasValue)
-                                stmt.Bind(4, (ballot.IsClosed == true) ? 1 : 0);
+                                insertBallotStmt.Bind(4, (ballot.IsClosed == true) ? 1 : 0);
                             else
-                                stmt.Bind(4, 0);    // Setze Closed auf false.
+                                insertBallotStmt.Bind(4, 0);    // Setze Closed auf false.
 
                             if (ballot.IsMultipleChoice.HasValue)
-                                stmt.Bind(5, (ballot.IsMultipleChoice == true) ? 1 : 0);
+                                insertBallotStmt.Bind(5, (ballot.IsMultipleChoice == true) ? 1 : 0);
                             else
-                                stmt.Bind(5, 0);    // Setze MultipleChoice auf false.
+                                insertBallotStmt.Bind(5, 0);    // Setze MultipleChoice auf false.
 
                             if (ballot.HasPublicVotes.HasValue)
-                                stmt.Bind(6, (ballot.HasPublicVotes == true) ? 1 : 0);
+                                insertBallotStmt.Bind(6, (ballot.HasPublicVotes == true) ? 1 : 0);
                             else
-                                stmt.Bind(6, 0);    // Setze Public auf false.
+                                insertBallotStmt.Bind(6, 0);    // Setze Public auf false.
 
-                            stmt.Bind(7, groupId);
-                            stmt.Bind(8, ballot.AdminId);
+                            insertBallotStmt.Bind(7, groupId);
+                            insertBallotStmt.Bind(8, ballot.AdminId);
 
-                            if (stmt.Step() == SQLiteResult.DONE)
+                            if (insertBallotStmt.Step() == SQLiteResult.DONE)
                                 Debug.WriteLine("StoreBallot: Successfully inserted ballot with id {0} for group with id {1}.",
                                     ballot.Id, groupId);
                             else
                                 Debug.WriteLine("StoreBallot: Failed to insert ballot with id {0} for group with id {1}.",
                                     ballot.Id, groupId);
+
+                            // Wenn Optionen gesetzt sind, dann füge diese auch ein.
+                            if (ballot.Options != null)
+                            {
+                                foreach (Option option in ballot.Options)
+                                {
+                                    insertOptionStmt.Bind(1, option.Id);
+                                    insertOptionStmt.Bind(2, option.Text);
+                                    insertOptionStmt.Bind(3, ballot.Id);
+
+                                    if (insertOptionStmt.Step() == SQLiteResult.DONE)
+                                        Debug.WriteLine("StoreBallot: Inserted option with id {0} for the ballot.", option.Id);
+                                    else
+                                        Debug.WriteLine("StoreBallot: Failed to store option with id {0} for the ballot.", option.Id);
+
+                                    // Wenn Voters gesetzt sind, dann füge auch diese ein.
+                                    if (option.VoterIds != null)
+                                    {
+                                        foreach (int voter in option.VoterIds)
+                                        {
+                                            addVoteStmt.Bind(1, option.Id);
+                                            addVoteStmt.Bind(2, voter);
+
+                                            if (addVoteStmt.Step() == SQLiteResult.DONE)
+                                                Debug.WriteLine("StoreBallot: Added vote for option with id {0}.", option.Id);
+                                            else
+                                                Debug.WriteLine("StoreBallot: Failed to add vote to option with id {0}.", option.Id);
+
+                                            // Setze Statement zurück für nächste Iteration.
+                                            addVoteStmt.Reset();
+                                        }
+                                    }
+
+                                    // Zurücksetzten des Statement für die nächse Iteration.
+                                    insertOptionStmt.Reset();
+                                }
+                            }
+
+                            // Commit der Transaktion.
+                            using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                            {
+                                statement.Step();
+                                Debug.WriteLine("StoreBallot: Successfully completed.");
+                            }
                         }
                     }
                     catch (SQLiteException sqlEx)
                     {
                         Debug.WriteLine("StoreBallot: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
                         throw new DatabaseException(sqlEx.Message);
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine("StoreBallot: Exception occurred. Msg is {0}.", ex.Message);
+                        // Rollback der Transaktion.
+                        using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                        {
+                            statement.Step();
+                        }
                         throw new DatabaseException(ex.Message);
                     }
                     finally
@@ -2843,13 +2912,15 @@ namespace DataHandlingLayer.Database
 
         /// <summary>
         /// Fügt eine Menge von Abstimmungsobjekten einer bestimmten Gruppe den lokalen Datensätzen hinzu.
+        /// Falls gesetzt werden auch die Subresourcen Options und Votes einer einzelnen Abstimmung direkt 
+        /// in die lokalen Datenbank übernommen.
         /// </summary>
         /// <param name="groupId">Die Id der Gruppe der die Abstimmungen zugeordnet sind.</param>
         /// <param name="ballots">Liste von Objekten der Klasse Ballot, die hinzugefügt werden sollen.</param>
         /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Speicherung fehlschlägt.</exception>
         public void BulkInsertBallots(int groupId, List<Ballot> ballots)
         {
-            if (ballots == null || ballots.Count() > 0)
+            if (ballots == null || ballots.Count() == 0)
             {
                 Debug.WriteLine("BulkInsertBallots: No valid data passed to the method.");
                 return;
@@ -2869,12 +2940,20 @@ namespace DataHandlingLayer.Database
                             Group_Id, BallotAdmin_User_Id) 
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 
+                        string insertOptionQuery = @"INSERT INTO Option (Id, Text, Ballot_Id) 
+                            VALUES (?, ?, ?);";
+
+                        string addVotersQuery = @"INSERT INTO UserOption (Option_Id, User_Id) 
+                            VALUES (?, ?);";
+
                         // Starte eine Transaktion.
                         using (var statement = conn.Prepare("BEGIN TRANSACTION"))
                         {
                             statement.Step();
                         }
 
+                        using (var addVoteStmt = conn.Prepare(addVotersQuery))
+                        using (var insertOptionStmt = conn.Prepare(insertOptionQuery))
                         using (var stmt = conn.Prepare(query))
                         {
                             foreach (Ballot ballot in ballots)
@@ -2901,7 +2980,47 @@ namespace DataHandlingLayer.Database
                                 stmt.Bind(7, groupId);
                                 stmt.Bind(8, ballot.AdminId);
 
-                                stmt.Step();
+                                if (stmt.Step() == SQLiteResult.DONE)
+                                    Debug.WriteLine("BulkInsertBallots: Successfully added a ballot with id {0} to group with id {1}.", ballot.Id, groupId);
+                                else
+                                    Debug.WriteLine("BulkInsertBallots: Failed to add a ballot with id {0} to group with id {1}.", ballot.Id, groupId);
+
+                                // Wenn Optionen gesetzt sind, dann füge diese auch ein.
+                                if (ballot.Options != null)
+                                {
+                                    foreach (Option option in ballot.Options)
+                                    {
+                                        insertOptionStmt.Bind(1, option.Id);
+                                        insertOptionStmt.Bind(2, option.Text);
+                                        insertOptionStmt.Bind(3, ballot.Id);
+
+                                        if (insertOptionStmt.Step() == SQLiteResult.DONE)
+                                            Debug.WriteLine("BulkInsertBallots: Inserted option with id {0} for the ballot.", option.Id);
+                                        else
+                                            Debug.WriteLine("BulkInsertBallots: Failed to store option with id {0} for the ballot.", option.Id);
+
+                                        // Wenn Voters gesetzt sind, dann füge auch diese ein.
+                                        if (option.VoterIds != null)
+                                        {
+                                            foreach (int voter in option.VoterIds)
+                                            {
+                                                addVoteStmt.Bind(1, option.Id);
+                                                addVoteStmt.Bind(2, voter);
+
+                                                if (addVoteStmt.Step() == SQLiteResult.DONE)
+                                                    Debug.WriteLine("BulkInsertBallots: Added vote for option with id {0}.", option.Id);
+                                                else
+                                                    Debug.WriteLine("BulkInsertBallots: Failed to add vote to option with id {0}.", option.Id);
+
+                                                // Setze Statement zurück für nächste Iteration.
+                                                addVoteStmt.Reset();
+                                            }
+                                        }
+
+                                        // Zurücksetzten des Statement für die nächse Iteration.
+                                        insertOptionStmt.Reset();
+                                    }
+                                }
 
                                 // Statement zurücksetzen für nächste Iteration.
                                 stmt.Reset();
@@ -2947,6 +3066,68 @@ namespace DataHandlingLayer.Database
                 Debug.WriteLine("BulkInsertBallots: Mutex timeout.");
                 throw new DatabaseException("BulkInsertBallots: Timeout: Failed to get access to DB.");
             }
+        }
+
+        /// <summary>
+        /// Gibt an, ob eine Abstimmung mit der angegebenen Id in den lokalen Datensätzen gespeichert ist.
+        /// </summary>
+        /// <param name="ballotId">Die Id der Abstimmung.</param>
+        /// <returns>Liefert true, wenn ein solcher Eintrag existiert, ansonsten false.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abfrage fehlschlägt.</exception>
+        public bool IsBallotStored(int ballotId)
+        {
+            bool isStored = false;
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT COUNT(*) AS amount 
+                            FROM Ballot 
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, ballotId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                int amount = Convert.ToInt32(stmt["amount"]);
+
+                                if (amount == 1)
+                                    isStored = true;
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("IsBallotStored: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("IsBallotStored: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("IsBallotStored: Mutex timeout.");
+                throw new DatabaseException("IsBallotStored: Timeout: Failed to get access to DB.");
+            }
+
+            return isStored;
         }
 
         /// <summary>
@@ -3122,7 +3303,7 @@ namespace DataHandlingLayer.Database
                                 closed = ((long)stmt["Closed"] == 1) ? true : false;
                                 multipleChoice = ((long)stmt["MultipleChoice"] == 1) ? true : false;
                                 publicVotes = ((long)stmt["Public"] == 1) ? true : false;
-                                groupId = Convert.ToInt32(stmt["GroupId"]);
+                                groupId = Convert.ToInt32(stmt["Group_Id"]);
                                 adminId = Convert.ToInt32(stmt["BallotAdmin_User_Id"]);
                                 adminName = (string)stmt["Name"];
 

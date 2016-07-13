@@ -154,8 +154,8 @@
     <RootPropertyPathName Name="SelectedGroup" />
     <RootPropertyPathName Name="Participants" />
     <RootPropertyPathName Name="BallotCollection" />
-    <RootPropertyPathName Name="ConversationCollection" />
     <RootPropertyPathName Name="ConversationSelectedCommand" />
+    <RootPropertyPathName Name="ConversationCollection" />
     <RootPropertyPathName Name="IsRemovedFromGroup" />
     <RootPropertyPathName Name="SearchGroupsCommand" />
     <RootPropertyPathName Name="Groups" />
@@ -641,6 +641,7 @@
     <RootType FullName="UlmUniversityNews.Converters.GroupToGroupAdminStringConverter" />
     <RootType FullName="UlmUniversityNews.Converters.ParticipantsListToStringConverter" />
     <RootType FullName="UlmUniversityNews.Converters.ConversationToIconPathConverter" />
+    <RootType FullName="UlmUniversityNews.Converters.BallotToIconPathConverter" />
     <RootType FullName="Windows.UI.Xaml.Controls.ContentDialog">
       <RootProperty Name="VerticalAlignment" />
       <RootProperty Name="Title" />

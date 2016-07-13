@@ -149,6 +149,9 @@ namespace UlmUniversityNews.Views.Group
 
                 // Lade Konversationen.
                 await groupDetailsViewModel.LoadConversationsAsync(groupId);
+
+                // Lade Abstimmungen.
+                await groupDetailsViewModel.LoadBallotsAsync(groupId);
             }
 
             // Registriere Seite für relevante Push Notification Events.

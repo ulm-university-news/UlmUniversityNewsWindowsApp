@@ -457,6 +457,7 @@ namespace DataHandlingLayer.Database
                                         GroupAdmin_User_Id  INTEGER NOT NULL,
                                         NotificationSettings_NotifierId INTEGER,
                                         IsDirty             INTEGER,
+                                        HasNewEvent         INTEGER DEFAULT 0,
                                         PRIMARY KEY(Id),
                                         FOREIGN KEY(GroupAdmin_User_Id) REFERENCES User(Id),
                                         FOREIGN KEY(NotificationSettings_NotifierId) REFERENCES NotificationSettings(NotifierId)

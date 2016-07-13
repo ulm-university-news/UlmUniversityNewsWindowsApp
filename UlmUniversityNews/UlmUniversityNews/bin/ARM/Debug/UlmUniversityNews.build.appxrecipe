@@ -156,6 +156,18 @@
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\app_logo_breit.scale-240.png">
       <PackagePath>Assets\app_logo_breit.scale-240.png</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\ballotIcons\abstimmung.png">
+      <PackagePath>Assets\ballotIcons\abstimmung.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\ballotIcons\abstimmung_admin.png">
+      <PackagePath>Assets\ballotIcons\abstimmung_admin.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\ballotIcons\ballot_closed_admin_white.png">
+      <PackagePath>Assets\ballotIcons\ballot_closed_admin_white.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\ballotIcons\ballot_closed_white.png">
+      <PackagePath>Assets\ballotIcons\ballot_closed_white.png</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Philipp\Documents\Visual Studio 2015\Projects\UlmUniversityNewsWindowsApp\UlmUniversityNews\UlmUniversityNews\Assets\ButtonIcons\feature.search.png">
       <PackagePath>Assets\ButtonIcons\feature.search.png</PackagePath>
     </AppxPackagedFile>

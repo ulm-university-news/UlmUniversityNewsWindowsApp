@@ -193,6 +193,7 @@
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\StatusBarBehavior.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
+    <Compile Include="Converters\BallotToIconPathConverter.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\BooleanValueToLocalizedStringConverter.cs" />
     <Compile Include="Converters\ChannelTermToLocalizedStringConverter.cs" />
@@ -348,6 +349,10 @@
     <Content Include="Assets\app_logo_breit.scale-100.png" />
     <Content Include="Assets\app_logo_breit.scale-140.png" />
     <Content Include="Assets\app_logo_breit.scale-240.png" />
+    <Content Include="Assets\ballotIcons\abstimmung.png" />
+    <Content Include="Assets\ballotIcons\abstimmung_admin.png" />
+    <Content Include="Assets\ballotIcons\ballot_closed_admin_white.png" />
+    <Content Include="Assets\ballotIcons\ballot_closed_white.png" />
     <Content Include="Assets\ButtonIcons\feature.search.png" />
     <Content Include="Assets\channelIcons\de-DE\ic_deleted.scale-100.png" />
     <Content Include="Assets\channelIcons\de-DE\ic_deleted.scale-140.png" />

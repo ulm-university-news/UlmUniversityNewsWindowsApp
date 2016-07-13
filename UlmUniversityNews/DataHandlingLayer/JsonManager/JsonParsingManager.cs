@@ -716,6 +716,55 @@ namespace DataHandlingLayer.JsonManager
         }
         #endregion ConversationMessage
 
+        #region Ballot
+        /// <summary>
+        /// Extrahiere Liste von Ballots Instanzen aus dem übergebenen JSON-Dokument.
+        /// </summary>
+        /// <param name="jsonString">Das übergebene JSON-Dokument.</param>
+        /// <returns>Eine Liste von Objekten des Typs Ballot, oder null, falls die Objekte
+        ///     nicht extrahiert werden können.</returns>
+        public List<Ballot> ParseBallotListFromJson(string jsonString)
+        {
+            List<Ballot> ballots = null;
+            try
+            {
+                ballots = JsonConvert.DeserializeObject<List<Ballot>>(jsonString);
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine("ParseBallotListFromJson: Json parser error occurred. " +
+                    "Message is {0}.", ex.Message);
+            }
+
+            return ballots;
+        }
+
+        #endregion Ballot
+
+        #region Options
+        /// <summary>
+        /// Extrahiere Liste von Option Instanzen aus dem übergebenen JSON-Dokument.
+        /// </summary>
+        /// <param name="jsonString">Das übergebene JSON-Dokument.</param>
+        /// <returns>Eine Liste von Objekten des Typs Option, oder null, falls die Objekte
+        ///     nicht extrahiert werden können.</returns>
+        public List<Option> ParseOptionListFromJson(string jsonString)
+        {
+            List<Option> options = null;
+            try
+            {
+                options = JsonConvert.DeserializeObject<List<Option>>(jsonString);
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine("ParseOptionListFromJson: Json parser error occurred. " +
+                   "Message is {0}.", ex.Message);
+            }
+
+            return options;
+        }
+        #endregion Options
+
         ///// <summary>
         ///// Eine Hilfsmethode, die ein DateTimeOffset Objekt in das Format der koordinierten Weltzeit umwandelt und
         ///// als String zurückliefert. Diese Methode kann verwendet werden, um DateTimeOffset Objekte in ein
