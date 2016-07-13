@@ -108,7 +108,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Die der Abstimmung zugeordneten Abstimmungsoptionen.
         /// </summary>
-        [JsonIgnore]
+        [JsonProperty("options", NullValueHandling = NullValueHandling.Ignore)]
         public List<Option> Options
         {
             get { return options; }

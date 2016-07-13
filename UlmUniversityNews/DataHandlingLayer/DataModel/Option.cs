@@ -42,7 +42,7 @@ namespace DataHandlingLayer.DataModel
         /// Liste von Identifier, die eindeutig auf Nutzer verweisen,
         /// die für diese Abstimmungsoption gestimmt haben.
         /// </summary>
-        [JsonIgnore]
+        [JsonProperty("voters", NullValueHandling = NullValueHandling.Ignore)]
         public List<int> VoterIds
         {
             get { return voterIds; }
