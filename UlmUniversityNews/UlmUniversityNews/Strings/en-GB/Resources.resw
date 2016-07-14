@@ -1508,4 +1508,7 @@ date: </value>
   <data name="GroupDetailsSynchronizeGroupDetailsStatus" xml:space="preserve">
     <value>Synchronizing group details</value>
   </data>
+  <data name="GroupDetailsSynchronizeBallotStatus" xml:space="preserve">
+    <value>Synchronizing ballots</value>
+  </data>
 </root>

@@ -420,7 +420,7 @@ namespace DataHandlingLayer.ViewModel
             try
             {
                 // Lade die lokal gespeicherten Abstimmungen.
-                List<Ballot> ballots = await Task.Run(() => groupController.GetBallots(groupId));
+                List<Ballot> ballots = await Task.Run(() => groupController.GetBallots(groupId, false));
                 if (ballots != null)
                 {
                     // TODO sortieren 
@@ -469,6 +469,38 @@ namespace DataHandlingLayer.ViewModel
             catch (ClientException ex)
             {
                 Debug.WriteLine("SynchronizeConversations: Execution failed.");
+                displayError(ex.ErrorCode);
+            }
+        }
+
+        /// <summary>
+        /// Stößt eine Synchronisation der Abstimmungsressourcen dieser Gruppe mit dem Server an.
+        /// Aktualisiert anschließend die Anzeige.
+        /// </summary>
+        public async Task SynchronizeBallotsAsync()
+        {
+            if (SelectedGroup == null)
+                return;
+
+            try
+            {
+                // Führe Synchronisation durch.
+                await Task.Run(() => groupController.SynchronizeBallotsWithServerAsync(SelectedGroup.Id));
+
+                // Aktualisere Anzeige. Rufe synchronisierte Daten ab.
+                List<Ballot> ballots = await Task.Run(() => groupController.GetBallots(SelectedGroup.Id, false));
+
+                // TODO Sortieren.
+
+                BallotCollection.Clear();
+                foreach (Ballot ballot in ballots)
+                {
+                    BallotCollection.Add(ballot);
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("SynchronizeBallotsAsync: Execution failed.");
                 displayError(ex.ErrorCode);
             }
         }
@@ -771,7 +803,9 @@ namespace DataHandlingLayer.ViewModel
                         displayIndeterminateProgressIndicator("GroupDetailsSynchronizeConversationStatus");
                         await SynchronizeConversationsAsync();
                         break;
-                    case "BallotPivotItem":
+                    case "BallotsPivotItem":
+                        displayIndeterminateProgressIndicator("GroupDetailsSynchronizeBallotStatus");
+                        await SynchronizeBallotsAsync();
                         break;
                     case "GroupDetailsPivotItem":
                         displayIndeterminateProgressIndicator("GroupDetailsSynchronizeGroupDetailsStatus");

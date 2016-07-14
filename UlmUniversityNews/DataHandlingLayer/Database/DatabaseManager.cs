@@ -922,7 +922,7 @@ namespace DataHandlingLayer.Database
                                 statement.Bind(8, 1);   // Deutsch als Default.
                             }
 
-                            statement.Bind(9, 0);    // NotificationSettings
+                            statement.Bind(9, 1);    // NotificationSettings
 
                             statement.Step();
                             Debug.WriteLine("Inserted default values.");

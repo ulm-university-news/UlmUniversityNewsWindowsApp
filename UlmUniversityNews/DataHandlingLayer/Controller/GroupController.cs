@@ -1561,6 +1561,113 @@ namespace DataHandlingLayer.Controller
 
             return options;
         }
+
+        /// <summary>
+        /// Führt eine Synchronisierung der Abstimmungen der angegebenen Gruppe mit den Daten vom Server durch.
+        /// Die lokalen Datensätze werden auf die vom Server angepasst.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, für die die Synchronisation der Abstimmungen durchgeführt werden soll.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Synchronisation fehlschlägt.</exception>
+        public async Task SynchronizeBallotsWithServerAsync(int groupId)
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+            Debug.WriteLine("SynchronizeBallotsWithServerAsync: Start.");
+
+            // Synchronisiere zunächst die Teilnehmer-Information, das es bei den Einfügeoperationen zu keinen Problemen kommt.
+            await SynchronizeGroupParticipantsAsync(groupId);
+
+            // Frage zunächst die Abstimmungen mit Subressourcen vom Server ab.
+            List<Ballot> referenceBallots = await GetBallotsAsync(groupId, true, false);
+
+            // Frage die lokal gespeicherten Abstimmungen mit Subressourcen ab.
+            List<Ballot> localBallots = GetBallots(groupId, true);
+
+            List<Ballot> updatableBallots = new List<Ballot>();
+            List<Ballot> newBallots = new List<Ballot>();
+            // Prüfe, ob neue Abstimmungen hinzugekommen sind, oder bestehende Abstimmungen aktualisiert werden müssen.
+            foreach (Ballot refernceBallot in referenceBallots)
+            {
+                bool isContained = false;
+
+                foreach (Ballot localBallot in localBallots)
+                {
+                    if (localBallot.Id == refernceBallot.Id)
+                    {
+                        isContained = true;
+                        updatableBallots.Add(refernceBallot);                       
+                    }
+                }
+
+                if (!isContained)
+                {
+                    newBallots.Add(refernceBallot);
+                }
+            }
+
+            // Führe Einfüge-Operation bzw. Aktualisierungen aus.
+            foreach (Ballot newBallot in newBallots)
+            {
+                bool successful = StoreBallot(groupId, newBallot);
+                if (!successful)
+                {
+                    Debug.WriteLine("SynchronizeBallotsWithServerAsync: Couldn't store ballot. Missing references.");
+                    throw new ClientException(ErrorCodes.LocalDatabaseException, "Couldn't store ballot probably due to missing references.");
+                }
+            }
+            foreach (Ballot updatableBallot in updatableBallots)
+            {
+                bool successful = UpdateBallot(updatableBallot);
+                if (!successful)
+                {
+                    Debug.WriteLine("SynchronizeBallotsWithServerAsync: Couldn't update ballot. Missing references.");
+                    throw new ClientException(ErrorCodes.LocalDatabaseException, "Couldn't update ballot probably due to missing references.");
+                }
+            }
+
+            // Entferne Abstimmungen, wenn sie auf dem Server nicht mehr verfügbar sind.
+            foreach (Ballot localBallot in localBallots)
+            {
+                bool isContained = false;
+
+                foreach (Ballot referenceBallot in referenceBallots)
+                {
+                    if (localBallot.Id == referenceBallot.Id)
+                    {
+                        isContained = true;
+                    }
+                }
+
+                if (!isContained)
+                {
+                    // Entferne Abstimmung aus lokalen Datensätzen.
+                    DeleteBallot(localBallot.Id);
+                }
+            }
+
+            // Synchronisiere nun die Abstimmungsoptionen und Votes der Abstimmungen.
+            Debug.WriteLine("SynchronizeBallotsWithServerAsync: Start processing options and votes.");
+            foreach (Ballot referenceBallot in referenceBallots)
+            {
+                Debug.WriteLine("SynchronizeBallotsWithServerAsync: Start processing options and votes for ballot with id {0}.", referenceBallot.Id);
+                if (referenceBallot.Options != null)
+                {
+                    // Synchronisiere Abstimmungsoptionen dieser Abstimmung.
+                    SynchronizeLocalOptionsOfBallot(referenceBallot.Id, referenceBallot.Options);
+
+                    // Synchronisiere Votes der Abstimmungsoptionen dieser Abstimmung.
+                    foreach (Option refOption in referenceBallot.Options)
+                    {
+                        if (refOption.VoterIds == null)
+                            refOption.VoterIds = new List<int>();
+
+                        SynchronizeLocalVotesForOption(referenceBallot.Id, refOption.Id, refOption.VoterIds);
+                    }
+                }
+            }
+
+            sw.Stop();
+            Debug.WriteLine("SynchronizeBallotsWithServerAsync: Finished. Elapsed time: {0}.", sw.Elapsed.TotalMilliseconds);
+        }
         #endregion RemoteBallotMethods
 
         #region LocalGroupMethods
@@ -2356,6 +2463,137 @@ namespace DataHandlingLayer.Controller
         #endregion LocalConversationMethods
 
         #region LocalBallotMethods
+
+        /// <summary>
+        /// Führt eine Synchronisierung der lokalen Abstimmungsoptionen durch, die zu der
+        /// angegebenen Abstimmung gehören. Die Abstimmungsoptionen werden gegen die übergebene
+        /// Referenzliste synchronisiert. 
+        /// </summary>
+        /// <param name="ballotId">Die Id der Abstimmung, zu der die Abstimmungsoptionen gehören.</param>
+        /// <param name="referenceOptions">Die Liste von Abstimmungsoptionen, die als Referenzwert dienen, und gegen die
+        ///     synchronisiert wird.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Synchronisierung fehlschlägt.</exception>
+        /// <exception cref="ArgumentNullException">Wirft ArgumentNullException, wenn Liste null ist.</exception>
+        public void SynchronizeLocalOptionsOfBallot(int ballotId, List<Option> referenceOptions)
+        {
+            if (referenceOptions == null)
+            {
+                Debug.WriteLine("SynchronizeLocalOptionsOfBallot: Invalid parameter. referenceList is null.");
+                throw new ArgumentNullException("referenceList is null");
+            }
+
+            // Frage alle lokalen Optionen dieser Abstimmung ab.
+            List<Option> localOptions = GetOptions(ballotId, false);
+
+            List<Option> updatabaleOptions = new List<Option>();
+            List<Option> newOptions = new List<Option>();
+
+            foreach (Option referenceOption in referenceOptions)
+            {
+                bool isContained = false;
+
+                foreach (Option localOption in localOptions)
+                {
+                    if (referenceOption.Id == localOption.Id)
+                    {
+                        isContained = true;
+
+                        updatabaleOptions.Add(referenceOption);
+                    }
+                }
+
+                if (!isContained)
+                {
+                    newOptions.Add(referenceOption);
+                }
+            }
+
+            // Speichere neue Optionen ab und aktualisiere bestehende Optionen.
+            UpdateOptions(updatabaleOptions);
+            StoreOptions(ballotId, newOptions);                
+
+            // Entferne Optionen, die auf dem Server nicht mehr gelistet werden.
+            foreach (Option localOption in localOptions)
+            {
+                bool isContained = false;
+
+                foreach (Option referenceOption in referenceOptions)
+                {
+                    if (localOption.Id == referenceOption.Id)
+                    {
+                        isContained = true;
+                    }
+                }
+
+                if (!isContained)
+                {
+                    DeleteOption(localOption.Id);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Führt eine Synchronisation der lokal gespeicherten Votes für eine Abstimmungsoption durch. Die
+        /// Votes werden gegen die übergebene Referenzliste synchronisiert.
+        /// </summary>
+        /// <param name="ballotId">Die Id der Abstimmung, zu der die Abstimmungsoption gehört.</param>
+        /// <param name="optionId">Die Id der Abstimmungsoption für die die Votes synchronisiert werden soll.</param>
+        /// <param name="referenceVotes">Die Referenzliste an Votes, gegen die die Synchronisation durchgeführt wird.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Synchronisiation fehlschlägt.</exception>
+        public void SynchronizeLocalVotesForOption(int ballotId, int optionId, List<int> referenceVotes)
+        {
+            if (referenceVotes == null)
+            {
+                Debug.WriteLine("SynchronizeLocalVotesForOption: No valid data passed to the method.");
+                throw new ArgumentNullException("reference list is null.");
+            }
+
+            // Frage zunächst die Votes ab für diese Abstimmungsoption.
+            List<User> localVoters = GetVotersForOption(optionId);
+
+            // Prüfe, ob neue Votes hinzugekommen sind.
+            foreach (int referenceVote in referenceVotes)
+            {
+                bool isContained = false;
+
+                foreach (User localVoter in localVoters)
+                {
+                    if (localVoter.Id == referenceVote)
+                    {
+                        isContained = true;
+                    }
+                }
+
+                if (!isContained)
+                {
+                    Debug.WriteLine("SynchronizeLocalVotesForOption: Need to add vote for option with id {0} " + 
+                        "the added vote is {1}.", optionId, referenceVote);
+                    AddVote(ballotId, optionId, referenceVote);
+                }
+            }
+
+            // Prüfe, ob Votes entfernt wurden.
+            foreach (User localVoter in localVoters)
+            {
+                bool isContained = false;
+
+                foreach (int referenceVote in referenceVotes)
+                {
+                    if (referenceVote == localVoter.Id)
+                    {
+                        isContained = true;
+                    }
+                }
+
+                if (!isContained)
+                {
+                    Debug.WriteLine("SynchronizeLocalVotesForOption: Need to remove vote for option with id {0} " + 
+                        "the remove vote is {1}.", optionId, localVoter.Id);
+                    RemoveVote(optionId, localVoter.Id);
+                }
+            }
+        }
+
         /// <summary>
         /// Speichert die Abstimmung in den lokalen Datensätzen ab.
         /// </summary>
@@ -2373,6 +2611,12 @@ namespace DataHandlingLayer.Controller
             {
                 if (groupDBManager.IsGroupStored(groupId) && !groupDBManager.IsBallotStored(ballot.Id))
                 {
+                    if (!userController.IsUserLocallyStored(ballot.AdminId))
+                    {
+                        Debug.WriteLine("StoreBallot: The ballot's admin (id: {0}) is not locally stored. Cannot continue.", ballot.AdminId);
+                        fulfillsConstraints = false;
+                    }
+
                     if (ballot.Options != null)
                     {
                         Dictionary<int, bool> userStoredStatus = new Dictionary<int, bool>();
@@ -2448,14 +2692,15 @@ namespace DataHandlingLayer.Controller
         /// Fragt die Abstimmungen aus den lokalen Datensätzen ab, die der Gruppe mit der spezifizierten Id zugeordnet sind.
         /// </summary>
         /// <param name="groupId">Die Id der Gruppe, der die Abstimmungen zugeordnet sind.</param>
+        /// <param name="includingSubresources">Gibt an, ob die Subressourcen (Options und Votes) ebenfalls abgerufen werden sollen.</param>
         /// <returns>Eine Liste von Objekten des Typs Ballot.</returns>
         /// <exception cref="ClientException">Wirft ClientException, wenn Abruf fehlschlägt.</exception>
-        public List<Ballot> GetBallots(int groupId)
+        public List<Ballot> GetBallots(int groupId, bool includingSubresources)
         {
             List<Ballot> ballots = null;
             try
             {
-                ballots = groupDBManager.GetBallots(groupId);
+                ballots = groupDBManager.GetBallots(groupId, includingSubresources);
             }
             catch (DatabaseException ex)
             {
@@ -2464,6 +2709,301 @@ namespace DataHandlingLayer.Controller
             }
 
             return ballots;
+        }
+
+        /// <summary>
+        /// Liefert die Abstimmung zurück, die durch die angegebene Id eindeutig identifiziert ist.
+        /// </summary>
+        /// <param name="ballotId">Die Id der Abstimmung. </param>
+        /// <param name="includingSubresources">Gibt an, ob Subressourcen der Abstimmung enthalten sein sollen.</param>
+        /// <returns>Eine Instanz der Klasse Ballot.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abstimmung nicht abgerufen werden konnte.</exception>
+        public Ballot GetBallot(int ballotId, bool includingSubresources)
+        {
+            Ballot ballot = null;
+            try
+            {
+                ballot = groupDBManager.GetBallot(ballotId, includingSubresources);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetBallot: Failed to retrieve ballot from local datasets.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return ballot;
+        }
+
+        /// <summary>
+        /// Aktualisiert die lokal gespeicherten Datensätze der übergebenen Abstimmung.
+        /// Gibt an, ob die Aktualisierung erfolgreich war, oder ob fehlende Referenzen (z.B. 
+        /// der lokale Datensatz des Administrators) eine Aktualisierung verhindert haben.
+        /// Methode aktualisisert nur die Abstimmungsdaten selbst, Subressourcen werden nicht aktualisiert,
+        /// d.h. keine Optionen und Abstimmungsergebnisse werden aktualisiert.
+        /// </summary>
+        /// <param name="newBallot">Das Objekt mit den neuen Abstimmungsdaten.</param>
+        /// <returns>Liefert true, wenn die Aktualisierung erfolgreich war, false, wenn die
+        ///     Aktualisierung aufgrund fehlender Referenzen nicht durchgeführt werden konnte.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Aktualisierung fehlgeschlagen ist.</exception>
+        public bool UpdateBallot(Ballot newBallot)
+        {
+            bool updatedSuccessfully = false;
+
+            try
+            {
+                if (newBallot != null && userController.IsUserLocallyStored(newBallot.AdminId)
+                    && groupDBManager.IsBallotStored(newBallot.Id))
+                {
+                    groupDBManager.UpdateBallot(newBallot);
+                    updatedSuccessfully = true;
+                }
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("UpdateBallot: Failed to update ballot with id {0} in local datasets.", newBallot.Id);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return updatedSuccessfully;
+        }
+
+        /// <summary>
+        /// Lösche die Abstimmung mit der angegebenen Id aus den lokalen Datensätzen.
+        /// </summary>
+        /// <param name="ballotId">Die Abstimmung mit der angegebenen Id.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Löschung nicht ausgeführt werden konnte.</exception>
+        public void DeleteBallot(int ballotId)
+        {
+            try
+            {
+                groupDBManager.DeleteBallot(ballotId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("DeleteBallot: Failed to delete ballot with id {0} in local datasets.", ballotId);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Liefert die Abstimmungsressourcen, die der angegebenen Abstimmung zugeordnet sind. 
+        /// Die Abstimmungsoptionen können inklusiver ihrer zugeordneten Subressourcen (Votes) 
+        /// abgerufen werden. 
+        /// </summary>
+        /// <param name="ballotId">Die Id der Abstimmung zu der die Abstimmungsoptionen abgefragt werden sollen.</param>
+        /// <param name="includingSubressources">Gibt an, ob die </param>
+        /// <returns>Liefert Liste von Objekten der Klasse Option. Die Liste kann auch leer sein.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abfruf fehlschlägt.</exception>
+        public List<Option> GetOptions(int ballotId, bool includingSubressources)
+        {
+            List<Option> options = null;
+            try
+            {
+                options = groupDBManager.GetOptions(ballotId, includingSubressources);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetOptions: Failed to retrieve options for the ballot with id {0}.", ballotId);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return options;
+        }
+
+        /// <summary>
+        /// Aktualisiert die lokalen Datensätze der übergebenen Abstimmungsoptionen.
+        /// </summary>
+        /// <param name="options">Die Liste von Abstimmungsoptionen mit aktualisierten Datensätzen.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Aktualisierung fehlschlägt.</exception>
+        public void UpdateOptions(List<Option> options)
+        {
+            try
+            {
+                groupDBManager.UpdateOptions(options);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("UpdateOptions: Failed to update the given options.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Speichert eine Menge von Abstimmungsoptionen, die zu einer gegebenen Abstimmungsoption gehören
+        /// in den lokalen Datensätzen ab. Die Abstimmungsoptionen werden ohne Daten bezüglich Subressourcen (Votes) 
+        /// abgespeichert, d.h. rein die Daten der Klasse Option (Id und Text).
+        /// </summary>
+        /// <param name="ballotId">Die Id der Abstimmung, zu der die Abstimmungsoptionen gehören.</param>
+        /// <param name="options">Die Liste an abzuspeichernden Datensätzen.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Speicherung fehlschlägt.</exception>
+        public void StoreOptions(int ballotId, List<Option> options)
+        {
+            try
+            {
+                groupDBManager.BulkInsertOptions(ballotId, options, false);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("StoreOptions: Failed to store the given options.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Speichert die übergebene Menge an Abstimmungsoption für die angegebene Abstimmung ab.
+        /// Die Optionen werden einschließlich Subressourcen (Votes) abgespeichert. Bei Aufruf sollte
+        /// man sicherstellen, dass alle Nutzer, die abgestimmt haben, auch bereits lokal als Datensätze in der 
+        /// Datenbank vorhanden sind. Ist das nicht der Fall fehlen notwendige Abhängikeiten.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Abstimmung gehört.</param>
+        /// <param name="ballotId">Die Id der Abstimmung, zu der die Abstimmungsoptionen gespeichert werden sollen.</param>
+        /// <param name="options">Die Liste an Objekten der Klasse Option.</param>
+        /// <returns>Liefert true, falls die Speicherung erfolgreich war, und false, falls die Speicherung aufgrund
+        ///     fehlender Abhängigkeiten nicht durchgeführt werden konnte.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, falls Speicherung fehlschlägt. </exception>
+        public bool StoreOptionsIncludingVoters(int groupId, int ballotId, List<Option> options)
+        {
+            bool storedSuccessfully = false;
+            bool fulfillsConstraints = true;
+
+            try
+            {
+                if (groupDBManager.IsBallotStored(ballotId))
+                {
+                    // Frage Gruppenteilnehmer ab.
+                    Dictionary<int, User> participants = groupDBManager.GetAllParticipantsOfGroup(groupId);
+
+                    foreach (Option option in options)
+                    {
+                        if (option.VoterIds != null)
+                        {
+                            foreach (int voter in option.VoterIds)
+                            {
+                                if (!participants.ContainsKey(voter))
+                                {
+                                    Debug.WriteLine("StoreOptions: Voter with id {0} seems not to be stored, cannot continue.", voter);
+                                    fulfillsConstraints = false;
+                                }
+                            }
+                        }
+                    }
+
+                    if (fulfillsConstraints)
+                    {
+                        groupDBManager.BulkInsertOptions(ballotId, options, true);
+                        storedSuccessfully = true;
+                    }
+                }
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("StoreOptions: Failed to store the given options.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return storedSuccessfully;
+        }
+
+        /// <summary>
+        /// Löscht die Abstimmungsoption mit der angegebenen Id aus den lokalen Datensätzen.
+        /// </summary>
+        /// <param name="optionId">Die Id der Abstimmunsoption, die gelöscht werden soll.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Löschvorgang fehlschlagen sollte.</exception>
+        public void DeleteOption(int optionId)
+        {
+            try
+            {
+                groupDBManager.DeleteOption(optionId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("DeleteOption: Failed to delete the specified option.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Gibt alle Nutzer zurück, die für die angegebenen Abstimmungsoption abgestimmt haben.
+        /// </summary>
+        /// <param name="optionId">Die Id der Abstimmungsoption.</param>
+        /// <returns>Liste von User Objekten, die alle Nutzer beinhaltet, die für die Abstimmungsoption gestimmt haben.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abruf fehlschlägt.</exception>
+        public List<User> GetVotersForOption(int optionId)
+        {
+            List<User> voters = null;
+            try
+            {
+                voters = groupDBManager.GetVotersForOption(optionId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetVotersForOption: Failed to retrieve the voters for the option.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return voters;
+        }
+
+        /// <summary>
+        /// Fügt eine Verknüfpung von Nutzer-Id zu der angegebenen Abstimmungsoption den lokalen
+        /// Datensätzen hinzu. Der angegebene Nutzer hat dann für diese Abstimmungsoption abgestimmt.
+        /// </summary>
+        /// <param name="optionId">Die Id der Abstimmungsoption, für die der Nutzer abstimmt.</param>
+        /// <param name="userId">Die Id des entsprechenden Nutzers.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Speicherung fehlschlägt.</exception>
+        public void AddVote(int ballotId, int optionId, int userId)
+        {
+            Ballot affectedBallot = GetBallot(ballotId, false);
+
+            try
+            {
+                if (userController.IsUserLocallyStored(userId))
+                {
+                    if (affectedBallot.IsMultipleChoice.HasValue && affectedBallot.IsMultipleChoice == false)
+                    {
+                        if (groupDBManager.HasVotedForBallot(ballotId, userId))
+                        {
+                            Debug.WriteLine("AddVote: Ballot not multiple choice and user has already voted.");
+                            Debug.WriteLine("AddVote: Deleting all votes before adding the new one.");
+                            groupDBManager.RemoveAllVotesForBallot(ballotId, userId);
+                        }
+                    }
+
+                    if (!groupDBManager.HasVotedForOption(optionId, userId))
+                    {
+                        groupDBManager.AddVote(optionId, userId);
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("AddVote: Failed. No such user stored in database.");
+                }                
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("AddVote: Failed to add vote for the specified option.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Entfernt die Verknüpfung zwischen dem Nutzer und der angegebenen Abstimmungsoption.
+        /// Der Nutzer hat dann nicht mehr für diese Abstimmungsoption abgestimmt.
+        /// </summary>
+        /// <param name="optionId">Die Id der Abstimmungsoption.</param>
+        /// <param name="userId">Die Id des Nutzers.</param>
+        /// <exception cref="ClientException">Wirft ClientException, falls Löschung fehlschlägt.</exception>
+        public void RemoveVote(int optionId, int userId)
+        {
+            try
+            {
+                groupDBManager.DeleteVote(optionId, userId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("RemoveVote: Failed to remove vote for the specified option.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
         }
         #endregion LocalBallotMethods
     }

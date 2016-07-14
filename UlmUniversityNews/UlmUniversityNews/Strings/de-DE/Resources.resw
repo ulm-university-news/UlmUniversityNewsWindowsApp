@@ -1509,4 +1509,7 @@ Nachricht am: </value>
   <data name="GroupDetailsSynchronizeGroupDetailsStatus" xml:space="preserve">
     <value>Synchronisiere Gruppeninformationen</value>
   </data>
+  <data name="GroupDetailsSynchronizeBallotStatus" xml:space="preserve">
+    <value>Synchronisiere Abstimmungen</value>
+  </data>
 </root>
