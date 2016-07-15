@@ -323,6 +323,7 @@ namespace UlmUniversityNews
             NavigationService.RegisterPage("ConversationDetails", typeof(Views.Group.ConversationDetails));
             NavigationService.RegisterPage("GroupSettings", typeof(Views.Group.GroupSettings));
             NavigationService.RegisterPage("AddAndEditConversation", typeof(Views.Group.AddAndEditConversationDialog.AddAndEditConversation));
+            NavigationService.RegisterPage("BallotDetails", typeof(Views.Group.BallotDetails));
         }
 
         /// <summary>

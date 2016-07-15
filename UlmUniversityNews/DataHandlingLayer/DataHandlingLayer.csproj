@@ -145,6 +145,7 @@
     <Compile Include="DataModel\Sports.cs" />
     <Compile Include="DataModel\User.cs" />
     <Compile Include="DataModel\Validator\ModelValidatorBase.cs" />
+    <Compile Include="DataModel\VoteResult.cs" />
     <Compile Include="ErrorMapperInterface\IErrorMapper.cs" />
     <Compile Include="Exceptions\APIException.cs" />
     <Compile Include="Exceptions\ClientException.cs" />
@@ -161,6 +162,7 @@
     <Compile Include="ViewModel\AddAnnouncementViewModel.cs" />
     <Compile Include="ViewModel\AddAndEditGroupViewModel.cs" />
     <Compile Include="ViewModel\ApplicationSettingsViewModel.cs" />
+    <Compile Include="ViewModel\BallotDetailsViewModel.cs" />
     <Compile Include="ViewModel\ChannelDetailsBaseViewModel.cs" />
     <Compile Include="ViewModel\ChannelDetailsViewModel.cs" />
     <Compile Include="ViewModel\ChannelEnumerationBaseViewModel.cs" />

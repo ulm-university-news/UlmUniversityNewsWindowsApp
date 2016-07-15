@@ -739,6 +739,27 @@ namespace DataHandlingLayer.JsonManager
             return ballots;
         }
 
+        /// <summary>
+        /// Extrahiert eine Ballot Instanz aus dem übergebenen JSON-Dokument.
+        /// </summary>
+        /// <param name="jsonString">Das übergebene JSON-Dokument.</param>
+        /// <returns>Ein Objekt vom Typ Ballot, oder null, falls das Objekt
+        ///     nicht extrahiert werden konnte.</returns>
+        public Ballot ParseBallotFromJson(string jsonString)
+        {
+            Ballot ballot = null;
+            try
+            {
+                ballot = JsonConvert.DeserializeObject<Ballot>(jsonString);
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine("ParseBallotFromJson: Json parser error occurred. " + 
+                    "Message is {0}.", ex.Message);
+            }
+
+            return ballot;
+        }
         #endregion Ballot
 
         #region Options

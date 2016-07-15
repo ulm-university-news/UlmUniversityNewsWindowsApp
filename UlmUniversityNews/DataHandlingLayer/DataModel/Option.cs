@@ -34,7 +34,18 @@ namespace DataHandlingLayer.DataModel
         public string Text
         {
             get { return text; }
-            set { text = value; }
+            set { this.setProperty(ref this.text, value); }
+        }
+
+        private bool isChosen;
+        /// <summary>
+        /// Gibt an, ob der Nutzer die Abstimmungsoption gewählt hat.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsChosen
+        {
+            get { return isChosen; }
+            set { this.setProperty(ref this.isChosen, value); }
         }
 
         private List<int> voterIds;

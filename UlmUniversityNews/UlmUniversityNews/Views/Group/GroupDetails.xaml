@@ -510,7 +510,7 @@
                                 <!-- Bind auf Command mittels Behaviour. Event vom Klick auf ein Item wird auf Command abgebildet.-->
                                 <i:Interaction.Behaviors>
                                     <core:EventTriggerBehavior EventName="ItemClick">
-                                        <core:InvokeCommandAction Command="{Binding ConversationSelectedCommand}"
+                                        <core:InvokeCommandAction Command="{Binding BallotSelectedCommand}"
                                                               InputConverter="{StaticResource ItemClickedConverter}" />
                                     </core:EventTriggerBehavior>
                                 </i:Interaction.Behaviors>

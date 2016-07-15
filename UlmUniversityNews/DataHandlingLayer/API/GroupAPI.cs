@@ -428,6 +428,32 @@ namespace DataHandlingLayer.API
         }
 
         /// <summary>
+        /// Sende einen Request zum Abfragen einer spezifischen Abstimmung einer Gruppe.
+        /// Es kann angegeben werden, ob die Abstimmung inklusive ihrer Subresourcen (Options und Votes) abgefragt werden soll.
+        /// Der Anfrager muss Teilnehmer der Gruppe sein, um diese Anfrage durchführen zu können.
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Nutzers.</param>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Abstimmung gehört.</param>
+        /// <param name="ballotId">Die Id der Abstimmung, die abgefragt werden soll.</param>
+        /// <param name="subresources">Gibt an, ob die Subressourcen (Options und Votes) ebenfalls abgefragt werden sollen.</param>
+        /// <param name="withCaching">Gibt an, ob Caching bei diesem Request zugelassen werden soll.</param>
+        /// <returns>Die Antwort des Servers als String. Hier die abgefragte Abstimmungsressource.</returns>
+        /// <exception cref="APIException">Wirft APIException, falls Request fehlschlägt, oder vom Server abgelehnt wird.</exception>
+        public async Task<string> SendGetBallotRequest(string serverAccessToken, int groupId, int ballotId, bool subresources, bool withCaching)
+        {
+            Dictionary<string, string> urlParams = new Dictionary<string, string>();
+            urlParams.Add("subresources", subresources.ToString());
+
+            string serverResponse = await base.SendHttpGetRequestAsync(
+                serverAccessToken,
+                "/group/" + groupId.ToString() + "/ballot/" + ballotId.ToString(),
+                urlParams,
+                withCaching);
+
+            return serverResponse;
+        }
+
+        /// <summary>
         /// Sende einen Request zum Aktualisieren einer spezifischen Abstimmung. Die durchzuführenden Änderungen 
         /// werden in Form einer Beschreibung im JSON Merge Patch Format an den Server geschickt. Der Anfrager muss 
         /// Administrator der angegebenen Abstimmung sein, um diesen Request durchführen zu können.

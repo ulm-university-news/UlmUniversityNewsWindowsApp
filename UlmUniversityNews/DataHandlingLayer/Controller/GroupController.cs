@@ -23,11 +23,6 @@ namespace DataHandlingLayer.Controller
         private GroupAPI groupAPI;
 
         /// <summary>
-        /// Referenz auf den JsonManager, um das Parsen von Objekten durchzuführen.
-        /// </summary>
-        private JsonParsingManager jsonManager;
-
-        /// <summary>
         /// Refernz auf die Controller Instanz für die Verwaltung der Nutzerdaten.
         /// </summary>
         private UserController userController;
@@ -45,7 +40,7 @@ namespace DataHandlingLayer.Controller
             : base()
         {
             groupAPI = new GroupAPI();
-            jsonManager = new JsonParsingManager();
+            jsonParser = new JsonParsingManager();
             groupDBManager = new GroupDatabaseManager();
             userController = new UserController();
         }
@@ -58,7 +53,7 @@ namespace DataHandlingLayer.Controller
             : base(errorReporter)
         {
             groupAPI = new GroupAPI();
-            jsonManager = new JsonParsingManager();
+            jsonParser = new JsonParsingManager();
             groupDBManager = new GroupDatabaseManager();
             userController = new UserController();
         }
@@ -110,7 +105,7 @@ namespace DataHandlingLayer.Controller
             newGroup.Password = hashingHelper.GenerateSHA256Hash(newGroup.Password);
 
             // Umwandeln des Objekts in Json.
-            string jsonContent = jsonManager.ParseGroupToJson(newGroup);
+            string jsonContent = jsonParser.ParseGroupToJson(newGroup);
             if (jsonContent == null)
             {
                 Debug.WriteLine("Error during serialization from group object to json string. Could " +
@@ -134,7 +129,7 @@ namespace DataHandlingLayer.Controller
             }
 
             // Extrahiere Group Objekt aus Antwort des Servers.
-            Group responseGroupObj = jsonManager.ParseGroupFromJson(serverResponse);
+            Group responseGroupObj = jsonParser.ParseGroupFromJson(serverResponse);
             if (responseGroupObj != null)
             {
                 // Speichere Gruppe lokal ab.
@@ -208,7 +203,7 @@ namespace DataHandlingLayer.Controller
 
             if (serverResponse != null)
             {
-                retrievedGroups = jsonManager.ParseGroupListFromJson(serverResponse);
+                retrievedGroups = jsonParser.ParseGroupListFromJson(serverResponse);
             }
 
             return retrievedGroups;
@@ -246,7 +241,7 @@ namespace DataHandlingLayer.Controller
 
             if (serverResponse != null)
             {
-                group = jsonManager.ParseGroupFromJson(serverResponse);
+                group = jsonParser.ParseGroupFromJson(serverResponse);
             }
 
             return group;
@@ -266,7 +261,7 @@ namespace DataHandlingLayer.Controller
             string hash = hashHelper.GenerateSHA256Hash(password);
 
             // Erstelle JSON-Dokument für Passwortübergabe.
-            string jsonContent = jsonManager.CreatePasswordResource(hash);
+            string jsonContent = jsonParser.CreatePasswordResource(hash);
 
             // Frage zunächst die Gruppen-Ressource vom Server ab.
             Group group = await GetGroupAsync(groupId, false);
@@ -530,7 +525,7 @@ namespace DataHandlingLayer.Controller
 
             if (serverResponse != null)
             {
-                participants = jsonManager.ParseUserListFromJson(serverResponse);
+                participants = jsonParser.ParseUserListFromJson(serverResponse);
             }
 
             return participants;
@@ -604,7 +599,7 @@ namespace DataHandlingLayer.Controller
             }
 
             // Erstelle Json-Dokument für die Aktualisierung.
-            string jsonContent = jsonParser.ParseGroupToJson(updatableGroupObj);
+            string jsonContent = base.jsonParser.ParseGroupToJson(updatableGroupObj);
             if (jsonContent == null)
             {
                 Debug.WriteLine("UpdateGroupAsync: Group object could not be translated to a json document.");
@@ -635,7 +630,7 @@ namespace DataHandlingLayer.Controller
             // Führe lokale Aktualisierung des Datensatzes aus.
             try
             {
-                Group updatedGroup = jsonParser.ParseGroupFromJson(serverResponse);
+                Group updatedGroup = base.jsonParser.ParseGroupFromJson(serverResponse);
                 if (updatedGroup == null)
                 {
                     throw new ClientException(ErrorCodes.JsonParserError, "Couldn't parse server response.");
@@ -828,7 +823,7 @@ namespace DataHandlingLayer.Controller
             }
 
             // Parse Konversation zu JSON.
-            string jsonContent = jsonManager.ParseConversationToJson(newConversation);
+            string jsonContent = jsonParser.ParseConversationToJson(newConversation);
             if (jsonContent == null)
             {
                 Debug.WriteLine("CreateConversationAsync: Failed to create a json object.");
@@ -860,7 +855,7 @@ namespace DataHandlingLayer.Controller
             if (serverResponse != null)
             {
                 // Extrahiere Conversation aus der Serverantwort.
-                Conversation createdConv = jsonManager.ParseConversationFromJson(serverResponse);
+                Conversation createdConv = jsonParser.ParseConversationFromJson(serverResponse);
 
                 if (createdConv != null)
                 {
@@ -911,7 +906,7 @@ namespace DataHandlingLayer.Controller
             }
 
             // Erstelle JSON Dokument für die Aktualisierung.
-            string jsonContent = jsonManager.ParseConversationToJson(updatableConversationObj);
+            string jsonContent = jsonParser.ParseConversationToJson(updatableConversationObj);
             if (jsonContent == null)
             {
                 Debug.WriteLine("UpdateConversationAsync: Failed to create json document.");
@@ -944,7 +939,7 @@ namespace DataHandlingLayer.Controller
             if (serverResponse != null)
             {
                 // Parse Server Antwort.
-                Conversation updatedConv = jsonManager.ParseConversationFromJson(serverResponse);
+                Conversation updatedConv = jsonParser.ParseConversationFromJson(serverResponse);
 
                 if (updatedConv != null)
                 {
@@ -1076,7 +1071,7 @@ namespace DataHandlingLayer.Controller
             // Parsen der Serverantwort.
             if (serverResponse != null)
             {
-                conversationMessages = jsonParser.ParseConversationMessageListFromJson(serverResponse);
+                conversationMessages = base.jsonParser.ParseConversationMessageListFromJson(serverResponse);
             }
 
             return conversationMessages;
@@ -1118,7 +1113,7 @@ namespace DataHandlingLayer.Controller
             // Parse Liste aus Server Antwort.
             if (serverResponse != null)
             {
-                conversations = jsonManager.ParseConversationListFromJson(serverResponse);
+                conversations = jsonParser.ParseConversationListFromJson(serverResponse);
             }
 
             return conversations;
@@ -1320,7 +1315,7 @@ namespace DataHandlingLayer.Controller
             }
 
             // Parse Nachricht zu Json.
-            string jsonContent = jsonParser.ParseConversationMessageToJson(message);
+            string jsonContent = base.jsonParser.ParseConversationMessageToJson(message);
 
             // Setze Request an den Server ab.
             string serverResponse = null;
@@ -1367,7 +1362,7 @@ namespace DataHandlingLayer.Controller
             // Parse Serverantwort.
             if (serverResponse != null)
             {
-                ConversationMessage convMsg = jsonParser.ParseConversationMessageFromJson(serverResponse);
+                ConversationMessage convMsg = base.jsonParser.ParseConversationMessageFromJson(serverResponse);
 
                 int highestMessageNr = GetHighestMessageNumberOfConversation(conversationId);
                 if (highestMessageNr + 1 != convMsg.MessageNumber)
@@ -1507,10 +1502,59 @@ namespace DataHandlingLayer.Controller
             // Parse Liste von Ballots aus Serverantwort.
             if (serverResponse != null)
             {
-                ballots = jsonManager.ParseBallotListFromJson(serverResponse);
+                ballots = jsonParser.ParseBallotListFromJson(serverResponse);
             }
 
             return ballots;
+        }
+
+        /// <summary>
+        /// Ruft die Daten zu einer bestimmten Abstimmung einer Gruppe vom Server ab.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Abstimmung gehört.</param>
+        /// <param name="ballotId">Die Id der Abstimmung, die abgefragt werden soll.</param>
+        /// <param name="includingSubressources">Gibt an, ob Daten bezüglich Subressourcen (Option und Votes) 
+        ///     ebenfalls abgefragt werden sollen.</param>
+        /// <param name="withCaching">Gibt an, ob bei der Abfrage Caching zugelassen werden soll.</param>
+        /// <returns>Eine Instanz der Klasse Ballot mit den abgerufenen Daten.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abruf fehlschlägt, oder der
+        ///     Server die Anfrage ablehnt.</exception>
+        public async Task<Ballot> GetBallotAsync(int groupId, int ballotId, bool includingSubressources, bool withCaching)
+        {
+            Ballot ballot = null;
+
+            string serverResponse = null;
+            try
+            {
+                serverResponse = await groupAPI.SendGetBallotRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    ballotId,
+                    includingSubressources,
+                    withCaching);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("GetBallotAsync: Request failed. Error code is {0}.", ex.ErrorCode);
+
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    Debug.WriteLine("GetBallotAsync: Group not found.");
+                    // Markiere Gruppe lokal als gelöscht.
+                    MarkGroupAsDeleted(groupId);
+                }
+
+                // TODO Ballot not found
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            if (serverResponse != null)
+            {
+                ballot = jsonParser.ParseBallotFromJson(serverResponse);
+            }
+
+            return ballot;
         }
 
         /// <summary>
@@ -1556,7 +1600,7 @@ namespace DataHandlingLayer.Controller
             // Parse Liste von Options aus Serverantwort.
             if (serverResponse != null)
             {
-                options = jsonManager.ParseOptionListFromJson(serverResponse);
+                options = jsonParser.ParseOptionListFromJson(serverResponse);
             }
 
             return options;
@@ -1667,6 +1711,62 @@ namespace DataHandlingLayer.Controller
 
             sw.Stop();
             Debug.WriteLine("SynchronizeBallotsWithServerAsync: Finished. Elapsed time: {0}.", sw.Elapsed.TotalMilliseconds);
+        }
+
+        /// <summary>
+        /// Synchronisiert eine einzelne Abstimmung mit den Daten vom Server. Die lokalen
+        /// Datensätze werden auf die des Servers angepasst.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Abstimmung gehört.</param>
+        /// <param name="ballotId">Die Id der Abstimmung, die synchronisiert werden soll.</param>
+        /// <exception cref="ClientException">Wirft ClientException, falls Synchronisation fehlschlägt.</exception>
+        public async Task SynchronizeBallotWithServerAsync(int groupId, int ballotId)
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+            Debug.WriteLine("SynchronizeBallotWithServerAsync: Start.");
+
+            // Synchronisiere zunächst die Teilnehmer-Information, das es bei den Einfügeoperationen zu keinen Problemen kommt.
+            await SynchronizeGroupParticipantsAsync(groupId);
+
+            // Frage die Daten zu der Abstimmung ab.
+            Ballot referenceBallot = await GetBallotAsync(groupId, ballotId, true, false);
+
+            // Frage die Abstimmung aus den lokalen Datensätzen ab.
+            Ballot localBallot = GetBallot(ballotId, false);
+
+            if (localBallot == null && referenceBallot != null)
+            {
+                Debug.WriteLine("SynchronizeBallotWithServerAsync: Ballot seems to be missing in the local datasets.");
+                bool successful = StoreBallot(groupId, referenceBallot);
+                if (!successful)
+                {
+                    Debug.WriteLine("SynchronizeBallotWithServerAsync: Failed to store ballot.");
+                    throw new ClientException(ErrorCodes.LocalDatabaseException, "Couldn't store ballot, probably due to missing references.");
+                }
+            }
+
+            if (localBallot != null && referenceBallot != null)
+            {
+                // Aktualisere die Daten der lokalen Abstimmung.
+                UpdateBallot(referenceBallot);
+            }
+
+            if (referenceBallot != null && referenceBallot.Options != null)
+            {
+                // Aktualisiere noch die Optionen und die Votes.
+                SynchronizeLocalOptionsOfBallot(ballotId, referenceBallot.Options);
+
+                foreach (Option option in referenceBallot.Options)
+                {
+                    if (option.VoterIds != null)
+                    {
+                        SynchronizeLocalVotesForOption(ballotId, option.Id, option.VoterIds);
+                    }
+                }
+            }
+
+            sw.Stop();
+            Debug.WriteLine("SynchronizeBallotWithServerAsync: Finished. Elapsed time is {0}.", sw.Elapsed.TotalMilliseconds);
         }
         #endregion RemoteBallotMethods
 

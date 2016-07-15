@@ -34,7 +34,7 @@ namespace DataHandlingLayer.DataModel
         public string Title
         {
             get { return title; }
-            set { title = value; }
+            set { this.setProperty(ref this.title, value); }
         }
 
         private string description;
@@ -45,7 +45,7 @@ namespace DataHandlingLayer.DataModel
         public string Description
         {
             get { return description; }
-            set { description = value; }
+            set { this.setProperty(ref this.description, value); }
         }
 
         private int adminId;
@@ -56,7 +56,7 @@ namespace DataHandlingLayer.DataModel
         public int AdminId
         {
             get { return adminId; }
-            set { adminId = value; }
+            set { this.setProperty(ref this.adminId, value); }
         }
 
         private string adminName;
@@ -66,7 +66,7 @@ namespace DataHandlingLayer.DataModel
         public string AdminName
         {
             get { return adminName; }
-            set { adminName = value; }
+            set { this.setProperty(ref this.adminName, value); }
         }
 
         private bool? isClosed;
@@ -77,7 +77,7 @@ namespace DataHandlingLayer.DataModel
         public bool? IsClosed
         {
             get { return isClosed; }
-            set { isClosed = value; }
+            set { this.setProperty(ref this.isClosed, value); }
         }
 
         private bool? isMultipleChoice;
@@ -89,7 +89,7 @@ namespace DataHandlingLayer.DataModel
         public bool? IsMultipleChoice
         {
             get { return isMultipleChoice; }
-            set { isMultipleChoice = value; }
+            set { this.setProperty(ref this.isMultipleChoice, value); }
         }
 
         private bool? hasPublicVotes;
@@ -101,7 +101,7 @@ namespace DataHandlingLayer.DataModel
         public bool? HasPublicVotes
         {
             get { return hasPublicVotes; }
-            set { hasPublicVotes = value; }
+            set { this.setProperty(ref this.hasPublicVotes, value); }
         }
 
         private List<Option> options;

@@ -988,7 +988,11 @@ namespace DataHandlingLayer.ViewModel
         private void executeBallotSectedCommand(object selectedItem)
         {
             Ballot ballot = selectedItem as Ballot;
-            // TODO
+            if (ballot != null && SelectedGroup != null)
+            {
+                string navigationParameter = "navParam?groupId=" + SelectedGroup.Id + "?ballotId=" + ballot.Id;
+                _navService.Navigate("BallotDetails", navigationParameter);
+            }
         }
         #endregion CommandFunctionality
 

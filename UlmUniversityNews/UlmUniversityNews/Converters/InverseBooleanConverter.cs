@@ -14,14 +14,22 @@ namespace UlmUniversityNews.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            bool valueBool = (bool)value;
-            return !valueBool;
+            if (value != null)
+            {
+                bool valueBool = (bool)value;
+                return !valueBool;
+            }
+            return false;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
-            bool valueBool = (bool)value;
-            return !valueBool;
+            if (value != null)
+            {
+                bool valueBool = (bool)value;
+                return !valueBool;
+            }
+            return false;
         }
     }
 }
