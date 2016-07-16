@@ -1768,6 +1768,154 @@ namespace DataHandlingLayer.Controller
             sw.Stop();
             Debug.WriteLine("SynchronizeBallotWithServerAsync: Finished. Elapsed time is {0}.", sw.Elapsed.TotalMilliseconds);
         }
+
+        /// <summary>
+        /// Erstellt die Verknüpfung zwischen lokalem Nutzer und der angegebenen
+        /// Abstimmungsoption. Der lokale Nutzer hat dann für diese Abstimmungsoption
+        /// abgestimmt. Erzeugt die Verknüpfung auf dem Server und in den lokalen Datensätzen.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Abstimmung gehört.</param>
+        /// <param name="ballotId">Die Id der Abstimmung.</param>
+        /// <param name="optionId">Die Id der gewählten Abstimmungsoption.</param>
+        /// <returns>Liefert true, wenn die Erstellung erfolgreich war. Liefert false,
+        ///     wenn die Aktion nicht durchgeführt werden musste, z.B. wenn der Nutzer
+        ///     bereits für diese Option gestimmt hat.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Aktion fehlschlägt, 
+        ///     oder Anfrage vom Server abgelehnt wurde.</exception>
+        public async Task<bool> PlaceVoteAsync(int groupId, int ballotId, int optionId)
+        {
+            bool successful = false;
+            User localUser = getLocalUser();
+
+            // Rufe lokale Instanz der Abstimmung ab.
+            Ballot localBallot = GetBallot(ballotId, false);
+
+            // Prüfe, ob der Nutzer bereits für genau diese Option abgestimmt hat.
+            if (HasPlacedVoteForOption(optionId, localUser.Id))
+            {
+                Debug.WriteLine("PlaceVoteAsync: No need to place vote. User has already voted for this option.");
+                return false;
+            }
+
+            // Sonderfall: Single-Choice Abstimmung.
+            if (localBallot != null && 
+                localBallot.IsMultipleChoice.HasValue && 
+                localBallot.IsMultipleChoice.Value == false)
+            {
+                Debug.WriteLine("PlaceVoteAsync: Need to check special case Single-Choice ballot.");
+                // Prüfe, ob der Nutzer bereits für eine Option dieser Abstimmung abgestimmt hat.
+                if (HasPlacedVoteInBallot(ballotId, localUser.Id))
+                {
+                    List<Option> selectedOptions = GetSelectedOptionsInBallot(ballotId, localUser.Id);
+
+                    // Entferne alle bisher getätigten Abstimmungen.
+                    foreach (Option selectedOption in selectedOptions)
+                    {
+                        Debug.WriteLine("PlaceVoteAsync: Need to remove vote for option with id {0} and text '{1}' first.", 
+                            selectedOption.Id, selectedOption.Text);
+                        await RemoveVoteAsync(groupId, ballotId, selectedOption.Id);
+                    }
+                }
+            }
+
+            // Setze Request ab.
+            try
+            {
+                await groupAPI.SendVoteForOptionRequest(
+                    localUser.ServerAccessToken,
+                    groupId,
+                    ballotId,
+                    optionId);
+
+                successful = true;
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("PlaceVoteAsync: Failed to place vote. Request failed. Error code is: {0}.", ex.ErrorCode);
+
+
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    Debug.WriteLine("RemoveVoteAsync: Group seems to be deleted on the server.");
+                    // Markiere Gruppe lokal als gelöscht.
+                    MarkGroupAsDeleted(groupId);
+                }
+
+                // TODO Ballot not found
+                // - eventuell weitere Fehlerbehandlungen für vote spezifische Fehler?
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            if (successful)
+            {
+                // Aktualisiere lokale Datensätze.
+                AddVote(ballotId, optionId, localUser.Id);
+            }
+
+            return successful;
+        }
+
+        /// <summary>
+        /// Entfernt die Verknüpfung zwischen lokalem Nutzer und der angegebenen
+        /// Abstimmungsoption. Der lokale Nutzer hat dann nicht mehr für diese Abstimmungsoption
+        /// abgestimmt. Entfernt die Verknüpfung auf dem Server und in den lokalen Datensätzen.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Abstimmung gehört.</param>
+        /// <param name="ballotId">Die Id der Abstimmung.</param>
+        /// <param name="optionId">Die Id der Abstimmungsoption, die der Nutzer abwählt.</param>
+        /// <returns>Liefert true, wenn Aktion erfolgreich. Liefert false wenn keine Aktion ausgeführt werden 
+        ///     musste, z.B. wenn der Nutzer gar nicht für die angegebene Abstimmungsoption abgestimmt hatte.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Aktion fehlschlägt, oder der Server
+        ///     die Anfrage abgelehnt hat.</exception>
+        public async Task<bool> RemoveVoteAsync(int groupId, int ballotId, int optionId)
+        {
+            bool successful = false;
+            User localUser = getLocalUser();
+            
+            // Prüfe, ob der Nutzer überhaupt für genau diese Option abgestimmt hat.
+            if (!HasPlacedVoteForOption(optionId, localUser.Id))
+            {
+                Debug.WriteLine("RemoveVoteAsync: No need to remove vote. User has not voted for this option.");
+                return false;
+            }
+
+            try
+            {
+                await groupAPI.SendRemoveVoteRequest(
+                    localUser.ServerAccessToken,
+                    groupId,
+                    ballotId,
+                    optionId,
+                    localUser.Id);
+
+                successful = true;
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("RemoveVoteAsync: Failed to remove vote. Request failed. Error code is {0}.", ex.ErrorCode);
+
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    Debug.WriteLine("RemoveVoteAsync: Group seems to be deleted on the server.");
+                    // Markiere Gruppe lokal als gelöscht.
+                    MarkGroupAsDeleted(groupId);
+                }
+
+                // TODO Ballot not found
+                // - eventuell weitere Fehlerbehandlungen für vote spezifische Fehler?
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            if (successful)
+            {
+                // Entferne aus lokalen Datensätzen.
+                RemoveVote(optionId, localUser.Id);
+            }
+
+            return successful;
+        }
         #endregion RemoteBallotMethods
 
         #region LocalGroupMethods
@@ -3045,6 +3193,30 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Ruft die Abstimmungsoptionen ab, für die der angegebene Nutzer in der 
+        /// Abstimmung abgestimmt hat.
+        /// </summary>
+        /// <param name="ballotId">Die Id der Abstimmung.</param>
+        /// <param name="userId">Die Id des Nutzers.</param>
+        /// <returns>Eine Liste von Instanzen der Klasse Option. Die Liste kann auch leer sein.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abruf fehlschlägt.</exception>
+        public List<Option> GetSelectedOptionsInBallot(int ballotId, int userId)
+        {
+            List<Option> selectedOptions = null;
+            try
+            {
+                selectedOptions = groupDBManager.GetSelectedOptionsInBallot(ballotId, userId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetSelectedOptionsInBallot: Failed to retrieve selected options.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return selectedOptions;
+        }
+
+        /// <summary>
         /// Fügt eine Verknüfpung von Nutzer-Id zu der angegebenen Abstimmungsoption den lokalen
         /// Datensätzen hinzu. Der angegebene Nutzer hat dann für diese Abstimmungsoption abgestimmt.
         /// </summary>
@@ -3104,6 +3276,55 @@ namespace DataHandlingLayer.Controller
                 Debug.WriteLine("RemoveVote: Failed to remove vote for the specified option.");
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Nutzer, der durch die angegeben Id identifiziert wird, bereits
+        /// für die angegebene Abstimmung abgestimmt hat.
+        /// </summary>
+        /// <param name="ballotId">Die Id der Abstimmung.</param>
+        /// <param name="userId">Die Id des Nutzers.</param>
+        /// <returns>Liefert true, wenn der Nutzer bereits abgestimmt hat, ansonsten false.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Prüfung fehlschlägt.</exception>
+        public bool HasPlacedVoteInBallot(int ballotId, int userId)
+        {
+            bool hasVoted = false;
+
+            try
+            {
+                hasVoted = groupDBManager.HasVotedForBallot(ballotId, userId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("HasPlacedVoteInBallot: Failed to check voting status.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return hasVoted;
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Nutzer für die angegebene Abstimmungsoption abgestimmt hat.
+        /// </summary>
+        /// <param name="optionId">Die Id der Abstimmungsoption.</param>
+        /// <param name="userId">Die Id des Nutzers.</param>
+        /// <returns>Liefert true, wenn der Nutzer für diese Abstimmungsoption abgestimmt hat, ansonsten false.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Prüfung fehlschlägt.</exception>
+        public bool HasPlacedVoteForOption(int optionId, int userId)
+        {
+            bool hasVoted = false;
+
+            try
+            {
+                hasVoted = groupDBManager.HasVotedForOption(optionId, userId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("HasPlacedVoteForOption: Failed to check voting status for option.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return hasVoted;
         }
         #endregion LocalBallotMethods
     }

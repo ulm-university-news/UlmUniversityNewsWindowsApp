@@ -164,6 +164,24 @@ namespace UlmUniversityNews.ErrorHandling
                 case ErrorCodes.ConversationIsClosed:
                     errorDescription = loader.GetString("ApplicationErrorConversationIsClosedError");
                     break;
+                case ErrorCodes.BallotNotFound:
+                    errorDescription = loader.GetString("ApplicationErrorBallotNotFoundError");
+                    break;
+                case ErrorCodes.BallotDataIncomplete:
+                    errorDescription = loader.GetString("ApplicationErrorBallotDataIncompleteError");
+                    break;
+                case ErrorCodes.BallotInvalidTitle:
+                    errorDescription = loader.GetString("ApplicationErrorBallotInvalidTitleError");
+                    break;
+                case ErrorCodes.BallotInvalidDescription:
+                    errorDescription = loader.GetString("ApplicationErrorBallotInvalidDescriptionError");
+                    break;
+                case ErrorCodes.BallotClosed:
+                    errorDescription = loader.GetString("ApplicationErrorBallotClosedError");
+                    break;
+                case ErrorCodes.BallotUserHasAlreadyVoted:
+                    errorDescription = loader.GetString("ApplicationErrorBallotUserHasAlreadyVotedError");
+                    break;
                 case ErrorCodes.BadRequest:
                     errorDescription = loader.GetString("ApplicationErrorBadRequestError");;
                     break;

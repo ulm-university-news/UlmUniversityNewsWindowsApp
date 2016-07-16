@@ -591,7 +591,7 @@ namespace DataHandlingLayer.API
         {
             await base.SendHttpPostRequestWithJsonBodyAsync(
                 serverAccessToken,
-                null,
+                "",
                 "/group/" + groupId.ToString() + "/ballot/" + ballotId.ToString() + "/option/" + optionId.ToString() + "/user",
                 null);
         }

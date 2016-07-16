@@ -156,7 +156,7 @@
                                   BackgroundOpacity="1.0" />
         <common:ProgressIndicatorBehavior IsVisible="{Binding IsProgressIndicatorVisible, UpdateSourceTrigger=PropertyChanged}"
                                           Value="{Binding ProgressIndicatorProgressValue, UpdateSourceTrigger=PropertyChanged}"
-                                          Text="{Binding ProgressIndicatorText, UpdateSourceTrigger=PropertyChanged}"
+                                          Text="{Binding ProgressIndicatorText, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StatusBarInformationToLocalizedStringConverter}}"
                                           IsIndeterminate="{Binding IsIndeterminateProgressIndicator, UpdateSourceTrigger=PropertyChanged}" />
     </i:Interaction.Behaviors>
 
@@ -164,7 +164,7 @@
     <Page.BottomAppBar>
         <CommandBar x:Name="GroupDetailsCommandBar"
 						Foreground="{StaticResource UNUCommandBarButtonColor}"
-						Background="{StaticResource UniUlmMainBackgroundColor}">
+						Background="{StaticResource UUNBallotColor}">
             <AppBarToggleButton
                 x:Name="BallotDetailsSelectOptionsButton"
                 x:Uid="BallotDetailsSelectOptionsButton"
@@ -175,7 +175,9 @@
                 x:Name="BallotDetailsPlaceVoteButton"
                 x:Uid="BallotDetailsPlaceVoteButton"
                 Icon="Accept"
-                Label="place vote"/>
+                Label="place vote"
+                Visibility="{Binding ElementName=BallotDetailsPlaceVoteButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding PlaceVotesCommand}"/>
             <AppBarButton
                 x:Name="BallotDetailsDeleteOptionButton"
                 x:Uid="BallotDetailsDeleteOptionButton"
@@ -200,7 +202,7 @@
         </Grid.RowDefinitions>
 
         <!-- Titelbereich - Drawer -->
-        <Grid Grid.Row="0" Style="{StaticResource DrawerMenuTitleBar}">
+        <Grid Grid.Row="0" Style="{StaticResource DrawerMenuTitleBar}" Background="{StaticResource UUNBallotColor}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />

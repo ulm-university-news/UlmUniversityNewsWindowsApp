@@ -448,6 +448,7 @@
     <Content Include="Assets\conversationIcons\conversation_closed_admin_white.png" />
     <Content Include="Assets\conversationIcons\conversation_closed_white.png" />
     <Content Include="Assets\Drawer\feature.settings.png" />
+    <Content Include="Assets\extIcons\appbar.delete.png" />
     <Content Include="Assets\extIcons\appbar.door.enter.png" />
     <Content Include="Assets\extIcons\appbar.door.leave.png" />
     <Content Include="Assets\extIcons\appbar.home.empty.png" />

@@ -32,6 +32,7 @@
         <SolidColorBrush x:Key="UniUlmFacultyColorNaturalSciences" Color="#BD6005" />
         <SolidColorBrush x:Key="UUNChannelMarkedAsDeletedColor" Color="#333333" />
         <SolidColorBrush x:Key="UUNConversationColor" Color="#FFCF05" />
+        <SolidColorBrush x:Key="UUNBallotColor" Color="#07966E" />
         <SolidColorBrush x:Key="MainFragmentBackgroundColor" Color="White" />
         <SolidColorBrush x:Key="UnreadMessageBackgroundColor" Color="Gray" Opacity="0.3" />
         <SolidColorBrush x:Key="DrawerMenuContentPanelBackgroundColor" Color="White" />

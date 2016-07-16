@@ -83,6 +83,13 @@ namespace DataHandlingLayer.Exceptions
         public const int ConversationStorageFailedDueToMissingAdmin = 4104;
         public const int ConversationIsClosed = 4105;
 
+        public const int BallotNotFound = 4300;
+        public const int BallotDataIncomplete = 4302;
+        public const int BallotInvalidTitle = 4303;
+        public const int BallotInvalidDescription = 4304;
+        public const int BallotClosed = 4305;
+        public const int BallotUserHasAlreadyVoted = 4306;
+
         public const int ServerDatabaseFailure = 5000;
 
         // Allgemeingültige Fehlercodes (von HTTP).

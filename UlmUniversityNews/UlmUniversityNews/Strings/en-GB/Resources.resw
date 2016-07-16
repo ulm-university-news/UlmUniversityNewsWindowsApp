@@ -1511,4 +1511,28 @@ date: </value>
   <data name="GroupDetailsSynchronizeBallotStatus" xml:space="preserve">
     <value>Synchronizing ballots</value>
   </data>
+  <data name="ApplicationErrorBallotClosedError" xml:space="preserve">
+    <value>The ballot has been closed. No actions can be performed in a closed ballot.</value>
+  </data>
+  <data name="ApplicationErrorBallotDataIncompleteError" xml:space="preserve">
+    <value>The server rejected the request due to missing data. Please check your input.</value>
+  </data>
+  <data name="ApplicationErrorBallotInvalidDescriptionError" xml:space="preserve">
+    <value>The provided description seems to have an invalid format. Please check your input.</value>
+  </data>
+  <data name="ApplicationErrorBallotInvalidTitleError" xml:space="preserve">
+    <value>The provided title seems to have an invalid format. Please check your input.</value>
+  </data>
+  <data name="ApplicationErrorBallotNotFoundError" xml:space="preserve">
+    <value>The specified ballot could not be found on the server. It is possible that the ballot has been deleted on the server.</value>
+  </data>
+  <data name="ApplicationErrorBallotUserHasAlreadyVotedError" xml:space="preserve">
+    <value>Only one option can be selected at a time. Please try again.</value>
+  </data>
+  <data name="BallotDetailsPlaceVotesStatus" xml:space="preserve">
+    <value>Saving selection</value>
+  </data>
+  <data name="BallotDetailsVotesSavedStatus" xml:space="preserve">
+    <value>Saved successfully</value>
+  </data>
 </root>

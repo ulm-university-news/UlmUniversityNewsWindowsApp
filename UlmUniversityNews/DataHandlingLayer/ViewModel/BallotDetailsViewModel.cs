@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using DataHandlingLayer.Exceptions;
 using System.Diagnostics;
 using DataHandlingLayer.Controller;
+using DataHandlingLayer.CommandRelays;
 
 namespace DataHandlingLayer.ViewModel
 {
@@ -75,6 +76,16 @@ namespace DataHandlingLayer.ViewModel
         #endregion Properties
 
         #region Commands
+        private AsyncRelayCommand placeVotesCommand;
+        /// <summary>
+        /// Befehl zur Bestätigung der Auswahl. Es werden die entsprechenden
+        /// Abstimmungsoptionen als gewählt/abgewählt markiert.
+        /// </summary>
+        public AsyncRelayCommand PlaceVotesCommand
+        {
+            get { return placeVotesCommand; }
+            set { placeVotesCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -92,6 +103,10 @@ namespace DataHandlingLayer.ViewModel
 
             if (VoteResultsCollection == null)
                 VoteResultsCollection = new ObservableCollection<VoteResult>();
+
+            PlaceVotesCommand = new AsyncRelayCommand(
+                param => executePlaceVotesCommand(),
+                param => canPlaceVotes());
         }
 
         /// <summary>
@@ -112,7 +127,19 @@ namespace DataHandlingLayer.ViewModel
                     {
                         BallotOptionCollection = new ObservableCollection<Option>(SelectedBallot.Options);
 
-                        // TODO - Mark the options that the local user has voted for.
+                        // Markiere die vom Nutzer gewählten Abstimmungsoptionen der Abstimmung.
+                        List<Option> selectedOptions = await Task.Run(() =>
+                            groupController.GetSelectedOptionsInBallot(SelectedBallot.Id, groupController.GetLocalUser().Id));
+
+                        foreach (Option selectedOption in selectedOptions)
+                        {
+                            Option affectedOption = BallotOptionCollection.Where(item => item.Id == selectedOption.Id).FirstOrDefault<Option>();
+
+                            if (affectedOption != null)
+                            {
+                                affectedOption.IsChosen = true;
+                            }
+                        }
                     }
                 }
             }
@@ -124,6 +151,8 @@ namespace DataHandlingLayer.ViewModel
 
             // Lade die Abstimmungsergebnisse.
             await LoadBallotOptionResultsAsync();
+
+            checkCommandExecution();
         }
 
         /// <summary>
@@ -209,5 +238,76 @@ namespace DataHandlingLayer.ViewModel
                 displayError(ex.ErrorCode);
             }
         }
+
+        #region CommandFunctionality
+        /// <summary>
+        /// Hilfsmethode um die Überprüfung der Ausführbarkeit der Befehle anzustoßen.
+        /// </summary>
+        private void checkCommandExecution()
+        {
+            PlaceVotesCommand.OnCanExecuteChanged();
+        }
+
+        /// <summary>
+        /// Prüft, ob der Befehl PlaceVotesCommand zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canPlaceVotes()
+        {
+            // Pivot Item Index 0 -> Abstimmung
+            if (AffectedGroup != null && 
+                SelectedBallot != null && 
+                !AffectedGroup.Deleted &&
+                SelectedBallot.IsClosed.HasValue && SelectedBallot.IsClosed.Value != true && 
+                BallotOptionCollection != null && BallotOptionCollection.Count > 0 && 
+                SelectedPivotItemIndex == 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl PlaceVotesCommand aus. Speichert die gewählten bzw. abgewählten
+        /// Abstimmungsoptionen ab.
+        /// </summary>
+        private async Task executePlaceVotesCommand()
+        {
+            try
+            {
+                displayIndeterminateProgressIndicator("BallotDetailsPlaceVotesStatus");
+
+                foreach (Option option in BallotOptionCollection)
+                {
+                    bool successful = false;
+
+                    if (option.IsChosen)
+                    {
+                        successful = await groupController.PlaceVoteAsync(AffectedGroup.Id, SelectedBallot.Id, option.Id);
+                    }
+                    else
+                    {
+                        successful = await groupController.RemoveVoteAsync(AffectedGroup.Id, SelectedBallot.Id, option.Id);
+                    }
+
+                    if (!successful)
+                        Debug.WriteLine("executePlaceVotesCommand: No action taken for option with id {0}.", option.Id);
+                }
+
+                // Anzeige der Ergebnisse aktualisieren.
+                await LoadBallotOptionResultsAsync();
+
+                hideIndeterminateProgressIndicator();
+                displayStatusBarText("BallotDetailsVotesSavedStatus", 3.0f);
+            }
+            catch (ClientException ex)
+            {
+                hideIndeterminateProgressIndicator();
+                Debug.WriteLine("executePlaceVotesCommand: Failed to place votes. Msg is {0}.", ex.Message);
+                displayError(ex.ErrorCode);
+            }
+        }
+        #endregion CommandFunctionality
     }
 }

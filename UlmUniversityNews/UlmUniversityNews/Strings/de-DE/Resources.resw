@@ -1512,4 +1512,28 @@ Nachricht am: </value>
   <data name="GroupDetailsSynchronizeBallotStatus" xml:space="preserve">
     <value>Synchronisiere Abstimmungen</value>
   </data>
+  <data name="ApplicationErrorBallotClosedError" xml:space="preserve">
+    <value>Die Abstimmung wurde geschlossen. In einer geschlossenene Abstimmung können keine Aktionen ausgeführt werden. </value>
+  </data>
+  <data name="ApplicationErrorBallotDataIncompleteError" xml:space="preserve">
+    <value>Der Server hat die Anfrage aufgrund fehlender Daten abgelehnt. Bitte prüfen Sie Ihre Eingabe.</value>
+  </data>
+  <data name="ApplicationErrorBallotInvalidDescriptionError" xml:space="preserve">
+    <value>Die angegebene Beschreibung scheint nicht dem gewünschten Format zu entsprechen. Bitte prüfen Sie Ihre Eingabe.</value>
+  </data>
+  <data name="ApplicationErrorBallotInvalidTitleError" xml:space="preserve">
+    <value>Der angegebene Titel scheint nicht dem gewünschten Format zu entsprechen. Bitte prüfen Sie Ihre Eingabe.</value>
+  </data>
+  <data name="ApplicationErrorBallotNotFoundError" xml:space="preserve">
+    <value>Die angegebene Abstimmung konnte auf dem Server nicht gefunden werden. Es ist möglich, dass die Abstimmung gelöscht wurde.</value>
+  </data>
+  <data name="ApplicationErrorBallotUserHasAlreadyVotedError" xml:space="preserve">
+    <value>Die Abstimmung ist so eingestellt, dass nur eine Option zu einem Zeitpunkt angewählt sein kann. Bitte versuchen Sie es erneut.</value>
+  </data>
+  <data name="BallotDetailsPlaceVotesStatus" xml:space="preserve">
+    <value>Speichere Auswahl</value>
+  </data>
+  <data name="BallotDetailsVotesSavedStatus" xml:space="preserve">
+    <value>Erfolgreich gespeichert</value>
+  </data>
 </root>

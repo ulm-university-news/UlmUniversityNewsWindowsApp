@@ -3929,6 +3929,77 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Gibt die Abstimmungsoptionen einer Abstimmung zurück, für die der angegebene
+        /// Nutzer abgestimmt hat.
+        /// </summary>
+        /// <param name="ballotId">Die Id der Abstimmung.</param>
+        /// <param name="userId">Die Id des Nutzers.</param>
+        /// <returns>Liste von Abstimmungsoptionen. Die Liste kann auch leer sein.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abruf fehlschlägt.</exception>
+        public List<Option> GetSelectedOptionsInBallot(int ballotId, int userId)
+        {
+            List<Option> selectedOptions = new List<Option>();
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT * 
+                            FROM UserOption AS uo JOIN Option AS o ON uo.Option_Id=o.Id 
+                            WHERE o.Ballot_Id=? AND uo.User_Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, ballotId);
+                            stmt.Bind(2, userId);
+
+                            while (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                int optionId = Convert.ToInt32(stmt["Id"]);
+                                string text = (string)stmt["Text"];
+
+                                Option tmp = new Option()
+                                {
+                                    Id = optionId,
+                                    Text = text
+                                };
+
+                                selectedOptions.Add(tmp);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetSelectedOptionsInBallot: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetSelectedOptionsInBallot: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("GetSelectedOptionsInBallot: Mutex timeout.");
+                throw new DatabaseException("GetSelectedOptionsInBallot: Timeout: Failed to get access to DB.");
+            }
+
+            return selectedOptions;
+        }
+
+        /// <summary>
         /// Ruft die Nutzer ab, die für die angegebenen Abstimmungsoption abgestimmt haben.
         /// </summary>
         /// <param name="optionId">Die Id der Abstimmungsoption.</param>
