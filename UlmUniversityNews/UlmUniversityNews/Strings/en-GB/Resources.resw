@@ -1535,4 +1535,7 @@ date: </value>
   <data name="BallotDetailsVotesSavedStatus" xml:space="preserve">
     <value>Saved successfully</value>
   </data>
+  <data name="BallotDetailsSynchronizationStatus" xml:space="preserve">
+    <value>Synchronizing ballot</value>
+  </data>
 </root>

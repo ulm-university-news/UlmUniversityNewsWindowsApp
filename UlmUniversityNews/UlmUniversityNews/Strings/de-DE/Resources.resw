@@ -1536,4 +1536,7 @@ Nachricht am: </value>
   <data name="BallotDetailsVotesSavedStatus" xml:space="preserve">
     <value>Erfolgreich gespeichert</value>
   </data>
+  <data name="BallotDetailsSynchronizationStatus" xml:space="preserve">
+    <value>Synchronisiere Abstimmung</value>
+  </data>
 </root>

@@ -1,0 +1,433 @@
+﻿<Page
+    x:Class="UlmUniversityNews.Views.Group.AddAndEditBallotDialog.AddAndEditBallot"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:UlmUniversityNews.Views.Group.AddAndEditBallotDialog"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"	
+	xmlns:i="using:Microsoft.Xaml.Interactivity"
+	xmlns:common="using:UlmUniversityNews.Common"
+	xmlns:valueconverter="using:UlmUniversityNews.Converters"
+	xmlns:drawerLayout="using:DrawerLayout"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <!-- Konvertierung eines ItemClickEventArgs auf das geklickte Objekt. -->
+        <valueconverter:ItemClickedConverter x:Key="ItemClickedConverter" />
+        <valueconverter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <valueconverter:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <valueconverter:ValidationMessageOnLocalizedStringConverter x:Key="ValidationMessageOnLocalizedStringConverter" />
+        <valueconverter:ListCountToVisibilityConverter x:Key="ListCountToVisibilityConverter" />
+
+        <!-- Template für die Anzeige der Optionen der Abstimmung. -->
+        <DataTemplate x:Key="OptionListItemStyle">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock 
+                    Grid.Row="0"
+                    Style="{StaticResource UniversityNewsUlmStandardHeader}"
+                    Text="Option"
+                    />
+
+                <TextBlock
+                    Grid.Row="1"
+                    Style="{StaticResource UniversityNewsUlmStandardText}"
+                    Text="{Binding Text}"
+                    />
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
+
+    <!-- StatusBar -->
+    <i:Interaction.Behaviors>
+        <common:StatusBarBehavior IsVisible="True"
+                                  ForegroundColor="White"
+                                  BackgroundColor="Black"
+                                  BackgroundOpacity="1.0" />
+        <common:ProgressIndicatorBehavior IsVisible="{Binding IsProgressIndicatorVisible, UpdateSourceTrigger=PropertyChanged}"
+                                          Value="{Binding ProgressIndicatorProgressValue, UpdateSourceTrigger=PropertyChanged}"
+                                          Text="{Binding ProgressIndicatorText, UpdateSourceTrigger=PropertyChanged}"
+                                          IsIndeterminate="{Binding IsIndeterminateProgressIndicator, UpdateSourceTrigger=PropertyChanged}" />
+    </i:Interaction.Behaviors>
+
+    <!-- CommandBar -->
+    <Page.BottomAppBar>
+        <CommandBar x:Name="ChannelSettingsCommandBar"
+						Foreground="{StaticResource UNUCommandBarButtonColor}"
+						Background="{StaticResource UUNBallotColor}">
+            <AppBarButton 
+                x:Name="AddAndEditBallotNextPivotItemButton"
+                x:Uid="AddAndEditBallotNextPivotItemButton"
+                Icon="Forward"
+                Label="continue"
+                Click="AddAndEditBallotNextPivotItemButton_Click"/>
+            <AppBarButton 
+                x:Name="AddAndEditBallotCreateBallotButton"
+                x:Uid="AddAndEditBallotCreateBallotButton"
+                Icon="Accept"
+                Label="create"
+                />
+            <AppBarButton 
+                x:Name="AddAndEditBallotSaveChangesButton"
+                x:Uid="AddAndEditBallotSaveChangesButton"
+                Icon="Save"
+                Label="save changes"
+                />
+        </CommandBar>
+    </Page.BottomAppBar>
+
+    <Grid x:Name="LayoutRoot">
+
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Titelbereich - Drawer -->
+        <Grid Grid.Row="0" Style="{StaticResource DrawerMenuTitleBar}" Background="{StaticResource UUNBallotColor}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Drawer Icon -->
+            <Image x:Name="DrawerIcon" 
+					   Grid.Column="0"
+					   Style="{StaticResource DrawerIconStyle}"
+					   Tapped="DrawerIcon_Tapped" />
+
+            <!-- Drawer Text - Add Dialog -->
+            <TextBlock Grid.Column="1"
+						   x:Uid="AddAndEditBallotAddBallotDrawerTitle"
+						   Style="{StaticResource DrawerTextStyle}"
+                           Visibility="{Binding IsAddDialog, Converter={StaticResource BooleanToVisibilityConverter}}"
+						   Text="" />
+
+            <!-- Drawer Text - Edit Dialog -->
+            <TextBlock Grid.Column="1"
+						   x:Uid="AddAndEditBallotEditBallotDrawerTitle"
+						   Style="{StaticResource DrawerTextStyle}"
+                           Visibility="{Binding IsEditDialog, Converter={StaticResource BooleanToVisibilityConverter}}"
+						   Text="Your Drawer Title Text goes here" />
+        </Grid>
+
+        <!--Inhalt der Seite und Inhalt des Drawer Menü-->
+        <drawerLayout:DrawerLayout Grid.Row="1" x:Name="DrawerLayout">
+
+            <!-- Inhalt der Seite -->
+            <Grid x:Name="MainFragment" Background="{StaticResource MainFragmentBackgroundColor}">
+                <Pivot x:Name="AddAndEditBallotPivot"
+                       x:Uid="AddAndEditBallotPivot"
+                       SelectionChanged="AddAndEditBallotPivot_SelectionChanged"
+                       HeaderTemplate="{StaticResource PivotItemHeaderStyle}"
+                       SelectedIndex="{Binding SelectedPivotItemIndex, Mode=TwoWay}">
+                    
+                    <!-- Abstimmungsdaten -->
+                    <PivotItem
+                        Name="AddAndEditBallotDetailsPivotItem"
+                        x:Uid="AddAndEditBallotDetailsPivotItem"
+                        Style="{StaticResource PivotItemStyle}"
+                        Header="Abstimmungsdaten">
+                        <ScrollViewer>
+                            <Grid x:Name="AddAndEditBallotMainGrid">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Beschreibung Dialog - Add Dialog -->
+                                <TextBlock
+                                    Grid.Row="0"
+                                    x:Name="AddAndEditBallotAddDescription"
+                                    x:Uid="AddAndEditBallotAddDescription"
+                                    Style="{StaticResource UniversityNewsUlmStandardText}"
+                                    Visibility="{Binding IsAddDialog, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Text="Bitte geben Sie die Daten für die neue Abstimmung an. Beschreiben Sie den Sachverhalt, über den abgestimmt wird."
+                                />
+
+                                <!-- Beschreibung Dialog - Edit Dialog -->
+                                <TextBlock
+                                    Grid.Row="0"
+                                    x:Name="AddAndEditBallotEditDescription"
+                                    x:Uid="AddAndEditBallotEditDescription"
+                                    Style="{StaticResource UniversityNewsUlmStandardText}"
+                                    Visibility="{Binding IsEditDialog, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Text=""
+                                />
+
+                                <!-- Grid für eigentliche Abstimmungsdaten -->
+                                <Grid Grid.Row="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Titel der Abstimmung -->
+                                    <Grid Grid.Row="0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <TextBox 
+                                            Grid.Row="0"
+                                            x:Name="AddAndEditBallotTitleTextBox"
+                                            x:Uid="AddAndEditBallotTitleTextBox"
+                                            Header="Title"
+                                            PlaceholderText="Enter title"
+                                        />
+                                        <!-- TODO Binding -->
+
+                                        <TextBlock 
+                                            Grid.Row="1"
+                                            x:Name="AddAndEditBallotTitleValidationError"
+                                            Style="{StaticResource UniversityNewsUlmStandardErrorText}"
+                                            Visibility="{Binding ElementName=AddAndEditBallotTitleValidationError, Path=Text, Converter={StaticResource StringToVisibilityConverter}}"
+                                            Text="{Binding ValidationMessages[Title], TargetNullValue='', FallbackValue='', Converter={StaticResource ValidationMessageOnLocalizedStringConverter}}"                             
+                                        />
+                                    </Grid>
+
+                                    <!-- Beschreibung der Abstimmung -->
+                                    <Grid Grid.Row="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <TextBox 
+                                            Grid.Row="0"
+                                            x:Name="AddAndEditBallotDescriptionTextBox"
+                                            x:Uid="AddAndEditBallotDescriptionTextBox"
+                                            Header="Description"
+                                            PlaceholderText="Enter description"
+                                        />
+                                        <!-- TODO Binding -->
+
+                                        <TextBlock 
+                                            Grid.Row="1"
+                                            x:Name="AddAndEditBallotDescriptionValidationError"
+                                            Style="{StaticResource UniversityNewsUlmStandardErrorText}"
+                                            Visibility="{Binding ElementName=AddAndEditBallotDescriptionValidationError, Path=Text, Converter={StaticResource StringToVisibilityConverter}}"
+                                            Text="{Binding ValidationMessages[Description], TargetNullValue='', FallbackValue='', Converter={StaticResource ValidationMessageOnLocalizedStringConverter}}"                             
+                                        />
+                                    </Grid>
+
+                                    <!-- Festlegung, ob Abstimmung MultipleChoice ist. -->
+                                    <Grid Grid.Row="2">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock 
+                                            Grid.Row="0"
+                                            x:Name="AddAndEditBallotMultipleChoiceDescription"
+                                            Style="{StaticResource UniversityNewsUlmStandardText}"  
+                                            Text="Geben Sie an, ob Nutzer mehrere Abstimmungsoptionen wählen können, oder ob jeder Nutzer nur eine Wahlmöglichkeit besitzt."
+                                        />
+
+                                        <CheckBox 
+                                            Grid.Row="1"
+                                            x:Name="AddAndEditBallotMultipleChoiceCheckBox"
+                                            x:Uid="AddAndEditBallotMultipleChoiceCheckBox"
+                                            Content="Multiple Choice"
+                                            IsEnabled="{Binding IsAddDialog}"
+                                        />   <!-- TODO Binding -->
+
+                                    </Grid>
+
+                                    <!-- Festlegung, ob Abstimmung öffentlich ist. -->
+                                    <Grid Grid.Row="3">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock 
+                                            Grid.Row="0"
+                                            x:Name="AddAndEditBallotPublicVotesDescription"
+                                            Style="{StaticResource UniversityNewsUlmStandardText}"  
+                                            Text="Geben Sie an, ob bei der Anzeige der Abstimmungsergebnisse die Namen der Nutzer angezeigt werden sollen."
+                                        />
+
+                                        <CheckBox 
+                                            Grid.Row="1"
+                                            x:Name="AddAndEditBallotPublicVotesCheckBox"
+                                            x:Uid="AddAndEditBallotPublicVotesCheckBox"
+                                            Content="Public Votes"
+                                            IsEnabled="{Binding IsAddDialog}"
+                                        /> <!-- TODO Binding -->
+                                    </Grid>
+
+                                </Grid>
+                            </Grid>
+                        </ScrollViewer>
+                    </PivotItem>
+
+                    <PivotItem
+                        Name="AddAndEditBallotOptionsPivotItem"
+                        x:Uid="AddAndEditBallotOptionsPivotItem"
+                        Style="{StaticResource PivotItemStyle}"
+                        Header="Abstimmungsoptionen">
+                        
+                        <ScrollViewer>
+                            <!-- Options -->
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Beschreibung - Optionen -->
+                                <TextBlock  Grid.Row="0"
+                                        x:Name="AddAndEditBallotOptionsDescription"
+                                        Margin="0, 0, 0, 15"
+                                        x:Uid="AddAndEditBallotOptionsDescription"
+                                        Style="{StaticResource UniversityNewsUlmStandardText}"
+                                        Text="Fügen Sie Abstimmungsoptionen zur Abstimmung hinzu. Abstimmungsoptionen können auch wieder entfernt werden. Eine Abstimmung sollte immer mindestens 2 Abstimmungsoptionen haben."
+                                    />
+
+                                <!-- Text, der angezeigt wird wenn noch keine Optionen festgelegt sind.-->
+                                <TextBlock 
+                                    Grid.Row="1"
+                                    x:Name="AddAndEditBallotNoOptionsText"
+                                    x:Uid="AddAndEditBallotNoOptionsText"
+                                    Style="{StaticResource UniversityNewsUlmStandardText}"
+                                    Visibility="{Binding BallotOptionsCollection.Count, Converter={StaticResource ListCountToVisibilityConverter}}"
+                                    Text="Es wurden noch keine Abstimmungsoptionen für die Abstimmung definiert."
+                                />
+
+                                <!-- Liste mit Abstimmungsoptionen -->
+                                <ListView
+                                    x:Name="AddAndEditBallotOptionList"
+                                    ScrollViewer.VerticalScrollMode="Disabled"
+                                    Grid.Row="2"
+                                    ItemTemplate="{StaticResource OptionListItemStyle}"
+                                    ItemsSource="{Binding BallotOptionsCollection}"
+                                    HorizontalContentAlignment="Stretch"
+                                    HorizontalAlignment="Stretch">
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="ListViewItem">
+                                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
+                                </ListView>
+
+                                <!-- Feld, um neue Option zu definieren -->
+                                <Grid Grid.Row="3"
+                                      Margin="0, 15, 0, 0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBox Grid.Row="0"
+                                             x:Name="AddAndEditBallotNewOptionTextField"
+                                             x:Uid="AddAndEditBallotNewOptionTextField"
+                                             Header="Option"
+                                             PlaceholderText="Add option text"
+                                             Text=""/> <!-- TODO Binding -->
+
+                                    <TextBlock 
+                                            Grid.Row="1"
+                                            x:Name="AddAndEditBallotOptionTextValidationError"
+                                            Style="{StaticResource UniversityNewsUlmStandardErrorText}"
+                                            Visibility="{Binding ElementName=AddAndEditBallotOptionTextValidationError, Path=Text, Converter={StaticResource StringToVisibilityConverter}}"
+                                            Text="{Binding ValidationMessages[Text], TargetNullValue='', FallbackValue='', Converter={StaticResource ValidationMessageOnLocalizedStringConverter}}"                             
+                                        />
+
+                                </Grid>
+
+                                <Button
+                                    Grid.Row="4"
+                                    HorizontalAlignment="Center"
+                                    BorderThickness="0"
+                                    MinWidth="80"
+                                    MinHeight="80">
+                                    <Button.Background>
+                                        <ImageBrush Stretch="None" 
+                                            ImageSource="/Assets/extIcons/appbar.section.expand.png"/>
+                                    </Button.Background>
+                                </Button> <!-- TODO Bind Command -->
+
+                            </Grid>
+                        </ScrollViewer>
+                       
+                    </PivotItem>
+                </Pivot>
+               
+            </Grid>
+
+
+            <!--Inhalt des Drawer Menüs-->
+            <Grid x:Name="ListFragment" Background="{StaticResource DrawerMenuContentPanelBackgroundColor}">
+                 <!--Flyout für Warnung "Dialog verlassen."--> 
+                <FlyoutBase.AttachedFlyout>
+                    <Flyout                    
+                        FlyoutPresenterStyle="{StaticResource ResourceKey=FlyoutStyle}"
+                            common:FlyoutHelper.IsOpen="{Binding IsFlyoutOpen, Mode=TwoWay}"
+                            common:FlyoutHelper.Parent="{Binding ElementName=ListFragment}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                                Grid.Row="0"
+                                x:Uid="FlyoutWarningDialogCloseDescription"
+                                Text="Achtung! Wenn Sie den Dialog verlassen werden die von Ihnen eingetragenen Daten gelöscht."
+                                Style="{StaticResource TextInFlyoutsStyle}"/>
+                            <Button
+                                Grid.Row="1"
+                                x:Uid="FlyoutWariningDialogCloseButton"
+                                Content="Dialog verlassen"
+                                Command="{Binding PerformOriginalDrawerMenuActionCommand}"
+                                Margin="0,0,15,15"
+                                HorizontalAlignment="Right" />
+                        </Grid>
+                    </Flyout>
+                </FlyoutBase.AttachedFlyout>
+
+                <ListView     
+                    x:Name="ListMenuItems"
+					ItemTemplate="{StaticResource DrawerMenuEntryDataTemplate}"
+					IsItemClickEnabled="True">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+
+                    <!--Bind auf Command mittels Behaviour. Öffne das Flyout beim Klick auf das Command. Übergibt den geklickten DrawerMenuEntry.--> 
+                    <i:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{Binding ShowWarningFlyout}"
+                                                      InputConverter="{StaticResource ItemClickedConverter}" />
+                        </core:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </ListView>
+            </Grid>
+
+        </drawerLayout:DrawerLayout>
+        
+    </Grid>
+</Page>

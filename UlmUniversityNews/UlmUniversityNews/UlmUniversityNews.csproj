@@ -114,6 +114,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Group\AddAndEditBallotDialog\AddAndEditBallot.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Group\AddAndEditConversationDialog\AddAndEditConversation.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -263,6 +267,9 @@
     </Compile>
     <Compile Include="Views\ChannelSearch\ChannelSearch.xaml.cs">
       <DependentUpon>ChannelSearch.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Group\AddAndEditBallotDialog\AddAndEditBallot.xaml.cs">
+      <DependentUpon>AddAndEditBallot.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Group\AddAndEditConversationDialog\AddAndEditConversation.xaml.cs">
       <DependentUpon>AddAndEditConversation.xaml</DependentUpon>
@@ -453,6 +460,7 @@
     <Content Include="Assets\extIcons\appbar.door.leave.png" />
     <Content Include="Assets\extIcons\appbar.home.empty.png" />
     <Content Include="Assets\extIcons\appbar.information.png" />
+    <Content Include="Assets\extIcons\appbar.section.expand.png" />
     <Content Include="Assets\extIcons\license.txt" />
     <Content Include="Assets\groupIcons\g.png" />
     <Content Include="Assets\groupIcons\g_admin.png" />

@@ -86,6 +86,16 @@ namespace DataHandlingLayer.ViewModel
             get { return placeVotesCommand; }
             set { placeVotesCommand = value; }
         }
+
+        private AsyncRelayCommand synchronizeBallotCommand;
+        /// <summary>
+        /// Befehl zur Synchronisation der gewählten Abstimmung mit dem Server.
+        /// </summary>
+        public AsyncRelayCommand SynchronizeBallotCommand
+        {
+            get { return synchronizeBallotCommand; }
+            set { synchronizeBallotCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -107,6 +117,9 @@ namespace DataHandlingLayer.ViewModel
             PlaceVotesCommand = new AsyncRelayCommand(
                 param => executePlaceVotesCommand(),
                 param => canPlaceVotes());
+            SynchronizeBallotCommand = new AsyncRelayCommand(
+                param => executeSynchronizeBallotCommand(),
+                param => canSynchronizeBallot());
         }
 
         /// <summary>
@@ -246,6 +259,7 @@ namespace DataHandlingLayer.ViewModel
         private void checkCommandExecution()
         {
             PlaceVotesCommand.OnCanExecuteChanged();
+            SynchronizeBallotCommand.OnCanExecuteChanged();
         }
 
         /// <summary>
@@ -306,6 +320,50 @@ namespace DataHandlingLayer.ViewModel
                 hideIndeterminateProgressIndicator();
                 Debug.WriteLine("executePlaceVotesCommand: Failed to place votes. Msg is {0}.", ex.Message);
                 displayError(ex.ErrorCode);
+            }
+        }
+
+        /// <summary>
+        /// Prüft, ob der Befehl SynchronizeBallotCommand zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canSynchronizeBallot()
+        {
+            if (AffectedGroup != null && SelectedBallot != null &&
+                !AffectedGroup.Deleted && 
+                SelectedBallot.IsClosed.HasValue && SelectedBallot.IsClosed.Value == false)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl SynchronizeBallotCommand aus. Stößt die Synchronisation
+        /// der Abstimmungsdaten mit den Daten des Servers an.
+        /// </summary>
+        private async Task executeSynchronizeBallotCommand()
+        {
+            try
+            {
+                displayIndeterminateProgressIndicator("BallotDetailsSynchronizationStatus");
+
+                // Perform synchronization.
+                await Task.Run(() => groupController.SynchronizeBallotWithServerAsync(AffectedGroup.Id, SelectedBallot.Id));
+
+                // Aktualisiere Anzeige, indem Daten neu geladen werden.
+                await LoadBallotAsync(AffectedGroup.Id, SelectedBallot.Id);
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("executeSynchronizeBallotCommand: Synchronization failed. Error code is {0}. " + 
+                    "Msg is: {1}.", ex.ErrorCode, ex.Message);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
             }
         }
         #endregion CommandFunctionality

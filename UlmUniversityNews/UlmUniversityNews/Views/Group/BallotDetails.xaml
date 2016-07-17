@@ -171,6 +171,13 @@
                 Icon="Bullets"
                 Label="select"
                 Click="BallotDetailsSelectOptionsButton_Click"/>
+            <AppBarButton 
+                x:Name="BallotDetailsSynchronizeBallotButton"
+                x:Uid="BallotDetailsSynchronizeBallotButton"
+                Icon="Sync"
+                Label="sync"
+                Command="{Binding SynchronizeBallotCommand}"
+                />
             <AppBarButton
                 x:Name="BallotDetailsPlaceVoteButton"
                 x:Uid="BallotDetailsPlaceVoteButton"

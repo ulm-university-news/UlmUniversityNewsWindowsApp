@@ -303,7 +303,15 @@
                 Label="bearbeiten"
                 Visibility="{Binding ElementName=GroupDetailsEditGroupButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding EditGroupCommand}"/>
-            
+            <AppBarButton 
+                x:Name="GroupDetailsAddBallotButton"
+                x:Uid="GroupDetailsAddBallotButton"
+                Icon="Add"
+                Label="hinzufügen"
+                Visibility="{Binding ElementName=GroupDetailsAddBallotButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding SwitchToCreateBallotDialogCommand}"
+                />
+
             <!-- Secondary commands -->
             <CommandBar.SecondaryCommands>
                 <AppBarButton

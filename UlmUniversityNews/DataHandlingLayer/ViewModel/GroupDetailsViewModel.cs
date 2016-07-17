@@ -239,6 +239,16 @@ namespace DataHandlingLayer.ViewModel
             get { return ballotSelectedCommand; }
             set { ballotSelectedCommand = value; }
         }
+
+        private RelayCommand switchToCreateBallotDialogCommand;
+        /// <summary>
+        /// Befehl zum Wechsel auf den Dialog für die Erstellung einer neuen Abstimmung.
+        /// </summary>
+        public RelayCommand SwitchToCreateBallotDialogCommand
+        {
+            get { return switchToCreateBallotDialogCommand; }
+            set { switchToCreateBallotDialogCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -286,7 +296,9 @@ namespace DataHandlingLayer.ViewModel
                 param => canChangeToAddConversationDialog());
             BallotSelectedCommand = new RelayCommand(
                 param => executeBallotSectedCommand(param));
-
+            SwitchToCreateBallotDialogCommand = new RelayCommand(
+                param => executeSwitchToCreateBallotDialogCommand(),
+                param => canSwitchToCreateBallotDialog());
         }
 
         /// <summary>
@@ -619,6 +631,7 @@ namespace DataHandlingLayer.ViewModel
             DeleteGroupLocallyCommand.RaiseCanExecuteChanged();
             ChangeToGroupSettingsCommand.RaiseCanExecuteChanged();
             ChangeToAddConversationDialog.RaiseCanExecuteChanged();
+            SwitchToCreateBallotDialogCommand.RaiseCanExecuteChanged();
         }
 
         /// <summary>
@@ -993,6 +1006,32 @@ namespace DataHandlingLayer.ViewModel
                 string navigationParameter = "navParam?groupId=" + SelectedGroup.Id + "?ballotId=" + ballot.Id;
                 _navService.Navigate("BallotDetails", navigationParameter);
             }
+        }
+
+        /// <summary>
+        /// Prüft, ob der Befehl zum Wechseln auf den Erstellungdialog einer neuen Abstimmung 
+        /// aktuell zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canSwitchToCreateBallotDialog()
+        {
+            if (SelectedGroup != null &&
+                !SelectedGroup.Deleted && 
+                SelectedPivotItemName == "BallotsPivotItem")
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl SwitchToCreateBallotDialogCommand aus. Wechselt auf
+        /// den Erstellungsdialog für Abstimmungen.
+        /// </summary>
+        private void executeSwitchToCreateBallotDialogCommand()
+        {
+            string navigationParameter = "navParam?groupId=" + SelectedGroup.Id;
+            _navService.Navigate("AddAndEditBallot", navigationParameter);
         }
         #endregion CommandFunctionality
 
