@@ -147,28 +147,22 @@
                 <!-- Akzeptieren der Nutzungsbedingungen. -->
                     <Grid Grid.Row="5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*" />
-                            <ColumnDefinition Width="9*" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        
+
                         <CheckBox 
                           Grid.Column="0"
+                          Style="{StaticResource UUNCheckBoxStyle}"
                           x:Name="StartPageAcceptTermsAndConditionsCheckBox"
-                          IsChecked="{Binding AreTermsAndConditionsAccepted, Mode=TwoWay}"
-                          />
-                        
-                        <TextBlock
-                            Grid.Column="1"
-                            VerticalAlignment="Center"
-                            x:Name="StartPageAcceptTermsAndConditionsCheckBoxText"
-                            x:Uid="StartPageAcceptTermsAndConditionsCheckBoxText"
-                            Style="{StaticResource UniversityNewsUlmStandardText}"
-                            TextWrapping="Wrap"
-                            Text="I accept the terms and conditions"
+                          IsChecked="{Binding AreTermsAndConditionsAccepted, Mode=TwoWay}">
+                            <TextBlock
+                                x:Name="StartPageAcceptTermsAndConditionsCheckBoxText"
+                                x:Uid="StartPageAcceptTermsAndConditionsCheckBoxText"
+                                Style="{StaticResource DialogInlineFontStyle}"
+                                Text="I accept the terms and conditions"
                             />
-
+                        </CheckBox>
                     </Grid>
-
 
             </Grid>
             </ScrollViewer>

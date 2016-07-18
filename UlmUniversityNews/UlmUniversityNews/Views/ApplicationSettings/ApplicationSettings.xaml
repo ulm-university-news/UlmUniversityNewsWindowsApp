@@ -147,6 +147,7 @@
                                         <Run Text="{Binding LocalUser.Name, FallbackValue='',TargetNullValue=''}" />       
                                     
                                         <LineBreak />
+                                        <LineBreak />
                                     
                                         <Run
                                             x:Uid="ApplicationSettingsChangeUsernameDescription"
@@ -202,17 +203,27 @@
                                         Grid.Row="2">
                                         <RadioButton 
                                             x:Name="ApplicationSettingsLanguageGerman"
-                                            x:Uid="ApplicationSettingsLanguageGerman"
-                                            Content="Deutsch"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsGermanLanguageSelected, Mode=TwoWay}"
-                                            GroupName="language"/>
-                                    
+                                            GroupName="language">
+                                            <TextBlock 
+                                                x:Uid="ApplicationSettingsLanguageGerman"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Deutsch"
+                                                />
+                                        </RadioButton>
+
                                         <RadioButton
                                             x:Name="ApplicationSettingsLanguageEnglish"
-                                            x:Uid="ApplicationSettingsLanguageEnglish"
-                                            Content="Englisch"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsEnglishLanguageSelected, Mode=TwoWay}"
-                                            GroupName="language"/>
+                                            GroupName="language">
+                                            <TextBlock 
+                                                x:Uid="ApplicationSettingsLanguageEnglish"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Englisch"
+                                                />
+                                        </RadioButton>
                                     </StackPanel>
 
                                 </Grid>
@@ -254,24 +265,39 @@
                                         Grid.Row="2">
                                     <RadioButton 
                                             x:Name="ApplicationSettingsNotificationSettingsOptionPrioHigh"
-                                            x:Uid="ApplicationSettingsNotificationSettingsOptionPrioHigh"
-                                            Content="Nur Priorität 'hoch' ankündigen"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsNotificationOptionPrioHighSelected, Mode=TwoWay}"
-                                            GroupName="notificationSettings"/>
+                                            GroupName="notificationSettings">
+                                        <TextBlock
+                                            x:Uid="ApplicationSettingsNotificationSettingsOptionPrioHigh"
+                                            Style="{StaticResource DialogInlineFontStyle}"
+                                            Text="Nur Priorität 'hoch' ankündigen"
+                                            />
+                                    </RadioButton>
 
                                     <RadioButton
                                             x:Name="ApplicationSettingsNotificationSettingsOptionAll"
-                                            x:Uid="ApplicationSettingsNotificationSettingsOptionAll"
-                                            Content="Alle Nachrichten ankündigen"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsNotificationOptionAllSelected, Mode=TwoWay}"
-                                            GroupName="notificationSettings"/>
+                                            GroupName="notificationSettings">
+                                        <TextBlock 
+                                            x:Uid="ApplicationSettingsNotificationSettingsOptionAll"
+                                            Style="{StaticResource DialogInlineFontStyle}"
+                                            Text="Alle Nachrichten ankündigen"
+                                            />
+                                    </RadioButton>
 
                                     <RadioButton
                                             x:Name="ApplicationSettingsNotificationSettingsOptionNone"
-                                            x:Uid="ApplicationSettingsNotificationSettingsOptionNone"
-                                            Content="Keine Nachrichten ankündigen"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsNotificationOptionNoneSelected, Mode=TwoWay}"
-                                            GroupName="notificationSettings"/>
+                                            GroupName="notificationSettings">
+                                        <TextBlock 
+                                            x:Uid="ApplicationSettingsNotificationSettingsOptionNone"
+                                            Style="{StaticResource DialogInlineFontStyle}"
+                                            Text="Keine Nachrichten ankündigen"
+                                            />
+                                    </RadioButton>
                                 </StackPanel>
                             </Grid>
                         </ScrollViewer>
@@ -367,17 +393,27 @@
                                         Grid.Row="2">
                                         <RadioButton 
                                             x:Name="ApplicationSettingsAnnouncementSettingsOptionAsc"
-                                            x:Uid="ApplicationSettingsAnnouncementSettingsOptionAsc"
-                                            Content="Von oben nach unten"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsAscendingMsgOrderSelected, Mode=TwoWay}"
-                                            GroupName="announcementOrderSettings"/>
+                                            GroupName="announcementOrderSettings">
+                                            <TextBlock 
+                                                x:Uid="ApplicationSettingsAnnouncementSettingsOptionAsc"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Von oben nach unten"
+                                                />
+                                        </RadioButton>
 
                                         <RadioButton
                                             x:Name="ApplicationSettingsAnnouncementSettingsOptionDesc"
-                                            x:Uid="ApplicationSettingsAnnouncementSettingsOptionDesc"
-                                            Content="Von unten nach oben"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsDescendingMsgOrderSelected, Mode=TwoWay}"
-                                            GroupName="announcementOrderSettings"/>
+                                            GroupName="announcementOrderSettings">
+                                            <TextBlock 
+                                                x:Uid="ApplicationSettingsAnnouncementSettingsOptionDesc"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Von unten nach oben"
+                                                />
+                                        </RadioButton>
                                     </StackPanel>
                                 </Grid>
 
@@ -413,24 +449,40 @@
                                         Grid.Row="2">
                                         <RadioButton 
                                             x:Name="ApplicationSettingsChannelListSettingsOptionAlphabetical"
-                                            x:Uid="ApplicationSettingsChannelListSettingsOptionAlphabetical"
-                                            Content="Alphabetisch"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsChannelOrderOptionAlphabetical, Mode=TwoWay}"
-                                            GroupName="channelListSettings"/>
+                                            GroupName="channelListSettings">
+                                            <TextBlock
+                                                x:Uid="ApplicationSettingsChannelListSettingsOptionAlphabetical"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Alphabetisch"
+                                                />
+                                        </RadioButton>
 
                                         <RadioButton
                                             x:Name="ApplicationSettingsChannelListSettingsOptionType"
-                                            x:Uid="ApplicationSettingsChannelListSettingsOptionType"
-                                            Content="Nach Kanaltyp"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsChannelOrderOptionByType, Mode=TwoWay}"
-                                            GroupName="channelListSettings"/>
+                                            GroupName="channelListSettings">
+                                            <TextBlock 
+                                                x:Uid="ApplicationSettingsChannelListSettingsOptionType"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Nach Kanaltyp"
+                                                />
+                                        </RadioButton>
 
-                                        <RadioButton
+                                        <!--Blende dieses Feature aus. Wird erstmal nicht umgesetzt.-->
+                                        <!--<RadioButton
                                             x:Name="ApplicationSettingsChannelListSettingsOptionMsgAmount"
-                                            x:Uid="ApplicationSettingsChannelListSettingsOptionMsgAmount"
-                                            Content="Nach Anzahl ungelesener Nachrichten"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsChannelOrderOptionByMsgAmount, Mode=TwoWay}"
-                                            GroupName="channelListSettings"/>
+                                            GroupName="channelListSettings">
+                                            <TextBlock 
+                                                x:Uid="ApplicationSettingsChannelListSettingsOptionMsgAmount"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Nach Anzahl ungelesener Nachrichten"
+                                                />
+                                        </RadioButton>-->
                                     </StackPanel>
                                 </Grid>
 
@@ -466,24 +518,40 @@
                                         Grid.Row="2">
                                         <RadioButton 
                                             x:Name="ApplicationSettingsGroupListSettingsOptionAlphabetical"
-                                            x:Uid="ApplicationSettingsGroupListSettingsOptionAlphabetical"
-                                            Content="Alphabetisch"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsGroupOrderOptionAlphabetical, Mode=TwoWay}"
-                                            GroupName="groupListSettings"/>
+                                            GroupName="groupListSettings">
+                                            <TextBlock 
+                                                x:Uid="ApplicationSettingsGroupListSettingsOptionAlphabetical"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Alphabetisch"
+                                                />
+                                        </RadioButton>
 
                                         <RadioButton
                                             x:Name="ApplicationSettingsGroupListSettingsOptionType"
-                                            x:Uid="ApplicationSettingsGroupListSettingsOptionType"
-                                            Content="Nach Gruppentyp"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsGroupOrderOptionByType, Mode=TwoWay}"
-                                            GroupName="groupListSettings"/>
-
-                                        <RadioButton
+                                            GroupName="groupListSettings">
+                                            <TextBlock 
+                                                x:Uid="ApplicationSettingsGroupListSettingsOptionType"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Nach Gruppentyp"
+                                                />
+                                        </RadioButton>
+                                        
+                                        <!-- Wird ausgeblendet. Feature wird erstmal nicht umgesetzt. -->
+                                        <!--<RadioButton
                                             x:Name="ApplicationSettingsGroupListSettingsOptionMsgAmount"
-                                            x:Uid="ApplicationSettingsGroupListSettingsOptionMsgAmount"
-                                            Content="Nach Anzahl ungelesener Nachrichten"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsGroupOrderOptionByMsgAmount, Mode=TwoWay}"
-                                            GroupName="groupListSettings"/>
+                                            GroupName="groupListSettings">
+                                            <TextBlock 
+                                                x:Uid="ApplicationSettingsGroupListSettingsOptionMsgAmount"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Nach Anzahl ungelesener Nachrichten"
+                                                />
+                                        </RadioButton>-->
                                     </StackPanel>
                                 </Grid>
 
@@ -519,24 +587,39 @@
                                         Grid.Row="2">
                                         <RadioButton 
                                             x:Name="ApplicationSettingsConversationListSettingsOptionAlphabetical"
-                                            x:Uid="ApplicationSettingsConversationListSettingsOptionAlphabetical"
-                                            Content="Alphabetisch"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsConversationOrderOptionAlphabetical, Mode=TwoWay}"
-                                            GroupName="conversationListSettings"/>
+                                            GroupName="conversationListSettings">
+                                            <TextBlock 
+                                                x:Uid="ApplicationSettingsConversationListSettingsOptionAlphabetical"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Alphabetisch"
+                                                />
+                                        </RadioButton>
 
                                         <RadioButton
                                             x:Name="ApplicationSettingsConversationListSettingsOptionLatest"
-                                            x:Uid="ApplicationSettingsConversationListSettingsOptionLatest"
-                                            Content="Nach Erstellungsdatum"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsConversationOrderOptionLatest, Mode=TwoWay}"
-                                            GroupName="conversationListSettings"/>
+                                            GroupName="conversationListSettings">
+                                            <TextBlock 
+                                                x:Uid="ApplicationSettingsConversationListSettingsOptionLatest"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Nach Erstellungsdatum"
+                                                />
+                                        </RadioButton>
 
                                         <RadioButton
                                             x:Name="ApplicationSettingsConversationListSettingsOptionMsgAmount"
-                                            x:Uid="ApplicationSettingsConversationListSettingsOptionMsgAmount"
-                                            Content="Nach Anzahl ungelesener Nachrichten"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsConversationOrderOptionByMsgAmount, Mode=TwoWay}"
-                                            GroupName="conversationListSettings"/>
+                                            GroupName="conversationListSettings">
+                                            <TextBlock 
+                                                x:Uid="ApplicationSettingsConversationListSettingsOptionMsgAmount"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Nach Anzahl ungelesener Nachrichten"
+                                                />
+                                        </RadioButton>
                                     </StackPanel>
                                 </Grid>
                                 
@@ -572,24 +655,40 @@
                                         Grid.Row="2">
                                         <RadioButton 
                                             x:Name="ApplicationSettingsBallotListSettingsOptionAlphabetical"
-                                            x:Uid="ApplicationSettingsBallotListSettingsOptionAlphabetical"
-                                            Content="Alphabetisch"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsBallotOrderOptionAlphabetical, Mode=TwoWay}"
-                                            GroupName="ballotListSettings"/>
+                                            GroupName="ballotListSettings">
+                                            <TextBlock
+                                                x:Uid="ApplicationSettingsBallotListSettingsOptionAlphabetical"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Alphabetisch"
+                                                />
+                                        </RadioButton>
 
-                                        <RadioButton
+                                        <!-- Wird erstmal ausgeblendet. Feature wird zunächst nicht unterstützt. -->
+                                        <!--<RadioButton
                                             x:Name="ApplicationSettingsBallotListSettingsOptionLatestVote"
-                                            x:Uid="ApplicationSettingsBallotListSettingsOptionLatestVote"
-                                            Content="Neuste Abstimmung"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsBallotOrderOptionLatestVote, Mode=TwoWay}"
-                                            GroupName="ballotListSettings"/>
+                                            GroupName="ballotListSettings">
+                                            <TextBlock 
+                                                x:Uid="ApplicationSettingsBallotListSettingsOptionLatestVote"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Neuste Abstimmung"
+                                                />
+                                        </RadioButton>-->
 
                                         <RadioButton
                                             x:Name="ApplicationSettingsBallotListSettingsOptionType"
-                                            x:Uid="ApplicationSettingsBallotListSettingsOptionType"
-                                            Content="Nach Typ"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsBallotOrderOptionByBallotType, Mode=TwoWay}"
-                                            GroupName="ballotListSettings"/>
+                                            GroupName="ballotListSettings">
+                                            <TextBlock 
+                                                x:Uid="ApplicationSettingsBallotListSettingsOptionType"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Nach Typ"
+                                                />
+                                        </RadioButton>
                                     </StackPanel>
                                 </Grid>
                             </Grid>

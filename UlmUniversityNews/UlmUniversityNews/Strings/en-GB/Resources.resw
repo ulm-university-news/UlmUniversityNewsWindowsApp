@@ -338,10 +338,10 @@ To do that you just have to enter a user name below and accept the terms of user
   <data name="ApplicationSettingsLanguageDescription.Text" xml:space="preserve">
     <value>You can change your favoured language here.</value>
   </data>
-  <data name="ApplicationSettingsLanguageEnglish.Content" xml:space="preserve">
+  <data name="ApplicationSettingsLanguageEnglish.Text" xml:space="preserve">
     <value>English</value>
   </data>
-  <data name="ApplicationSettingsLanguageGerman.Content" xml:space="preserve">
+  <data name="ApplicationSettingsLanguageGerman.Text" xml:space="preserve">
     <value>German</value>
   </data>
   <data name="ApplicationSettingsListOrderSettingsPivotItem.Header" xml:space="preserve">
@@ -368,58 +368,58 @@ To do that you just have to enter a user name below and accept the terms of user
   <data name="ApplicationSettingsNotificationSettingsDescription.Text" xml:space="preserve">
     <value>The behaviour of the application regarding the announcement of incoming messages can be adjusted here.  The settings apply generally for the whole application. However, it is possible to set specific notification settings for individual channels or groups which override these settings for the specific resource.</value>
   </data>
-  <data name="ApplicationSettingsNotificationSettingsOptionAll.Content" xml:space="preserve">
+  <data name="ApplicationSettingsNotificationSettingsOptionAll.Text" xml:space="preserve">
     <value>Announce all messages</value>
   </data>
-  <data name="ApplicationSettingsNotificationSettingsOptionNone.Content" xml:space="preserve">
+  <data name="ApplicationSettingsNotificationSettingsOptionNone.Text" xml:space="preserve">
     <value>Announce no message</value>
   </data>
-  <data name="ApplicationSettingsNotificationSettingsOptionPrioHigh.Content" xml:space="preserve">
+  <data name="ApplicationSettingsNotificationSettingsOptionPrioHigh.Text" xml:space="preserve">
     <value>Only announce priority 'high' messages</value>
   </data>
   <data name="ApplicationSettingsAnnouncementOrderSettingsDescription.Text" xml:space="preserve">
     <value>It is possible to specify the order of the announcements here. Announcements can be ordered from top to bottom (latest announcement on top) or from bottom to top (latest announcement on bottom).</value>
   </data>
-  <data name="ApplicationSettingsAnnouncementSettingsOptionAsc.Content" xml:space="preserve">
+  <data name="ApplicationSettingsAnnouncementSettingsOptionAsc.Text" xml:space="preserve">
     <value>From top to bottom</value>
   </data>
-  <data name="ApplicationSettingsAnnouncementSettingsOptionDesc.Content" xml:space="preserve">
+  <data name="ApplicationSettingsAnnouncementSettingsOptionDesc.Text" xml:space="preserve">
     <value>From bottom to top</value>
   </data>
   <data name="ApplicationSettingsBallotListSettingsDescription.Text" xml:space="preserve">
     <value>This setting defines the order criterion for the enumeration of ballot resources.</value>
   </data>
-  <data name="ApplicationSettingsBallotListSettingsOptionAlphabetical.Content" xml:space="preserve">
+  <data name="ApplicationSettingsBallotListSettingsOptionAlphabetical.Text" xml:space="preserve">
     <value>Alphabetical</value>
   </data>
-  <data name="ApplicationSettingsBallotListSettingsOptionLatestVote.Content" xml:space="preserve">
+  <data name="ApplicationSettingsBallotListSettingsOptionLatestVote.Text" xml:space="preserve">
     <value>Latest vote first</value>
   </data>
-  <data name="ApplicationSettingsBallotListSettingsOptionType.Content" xml:space="preserve">
+  <data name="ApplicationSettingsBallotListSettingsOptionType.Text" xml:space="preserve">
     <value>By type</value>
   </data>
   <data name="ApplicationSettingsChannelListSettingsDescription.Text" xml:space="preserve">
     <value>This setting defines the order criterion for the enumeration of channel resources.</value>
   </data>
-  <data name="ApplicationSettingsChannelListSettingsOptionAlphabetical.Content" xml:space="preserve">
+  <data name="ApplicationSettingsChannelListSettingsOptionAlphabetical.Text" xml:space="preserve">
     <value>Alphabetical</value>
   </data>
-  <data name="ApplicationSettingsChannelListSettingsOptionMsgAmount.Content" xml:space="preserve">
+  <data name="ApplicationSettingsChannelListSettingsOptionMsgAmount.Text" xml:space="preserve">
     <value>By amount of new messages</value>
   </data>
-  <data name="ApplicationSettingsChannelListSettingsOptionType.Content" xml:space="preserve">
+  <data name="ApplicationSettingsChannelListSettingsOptionType.Text" xml:space="preserve">
     <value>By channel type</value>
   </data>
   <data name="ApplicationSettingsConversationListSettingsDescription.Text" xml:space="preserve">
     <value>This setting defines the order criterion for the enumeration of conversation resources.</value>
   </data>
-  <data name="ApplicationSettingsConversationListSettingsOptionAlphabetical.Content" xml:space="preserve">
+  <data name="ApplicationSettingsConversationListSettingsOptionAlphabetical.Text" xml:space="preserve">
     <value>Alphabetical</value>
   </data>
-  <data name="ApplicationSettingsConversationListSettingsOptionLatest.Content" xml:space="preserve">
+  <data name="ApplicationSettingsConversationListSettingsOptionLatest.Text" xml:space="preserve">
     <value>By creation date</value>
   </data>
-  <data name="ApplicationSettingsConversationListSettingsOptionMsgAmount.Content" xml:space="preserve">
+  <data name="ApplicationSettingsConversationListSettingsOptionMsgAmount.Text" xml:space="preserve">
     <value>By amount of new messages</value>
   </data>
   <data name="ApplicationSettingsGeneralListSettingsDescription.Text" xml:space="preserve">
@@ -434,13 +434,13 @@ To do that you just have to enter a user name below and accept the terms of user
   <data name="ApplicationSettingsGroupListSettingsDescription.Text" xml:space="preserve">
     <value>This setting defines the order criterion for the enumeration of group resources.</value>
   </data>
-  <data name="ApplicationSettingsGroupListSettingsOptionAlphabetical.Content" xml:space="preserve">
+  <data name="ApplicationSettingsGroupListSettingsOptionAlphabetical.Text" xml:space="preserve">
     <value>Alphabetical</value>
   </data>
-  <data name="ApplicationSettingsGroupListSettingsOptionMsgAmount.Content" xml:space="preserve">
+  <data name="ApplicationSettingsGroupListSettingsOptionMsgAmount.Text" xml:space="preserve">
     <value>By amount of new messages</value>
   </data>
-  <data name="ApplicationSettingsGroupListSettingsOptionType.Content" xml:space="preserve">
+  <data name="ApplicationSettingsGroupListSettingsOptionType.Text" xml:space="preserve">
     <value>By group type</value>
   </data>
   <data name="ApplicationSettingsHeaderAnnouncementOrderSettings.Text" xml:space="preserve">
@@ -476,16 +476,16 @@ To do that you just have to enter a user name below and accept the terms of user
   <data name="ChannelSettingsNotificationSettingsHeader.Text" xml:space="preserve">
     <value>Notifications</value>
   </data>
-  <data name="ChannelSettingsNotificationSettingsOptionAll.Content" xml:space="preserve">
+  <data name="ChannelSettingsNotificationSettingsOptionAll.Text" xml:space="preserve">
     <value>Announce all messages</value>
   </data>
-  <data name="ChannelSettingsNotificationSettingsOptionAppDefault.Content" xml:space="preserve">
+  <data name="ChannelSettingsNotificationSettingsOptionAppDefault.Text" xml:space="preserve">
     <value>Default</value>
   </data>
-  <data name="ChannelSettingsNotificationSettingsOptionNone.Content" xml:space="preserve">
+  <data name="ChannelSettingsNotificationSettingsOptionNone.Text" xml:space="preserve">
     <value>Announce no message</value>
   </data>
-  <data name="ChannelSettingsNotificationSettingsOptionPrioHigh.Content" xml:space="preserve">
+  <data name="ChannelSettingsNotificationSettingsOptionPrioHigh.Text" xml:space="preserve">
     <value>Only announce priority 'high' messages</value>
   </data>
   <data name="ChannelSettingsSaveButton.Label" xml:space="preserve">
@@ -842,7 +842,7 @@ date: </value>
   <data name="AddAndEditReminderReminderIsExpiredText.Text" xml:space="preserve">
     <value>Reminder is expired.</value>
   </data>
-  <data name="AddAndEditReminderSkipNextDateCheckBox.Content" xml:space="preserve">
+  <data name="AddAndEditReminderSkipNextDateCheckBox.Text" xml:space="preserve">
     <value>Skip next reminder date</value>
   </data>
   <data name="AddAndEditReminderStartDatePicker.Header" xml:space="preserve">
@@ -1537,5 +1537,11 @@ date: </value>
   </data>
   <data name="BallotDetailsSynchronizationStatus" xml:space="preserve">
     <value>Synchronizing ballot</value>
+  </data>
+  <data name="GroupDetailsBallotMultipleChoiceIndicator.Text" xml:space="preserve">
+    <value>MC</value>
+  </data>
+  <data name="GroupDetailsBallotPublicVotesIndicator.Text" xml:space="preserve">
+    <value>PV</value>
   </data>
 </root>

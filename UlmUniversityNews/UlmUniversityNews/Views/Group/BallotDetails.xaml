@@ -29,23 +29,18 @@
                 <Grid.ColumnDefinitions>
                     <!-- Spalte für RadioButton -->
                     <ColumnDefinition Width="1*" />
-                    <!-- Spalte für Beschreibung der Abstimmungsoption.-->
-                    <ColumnDefinition Width="4*" />
                 </Grid.ColumnDefinitions>
 
                 <RadioButton
                     Grid.Column="0"
                     GroupName="SingleChoice"
-                    IsChecked="{Binding IsChosen, Mode=TwoWay}" />
-
-                <TextBlock
-                    Grid.Column="1"
-                    TextWrapping="Wrap"
-                    VerticalAlignment="Center"
-                    TextAlignment="Left"
-                    Style="{StaticResource ListTextStyle}"
-                    Text="{Binding Text}"
+                    Style="{StaticResource UUNRadioButtonStyle}"
+                    IsChecked="{Binding IsChosen, Mode=TwoWay}">
+                    <TextBlock
+                        Style="{StaticResource DialogInlineFontStyle}"
+                        Text="{Binding Text}"
                     />
+                </RadioButton>
             </Grid>
         </DataTemplate>
         
@@ -54,22 +49,17 @@
             <Grid Margin="0, 5, 0, 5">
                 <Grid.ColumnDefinitions>
                     <!-- Spalte für CheckBox -->
-                    <ColumnDefinition Width="1*" />
-                    <!-- Spalte für Beschreibung der Abstimmungsoption.-->
-                    <ColumnDefinition Width="4*" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
                 <CheckBox
                     Grid.Column="0"
-                    IsChecked="{Binding IsChosen, Mode=TwoWay}" />
-
-                <TextBlock
-                    Grid.Column="1"
-                    TextWrapping="Wrap"
-                    VerticalAlignment="Center"
-                    TextAlignment="Left"
-                    Style="{StaticResource ListTextStyle}"
-                    Text="{Binding Text}" />
+                    Style="{StaticResource UUNCheckBoxStyle}"
+                    IsChecked="{Binding IsChosen, Mode=TwoWay}">
+                    <TextBlock
+                        Style="{StaticResource DialogInlineFontStyle}"
+                        Text="{Binding Text}" />
+                </CheckBox>
             </Grid>
         </DataTemplate>
         

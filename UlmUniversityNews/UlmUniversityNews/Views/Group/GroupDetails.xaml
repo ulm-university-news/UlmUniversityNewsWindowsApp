@@ -158,7 +158,7 @@
                         <RowDefinition Height="Auto" />
                         <!-- Zeile für Name der Abstimmung -->
                         <RowDefinition Height="*" />
-                        <!-- Zeile für Abstimmungssadmin -->
+                        <!-- Zeile für Abstimmungssadmin, und Typ -->
                     </Grid.RowDefinitions>
 
                     <!-- Zeile 1 -->
@@ -181,21 +181,43 @@
                     </Grid>
 
                     <!-- Zeile 2 -->
-                    <!-- Anzeige von Abstimmungsadmin -->
+                    <!-- Anzeige von Abstimmungsadmin und Typ -->
                     <Grid Grid.Row="1"
                           x:Name="BallotAdmin"
                           VerticalAlignment="Bottom"
                           Margin="0, 0, 0, 7" >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- Typ -->
+                        <!-- Admin-Name -->
                         <TextBlock Grid.Column="0" 
                                    x:Name="BallotAdminField" 
                                    HorizontalAlignment="Left"
                                    Style="{StaticResource ListTextStyle}"
                                    Text="{Binding AdminName}"/>
+
+                        <!-- Typ - öffentlich ? -->
+                        <TextBlock Grid.Column="1"
+                                   x:Uid="GroupDetailsBallotPublicVotesIndicator"
+                                   Margin="5, 0, 5, 0"
+                                   HorizontalAlignment="Right"
+                                   TextAlignment="Right"
+                                   Style="{StaticResource ListTextStyle}"
+                                   Visibility="{Binding HasPublicVotes, TargetNullValue=Collapsed, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                   Text="PV" />
+
+                        <!-- Typ - multiple choice ? -->
+                        <TextBlock Grid.Column="2"
+                                   x:Uid="GroupDetailsBallotMultipleChoiceIndicator"
+                                   Margin="5, 0, 5, 0"
+                                   HorizontalAlignment="Right"
+                                   TextAlignment="Right"
+                                   Style="{StaticResource ListTextStyle}"
+                                   Visibility="{Binding IsMultipleChoice, TargetNullValue=Collapsed, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                   Text="MC" />
                     </Grid>
 
                 </Grid>

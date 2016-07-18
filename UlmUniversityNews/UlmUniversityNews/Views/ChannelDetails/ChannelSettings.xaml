@@ -135,30 +135,50 @@
                                         Grid.Row="2">
                                 <RadioButton 
                                             x:Name="ChannelSettingsNotificationSettingsOptionAppDefault"
-                                            x:Uid="ChannelSettingsNotificationSettingsOptionAppDefault"
-                                            Content="Default"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsNotificationOptionPrioAppDefaultSelected, Mode=TwoWay}"
-                                            GroupName="notificationSettings"/>
+                                            GroupName="notificationSettings">
+                                    <TextBlock 
+                                        x:Uid="ChannelSettingsNotificationSettingsOptionAppDefault"
+                                        Style="{StaticResource DialogInlineFontStyle}"
+                                        Text="Default"
+                                        />
+                                </RadioButton>
                                 <RadioButton 
                                             x:Name="ChannelSettingsNotificationSettingsOptionPrioHigh"
-                                            x:Uid="ChannelSettingsNotificationSettingsOptionPrioHigh"
-                                            Content="Nur Priorität 'hoch' ankündigen"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsNotificationOptionPrioHighSelected, Mode=TwoWay}"
-                                            GroupName="notificationSettings"/>
+                                            GroupName="notificationSettings">
+                                    <TextBlock 
+                                        x:Uid="ChannelSettingsNotificationSettingsOptionPrioHigh"
+                                        Style="{StaticResource DialogInlineFontStyle}"
+                                        Text="Nur Priorität hoch ankündigen"
+                                        />
+                                </RadioButton>
 
                                 <RadioButton
                                             x:Name="ChannelSettingsNotificationSettingsOptionAll"
-                                            x:Uid="ChannelSettingsNotificationSettingsOptionAll"
-                                            Content="Alle Nachrichten ankündigen"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsNotificationOptionAllSelected, Mode=TwoWay}"
-                                            GroupName="notificationSettings"/>
+                                            GroupName="notificationSettings">
+                                    <TextBlock 
+                                        x:Uid="ChannelSettingsNotificationSettingsOptionAll"
+                                        Style="{StaticResource DialogInlineFontStyle}"
+                                        Text ="Alle Nachrichten ankündigen"
+                                        />
+                                </RadioButton>
 
                                 <RadioButton
                                             x:Name="ChannelSettingsNotificationSettingsOptionNone"
-                                            x:Uid="ChannelSettingsNotificationSettingsOptionNone"
-                                            Content="Keine Nachrichten ankündigen"
+                                            Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsNotificationOptionNoneSelected, Mode=TwoWay}"
-                                            GroupName="notificationSettings"/>
+                                            GroupName="notificationSettings">
+                                    <TextBlock 
+                                        x:Uid="ChannelSettingsNotificationSettingsOptionNone"
+                                        Style="{StaticResource DialogInlineFontStyle}"
+                                        Text="Keine Nachrichten ankündigen"
+                                        />
+                                </RadioButton>
                             </StackPanel>
                         </Grid>
                     </Grid>

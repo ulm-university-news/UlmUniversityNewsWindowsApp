@@ -338,10 +338,10 @@ Dazu müssen Sie unten einen Nutzername angeben und die Nutzungsbedingungen akze
   <data name="ApplicationSettingsLanguageDescription.Text" xml:space="preserve">
     <value>Hier können Sie Ihre bevorzugte Sprache wählen.</value>
   </data>
-  <data name="ApplicationSettingsLanguageEnglish.Content" xml:space="preserve">
+  <data name="ApplicationSettingsLanguageEnglish.Text" xml:space="preserve">
     <value>Englisch</value>
   </data>
-  <data name="ApplicationSettingsLanguageGerman.Content" xml:space="preserve">
+  <data name="ApplicationSettingsLanguageGerman.Text" xml:space="preserve">
     <value>Deutsch</value>
   </data>
   <data name="ApplicationSettingsListOrderSettingsPivotItem.Header" xml:space="preserve">
@@ -368,58 +368,58 @@ Dazu müssen Sie unten einen Nutzername angeben und die Nutzungsbedingungen akze
   <data name="ApplicationSettingsNotificationSettingsDescription.Text" xml:space="preserve">
     <value>Hier können Sie das Verhalten der Anwendung bei eingehenden Nachrichten verwalten. Die hier vorgenommenen Einstellungen gelten grundsätzlich für die gesamte Anwendung. Für einzelne Kanäle und Gruppen können auch spezifische Einstellungen vorgenommen werden, welche dann die hier vorgenommenen Einstellungen für die konkrete Ressource überschreiben.</value>
   </data>
-  <data name="ApplicationSettingsNotificationSettingsOptionAll.Content" xml:space="preserve">
+  <data name="ApplicationSettingsNotificationSettingsOptionAll.Text" xml:space="preserve">
     <value>Alle Nachrichten ankündigen</value>
   </data>
-  <data name="ApplicationSettingsNotificationSettingsOptionNone.Content" xml:space="preserve">
+  <data name="ApplicationSettingsNotificationSettingsOptionNone.Text" xml:space="preserve">
     <value>Keine Nachrichten ankündigen</value>
   </data>
-  <data name="ApplicationSettingsNotificationSettingsOptionPrioHigh.Content" xml:space="preserve">
+  <data name="ApplicationSettingsNotificationSettingsOptionPrioHigh.Text" xml:space="preserve">
     <value>Nur Priorität 'hoch' ankündigen</value>
   </data>
   <data name="ApplicationSettingsAnnouncementOrderSettingsDescription.Text" xml:space="preserve">
     <value>Die Anordnung der Benachrichtigungen kann hier eingestellt werden. Die Benachrichtigungen können von oben nach unten (neuste Nachricht ganz oben), oder von unten nach oben (neuste Nachricht ganz unten) angezeigt werden.</value>
   </data>
-  <data name="ApplicationSettingsAnnouncementSettingsOptionAsc.Content" xml:space="preserve">
+  <data name="ApplicationSettingsAnnouncementSettingsOptionAsc.Text" xml:space="preserve">
     <value>Von oben nach unten</value>
   </data>
-  <data name="ApplicationSettingsAnnouncementSettingsOptionDesc.Content" xml:space="preserve">
+  <data name="ApplicationSettingsAnnouncementSettingsOptionDesc.Text" xml:space="preserve">
     <value>Von unten nach oben</value>
   </data>
   <data name="ApplicationSettingsBallotListSettingsDescription.Text" xml:space="preserve">
     <value>Hier können Sie das Anordnungskriterium für die Auflistung von Abstimmungen festlegen.</value>
   </data>
-  <data name="ApplicationSettingsBallotListSettingsOptionAlphabetical.Content" xml:space="preserve">
+  <data name="ApplicationSettingsBallotListSettingsOptionAlphabetical.Text" xml:space="preserve">
     <value>Alphabetisch</value>
   </data>
-  <data name="ApplicationSettingsBallotListSettingsOptionLatestVote.Content" xml:space="preserve">
+  <data name="ApplicationSettingsBallotListSettingsOptionLatestVote.Text" xml:space="preserve">
     <value>Neuste Abstimmung zuerst</value>
   </data>
-  <data name="ApplicationSettingsBallotListSettingsOptionType.Content" xml:space="preserve">
+  <data name="ApplicationSettingsBallotListSettingsOptionType.Text" xml:space="preserve">
     <value>Nach Typ</value>
   </data>
   <data name="ApplicationSettingsChannelListSettingsDescription.Text" xml:space="preserve">
     <value>Hier können Sie das Anordnungskriterium für die Auflistung von Kanälen festlegen.</value>
   </data>
-  <data name="ApplicationSettingsChannelListSettingsOptionAlphabetical.Content" xml:space="preserve">
+  <data name="ApplicationSettingsChannelListSettingsOptionAlphabetical.Text" xml:space="preserve">
     <value>Alphabetisch</value>
   </data>
-  <data name="ApplicationSettingsChannelListSettingsOptionMsgAmount.Content" xml:space="preserve">
+  <data name="ApplicationSettingsChannelListSettingsOptionMsgAmount.Text" xml:space="preserve">
     <value>Nach Anzahl ungelesener Nachrichten</value>
   </data>
-  <data name="ApplicationSettingsChannelListSettingsOptionType.Content" xml:space="preserve">
+  <data name="ApplicationSettingsChannelListSettingsOptionType.Text" xml:space="preserve">
     <value>Nach Kanaltyp</value>
   </data>
   <data name="ApplicationSettingsConversationListSettingsDescription.Text" xml:space="preserve">
     <value>Hier können Sie das Anordnungskriterium für die Auflistung von Konversationen festlegen.</value>
   </data>
-  <data name="ApplicationSettingsConversationListSettingsOptionAlphabetical.Content" xml:space="preserve">
+  <data name="ApplicationSettingsConversationListSettingsOptionAlphabetical.Text" xml:space="preserve">
     <value>Alphabetisch</value>
   </data>
-  <data name="ApplicationSettingsConversationListSettingsOptionLatest.Content" xml:space="preserve">
+  <data name="ApplicationSettingsConversationListSettingsOptionLatest.Text" xml:space="preserve">
     <value>Nach Erstellungsdatum</value>
   </data>
-  <data name="ApplicationSettingsConversationListSettingsOptionMsgAmount.Content" xml:space="preserve">
+  <data name="ApplicationSettingsConversationListSettingsOptionMsgAmount.Text" xml:space="preserve">
     <value>Nach Anzahl ungelesener Nachrichten</value>
   </data>
   <data name="ApplicationSettingsGeneralListSettingsDescription.Text" xml:space="preserve">
@@ -434,13 +434,13 @@ Dazu müssen Sie unten einen Nutzername angeben und die Nutzungsbedingungen akze
   <data name="ApplicationSettingsGroupListSettingsDescription.Text" xml:space="preserve">
     <value>Hier können Sie das Anordnungskriterium für die Auflistung von Gruppen festlegen.</value>
   </data>
-  <data name="ApplicationSettingsGroupListSettingsOptionAlphabetical.Content" xml:space="preserve">
+  <data name="ApplicationSettingsGroupListSettingsOptionAlphabetical.Text" xml:space="preserve">
     <value>Alphabetisch</value>
   </data>
-  <data name="ApplicationSettingsGroupListSettingsOptionMsgAmount.Content" xml:space="preserve">
+  <data name="ApplicationSettingsGroupListSettingsOptionMsgAmount.Text" xml:space="preserve">
     <value>Nach Anzahl ungelesener Nachrichten</value>
   </data>
-  <data name="ApplicationSettingsGroupListSettingsOptionType.Content" xml:space="preserve">
+  <data name="ApplicationSettingsGroupListSettingsOptionType.Text" xml:space="preserve">
     <value>Nach Gruppentyp</value>
   </data>
   <data name="ApplicationSettingsHeaderAnnouncementOrderSettings.Text" xml:space="preserve">
@@ -476,16 +476,16 @@ Dazu müssen Sie unten einen Nutzername angeben und die Nutzungsbedingungen akze
   <data name="ChannelSettingsNotificationSettingsHeader.Text" xml:space="preserve">
     <value>Benachrichtigungen</value>
   </data>
-  <data name="ChannelSettingsNotificationSettingsOptionAll.Content" xml:space="preserve">
+  <data name="ChannelSettingsNotificationSettingsOptionAll.Text" xml:space="preserve">
     <value>Alle Nachrichten ankündigen</value>
   </data>
-  <data name="ChannelSettingsNotificationSettingsOptionAppDefault.Content" xml:space="preserve">
+  <data name="ChannelSettingsNotificationSettingsOptionAppDefault.Text" xml:space="preserve">
     <value>Default</value>
   </data>
-  <data name="ChannelSettingsNotificationSettingsOptionNone.Content" xml:space="preserve">
+  <data name="ChannelSettingsNotificationSettingsOptionNone.Text" xml:space="preserve">
     <value>Keine Nachrichten ankündigen</value>
   </data>
-  <data name="ChannelSettingsNotificationSettingsOptionPrioHigh.Content" xml:space="preserve">
+  <data name="ChannelSettingsNotificationSettingsOptionPrioHigh.Text" xml:space="preserve">
     <value>Nur Priorität 'hoch' ankündigen</value>
   </data>
   <data name="ChannelSettingsSaveButton.Label" xml:space="preserve">
@@ -843,7 +843,7 @@ Nachricht am: </value>
   <data name="AddAndEditReminderReminderIsExpiredText.Text" xml:space="preserve">
     <value>Reminder abgelaufen.</value>
   </data>
-  <data name="AddAndEditReminderSkipNextDateCheckBox.Content" xml:space="preserve">
+  <data name="AddAndEditReminderSkipNextDateCheckBox.Text" xml:space="preserve">
     <value>Überspringe nächsten Termin</value>
   </data>
   <data name="AddAndEditReminderStartDatePicker.Header" xml:space="preserve">
@@ -1538,5 +1538,11 @@ Nachricht am: </value>
   </data>
   <data name="BallotDetailsSynchronizationStatus" xml:space="preserve">
     <value>Synchronisiere Abstimmung</value>
+  </data>
+  <data name="GroupDetailsBallotMultipleChoiceIndicator.Text" xml:space="preserve">
+    <value>MC</value>
+  </data>
+  <data name="GroupDetailsBallotPublicVotesIndicator.Text" xml:space="preserve">
+    <value>ÖA</value>
   </data>
 </root>

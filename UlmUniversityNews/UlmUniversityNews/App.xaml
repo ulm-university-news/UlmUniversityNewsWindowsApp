@@ -179,6 +179,14 @@
             <Setter Property="Margin" Value="0, 0, 0, 14.5" />
         </Style>
 
+        <!-- Für Inline Text in einem Erstellungs- bzw. Änderungsdialog.
+            Wird ebenfalls als Schrift für CheckBoxen verwendet-->
+        <Style x:Name="DialogInlineFontStyle" 
+               x:Key="DialogInlineFontStyle"
+               TargetType="TextBlock" BasedOn="{StaticResource UniversityNewsUlmStandardText}">
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
         <!-- ************************************************************************************************************************************* -->
         <!-- ContentDialog:-->
         <!-- Definiere den Style für TextBlock Elemente innerhalb von einem ContentDialog.-->
@@ -190,6 +198,22 @@
             <Setter Property="Foreground" Value="Black" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>    
+        
+        <!-- CheckBoxStyle: -->
+        <Style
+            x:Key="UUNCheckBoxStyle"
+            TargetType="CheckBox">
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        
+        <!-- RadioButtonStyle: -->
+        <Style
+            x:Key="UUNRadioButtonStyle"
+            TargetType="RadioButton">
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
         
         <!-- ************************************************************************************************************************************* -->
         <!-- Drawer Menü:-->

@@ -72,12 +72,14 @@
                 x:Uid="AddAndEditBallotCreateBallotButton"
                 Icon="Accept"
                 Label="create"
+                Command="{Binding CreateBallotCommand}"
                 />
             <AppBarButton 
                 x:Name="AddAndEditBallotSaveChangesButton"
                 x:Uid="AddAndEditBallotSaveChangesButton"
                 Icon="Save"
                 Label="save changes"
+                Command="{Binding EditBallotCommand}"
                 />
         </CommandBar>
     </Page.BottomAppBar>
@@ -113,14 +115,14 @@
 						   x:Uid="AddAndEditBallotAddBallotDrawerTitle"
 						   Style="{StaticResource DrawerTextStyle}"
                            Visibility="{Binding IsAddDialog, Converter={StaticResource BooleanToVisibilityConverter}}"
-						   Text="" />
+						   Text="Add ballot" />
 
             <!-- Drawer Text - Edit Dialog -->
             <TextBlock Grid.Column="1"
 						   x:Uid="AddAndEditBallotEditBallotDrawerTitle"
 						   Style="{StaticResource DrawerTextStyle}"
                            Visibility="{Binding IsEditDialog, Converter={StaticResource BooleanToVisibilityConverter}}"
-						   Text="Your Drawer Title Text goes here" />
+						   Text="" />
         </Grid>
 
         <!--Inhalt der Seite und Inhalt des Drawer Menü-->
@@ -191,8 +193,8 @@
                                             x:Uid="AddAndEditBallotTitleTextBox"
                                             Header="Title"
                                             PlaceholderText="Enter title"
+                                            Text="{Binding EnteredTitle, Mode=TwoWay}"
                                         />
-                                        <!-- TODO Binding -->
 
                                         <TextBlock 
                                             Grid.Row="1"
@@ -204,7 +206,8 @@
                                     </Grid>
 
                                     <!-- Beschreibung der Abstimmung -->
-                                    <Grid Grid.Row="1">
+                                    <Grid Grid.Row="1"
+                                          Margin="0, 0, 0, 5">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
@@ -214,10 +217,12 @@
                                             Grid.Row="0"
                                             x:Name="AddAndEditBallotDescriptionTextBox"
                                             x:Uid="AddAndEditBallotDescriptionTextBox"
+                                            AcceptsReturn="True"
+                                            MinHeight="150"
                                             Header="Description"
                                             PlaceholderText="Enter description"
+                                            Text="{Binding EnteredDescription, Mode=TwoWay}"
                                         />
-                                        <!-- TODO Binding -->
 
                                         <TextBlock 
                                             Grid.Row="1"
@@ -246,10 +251,15 @@
                                             Grid.Row="1"
                                             x:Name="AddAndEditBallotMultipleChoiceCheckBox"
                                             x:Uid="AddAndEditBallotMultipleChoiceCheckBox"
-                                            Content="Multiple Choice"
+                                            Style="{StaticResource UUNCheckBoxStyle}"
                                             IsEnabled="{Binding IsAddDialog}"
-                                        />   <!-- TODO Binding -->
-
+                                            IsChecked="{Binding IsMultipleChoiceSelected, Mode=TwoWay}">
+                                            <TextBlock
+                                                x:Name="AddAndEditBallotMultipleChoiceCheckBoxText"
+                                                x:Uid="AddAndEditBallotMultipleChoiceCheckBoxText"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Multiple Choice"/>
+                                        </CheckBox>
                                     </Grid>
 
                                     <!-- Festlegung, ob Abstimmung öffentlich ist. -->
@@ -270,9 +280,15 @@
                                             Grid.Row="1"
                                             x:Name="AddAndEditBallotPublicVotesCheckBox"
                                             x:Uid="AddAndEditBallotPublicVotesCheckBox"
-                                            Content="Public Votes"
+                                            Style="{StaticResource UUNCheckBoxStyle}"
                                             IsEnabled="{Binding IsAddDialog}"
-                                        /> <!-- TODO Binding -->
+                                            IsChecked="{Binding IsPublicVotesSelected, Mode=TwoWay}">
+                                            <TextBlock
+                                                x:Name="AddAndEditBallotPublicVotesCheckBoxText"
+                                                x:Uid="AddAndEditBallotPublicVotesCheckBoxText"
+                                                Style="{StaticResource DialogInlineFontStyle}"
+                                                Text="Öffentliche Abstimmung"/>
+                                        </CheckBox>
                                     </Grid>
 
                                 </Grid>
@@ -345,7 +361,7 @@
                                              x:Uid="AddAndEditBallotNewOptionTextField"
                                              Header="Option"
                                              PlaceholderText="Add option text"
-                                             Text=""/> <!-- TODO Binding -->
+                                             Text="{Binding EnteredOptionText, Mode=TwoWay}"/>
 
                                     <TextBlock 
                                             Grid.Row="1"
@@ -362,7 +378,8 @@
                                     HorizontalAlignment="Center"
                                     BorderThickness="0"
                                     MinWidth="80"
-                                    MinHeight="80">
+                                    MinHeight="80"
+                                    Command="{Binding AddBallotOptionCommand}">
                                     <Button.Background>
                                         <ImageBrush Stretch="None" 
                                             ImageSource="/Assets/extIcons/appbar.section.expand.png"/>

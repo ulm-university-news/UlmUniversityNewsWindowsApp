@@ -34,6 +34,11 @@ namespace UlmUniversityNews.Views.Group.AddAndEditBallotDialog
         /// </summary>
         private AddAndEditBallotViewModel addAndEditBallotViewModel;
 
+        /// <summary>
+        /// Gibt an, ob es sich um einen Dialog zur Erstellung einer Abstimmung handelt.
+        /// </summary>
+        private bool isAddBallotDialog = false;
+
         public AddAndEditBallot()
         {
             this.InitializeComponent();
@@ -95,10 +100,12 @@ namespace UlmUniversityNews.Views.Group.AddAndEditBallotDialog
 
             if (groupId != -1 && ballotId == -1)
             {
+                isAddBallotDialog = true;
                 await addAndEditBallotViewModel.LoadCreateBallotDialogAsync(groupId);
             }
             else if (groupId != -1 && ballotId != -1)
             {
+                isAddBallotDialog = false;
                 await addAndEditBallotViewModel.LoadEditBallotDialogAsync(groupId, ballotId);
             }
         }
@@ -193,12 +200,23 @@ namespace UlmUniversityNews.Views.Group.AddAndEditBallotDialog
             Windows.Phone.UI.Input.HardwareButtons.BackPressed -= HardwareButtons_BackPressed;
         }
 
+        /// <summary>
+        /// Behandelt Klick auf "continue" Button. Wechsel auf das nächste PivotItem.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
         private void AddAndEditBallotNextPivotItemButton_Click(object sender, RoutedEventArgs e)
         {
             // Wechsel auf Optionen-Tab.
             AddAndEditBallotPivot.SelectedIndex = 1;
         }
 
+        /// <summary>
+        /// Wird gerufen, wenn es eine Änderung beim aktiven PivotItem gibt.
+        /// Wird hier genutzt um die Anzeige der AppBarButtons zu steuern.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
         private void AddAndEditBallotPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (AddAndEditBallotPivot.SelectedIndex == 0)
@@ -208,6 +226,33 @@ namespace UlmUniversityNews.Views.Group.AddAndEditBallotDialog
             else if (AddAndEditBallotPivot.SelectedIndex == 1)
             {
                 AddAndEditBallotNextPivotItemButton.Visibility = Visibility.Collapsed;
+            }
+
+            if (isAddBallotDialog)
+            {
+                // Erstellungsdialog.
+                AddAndEditBallotSaveChangesButton.Visibility = Visibility.Collapsed;
+                if (AddAndEditBallotPivot.SelectedIndex == 0)
+                {
+                    AddAndEditBallotCreateBallotButton.Visibility = Visibility.Collapsed;
+                }
+                else if (AddAndEditBallotPivot.SelectedIndex == 1)
+                {
+                    AddAndEditBallotCreateBallotButton.Visibility = Visibility.Visible;
+                }
+            }
+            else
+            {
+                // Änderungsdialog.
+                AddAndEditBallotCreateBallotButton.Visibility = Visibility.Collapsed;
+                if (AddAndEditBallotPivot.SelectedIndex == 0)
+                {
+                    AddAndEditBallotSaveChangesButton.Visibility = Visibility.Collapsed;
+                }
+                else if (AddAndEditBallotPivot.SelectedIndex == 1)
+                {
+                    AddAndEditBallotSaveChangesButton.Visibility = Visibility.Visible;
+                }
             }
         }
     }
