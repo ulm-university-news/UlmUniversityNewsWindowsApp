@@ -182,6 +182,9 @@ namespace DataHandlingLayer.ViewModel
         {
             groupController = new GroupController(this);
 
+            if (BallotOptionsCollection == null)
+                BallotOptionsCollection = new ObservableCollection<Option>();
+
             // Befehle
             CreateBallotCommand = new AsyncRelayCommand(
                 param => executeCreateBallotCommandAsync(),
@@ -233,6 +236,7 @@ namespace DataHandlingLayer.ViewModel
             try
             {
                 AffectedGroup = await Task.Run(() => groupController.GetGroup(groupId));
+                EditableBallot = await Task.Run(() => groupController.GetBallot(ballotId, true));
             }
             catch (ClientException ex)
             {
@@ -332,7 +336,33 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private void executeAddOptionTextCommand()
         {
-            // TODO
+            string optionText = EnteredOptionText;
+            if (optionText != null)
+                optionText = optionText.Trim();
+
+            // Erstelle Option Objekt aus eingegebenem Text.
+            Option tmp = new Option()
+            {
+                Text = optionText
+            };
+
+            // Führe Validierung direkt hier im ViewModel aus (Nicht wie sonst im Controller).
+            RemoveFailureMessagesForProperty("Text");
+            tmp.ClearValidationErrors();
+            tmp.ValidateTextProperty();
+            if (!tmp.HasValidationErrors())
+            {
+                // Füge die Option der Liste hinzu und setze Eingabefeld zurück.
+                BallotOptionsCollection.Add(tmp);
+                EnteredOptionText = "";
+
+                checkCommandExecution();
+            }
+            else
+            {
+                // Setze Validierungsfehler.
+                ReportValidationError("Text", tmp.GetValidationErrors()["Text"]);
+            }
         }
 
         /// <summary>
@@ -342,7 +372,8 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
         private bool canRemoveOptionText()
         {
-            if (AffectedGroup != null && !AffectedGroup.Deleted)
+            if (AffectedGroup != null && !AffectedGroup.Deleted && 
+                BallotOptionsCollection != null && BallotOptionsCollection.Count > 0)
             {
                 // Special case: Edit closed ballot.
                 if (IsEditDialog && (EditableBallot == null || EditableBallot.IsClosed.Value == true))
@@ -362,7 +393,15 @@ namespace DataHandlingLayer.ViewModel
         /// <param name="selectedOption"></param>
         private void executeRemoveOptionTextCommand(object selectedOption)
         {
-            // TODO
+            Option option = selectedOption as Option;
+            Debug.WriteLine("executeRemoveOptionTextCommand: Called with param {0}.", option);
+
+            if (option != null && BallotOptionsCollection.Contains(option))
+            {
+                BallotOptionsCollection.Remove(option);
+
+                checkCommandExecution();
+            }
         }
         #endregion CommandFunctionality
 

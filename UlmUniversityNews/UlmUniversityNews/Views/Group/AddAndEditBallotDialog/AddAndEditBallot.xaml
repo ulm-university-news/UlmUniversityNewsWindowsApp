@@ -23,7 +23,7 @@
 
         <!-- Template für die Anzeige der Optionen der Abstimmung. -->
         <DataTemplate x:Key="OptionListItemStyle">
-            <Grid>
+            <Grid Margin="0, 10, 0, 10">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -67,6 +67,13 @@
                 Icon="Forward"
                 Label="continue"
                 Click="AddAndEditBallotNextPivotItemButton_Click"/>
+            <AppBarToggleButton 
+                x:Name="AddAndEditBallotSelectOptionsToggleButton"
+                x:Uid="AddAndEditBallotSelectOptionsToggleButton"
+                Icon="Bullets"
+                Label="select"
+                Click="AddAndEditSelectOptionsToggleButton_Click"
+                />
             <AppBarButton 
                 x:Name="AddAndEditBallotCreateBallotButton"
                 x:Uid="AddAndEditBallotCreateBallotButton"
@@ -81,6 +88,20 @@
                 Label="save changes"
                 Command="{Binding EditBallotCommand}"
                 />
+            <AppBarButton
+                x:Name="AddAndEditBallotDeleteOptionButton"
+                x:Uid="AddAndEditBallotDeleteOptionButton"
+                Icon="Delete"
+                Label="delete option"
+                Visibility="Collapsed"
+                Click="AddAndEditBallotDeleteOptionButton_Click"/>
+            <AppBarButton
+                x:Name="AddAndEditBallotAddBallotOptionButton"
+                x:Uid="AddAndEditBallotAddBallotOptionButton"
+                Icon="Add"
+                Label="add option"
+                Visibility="Collapsed"
+                Command="{Binding AddBallotOptionCommand}"/>
         </CommandBar>
     </Page.BottomAppBar>
 
@@ -340,7 +361,10 @@
                                     ItemTemplate="{StaticResource OptionListItemStyle}"
                                     ItemsSource="{Binding BallotOptionsCollection}"
                                     HorizontalContentAlignment="Stretch"
-                                    HorizontalAlignment="Stretch">
+                                    HorizontalAlignment="Stretch"
+                                    SelectionMode="Single"
+                                    ContainerContentChanging="AddAndEditBallotOptionList_ContainerContentChanging"
+                                    >
                                     <ListView.ItemContainerStyle>
                                         <Style TargetType="ListViewItem">
                                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -356,11 +380,46 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
+                                    <!--<Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBox Grid.Column="0"
+                                             x:Name="AddAndEditBallotNewOptionTextField"
+                                             x:Uid="AddAndEditBallotNewOptionTextField"
+                                             InputScope="AlphanumericFullWidth"
+                                             AcceptsReturn="True"
+                                             TextWrapping="Wrap"
+                                             Header="Option"
+                                             PlaceholderText="Add option text"
+                                             Text="{Binding EnteredOptionText, Mode=TwoWay}"/>
+
+                                        <Button
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Bottom"
+                                            BorderThickness="0"
+                                            Command="{Binding AddBallotOptionCommand}">
+                                            <Button.Background>
+                                                <ImageBrush Stretch="None" 
+                                                    ImageSource="/Assets/extIcons/appbar.section.expand.png"/>
+                                            </Button.Background>
+                                        </Button>
+                                        
+                                    </Grid>-->
+
                                     <TextBox Grid.Row="0"
                                              x:Name="AddAndEditBallotNewOptionTextField"
                                              x:Uid="AddAndEditBallotNewOptionTextField"
+                                             InputScope="AlphanumericFullWidth"
+                                             AcceptsReturn="True"
+                                             TextWrapping="Wrap"
                                              Header="Option"
                                              PlaceholderText="Add option text"
+                                             GotFocus="AddAndEditBallotNewOptionTextField_GotFocus"
+                                             LostFocus="AddAndEditBallotNewOptionTextField_LostFocus"
                                              Text="{Binding EnteredOptionText, Mode=TwoWay}"/>
 
                                     <TextBlock 
@@ -372,20 +431,6 @@
                                         />
 
                                 </Grid>
-
-                                <Button
-                                    Grid.Row="4"
-                                    HorizontalAlignment="Center"
-                                    BorderThickness="0"
-                                    MinWidth="80"
-                                    MinHeight="80"
-                                    Command="{Binding AddBallotOptionCommand}">
-                                    <Button.Background>
-                                        <ImageBrush Stretch="None" 
-                                            ImageSource="/Assets/extIcons/appbar.section.expand.png"/>
-                                    </Button.Background>
-                                </Button> <!-- TODO Bind Command -->
-
                             </Grid>
                         </ScrollViewer>
                        

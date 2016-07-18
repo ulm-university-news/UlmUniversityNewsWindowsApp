@@ -1545,4 +1545,10 @@ Nachricht am: </value>
   <data name="GroupDetailsBallotPublicVotesIndicator.Text" xml:space="preserve">
     <value>ÖA</value>
   </data>
+  <data name="VE_BallotOptionInvalidLengthValidationError" xml:space="preserve">
+    <value>Der eingegebene Text für die Abstimmungsoption ist zu lang. Bitte achten Sie darauf, dass die maximale Länge von 300 Zeichen nicht überschritten wird.</value>
+  </data>
+  <data name="VE_BallotOptionIsNullValidationError" xml:space="preserve">
+    <value>Bitte geben Sie einen Text für die Abstimmungsoption an.</value>
+  </data>
 </root>

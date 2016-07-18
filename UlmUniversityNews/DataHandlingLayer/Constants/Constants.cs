@@ -56,6 +56,9 @@ namespace DataHandlingLayer.Constants
         public const int MinConversationTitleLength = 3;
         public const int MaxConversationTitleLength = 45;
 
+        public const int MinBallotOptionLength = 0;
+        public const int MaxBallotOptionLength = 300;
+
         // Patterns
         public const string TermPattern = @"^[W,S][0-9]{4}$";
         public const string UserNamePattern = @"^[-_a-zA-Z0-9]+$";

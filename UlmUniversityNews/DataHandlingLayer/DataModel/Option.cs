@@ -68,5 +68,34 @@ namespace DataHandlingLayer.DataModel
         {
 
         }
+
+        #region ValidationRules
+        /// <summary>
+        /// Validiert die Eigenschaft "Text" der Option Instanz.
+        /// </summary>
+        public void ValidateTextProperty()
+        {
+            if (Text == null || Text.Trim().Length == 0)
+            {
+                SetValidationError("Text", "VE_BallotOptionIsNullValidationError");
+            }
+            else if (!checkStringRange(
+                Constants.Constants.MinBallotOptionLength, 
+                Constants.Constants.MaxBallotOptionLength,
+                Text))
+            {
+                SetValidationError("Text", "VE_BallotOptionInvalidLengthValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Stößt die Validierung der Eigenschaften an, für die
+        /// eine Validierungsregel definiert wurde.
+        /// </summary>
+        public override void ValidateAll()
+        {
+            ValidateTextProperty();
+        }
+        #endregion ValidationRules
     }
 }

@@ -219,6 +219,73 @@ namespace UlmUniversityNews.Views.Group.AddAndEditBallotDialog
         /// <param name="e">Ereignisparameter.</param>
         private void AddAndEditBallotPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            determineVisibilityOfAppBarButtons();
+        }
+        
+        /// <summary>
+        /// Event-Handler, der das Klick-Event des Toggle-Buttons behandelt. 
+        /// Ändert den SelectionMode der Liste von Abstimmungsoptionen.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void AddAndEditSelectOptionsToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (AddAndEditBallotOptionList != null && 
+                AddAndEditBallotOptionList.SelectionMode == ListViewSelectionMode.Single)
+            {
+                AddAndEditBallotOptionList.SelectionMode = ListViewSelectionMode.Multiple;
+
+                // Blende Buttons aus.
+                AddAndEditBallotSaveChangesButton.Visibility = Visibility.Collapsed;
+                AddAndEditBallotCreateBallotButton.Visibility = Visibility.Collapsed;
+                
+                // Blende "Entferne Option" Button ein.
+                AddAndEditBallotDeleteOptionButton.Visibility = Visibility.Visible;
+
+            }
+            else if (AddAndEditBallotOptionList != null && 
+                AddAndEditBallotOptionList.SelectionMode == ListViewSelectionMode.Multiple)
+            {
+                AddAndEditBallotOptionList.SelectionMode = ListViewSelectionMode.Single;
+
+                // Blende "Entferne Option" Button aus.
+                AddAndEditBallotDeleteOptionButton.Visibility = Visibility.Collapsed;
+                
+                // Blende Button abhängig vom gewählten Dialog wieder ein.
+                if (isAddBallotDialog)
+                    AddAndEditBallotCreateBallotButton.Visibility = Visibility.Visible;
+                else
+                    AddAndEditBallotSaveChangesButton.Visibility = Visibility.Visible;
+            }
+        }
+
+        /// <summary>
+        /// Bestimmt und setzt die Sichtbarkeit des ToggleButtons zur Auswahl von definierten Abstimmungsoptionen.
+        /// </summary>
+        private void determineVisibilityOfSelectOptionsToggleButton()
+        {
+            // Richte Sichtbarkeit nach Ausführbarkeit des Befehls zum Entfernen der Option aus.
+            if (addAndEditBallotViewModel != null && 
+                addAndEditBallotViewModel.RemoveBallotOptionCommand != null &&
+                addAndEditBallotViewModel.RemoveBallotOptionCommand.CanExecute(null))
+            {
+                AddAndEditBallotSelectOptionsToggleButton.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                AddAndEditBallotSelectOptionsToggleButton.Visibility = Visibility.Collapsed;
+            }
+
+            if (AddAndEditBallotPivot != null && AddAndEditBallotPivot.SelectedIndex == 0)
+                AddAndEditBallotSelectOptionsToggleButton.Visibility = Visibility.Collapsed;
+        }
+
+        /// <summary>
+        /// Prüft, welche Buttons abhängig vom aktuellen ViewZustand aktiv sind
+        /// und deshalb angezeigt werden müssen. Inaktive Buttons werden ausgeblendet.
+        /// </summary>
+        private void determineVisibilityOfAppBarButtons()
+        {
             if (AddAndEditBallotPivot.SelectedIndex == 0)
             {
                 AddAndEditBallotNextPivotItemButton.Visibility = Visibility.Visible;
@@ -235,10 +302,20 @@ namespace UlmUniversityNews.Views.Group.AddAndEditBallotDialog
                 if (AddAndEditBallotPivot.SelectedIndex == 0)
                 {
                     AddAndEditBallotCreateBallotButton.Visibility = Visibility.Collapsed;
+                    AddAndEditBallotDeleteOptionButton.Visibility = Visibility.Collapsed;
                 }
                 else if (AddAndEditBallotPivot.SelectedIndex == 1)
                 {
-                    AddAndEditBallotCreateBallotButton.Visibility = Visibility.Visible;
+                    if (AddAndEditBallotSelectOptionsToggleButton.IsChecked.GetValueOrDefault() == true)
+                    {
+                        AddAndEditBallotCreateBallotButton.Visibility = Visibility.Collapsed;
+                        AddAndEditBallotDeleteOptionButton.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        AddAndEditBallotCreateBallotButton.Visibility = Visibility.Visible;
+                        AddAndEditBallotDeleteOptionButton.Visibility = Visibility.Collapsed;
+                    }
                 }
             }
             else
@@ -248,10 +325,100 @@ namespace UlmUniversityNews.Views.Group.AddAndEditBallotDialog
                 if (AddAndEditBallotPivot.SelectedIndex == 0)
                 {
                     AddAndEditBallotSaveChangesButton.Visibility = Visibility.Collapsed;
+                    AddAndEditBallotDeleteOptionButton.Visibility = Visibility.Collapsed;
                 }
                 else if (AddAndEditBallotPivot.SelectedIndex == 1)
                 {
-                    AddAndEditBallotSaveChangesButton.Visibility = Visibility.Visible;
+                    if (AddAndEditBallotSelectOptionsToggleButton.IsChecked.GetValueOrDefault() == true)
+                    {
+                        AddAndEditBallotSaveChangesButton.Visibility = Visibility.Collapsed;
+                        AddAndEditBallotDeleteOptionButton.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        AddAndEditBallotSaveChangesButton.Visibility = Visibility.Visible;
+                        AddAndEditBallotDeleteOptionButton.Visibility = Visibility.Collapsed;
+                    }
+                }
+            }
+
+            // Prüfe die Sichtbarkeit des ToggleButtons für die Auswahl von Abstimmungsoptionen.
+            determineVisibilityOfSelectOptionsToggleButton();
+        }
+
+        /// <summary>
+        /// Event-Handler, der gerufen wird, wenn der Inhalt der ListView sich geändert hat.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void AddAndEditBallotOptionList_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+        {
+            // Prüfe, ob Sichtbarkeitsstatus sich geändert hat.
+            determineVisibilityOfSelectOptionsToggleButton();
+        }
+
+        /// <summary>
+        /// Wird gerufen, wenn der Fokus auf das Eingabefeld für neue Optionen fällt.
+        /// Blende "Option hinzufügen" Button ein und die anderen Buttons aus.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparamter.</param>
+        private void AddAndEditBallotNewOptionTextField_GotFocus(object sender, RoutedEventArgs e)
+        {
+            // Blende "Option hinzufügen" Button ein.
+            AddAndEditBallotAddBallotOptionButton.Visibility = Visibility.Visible;
+
+            //Blende andere Buttons aus, abhängig von Dialogart.
+            if (isAddBallotDialog)
+            {
+                AddAndEditBallotSelectOptionsToggleButton.Visibility = Visibility.Collapsed;
+                AddAndEditBallotCreateBallotButton.Visibility = Visibility.Collapsed;
+                AddAndEditBallotDeleteOptionButton.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                AddAndEditBallotSelectOptionsToggleButton.Visibility = Visibility.Collapsed;
+                AddAndEditBallotSaveChangesButton.Visibility = Visibility.Collapsed;
+                AddAndEditBallotDeleteOptionButton.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        /// <summary>
+        /// Wird gerufen, wenn der Fokus dem Eingabefeld für neue Optionen entzogen wird.
+        /// Blende AddOption Button wieder aus und die ursprünglich dastehenden Buttons wieder ein.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparamter.</param>
+        private void AddAndEditBallotNewOptionTextField_LostFocus(object sender, RoutedEventArgs e)
+        {
+            // Blende Button wieder aus.
+            AddAndEditBallotAddBallotOptionButton.Visibility = Visibility.Collapsed;
+
+            // Blende Buttons wieder ein, abhängig von Dialogart.
+            determineVisibilityOfAppBarButtons();
+        }
+
+        /// <summary>
+        /// Wird gerufen, wenn der Button zum Löschen von Abstimmungsoptionen betätigt wird.
+        /// Führt den Befehl zum Löschen der gewählten Abstimmungsoptionen aus.
+        /// Muss manuell im Code-Behind ausgeführt werden, da SelectedItems Property bei
+        /// Multi-Selection sich nicht per Binding an eine ViewModel Variable binden lässt.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void AddAndEditBallotDeleteOptionButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (AddAndEditBallotOptionList != null && 
+                addAndEditBallotViewModel.RemoveBallotOptionCommand != null && 
+                addAndEditBallotViewModel.RemoveBallotOptionCommand.CanExecute(null))
+            {
+                var listItems = AddAndEditBallotOptionList.SelectedItems;
+                List<object> selectedItems = listItems.ToList<object>();
+
+                foreach (object item in selectedItems)
+                {
+                    System.Diagnostics.Debug.WriteLine("Test: Selected item: {0}.", item);
+                    addAndEditBallotViewModel.RemoveBallotOptionCommand.Execute(item);
                 }
             }
         }
