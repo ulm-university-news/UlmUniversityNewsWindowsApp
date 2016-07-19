@@ -58,11 +58,14 @@ namespace DataHandlingLayer.Constants
 
         public const int MinBallotOptionLength = 0;
         public const int MaxBallotOptionLength = 300;
+        public const int MinBallotDescriptionLength = 0;
+        public const int MaxBallotDescriptionLength = 500;
 
         // Patterns
         public const string TermPattern = @"^[W,S][0-9]{4}$";
         public const string UserNamePattern = @"^[-_a-zA-Z0-9]+$";
         public const string ChannelNamePattern = @"^[-!?_-öÖäÄüÜßa-zA-Z0-9\s]+$";
         public const string GroupNamePattern = @"^[-!?_-öÖäÄüÜßa-zA-Z0-9\s]+$";
+        public const string BallotTitlePattern = @"^[-!?_-öÖäÄüÜßa-zA-Z0-9\s]+$";
     }
 }

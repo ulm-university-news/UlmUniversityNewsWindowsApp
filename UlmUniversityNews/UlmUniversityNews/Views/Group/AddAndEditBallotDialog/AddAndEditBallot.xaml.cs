@@ -417,7 +417,6 @@ namespace UlmUniversityNews.Views.Group.AddAndEditBallotDialog
 
                 foreach (object item in selectedItems)
                 {
-                    System.Diagnostics.Debug.WriteLine("Test: Selected item: {0}.", item);
                     addAndEditBallotViewModel.RemoveBallotOptionCommand.Execute(item);
                 }
             }

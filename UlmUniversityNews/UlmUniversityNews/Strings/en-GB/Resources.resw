@@ -1538,16 +1538,40 @@ date: </value>
   <data name="BallotDetailsSynchronizationStatus" xml:space="preserve">
     <value>Synchronizing ballot</value>
   </data>
+  <data name="ApplicationErrorOptionCreationHasFailedInBallotCreationProcessError" xml:space="preserve">
+    <value>The ballot has been created successfully, but not all specified options could be created. Please check which of the options have been created successfully. You can add the missing options in the editing dialog. </value>
+  </data>
+  <data name="ApplicationErrorOptionDataIncompleteError" xml:space="preserve">
+    <value>The server rejected the request due to missing data. Please check your input.</value>
+  </data>
+  <data name="ApplicationErrorOptionInvalidTextError" xml:space="preserve">
+    <value>The request was rejected due to an invalid option text. Please check your input.</value>
+  </data>
+  <data name="ApplicationErrorOptionNotFoundError" xml:space="preserve">
+    <value>The specified option could not be found on the server. It is possible that the option has been deleted on the server. Please synchronize your ballots and try again.</value>
+  </data>
+  <data name="ApplicationErrorOptionUserHasAlreadyVotedError" xml:space="preserve">
+    <value>You have already voted for this option.</value>
+  </data>
   <data name="GroupDetailsBallotMultipleChoiceIndicator.Text" xml:space="preserve">
     <value>MC</value>
   </data>
   <data name="GroupDetailsBallotPublicVotesIndicator.Text" xml:space="preserve">
     <value>PV</value>
   </data>
+  <data name="VE_BallotDescriptionInvalidLengthValidationError" xml:space="preserve">
+    <value>The provided description is too long. Please make sure it does not exceed 500 characters.</value>
+  </data>
   <data name="VE_BallotOptionInvalidLengthValidationError" xml:space="preserve">
     <value>The provided option text is too long. Please make sure it does not exceed the maximum of 300 characters.</value>
   </data>
   <data name="VE_BallotOptionIsNullValidationError" xml:space="preserve">
     <value>Please provide a text for the option.</value>
+  </data>
+  <data name="VE_BallotTitleInvalidFormatValidationError" xml:space="preserve">
+    <value>The given title has an invalid format. Please make sure the title contains at least 3 characters and a maximum of 45 characters. Furthermore, only special characters, such as ! , ? , _ , and -, are allowed in the title.</value>
+  </data>
+  <data name="VE_BallotTitleIsNullValidationError" xml:space="preserve">
+    <value>Please provide a title for the ballot.</value>
   </data>
 </root>

@@ -85,7 +85,6 @@
     <Compile Include="API\ChannelAPI.cs" />
     <Compile Include="API\GroupAPI.cs" />
     <Compile Include="API\UserAPI.cs" />
-    <Compile Include="Class1.cs" />
     <Compile Include="CommandRelays\AsyncRelayCommand.cs" />
     <Compile Include="CommandRelays\Interface\IAsyncCommand.cs" />
     <Compile Include="CommandRelays\RelayCommand.cs" />

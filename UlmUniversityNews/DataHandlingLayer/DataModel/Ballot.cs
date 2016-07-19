@@ -123,5 +123,47 @@ namespace DataHandlingLayer.DataModel
         {
 
         }
+
+        #region ValidationRules
+        /// <summary>
+        /// Validiert die Eigenschaft "Description" der Ballot Instanz.
+        /// </summary>
+        public void ValidateDescriptionProperty()
+        {
+            if (!checkStringRange(
+                Constants.Constants.MinBallotDescriptionLength,
+                Constants.Constants.MaxBallotDescriptionLength,
+                Description))
+            {
+                SetValidationError("Description", "VE_BallotDescriptionInvalidLengthValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Validiert die Eigenschaft "Title" der Ballot Instanz.
+        /// </summary>
+        public void ValidateTitleProperty()
+        {
+            if (Title == null || Title.Trim().Length == 0)
+            {
+                SetValidationError("Title", "VE_BallotTitleIsNullValidationError");
+            }
+            else if (!checkStringFormat(Constants.Constants.BallotTitlePattern, Title))               
+            {
+                SetValidationError("Title", "VE_BallotTitleInvalidFormatValidationError");
+            }
+        }
+
+        /// <summary>
+        /// Führe die Validierung für alle Eigenschaften durch, für die 
+        /// Validierungsregeln definiert sind.
+        /// </summary>
+        public override void ValidateAll()
+        {
+            ValidateDescriptionProperty();
+            ValidateTitleProperty();
+        }
+        #endregion ValidationRules
+
     }
 }

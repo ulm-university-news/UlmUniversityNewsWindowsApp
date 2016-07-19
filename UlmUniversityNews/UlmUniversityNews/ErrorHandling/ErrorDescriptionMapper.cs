@@ -182,6 +182,21 @@ namespace UlmUniversityNews.ErrorHandling
                 case ErrorCodes.BallotUserHasAlreadyVoted:
                     errorDescription = loader.GetString("ApplicationErrorBallotUserHasAlreadyVotedError");
                     break;
+                case ErrorCodes.OptionNotFound:
+                    errorDescription = loader.GetString("ApplicationErrorOptionNotFoundError");
+                    break;
+                case ErrorCodes.OptionDataIncomplete:
+                    errorDescription = loader.GetString("ApplicationErrorOptionDataIncompleteError");
+                    break;
+                case ErrorCodes.OptionInvalidText:
+                    errorDescription = loader.GetString("ApplicationErrorOptionInvalidTextError");
+                    break;
+                case ErrorCodes.OptionUserHasAlreadyVoted:
+                    errorDescription = loader.GetString("ApplicationErrorOptionUserHasAlreadyVotedError");
+                    break;
+                case ErrorCodes.OptionCreationHasFailedInBallotCreationProcess:
+                    errorDescription = loader.GetString("ApplicationErrorOptionCreationHasFailedInBallotCreationProcessError");
+                    break;
                 case ErrorCodes.BadRequest:
                     errorDescription = loader.GetString("ApplicationErrorBadRequestError");;
                     break;

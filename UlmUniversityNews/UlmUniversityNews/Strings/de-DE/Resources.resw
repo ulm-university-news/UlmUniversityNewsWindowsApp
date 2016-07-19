@@ -1539,16 +1539,40 @@ Nachricht am: </value>
   <data name="BallotDetailsSynchronizationStatus" xml:space="preserve">
     <value>Synchronisiere Abstimmung</value>
   </data>
+  <data name="ApplicationErrorOptionCreationHasFailedInBallotCreationProcessError" xml:space="preserve">
+    <value>Die Abstimmung konnte erfolgreich angelegt werden. Es konnten jedoch nicht alle Abstimmungsoptionen erfolgreich angelegt werden. Bitte prüfen Sie in der Detailansicht, welche Optionen erzeugt wurden. Die fehlenden Abstimmungsoptionen können über den Bearbeitungsdialog erstellt werden.</value>
+  </data>
+  <data name="ApplicationErrorOptionDataIncompleteError" xml:space="preserve">
+    <value>Der Server hat die Anfrage aufgrund fehlender Daten abgewiesen. Bitte prüfen Sie Ihre Eingaben.</value>
+  </data>
+  <data name="ApplicationErrorOptionInvalidTextError" xml:space="preserve">
+    <value>Der Server hat die Anfrage aufgrund eines invaliden Texts bei der Abstimmungsoption abgelehnt. Bitte prüfen Sie Ihre Eingaben.</value>
+  </data>
+  <data name="ApplicationErrorOptionNotFoundError" xml:space="preserve">
+    <value>Die angegebene Abstimmungsoption konnte auf dem Server nicht gefunden werden. Es ist möglich, dass die Abstimmungsoption gelöscht wurde. Synchronisieren Sie Ihre Abstimmungen und versuchen Sie es erneut.</value>
+  </data>
+  <data name="ApplicationErrorOptionUserHasAlreadyVotedError" xml:space="preserve">
+    <value>Sie haben bereits für diese Abstimmungsoption abgestimmt.</value>
+  </data>
   <data name="GroupDetailsBallotMultipleChoiceIndicator.Text" xml:space="preserve">
     <value>MC</value>
   </data>
   <data name="GroupDetailsBallotPublicVotesIndicator.Text" xml:space="preserve">
     <value>ÖA</value>
   </data>
+  <data name="VE_BallotDescriptionInvalidLengthValidationError" xml:space="preserve">
+    <value>Die angegebene Beschreibung ist zu lang. Bitte stellen Sie sicher, dass die Beschreibung nicht die maximale Länge von 500 Zeichen überschreitet.</value>
+  </data>
   <data name="VE_BallotOptionInvalidLengthValidationError" xml:space="preserve">
     <value>Der eingegebene Text für die Abstimmungsoption ist zu lang. Bitte achten Sie darauf, dass die maximale Länge von 300 Zeichen nicht überschritten wird.</value>
   </data>
   <data name="VE_BallotOptionIsNullValidationError" xml:space="preserve">
     <value>Bitte geben Sie einen Text für die Abstimmungsoption an.</value>
+  </data>
+  <data name="VE_BallotTitleInvalidFormatValidationError" xml:space="preserve">
+    <value>Der angegebene Titel hat ein ungültiges Format. Bitte stellen Sie sicher, dass der Titel mindestens 3 und maximal 45 Zeichen umfasst. Beachten Sie bitte auch, dass nur bestimmte Sonderzeichen, wie - , _ , ! , und ? , im Titel erlaubt sind.</value>
+  </data>
+  <data name="VE_BallotTitleIsNullValidationError" xml:space="preserve">
+    <value>Bitte geben Sie einen Titel für die Abstimmung an.</value>
   </data>
 </root>

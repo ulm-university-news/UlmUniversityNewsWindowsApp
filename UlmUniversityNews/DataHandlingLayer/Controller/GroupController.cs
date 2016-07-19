@@ -1833,7 +1833,6 @@ namespace DataHandlingLayer.Controller
             {
                 Debug.WriteLine("PlaceVoteAsync: Failed to place vote. Request failed. Error code is: {0}.", ex.ErrorCode);
 
-
                 if (ex.ErrorCode == ErrorCodes.GroupNotFound)
                 {
                     Debug.WriteLine("RemoveVoteAsync: Group seems to be deleted on the server.");
@@ -1842,9 +1841,19 @@ namespace DataHandlingLayer.Controller
                 }
 
                 // TODO Ballot not found
-                // - eventuell weitere Fehlerbehandlungen für vote spezifische Fehler?
 
-                throw new ClientException(ex.ErrorCode, ex.Message);
+                // Weitere Fehlerbehandlungen für Vote-spezifische Fehler.
+                if (ex.ErrorCode == ErrorCodes.BallotUserHasAlreadyVoted)
+                {
+                    Debug.WriteLine("RemoveVoteAsync: Server data sets have already linked this option and the user. " +
+                        "Start updating the  local data sets.");
+                    successful = true;
+                }
+                
+                if (!successful)
+                {
+                    throw new ClientException(ex.ErrorCode, ex.Message);
+                }
             }
 
             if (successful)
@@ -1912,6 +1921,197 @@ namespace DataHandlingLayer.Controller
             {
                 // Entferne aus lokalen Datensätzen.
                 RemoveVote(optionId, localUser.Id);
+            }
+
+            return successful;
+        }
+
+        /// <summary>
+        /// Sendet einen Request zum Anlegen einer neuen Abstimmung an den Server.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, in der die Abstimmung angelegt werden soll.</param>
+        /// <param name="newBallot">Das Abstimmungsojekt mit den Daten der neuen Abstimmung.</param>
+        /// <returns>Liefert true, wenn die Abstimmung erfolgreich angelegt werden konnte. Liefert false, 
+        ///     wenn die Abstimmung nicht angelegt werden konnte, da z.B. die Validierung der Daten fehlgeschlagen ist.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Erzeugung der Abstimmung fehlgeschlagen ist, oder 
+        ///     vom Server abgelehnt wurde.</exception>
+        public async Task<bool> CreateBallotAsync(int groupId, Ballot newBallot)
+        {
+            bool successful = false;
+
+            if (newBallot == null)
+                return successful;
+
+            // Führe Validierung der Abstimmungsdaten durch. Abbruch bei aufgetretenem Validierungsfehler.
+            clearValidationErrors();
+            newBallot.ClearValidationErrors();
+            newBallot.ValidateAll();
+            if (newBallot.HasValidationErrors())
+            {
+                reportValidationErrors(newBallot.GetValidationErrors());
+                return successful;
+            }
+
+            // Die für die neue Abstimmung angegebenen Optionen.
+            List<Option> ballotOptions = newBallot.Options;
+
+            // Setze Optionen im Objekt selbst auf null zwecks Create Request.
+            newBallot.Options = null;
+
+            // Generiere JSON-Dokument.
+            string jsonContent = jsonParser.ParseBallotToJson(newBallot);
+            if (jsonContent == null)
+            {
+                Debug.WriteLine("CreateBallotAsync: Couldn't serialize ballot object to json. Cannot continue.");
+                return successful;
+            }
+
+            // Setze Request zum Anlegen der Abstimmung ab.
+            string serverResponse = null;
+            try
+            {
+                serverResponse = await groupAPI.SendCreateBallotRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    jsonContent);
+
+                successful = true;
+            }
+            catch (APIException ex)
+            {
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    Debug.WriteLine("CreateBallotAsync: The group with id {0} seems to be deleted on the server.", groupId);
+                    MarkGroupAsDeleted(groupId);
+                }
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            Ballot serverBallot = null;
+            if (serverResponse != null)
+            {
+                // Parse Server Antwort.
+                serverBallot = jsonParser.ParseBallotFromJson(serverResponse);
+
+                if (serverBallot != null)
+                {
+                    // Speichere Abstimmung ab.
+                    if (!StoreBallot(groupId, serverBallot))
+                    {
+                        Debug.WriteLine("CreateBallotAsync: Failed to store ballot.");
+                        throw new ClientException(ErrorCodes.LocalDatabaseException, "Failed to store ballot with id " + serverBallot.Id + ".");
+                    }
+                }
+            }
+
+            // Sende noch die Requests zum Anlegen der Abstimmungsoptionen.
+            if (serverBallot != null && ballotOptions != null)
+            {
+                bool successfullyCreatedOptions = true;
+
+                foreach (Option option in ballotOptions)
+                {
+                    try
+                    {
+                        await CreateBallotOptionAsync(groupId, serverBallot.Id, option);
+                    }
+                    catch (ClientException ex)
+                    {
+                        // Nicht die ganze Ausführung abbrechen bei fehlgeschlagenem Request.
+                        Debug.WriteLine("CreateBallotAsync: Failed to store a ballot option. " + 
+                            "The option with id {0} could not be created. Msg is: {1}.", option.Id, ex.Message);
+                        successfullyCreatedOptions = false;
+                    }
+                }
+
+                if (!successfullyCreatedOptions)
+                {
+                    // Werfe Fehler mit entsprechendem Fehlercode.
+                    throw new ClientException(ErrorCodes.OptionCreationHasFailedInBallotCreationProcess, "Failed to store options.");
+                }
+            }
+
+            return successful;
+        }
+
+        /// <summary>
+        /// Sendet einen Request zum Anlegen einer neuen Abstimmungsoption an den Server.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe zu der die Abstimmung gehört.</param>
+        /// <param name="ballotId">Die Id der Abstimmung für die eine neue Option angelegt werden soll.</param>
+        /// <param name="newOption">Das Objekt vom Typ Option mit den Daten der neuen Abstimmungsoption.</param>
+        /// <returns>Liefert true, wenn die Abstimmungsoption erfolgreich angelegt werden konnte. Liefert false, 
+        ///     wenn die Abstimmungsoption nicht angelegt werden konnte, da z.B. die Validierung der Daten fehlgeschlagen ist.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Erzeugung der Abstimmungsoption fehlschlägt, 
+        ///     oder vom Server abgelehnt wird.</exception>
+        public async Task<bool> CreateBallotOptionAsync(int groupId, int ballotId, Option newOption)
+        {
+            bool successful = false;
+
+            if (newOption == null)
+                return successful;
+
+            // Führe Validierung der Abstimmungsoptionsdaten durch. Abbruch bei Validierungsfehler.
+            clearValidationErrors();
+            newOption.ClearValidationErrors();
+            newOption.ValidateAll();
+            if (newOption.HasValidationErrors())
+            {
+                reportValidationErrors(newOption.GetValidationErrors());
+                return successful;
+            }
+
+            // Generiere JSON-Dokument.
+            string jsonContent = jsonParser.ParseOptionToJson(newOption);
+            if (jsonContent == null)
+            {
+                Debug.WriteLine("CreateBallotOptionAsync: Failed to serialize option to json. Cannot continue.");
+                return successful;
+            }
+
+            // Setze Request zum Anlegen der Option ab.
+            string serverResponse = null;
+            try
+            {
+                serverResponse = await groupAPI.SendCreateOptionRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    ballotId,
+                    jsonContent);
+
+                successful = true;
+            }
+            catch (APIException ex)
+            {
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    Debug.WriteLine("CreateBallotOptionAsync: The group with id {0} seems to be deleted on the server.", groupId);
+                    MarkGroupAsDeleted(groupId);
+                }
+
+                if (ex.ErrorCode == ErrorCodes.BallotNotFound)
+                {
+                    Debug.WriteLine("CreateBallotOptionAsync: There seems to be no ballot with the specified id on the server.");
+                    // TODO
+                }
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            if (serverResponse != null)
+            {
+                // Parse Server Antwort.
+                Option serverOption = jsonParser.ParseOptionFromJson(serverResponse);
+                if (serverOption != null)
+                {
+                    // Speichere Option lokal.
+                    if (!StoreOption(ballotId, serverOption, false))
+                    {
+                        throw new ClientException(ErrorCodes.LocalDatabaseException, 
+                            "CreateBallotOptionAsync: Failed to store option with id {0}." + serverOption.Id);
+                    }
+                }
             }
 
             return successful;
@@ -2893,14 +3093,19 @@ namespace DataHandlingLayer.Controller
                                 fulfillsConstraints = false;
                             }
                         }
-
-                        if (fulfillsConstraints)
-                        {
-                            // Speichere Abstimmung ab.
-                            groupDBManager.StoreBallot(groupId, ballot);
-                            insertedSuccessfully = true;
-                        }
                     }
+
+                    if (fulfillsConstraints)
+                    {
+                        // Speichere Abstimmung ab.
+                        groupDBManager.StoreBallot(groupId, ballot);
+                        insertedSuccessfully = true;
+                    }
+
+                }
+                else
+                {
+                    Debug.WriteLine("StoreBallot: Is Ballot already stored?");
                 }
             }
             catch (DatabaseException ex)
@@ -2909,6 +3114,7 @@ namespace DataHandlingLayer.Controller
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
 
+            Debug.WriteLine("StoreBallot: Returns {0}.", insertedSuccessfully);
             return insertedSuccessfully;
         }
 
@@ -3098,6 +3304,53 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Speichert die übergebene Abstimmungsoption in den lokalen Datensätzen.
+        /// Die übergebene Abstimmungsoption kann inklusive Informationen über die abgegebenen
+        /// Stimmen gespeichert werden.
+        /// </summary>
+        /// <param name="ballotId">Die Id der Abstimmung zu der die Abstimmungsoption gehört.</param>
+        /// <param name="option">Das Objekt vom Typ Option mit den Daten der Abstimmungsoption.</param>
+        /// <param name="includingVoters">Gibt an, ob die Informationen über die abgegebenen Stimmen ebenfalls
+        ///     gespeichert werden sollen.</param>
+        /// <returns>Liefert true, wenn Speicherung erfolgreich. Liefert false, wenn Option nicht gespeichert
+        ///     werden konnte aufgrund fehlender Abhängigkeiten.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Speicherung fehlschlägt.</exception>
+        public bool StoreOption(int ballotId, Option option, bool includingVoters)
+        {
+            bool successful = false;
+            try
+            {
+                if (includingVoters)
+                {
+                    if (option != null && option.VoterIds != null)
+                    {
+                        foreach (int voter in option.VoterIds)
+                        {
+                            if (!userController.IsUserLocallyStored(voter))
+                            {
+                                // Abbruch, da Einfügeoperation sonst fehlschlägt.
+                                return false;
+                            }
+                        }
+                    }
+                }
+
+                if (groupDBManager.IsBallotStored(ballotId))
+                {
+                    groupDBManager.InsertOption(ballotId, option, includingVoters);
+                    successful = true;
+                }
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("StoreOption: Failed to store the given option.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return successful;
+        }
+
+        /// <summary>
         /// Speichert die übergebene Menge an Abstimmungsoption für die angegebene Abstimmung ab.
         /// Die Optionen werden einschließlich Subressourcen (Votes) abgespeichert. Bei Aufruf sollte
         /// man sicherstellen, dass alle Nutzer, die abgestimmt haben, auch bereits lokal als Datensätze in der 
@@ -3222,9 +3475,12 @@ namespace DataHandlingLayer.Controller
         /// </summary>
         /// <param name="optionId">Die Id der Abstimmungsoption, für die der Nutzer abstimmt.</param>
         /// <param name="userId">Die Id des entsprechenden Nutzers.</param>
+        /// <returns>Liefert true, wenn Aktion erfolgreich ausgeführt wurde. Liefert false, 
+        ///     wenn eine fehlende Referenz (z.B. betroffener Nutzer nicht lokal gespeichert) die Ausführung verhindert.</returns>
         /// <exception cref="ClientException">Wirft ClientException, wenn Speicherung fehlschlägt.</exception>
-        public void AddVote(int ballotId, int optionId, int userId)
+        public bool AddVote(int ballotId, int optionId, int userId)
         {
+            bool successful = false;
             Ballot affectedBallot = GetBallot(ballotId, false);
 
             try
@@ -3244,6 +3500,7 @@ namespace DataHandlingLayer.Controller
                     if (!groupDBManager.HasVotedForOption(optionId, userId))
                     {
                         groupDBManager.AddVote(optionId, userId);
+                        successful = true;
                     }
                 }
                 else
@@ -3256,6 +3513,8 @@ namespace DataHandlingLayer.Controller
                 Debug.WriteLine("AddVote: Failed to add vote for the specified option.");
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
+
+            return successful;
         }
 
         /// <summary>

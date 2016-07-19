@@ -1019,6 +1019,15 @@ namespace DataHandlingLayer.ViewModel
                 !SelectedGroup.Deleted && 
                 SelectedPivotItemName == "BallotsPivotItem")
             {
+                if (SelectedGroup.Type == DataModel.Enums.GroupType.TUTORIAL)
+                {
+                    // Spezialfall Tutoriumsgruppe. Hier kann nur der Administrator eine Gruppe erstellen.
+                    if (localUser.Id != SelectedGroup.GroupAdmin)
+                    {
+                        return false;
+                    }
+                }
+
                 return true;
             }
             return false;

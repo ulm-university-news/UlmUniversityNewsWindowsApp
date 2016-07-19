@@ -760,6 +760,27 @@ namespace DataHandlingLayer.JsonManager
 
             return ballot;
         }
+
+        /// <summary>
+        /// Wandelt ein übergebenes Objekt vom Typ Ballot in ein JSON-Dokument um.
+        /// </summary>
+        /// <param name="ballot">Das Abstimmungsobjekt (Typ Ballot), das umgewandelt werden soll.</param>
+        /// <returns>Das erstellte JSON-Dokument, oder null, falls die Umwandung fehlgeschlagen ist.</returns>
+        public string ParseBallotToJson(Ballot ballot)
+        {
+            string jsonContent = null;
+            try
+            {
+                jsonContent = JsonConvert.SerializeObject(ballot);
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine("ParseBallotToJson: Json parser error occurred. " +
+                  "Message is {0}.", ex.Message);
+            }
+
+            return jsonContent;
+        }
         #endregion Ballot
 
         #region Options
@@ -783,6 +804,49 @@ namespace DataHandlingLayer.JsonManager
             }
 
             return options;
+        }
+
+        /// <summary>
+        /// Extrahiert Objekt vom Typ Option aus dem übergebenen JSON-Dokument.
+        /// </summary>
+        /// <param name="jsonString">Das JSON-Dokument in Form eines Strings.</param>
+        /// <returns>Ein Objekt der Klasse Option mit den extrahierten Daten, oder null, falls 
+        ///     die Umwandlung fehlschlägt.</returns>
+        public Option ParseOptionFromJson(string jsonString)
+        {
+            Option option = null;
+            try
+            {
+                option = JsonConvert.DeserializeObject<Option>(jsonString);
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine("ParseOptionFromJson: Json parser error occurred. " +
+                    "Message is {0}.", ex.Message);
+            }
+
+            return option;
+        }
+
+        /// <summary>
+        /// Wandelt ein Objekt der Klasse Option in ein zugehöriges JSON Dokument um.
+        /// </summary>
+        /// <param name="option">Das umzuwandelnde Option Objekt.</param>
+        /// <returns>Das generierte JSON-Dokument, oder null, falls die Umwandlung fehlgeschlagen ist.</returns>
+        public string ParseOptionToJson(Option option)
+        {
+            string jsonContent = null;
+            try
+            {
+                jsonContent = JsonConvert.SerializeObject(option);
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine("ParseOptionToJson: Json parser error occurred. " +
+                    "Message is {0}.", ex.Message);
+            }
+
+            return jsonContent;
         }
         #endregion Options
 

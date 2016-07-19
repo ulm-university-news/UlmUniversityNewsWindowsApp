@@ -103,7 +103,10 @@ namespace DataHandlingLayer.DataModel
                 sb.Append(voter.Name + " - ");
             }
             // Entferne letztes '-' Zeichen.
-            sb.Remove(sb.Length-2, 2);
+            if (sb.Length > 2)
+            {
+                sb.Remove(sb.Length - 2, 2);
+            }            
 
             VoterNames = sb.ToString();
         }

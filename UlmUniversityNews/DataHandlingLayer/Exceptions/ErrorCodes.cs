@@ -80,8 +80,8 @@ namespace DataHandlingLayer.Exceptions
         public const int ConversationNotFound = 4100;
         public const int ConversationDataIncomplete = 4102;
         public const int ConversationInvalidTitle = 4103;
-        public const int ConversationStorageFailedDueToMissingAdmin = 4104;
-        public const int ConversationIsClosed = 4105;
+        public const int ConversationStorageFailedDueToMissingAdmin = 4198; // Client only error code
+        public const int ConversationIsClosed = 4199; // Client only error code
 
         public const int BallotNotFound = 4300;
         public const int BallotDataIncomplete = 4302;
@@ -89,6 +89,12 @@ namespace DataHandlingLayer.Exceptions
         public const int BallotInvalidDescription = 4304;
         public const int BallotClosed = 4305;
         public const int BallotUserHasAlreadyVoted = 4306;
+
+        public const int OptionNotFound = 4400;
+        public const int OptionDataIncomplete = 4402;
+        public const int OptionInvalidText = 4403;
+        public const int OptionUserHasAlreadyVoted = 4406;
+        public const int OptionCreationHasFailedInBallotCreationProcess = 4499; // Client only error code
 
         public const int ServerDatabaseFailure = 5000;
 

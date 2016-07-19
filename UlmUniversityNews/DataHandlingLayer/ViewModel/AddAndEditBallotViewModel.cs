@@ -248,6 +248,34 @@ namespace DataHandlingLayer.ViewModel
             checkCommandExecution();
         }
 
+        /// <summary>
+        /// Erzeugt ein Objekt vom Typ Ballot, welches die vom Nutzer eingegebenen Daten beinhaltet.
+        /// </summary>
+        /// <returns>Ein Objekt vom Typ Ballot.</returns>
+        private Ballot generateBallotObjectFromEnteredData()
+        {
+            Ballot ballot = new Ballot();
+
+            ballot.Title = EnteredTitle;
+            ballot.Description = EnteredDescription;
+
+            ballot.IsMultipleChoice = IsMultipleChoiceSelected;
+            ballot.HasPublicVotes = IsPublicVotesSelected;
+
+            ballot.AdminId = groupController.GetLocalUser().Id;
+
+            if (BallotOptionsCollection != null)
+            {
+                ballot.Options = new List<Option>();
+                foreach (Option option in BallotOptionsCollection)
+                {
+                    ballot.Options.Add(option);
+                }
+            } 
+
+            return ballot;
+        }
+
         #region CommandFunctionality
         /// <summary>
         /// Stößt die Überprüfung der Ausführbarkeit der Befehle an.
@@ -283,7 +311,32 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private async Task executeCreateBallotCommandAsync()
         {
-            // TODO
+            Ballot enteredData = generateBallotObjectFromEnteredData();
+
+            try
+            {
+                displayIndeterminateProgressIndicator();
+
+                bool successful = await Task.Run(() => groupController.CreateBallotAsync(AffectedGroup.Id, enteredData));
+
+                if (successful)
+                {
+                    if (_navService.CanGoBack())
+                    {
+                        _navService.GoBack();
+                    }
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("executeCreateBallotCommandAsync: Failed to create ballot and all options. " +
+                    "The error code is {0} and the message is: '{1}'.", ex.ErrorCode, ex.Message);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
         }
 
         /// <summary>
