@@ -22,6 +22,11 @@ namespace DataHandlingLayer.ViewModel
         /// Die Referenz auf eine Instanz der Klasse GroupController.
         /// </summary>
         private GroupController groupController;
+
+        /// <summary>
+        /// Referenz auf den lokalen Nutzer.
+        /// </summary>
+        private User localUser;
         #endregion Fields
 
         #region Properties
@@ -63,6 +68,16 @@ namespace DataHandlingLayer.ViewModel
         {
             get { return activeParticipant; }
             set { this.setProperty(ref this.activeParticipant, value); }
+        }
+
+        private bool isDeletableConversation;
+        /// <summary>
+        /// Gibt an, ob der Nutzer das Recht hat die Konversation zu schließen.
+        /// </summary>
+        public bool IsDeletableConversation
+        {
+            get { return isDeletableConversation; }
+            set { this.setProperty(ref this.isDeletableConversation, value); }
         }
 
         private IncrementalLoadingCollection<IncrementalConversationMessagesLoader, ConversationMessage> conversationMessages;
@@ -107,6 +122,16 @@ namespace DataHandlingLayer.ViewModel
             get { return switchToEditConversationDialogCommand; }
             set { switchToEditConversationDialogCommand = value; }
         }
+
+        private AsyncRelayCommand deleteConversationCommand;
+        /// <summary>
+        /// Befehl zum Löschen der aktuell gewählten Konversation.
+        /// </summary>
+        public AsyncRelayCommand DeleteConversationCommand
+        {
+            get { return deleteConversationCommand; }
+            set { deleteConversationCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -118,6 +143,7 @@ namespace DataHandlingLayer.ViewModel
             : base(navService, errorMapper)
         {
             groupController = new GroupController(this);
+            localUser = groupController.GetLocalUser();
 
             // Erzeuge Befehle.
             SendMessageCommand = new AsyncRelayCommand(
@@ -129,6 +155,9 @@ namespace DataHandlingLayer.ViewModel
             SwitchToEditConversationDialogCommand = new RelayCommand(
                 param => executeSwitchToEditConversationDialogCommand(),
                 param => canSwitchToEditConversationDialog());
+            DeleteConversationCommand = new AsyncRelayCommand(
+                param => executeDeleteConversationAsync(),
+                param => canDeleteConversation());
         }
 
         /// <summary>
@@ -177,7 +206,12 @@ namespace DataHandlingLayer.ViewModel
             checkCommandExecution();
 
             // Führe noch einen Aktualisierungsrequest im Hintergrund aus.
-            await synchronizeConversationMessages(true, false);
+            if (SelectedConversation != null && SelectedConversation.IsClosed.HasValue && 
+                SelectedConversation.IsClosed.Value == false && 
+                CorrespondingGroup != null && !CorrespondingGroup.Deleted)
+            {
+                await synchronizeConversationMessages(true, false);
+            }            
         }
 
         /// <summary>
@@ -245,9 +279,8 @@ namespace DataHandlingLayer.ViewModel
             {
                 displayIndeterminateProgressIndicator();
 
-                if (SelectedConversation != null && 
-                    SelectedConversation.IsClosed.HasValue && 
-                    SelectedConversation.IsClosed.Value == false)
+                // SelectedConversation.IsClosed.HasValue && SelectedConversation.IsClosed.Value == false
+                if (SelectedConversation != null)
                 {
                     await groupController.SynchronizeConversationMessagesWithServer(
                         SelectedConversation.GroupId,
@@ -297,6 +330,12 @@ namespace DataHandlingLayer.ViewModel
             SendMessageCommand.OnCanExecuteChanged();
             SynchronizeMessagesCommand.OnCanExecuteChanged();
             SwitchToEditConversationDialogCommand.RaiseCanExecuteChanged();
+            DeleteConversationCommand.OnCanExecuteChanged();
+
+            if (canDeleteConversation())
+                IsDeletableConversation = true;
+            else
+                IsDeletableConversation = false;
         }
 
         /// <summary>
@@ -306,6 +345,7 @@ namespace DataHandlingLayer.ViewModel
         private bool canSendMessage()
         {
             if (SelectedConversation != null &&
+                CorrespondingGroup != null && !CorrespondingGroup.Deleted &&
                 IsActiveParticipant && 
                 SelectedConversation.IsClosed.HasValue && 
                 SelectedConversation.IsClosed.Value == false)
@@ -387,7 +427,8 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
         private bool canSynchronizeMessages()
         {
-            if (SelectedConversation != null &&
+            if (CorrespondingGroup != null && !CorrespondingGroup.Deleted &&
+                SelectedConversation != null &&
                 IsActiveParticipant)
                 return true;
 
@@ -412,7 +453,7 @@ namespace DataHandlingLayer.ViewModel
             User localUser = groupController.GetLocalUser();
 
             if (SelectedConversation != null &&
-                CorrespondingGroup != null &&  
+                CorrespondingGroup != null && !CorrespondingGroup.Deleted &&
                 SelectedConversation.AdminId == localUser.Id)
             {
                 return true;
@@ -429,6 +470,49 @@ namespace DataHandlingLayer.ViewModel
             string parameterString = 
                 "navParam?groupId=" + CorrespondingGroup.Id + "?conversationId=" + SelectedConversation.Id; ;
             _navService.Navigate("AddAndEditConversation", parameterString);
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zum Löschen der Konversation zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canDeleteConversation()
+        {
+            // Nur Admin kann Konversation löschen.
+            if (CorrespondingGroup != null && !CorrespondingGroup.Deleted && 
+                SelectedConversation != null && 
+                SelectedConversation.AdminId == localUser.Id)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl zum Löschen der aktuellen Konversation aus.
+        /// </summary>
+        private async Task executeDeleteConversationAsync()
+        {
+            try
+            {
+                displayIndeterminateProgressIndicator();
+
+                await groupController.DeleteConversationAsync(CorrespondingGroup.Id, SelectedConversation.Id);
+
+                if (_navService.CanGoBack())
+                    _navService.GoBack();
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("executeDeleteConversationAsync: Failed to delete conversation. " + 
+                    "Error code: {0} and Msg: '{1}'.", ex.ErrorCode, ex.Message);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
         }
         #endregion CommandFunctionality
     }

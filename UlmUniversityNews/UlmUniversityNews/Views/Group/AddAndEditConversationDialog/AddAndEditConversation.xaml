@@ -174,7 +174,8 @@
                             </Grid>
 
                             <!-- Konversation geschlossen Check Box-->
-                            <Grid Grid.Row="2" Margin="0, 5, 0, 0">
+                            <Grid Grid.Row="2" Margin="0, 5, 0, 0"
+                                  Visibility="{Binding IsEditDialog, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />

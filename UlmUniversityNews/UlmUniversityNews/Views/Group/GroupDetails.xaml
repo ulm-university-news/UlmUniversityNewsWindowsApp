@@ -268,9 +268,39 @@
                 x:Uid="GroupDetailsDeleteGroupLocallyButton"
                 Icon="Delete"
                 Label="lösche lokal"
-                Visibility="{Binding ElementName=GroupDetailsDeleteGroupLocallyButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
-                Command="{Binding DeleteGroupLocallyCommand}"
-                />
+                Visibility="{Binding HasDeleteLocallyOption, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <AppBarButton.Flyout>
+                    <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}">
+                        <Grid
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Warnhinweis bezüglich Gruppe löschen. -->
+                            <TextBlock 
+                                Grid.Row="0"
+                                x:Name="DeleteGroupLocallyWarning"
+                                x:Uid="GroupDetailsDeleteGroupLocallyWarning"
+                                Style="{StaticResource TextInFlyoutsStyle}" >
+                                Es handelt sich hier um eine Gruppe, die keinen Repräsentanten auf dem Server mehr hat. Sie können diese Gruppe auch aus Ihren lokalen Datensätzen entfernen.
+                            </TextBlock>
+
+                            <!-- Verlassen Button-->
+                            <Button
+                                Grid.Row="1"
+                                x:Name="DeleteGroupLocallyFlyoutButton"
+                                x:Uid="GroupDetailsDeleteGroupFlyoutButton"
+                                Style="{StaticResource FlyoutSingleButtonStyle}"
+                                Content="Löschen"
+                                Command="{Binding DeleteGroupLocallyCommand}">
+                            </Button>
+                        </Grid>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
             <AppBarButton
                 x:Name="GroupDetailsDeleteGroupButton"
                 x:Uid="GroupDetailsDeleteGroupButton"
@@ -417,6 +447,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <!-- Drawer Icon -->
@@ -437,14 +468,39 @@
 						   Style="{StaticResource DrawerTextStyle}"
 						   Text="{Binding SelectedGroup.Name, TargetNullValue='Gruppendetails', FallbackValue='Gruppendetails'}" />
                 
-                <!-- Teilnehmer entfernt Hinweis -->
+                <!-- Teilnehmer entfernt - Hinweis -->
                 <TextBlock Grid.Column="1"
                            x:Uid="GroupDetailsParticipantRemovedHint"
                            Style="{StaticResource DrawerTextStyle}"
-                           Text=""
-                           Visibility="{Binding IsRemovedFromGroup, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                           Visibility="{Binding IsRemovedFromGroup, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                <!-- Gruppe als gelöscht markiert - Hinweis -->
+                <TextBlock Grid.Column="1"
+                           x:Uid="GroupDetailsGroupDeletedHint"
+                           Style="{StaticResource DrawerTextStyle}"
+                           Visibility="{Binding SelectedGroup.Deleted, TargetNullValue=Collapsed, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                           />
             </Grid>
+
+            <!-- Teilnehmer entfernt - Hinweis -->
+            <Image Grid.Column="2"
+                   Source="/Assets/extIcons/appbar.user.delete.png"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Height="50"
+                   Width="50"
+                   Visibility="{Binding IsRemovedFromGroup, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                   />
             
+            <!-- Gruppe als gelöscht markiert - Hinweis -->
+            <Image Grid.Column="2" 
+                   Source="/Assets/extIcons/appbar.delete.png"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Height="50"
+                   Width="50"
+                   Visibility="{Binding SelectedGroup.Deleted, TargetNullValue=Collapsed, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                   />
         </Grid>
 
         <!--Inhalt der Seite und Inhalt des Drawer Menü-->

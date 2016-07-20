@@ -1661,8 +1661,14 @@ date: </value>
   <data name="BallotAdministratorField.Text" xml:space="preserve">
     <value>Ballot administrator</value>
   </data>
+  <data name="BallotDetailsBallotClosedHint.Text" xml:space="preserve">
+    <value>(closed)</value>
+  </data>
   <data name="BallotDetailsBallotInfoPivotItem.Header" xml:space="preserve">
     <value>Ballot details</value>
+  </data>
+  <data name="BallotDetailsDeleteBallotButton.Label" xml:space="preserve">
+    <value>delete</value>
   </data>
   <data name="BallotDetailsDeleteBallotFlyoutButton.Content" xml:space="preserve">
     <value>Delete</value>
@@ -1709,7 +1715,22 @@ date: </value>
   <data name="BallotPublicVotesStatusHeader.Text" xml:space="preserve">
     <value>Public: </value>
   </data>
+  <data name="ConversationDetailsDeleteBallotFlyoutButton.Content" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="ConversationDetailsDeleteBallotWarning.Text" xml:space="preserve">
+    <value>Do you really want to delete the conversation? This cannot be undone.</value>
+  </data>
+  <data name="ConversationDetailsDeleteConversationButton.Label" xml:space="preserve">
+    <value>delete</value>
+  </data>
   <data name="GroupDetailsAddBallotButton.Label" xml:space="preserve">
     <value>add ballot</value>
+  </data>
+  <data name="GroupDetailsDeleteGroupLocallyWarning.Text" xml:space="preserve">
+    <value>This is a group that has no corresponding representative on the server anymore. You can also delete the group from your local datasets.</value>
+  </data>
+  <data name="GroupDetailsGroupDeletedHint.Text" xml:space="preserve">
+    <value>(deleted)</value>
   </data>
 </root>

@@ -236,6 +236,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <!-- Drawer Icon -->
@@ -245,10 +246,34 @@
 					   Tapped="DrawerIcon_Tapped" />
 
             <!-- Drawer Text -->
-            <TextBlock Grid.Column="1"
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Column="0"
 						   x:Uid="BallotDetailsDrawerTitle"
 						   Style="{StaticResource DrawerTextStyle}"
 						   Text="{Binding SelectedBallot.Title, FallbackValue='Ballot details', TargetNullValue='Ballot details'}" />
+
+                <TextBlock Grid.Column="1" 
+                           x:Uid="BallotDetailsBallotClosedHint"
+                           Style="{StaticResource DrawerTextStyle}"
+                           Text="(geschlossen)"
+                           Visibility="{Binding SelectedBallot.IsClosed, FallbackValue=Collapsed, TargetNullValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                           />
+            </Grid>
+            
+            <!-- 'geschlossen' Markierung-->
+            <Image Grid.Column="2" 
+                   Source="/Assets/extIcons/appbar.lock.png"
+                   Height="50"
+                   Width="50"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Visibility="{Binding SelectedBallot.IsClosed, FallbackValue=Collapsed, TargetNullValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
         </Grid>
 
         <!--Inhalt der Seite und Inhalt des Drawer Menü-->

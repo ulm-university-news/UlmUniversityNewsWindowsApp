@@ -121,14 +121,6 @@
                 Label="aktualisieren"
                 Command="{Binding SynchronizeMessagesCommand}"
                 />
-            <AppBarButton 
-                x:Name="ConversationDetailsEditConversationButton"
-                x:Uid="ConversationDetailsEditConversationButton"
-                Icon="Edit"
-                Label="bearbeiten"
-                Visibility="{Binding ElementName=ConversationDetailsEditConversationButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
-                Command="{Binding SwitchToEditConversationDialogCommand}"
-                />
             <AppBarButton
                 x:Name="ConversationDetailsSendMessageButton"
                 x:Uid="ConversationDetailsSendMessageButton"
@@ -136,6 +128,53 @@
                 Label="senden"
                 Command="{Binding SendMessageCommand}"
                 />
+            <CommandBar.SecondaryCommands>
+                <AppBarButton 
+                x:Name="ConversationDetailsEditConversationButton"
+                x:Uid="ConversationDetailsEditConversationButton"
+                Icon="Edit"
+                Label="bearbeiten"
+                Visibility="{Binding ElementName=ConversationDetailsEditConversationButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding SwitchToEditConversationDialogCommand}"
+                />
+                <AppBarButton 
+                    x:Name="ConversationDetailsDeleteConversationButton"
+                    x:Uid="ConversationDetailsDeleteConversationButton"
+                    Icon="Delete"
+                    Label="löschen"
+                    Visibility="{Binding IsDeletableConversation, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <AppBarButton.Flyout>
+                        <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}">
+                            <Grid
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Warnhinweis bezüglich Löschoperation. -->
+                                <TextBlock 
+                                Grid.Row="0"
+                                x:Name="ConversationDetailsDeleteBallotWarning"
+                                x:Uid="ConversationDetailsDeleteBallotWarning"
+                                Style="{StaticResource TextInFlyoutsStyle}" >
+                                Wollen Sie die Konversation wirklich unwiderruflich löschen?
+                                </TextBlock>
+
+                                <!-- Löschen Button-->
+                                <Button
+                                Grid.Row="1"
+                                x:Name="ConversationDetailsDeleteBallotFlyoutButton"
+                                x:Uid="ConversationDetailsDeleteBallotFlyoutButton"
+                                Style="{StaticResource FlyoutSingleButtonStyle}"
+                                Content="Löschen"
+                                Command="{Binding DeleteConversationCommand}"/>
+                            </Grid>
+                        </Flyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
+            </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
 
@@ -157,6 +196,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <!-- Drawer Icon -->
@@ -170,21 +210,30 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                
+
                 <!-- Drawer Text -->
                 <TextBlock Grid.Column="0"
-						   x:Uid="ConversationDetailsConversationTitle"
-						   Style="{StaticResource DrawerTextStyle}"
-						   Text="{Binding SelectedConversation.Title}" />
-                
+					x:Uid="ConversationDetailsConversationTitle"
+				    Style="{StaticResource DrawerTextStyle}"
+					Text="{Binding SelectedConversation.Title}" />
+
                 <!-- Conversation closed hint -->
                 <TextBlock Grid.Column="1"
                            x:Uid="ConversationDetailsConverstionClosedHint"
                            Style="{StaticResource DrawerTextStyle}"
-                           Visibility="{Binding SelectedConversation.IsClosed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                           Visibility="{Binding SelectedConversation.IsClosed, FallbackValue=Collapsed, TargetNullValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"
                            Text=""/>
             </Grid>
-            
+
+            <!-- 'geschlossen' Markierung-->
+            <Image Grid.Column="2" 
+                   Source="/Assets/extIcons/appbar.lock.png"
+                   Height="50"
+                   Width="50"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Visibility="{Binding SelectedConversation.IsClosed, FallbackValue=Collapsed, TargetNullValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
         </Grid>
 
         <!--Inhalt der Seite und Inhalt des Drawer Menü-->
@@ -240,6 +289,8 @@
                             AcceptsReturn="True"
                             Margin="19, 10, 19, 10"
                             Background="White"
+                            GotFocus="ConversationDetailsMessageInputBox_GotFocus"
+                            LostFocus="ConversationDetailsMessageInputBox_LostFocus"
                             Text="{Binding EnteredMessage, Mode=TwoWay}" />
 
                         <TextBlock 

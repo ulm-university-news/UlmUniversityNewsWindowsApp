@@ -1662,8 +1662,14 @@ Nachricht am: </value>
   <data name="BallotAdministratorField.Text" xml:space="preserve">
     <value>Abstimmungsadministrator</value>
   </data>
+  <data name="BallotDetailsBallotClosedHint.Text" xml:space="preserve">
+    <value>(geschlossen)</value>
+  </data>
   <data name="BallotDetailsBallotInfoPivotItem.Header" xml:space="preserve">
     <value>Abstimmungsdetails</value>
+  </data>
+  <data name="BallotDetailsDeleteBallotButton.Label" xml:space="preserve">
+    <value>löschen</value>
   </data>
   <data name="BallotDetailsDeleteBallotFlyoutButton.Content" xml:space="preserve">
     <value>Löschen</value>
@@ -1710,7 +1716,22 @@ Nachricht am: </value>
   <data name="BallotPublicVotesStatusHeader.Text" xml:space="preserve">
     <value>Öffentlich:</value>
   </data>
+  <data name="ConversationDetailsDeleteBallotFlyoutButton.Content" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="ConversationDetailsDeleteBallotWarning.Text" xml:space="preserve">
+    <value>Wollen Sie die Konversation wirklich unwiderruflich löschen?</value>
+  </data>
+  <data name="ConversationDetailsDeleteConversationButton.Label" xml:space="preserve">
+    <value>löschen</value>
+  </data>
   <data name="GroupDetailsAddBallotButton.Label" xml:space="preserve">
     <value>füge hinzu</value>
+  </data>
+  <data name="GroupDetailsDeleteGroupLocallyWarning.Text" xml:space="preserve">
+    <value>Es handelt sich hier um eine Gruppe, die keinen Repräsentanten auf dem Server mehr hat. Sie können diese Gruppe auch aus Ihren lokalen Datensätzen entfernen.</value>
+  </data>
+  <data name="GroupDetailsGroupDeletedHint.Text" xml:space="preserve">
+    <value>(gelöscht)</value>
   </data>
 </root>

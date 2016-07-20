@@ -183,5 +183,26 @@ namespace UlmUniversityNews.Views.Group
                 DrawerLayout.OpenDrawer();
             }
         }
+
+        /// <summary>
+        /// Event-Handler, der gerufen wird, wenn die TextBox ConversationDetailsMessageInputBox vom Nutzer selektiert wird.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void ConversationDetailsMessageInputBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            ConversationDetailsSynchronizeButton.Visibility = Visibility.Collapsed;
+        }
+
+        /// <summary>
+        /// Event-Handler, der gerufen wird, wenn die TextBox ConversationDetailsMessageInputBox den
+        /// Fokus wieder verliert, d.h. nicht mehr selektiert ist.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void ConversationDetailsMessageInputBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ConversationDetailsSynchronizeButton.Visibility = Visibility.Visible;
+        }
     }
 }

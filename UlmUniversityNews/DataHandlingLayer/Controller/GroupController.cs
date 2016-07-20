@@ -1460,6 +1460,39 @@ namespace DataHandlingLayer.Controller
 
             return resolvedCorrectly;
         }
+
+        /// <summary>
+        /// Löscht die Konversation, die durch die angegebene Id identifiziert wird.
+        /// Die Konversation wird auf dem Server und lokal gelöscht. 
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Konversation gehört.</param>
+        /// <param name="conversationId">Die Id der Konversation, die gelöscht werden soll.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Konversation nicht gelöscht werden konnte,
+        ///     oder der Server die Anfrage abgelehnt hat.</exception>
+        public async Task DeleteConversationAsync(int groupId, int conversationId)
+        {
+            Debug.WriteLine("DeleteConversationAsync: Starting deleting process for conversation with id {0} " + 
+                "in group with id {1}.", conversationId, groupId);
+
+            try
+            {
+                await groupAPI.SendDeleteConversationRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    conversationId);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("DeleteConversationAsync: Failed to delete conversation with id {0}.", conversationId);
+
+                // TODO
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            // Lösche die Konversation lokal.
+            DeleteConversation(conversationId);
+        }
         #endregion RemoteConversationMethods
 
         #region RemoteBallotMethods
@@ -3240,6 +3273,24 @@ namespace DataHandlingLayer.Controller
             }
 
             return hasUnresolvedAuthors;
+        }
+
+        /// <summary>
+        /// Löscht die Konversation, die durch die angegebene Id identifiziert ist, aus den
+        /// lokalen Datensätzen.
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation, die gelöscht werden soll.</param>
+        public void DeleteConversation(int conversationId)
+        {
+            try
+            {
+                groupDBManager.DeleteConversation(conversationId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("DeleteConversation: Failed to delete conversation with id {0} locally.", conversationId);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
         }
         #endregion LocalConversationMethods
 

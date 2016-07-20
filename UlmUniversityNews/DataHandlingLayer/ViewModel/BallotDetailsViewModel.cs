@@ -385,9 +385,9 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
         private bool canSynchronizeBallot()
         {
+            // SelectedBallot.IsClosed.HasValue && SelectedBallot.IsClosed.Value == false
             if (AffectedGroup != null && SelectedBallot != null &&
-                !AffectedGroup.Deleted && 
-                SelectedBallot.IsClosed.HasValue && SelectedBallot.IsClosed.Value == false)
+                !AffectedGroup.Deleted)
             {
                 return true;
             }

@@ -101,12 +101,22 @@ namespace DataHandlingLayer.ViewModel
 
         private bool hasDeleteOption;
         /// <summary>
-        /// Gibt an, ob der Nutzer die Möglichkeit hat die Gruppe zu löschen.
+        /// Gibt an, ob der Nutzer die Möglichkeit hat, die Gruppe zu löschen.
         /// </summary>
         public bool HasDeleteOption
         {
             get { return hasDeleteOption; }
             set { this.setProperty(ref this.hasDeleteOption, value); }
+        }
+
+        private bool hasDeleteLocallyOption;
+        /// <summary>
+        /// Gibt an, ob der Nutzer die Möglichkeit hat, die Gruppe lokal zu löschen.
+        /// </summary>
+        public bool HasDeleteLocallyOption
+        {
+            get { return hasDeleteLocallyOption; }
+            set { this.setProperty(ref this.hasDeleteLocallyOption, value); }
         }
         
         private string enteredPassword;
@@ -376,8 +386,16 @@ namespace DataHandlingLayer.ViewModel
                     }
                     else
                     {
-                        IsRemovedFromGroup = true;
-                        Debug.WriteLine("LoadGroupFromLocalStorageAsync: local user seems to be removed from this group.");
+                        // Setze nur IsRemoveFromGroup, wenn Gruppe nicht sowieso schon gelöscht ist.
+                        if (!SelectedGroup.Deleted)
+                        {
+                            IsRemovedFromGroup = true;
+                            Debug.WriteLine("LoadGroupFromLocalStorageAsync: local user seems to be removed from this group.");
+                        }
+                        else
+                        {
+                            Debug.WriteLine("LoadGroupFromLocalStorageAsync: Group is already deleted.");
+                        }
                     }
                 }
             }
@@ -610,25 +628,21 @@ namespace DataHandlingLayer.ViewModel
             JoinGroupCommand.OnCanExecuteChanged();
             LeaveGroupCommand.OnCanExecuteChanged();
             if (canLeaveGroup())
-            {
                 HasLeaveOption = true;
-            }
             else
-            {
                 HasLeaveOption = false;
-            }
             EditGroupCommand.RaiseCanExecuteChanged();
             SynchronizeDataCommand.OnCanExecuteChanged();
             DeleteGroupCommand.OnCanExecuteChanged();
             if (canDeleteGroup())
-            {
                 HasDeleteOption = true;
-            }
             else
-            {
                 HasDeleteOption = false;
-            }
             DeleteGroupLocallyCommand.RaiseCanExecuteChanged();
+            if (canDeleteGroupLocally())
+                HasDeleteLocallyOption = true;
+            else
+                HasDeleteLocallyOption = false;
             ChangeToGroupSettingsCommand.RaiseCanExecuteChanged();
             ChangeToAddConversationDialog.RaiseCanExecuteChanged();
             SwitchToCreateBallotDialogCommand.RaiseCanExecuteChanged();
@@ -700,7 +714,7 @@ namespace DataHandlingLayer.ViewModel
         private bool canLeaveGroup()
         {
             // Steht nur im Gruppendetails PivotItem zur Verfügung (Index 2).
-            if (SelectedGroup != null && 
+            if (SelectedGroup != null && !SelectedGroup.Deleted &&
                 IsGroupParticipant && 
                 !IsRemovedFromGroup)
             {
@@ -748,7 +762,7 @@ namespace DataHandlingLayer.ViewModel
         private bool canEditGroup()
         {
             // Nur möglich für Administrator von Gruppe. Außerdem nur auf dem "Details" Pivot Item.
-            if (SelectedGroup != null &&
+            if (SelectedGroup != null && !SelectedGroup.Deleted &&
                 localUser.Id == SelectedGroup.GroupAdmin && 
                 !IsRemovedFromGroup &&
                 SelectedPivotItemName == "GroupDetailsPivotItem")
@@ -792,7 +806,7 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
         private bool canSynchronizeData()
         {
-            if (SelectedGroup != null && 
+            if (SelectedGroup != null && !SelectedGroup.Deleted &&
                 IsGroupParticipant && 
                 !IsRemovedFromGroup)
                 return true;
@@ -865,7 +879,7 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
         private bool canDeleteGroup()
         {
-            if (SelectedGroup != null && 
+            if (SelectedGroup != null && !SelectedGroup.Deleted &&
                 localUser.Id == SelectedGroup.GroupAdmin &&
                 !IsRemovedFromGroup && 
                 SelectedPivotItemName == "GroupDetailsPivotItem")
@@ -914,7 +928,7 @@ namespace DataHandlingLayer.ViewModel
         {
             if (SelectedGroup != null && 
                 IsGroupParticipant && 
-                IsRemovedFromGroup)
+                (IsRemovedFromGroup || SelectedGroup.Deleted))
             {
                 return true;
             }
@@ -947,7 +961,7 @@ namespace DataHandlingLayer.ViewModel
         /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
         private bool canChangeToGroupSettings()
         {
-            if (SelectedGroup != null && 
+            if (SelectedGroup != null && !SelectedGroup.Deleted && 
                 IsGroupParticipant && 
                 !IsRemovedFromGroup)
             {
