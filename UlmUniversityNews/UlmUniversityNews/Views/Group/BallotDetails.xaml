@@ -157,6 +157,43 @@
 						Foreground="{StaticResource UNUCommandBarButtonColor}"
 						Background="{StaticResource UUNBallotColor}">
             <AppBarButton 
+                x:Name="BallotDetailsDeleteBallotButton"
+                x:Uid="BallotDetailsDeleteBallotButton"
+                Icon="Delete"
+                Visibility="{Binding IsBallotDeletable, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Label="delete">
+                <AppBarButton.Flyout>
+                    <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}">
+                        <Grid
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Warnhinweis bezüglich Löschoperation. -->
+                            <TextBlock 
+                                Grid.Row="0"
+                                x:Name="BallotDetailsDeleteBallotWarning"
+                                x:Uid="BallotDetailsDeleteBallotWarning"
+                                Style="{StaticResource TextInFlyoutsStyle}" >
+                                Wollen Sie die Abstimmung wirklich unwiderruflich löschen?
+                            </TextBlock>
+
+                            <!-- Löschen Button-->
+                            <Button
+                                Grid.Row="1"
+                                x:Name="BallotDetailsDeleteBallotFlyoutButton"
+                                x:Uid="BallotDetailsDeleteBallotFlyoutButton"
+                                Style="{StaticResource FlyoutSingleButtonStyle}"
+                                Content="Löschen"
+                                Command="{Binding DeleteBallotCommand}"/>
+                        </Grid>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+            <AppBarButton 
                 x:Name="BallotDetailsSynchronizeBallotButton"
                 x:Uid="BallotDetailsSynchronizeBallotButton"
                 Icon="Sync"

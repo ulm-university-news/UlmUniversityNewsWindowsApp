@@ -1665,6 +1665,12 @@ Nachricht am: </value>
   <data name="BallotDetailsBallotInfoPivotItem.Header" xml:space="preserve">
     <value>Abstimmungsdetails</value>
   </data>
+  <data name="BallotDetailsDeleteBallotFlyoutButton.Content" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="BallotDetailsDeleteBallotWarning.Text" xml:space="preserve">
+    <value>Wollen Sie die Abstimmung wirklich unwiderruflich löschen?</value>
+  </data>
   <data name="BallotDetailsDescriptionField.Text" xml:space="preserve">
     <value>Beschreibung</value>
   </data>

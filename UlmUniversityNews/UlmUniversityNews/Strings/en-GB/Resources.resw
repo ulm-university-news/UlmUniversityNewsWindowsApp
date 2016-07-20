@@ -1664,6 +1664,12 @@ date: </value>
   <data name="BallotDetailsBallotInfoPivotItem.Header" xml:space="preserve">
     <value>Ballot details</value>
   </data>
+  <data name="BallotDetailsDeleteBallotFlyoutButton.Content" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="BallotDetailsDeleteBallotWarning.Text" xml:space="preserve">
+    <value>Do you really want to delete the ballot? This cannot be undone.</value>
+  </data>
   <data name="BallotDetailsDescriptionField.Text" xml:space="preserve">
     <value>Description</value>
   </data>

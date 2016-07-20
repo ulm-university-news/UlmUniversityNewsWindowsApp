@@ -2415,6 +2415,40 @@ namespace DataHandlingLayer.Controller
                 throw new ClientException(ErrorCodes.OptionUpdatesErrorsOccurred, "Could not perform all updates successfully.");
             }
         }
+
+        /// <summary>
+        /// Löscht die Abstimmung, die durch die angegebene Id identifiziert ist. 
+        /// Die Abstimmung wird auf dem Server und lokal gelöscht.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Abstimmung gehört.</param>
+        /// <param name="ballotId">Die Id der Abstimmung, die gelöscht werden soll.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Löschvorgang fehlschlägt,
+        ///     oder Server die Anfrage ablehnt.</exception>
+        public async Task DeleteBallotAsync(int groupId, int ballotId)
+        {
+            Debug.WriteLine("DeleteBallotAsync: Start deleting ballot process: groupId {0} and ballotId {1}.", groupId, ballotId);
+
+            // Setze Request zum Löschen der Abstimmung ab.
+            try
+            {
+                await groupAPI.SendDeleteBallotRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    ballotId);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("DeleteBallotAsync: Failed to delete ballot. Error code: {0} and msg: '{1}'.", 
+                    ex.ErrorCode, ex.Message);
+
+                // TODO 
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            // Lösche Abstimmung lokal.
+            DeleteBallot(ballotId);
+        }
         #endregion RemoteBallotMethods
 
         #region LocalGroupMethods

@@ -32,6 +32,9 @@ namespace DataHandlingLayer.ViewModel
         private int selectedPivotIndex;
         /// <summary>
         /// Gibt den Index des Pivotelements an, das gerade aktiv ist.
+        /// Index 0 => Abstimmen
+        /// Index 1 => Ergebnis
+        /// Index 2 => Abstimmungsdetails
         /// </summary>
         public int SelectedPivotItemIndex
         {
@@ -41,6 +44,16 @@ namespace DataHandlingLayer.ViewModel
                 selectedPivotIndex = value;
                 checkCommandExecution();
             }
+        }
+
+        private bool isBallotDeletable;
+        /// <summary>
+        /// Gibt an, ob der aktuelle lokale Nutzer das Recht hat die Abstimmung zu löschen.
+        /// </summary>
+        public bool IsBallotDeletable
+        {
+            get { return isBallotDeletable; }
+            set { this.setProperty(ref this.isBallotDeletable, value); }
         }
 
         private Group affectedGroup;
@@ -115,6 +128,16 @@ namespace DataHandlingLayer.ViewModel
             get { return switchToEditDialogCommand; }
             set { switchToEditDialogCommand = value; }
         }
+
+        private AsyncRelayCommand deleteBallotCommand;
+        /// <summary>
+        /// Befehl zum Löschen der Abstimmung.
+        /// </summary>
+        public AsyncRelayCommand DeleteBallotCommand
+        {
+            get { return deleteBallotCommand; }
+            set { deleteBallotCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -143,6 +166,9 @@ namespace DataHandlingLayer.ViewModel
             SwitchToEditDialogCommand = new RelayCommand(
                 param => executeSwitchToEditDialogCommand(),
                 param => canSwitchToEditDialog());
+            DeleteBallotCommand = new AsyncRelayCommand(
+                param => executeDeleteBallotAsync(),
+                param => canDeleteBallot());
         }
 
         /// <summary>
@@ -284,6 +310,12 @@ namespace DataHandlingLayer.ViewModel
             PlaceVotesCommand.OnCanExecuteChanged();
             SynchronizeBallotCommand.OnCanExecuteChanged();
             SwitchToEditDialogCommand.RaiseCanExecuteChanged();
+            DeleteBallotCommand.OnCanExecuteChanged();
+
+            if (canDeleteBallot())
+                IsBallotDeletable = true;
+            else
+                IsBallotDeletable = false;
         }
 
         /// <summary>
@@ -417,6 +449,51 @@ namespace DataHandlingLayer.ViewModel
         {
             string navigationParameter = "navParam?groupId=" + AffectedGroup.Id + "?ballotId=" + SelectedBallot.Id;
             _navService.Navigate("AddAndEditBallot", navigationParameter);
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zum Löschen der gewählten Abstimmung zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canDeleteBallot()
+        {
+            // Nur Admin kann löschen.
+            if (AffectedGroup != null && !AffectedGroup.Deleted && 
+                SelectedBallot != null && 
+                localUser.Id == SelectedBallot.AdminId && 
+                SelectedPivotItemIndex == 2)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl zum Löschen der Abstimmung aus. 
+        /// Die aktuell gewählte Abstimmung wird gelöscht.
+        /// </summary>
+        private async Task executeDeleteBallotAsync()
+        {
+            try
+            {
+                displayIndeterminateProgressIndicator();
+
+                await groupController.DeleteBallotAsync(AffectedGroup.Id, SelectedBallot.Id);
+
+                if (_navService.CanGoBack())
+                    _navService.GoBack();
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("executeDeleteBallotAsync: Failed to execute delete ballot command. " + 
+                    "Error code: {0} and message: '{1}'.", ex.ErrorCode, ex.Message);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
         }
         #endregion CommandFunctionality
     }
