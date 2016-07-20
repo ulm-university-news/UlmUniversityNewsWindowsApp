@@ -1484,8 +1484,8 @@ date: </value>
   <data name="AddAndEditConversationEditConversationStatus" xml:space="preserve">
     <value>Changing conversation</value>
   </data>
-  <data name="AddAndEditConversationIsClosedCheckBox.Content" xml:space="preserve">
-    <value>Close conversation</value>
+  <data name="AddAndEditConversationIsClosedCheckBox.Text" xml:space="preserve">
+    <value>Conversation closed</value>
   </data>
   <data name="AddAndEditConversationIsClosedHint.Text" xml:space="preserve">
     <value>(closed)</value>
@@ -1573,5 +1573,137 @@ date: </value>
   </data>
   <data name="VE_BallotTitleIsNullValidationError" xml:space="preserve">
     <value>Please provide a title for the ballot.</value>
+  </data>
+  <data name="AddAndEditBallotAddBallotDrawerTitle.Text" xml:space="preserve">
+    <value>Add ballot</value>
+  </data>
+  <data name="AddAndEditBallotAddBallotOptionButton.Label" xml:space="preserve">
+    <value>add option</value>
+  </data>
+  <data name="AddAndEditBallotAddDescription.Text" xml:space="preserve">
+    <value>Please provide the data for the ballot. Describe the topic of the ballot. The fields marked with * are mandatory.</value>
+  </data>
+  <data name="AddAndEditBallotCreateBallotButton.Label" xml:space="preserve">
+    <value>create</value>
+  </data>
+  <data name="AddAndEditBallotDeleteOptionButton.Label" xml:space="preserve">
+    <value>delete option</value>
+  </data>
+  <data name="AddAndEditBallotDescriptionTextBox.Header" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="AddAndEditBallotDescriptionTextBox.PlaceholderText" xml:space="preserve">
+    <value>Enter description</value>
+  </data>
+  <data name="AddAndEditBallotDetailsPivotItem.Header" xml:space="preserve">
+    <value>Ballot data</value>
+  </data>
+  <data name="AddAndEditBallotEditDescription.Text" xml:space="preserve">
+    <value>This dialog enables to change the data of the ballot. Options can be added and removed. The ballot can also be closed if no further votes are desired.</value>
+  </data>
+  <data name="AddAndEditBallotIsClosedCheckBox.Text" xml:space="preserve">
+    <value>Ballot closed</value>
+  </data>
+  <data name="AddAndEditBallotIsClosedDescription.Text" xml:space="preserve">
+    <value>If you close the ballot, users can no longer vote for any option of this ballot.</value>
+  </data>
+  <data name="AddAndEditBallotIsClosedHeadline.Text" xml:space="preserve">
+    <value>Close ballot</value>
+  </data>
+  <data name="AddAndEditBallotMultipleChoiceCheckBoxText.Text" xml:space="preserve">
+    <value>Multiple Choice</value>
+  </data>
+  <data name="AddAndEditBallotMultipleChoiceDescription.Text" xml:space="preserve">
+    <value>Define whether users can select more than one option. If it is not selected, each user can select exactly one option.</value>
+  </data>
+  <data name="AddAndEditBallotNewOptionTextField.Header" xml:space="preserve">
+    <value>Option</value>
+  </data>
+  <data name="AddAndEditBallotNewOptionTextField.PlaceholderText" xml:space="preserve">
+    <value>Add option</value>
+  </data>
+  <data name="AddAndEditBallotNextPivotItemButton.Label" xml:space="preserve">
+    <value>continue</value>
+  </data>
+  <data name="AddAndEditBallotNoOptionsText.Text" xml:space="preserve">
+    <value>There are no options defined at the moment.</value>
+  </data>
+  <data name="AddAndEditBallotOptionsDescription.Text" xml:space="preserve">
+    <value>Add options to the ballot. Added options can also be removed again. A ballot should contain at least 2 options.</value>
+  </data>
+  <data name="AddAndEditBallotOptionsPivotItem.Header" xml:space="preserve">
+    <value>Ballot options</value>
+  </data>
+  <data name="AddAndEditBallotPublicVotesCheckBoxText.Text" xml:space="preserve">
+    <value>Public</value>
+  </data>
+  <data name="AddAndEditBallotPublicVotesDescription.Text" xml:space="preserve">
+    <value>Define whether the user's names are shown at each option they have selected when displaying the ballot's result. </value>
+  </data>
+  <data name="AddAndEditBallotSaveChangesButton.Label" xml:space="preserve">
+    <value>save</value>
+  </data>
+  <data name="AddAndEditBallotSelectOptionsToggleButton.Label" xml:space="preserve">
+    <value>select</value>
+  </data>
+  <data name="AddAndEditBallotTitleTextBox.Header" xml:space="preserve">
+    <value>Title *</value>
+  </data>
+  <data name="AddAndEditBallotTitleTextBox.PlaceholderText" xml:space="preserve">
+    <value>Enter title</value>
+  </data>
+  <data name="AddAndEditConversationIsClosedHeadline.Text" xml:space="preserve">
+    <value>Close conversation</value>
+  </data>
+  <data name="ApplicationErrorOptionUpdatesErrorsOccurred" xml:space="preserve">
+    <value>The ballot data could be updated successfully. However, errors occurred during the update of the ballot's options. Please navigate to the details view of the ballot and synchronize the ballot with the server. Check which options have been updated successfully and perform the update again.</value>
+  </data>
+  <data name="BallotAdministratorField.Text" xml:space="preserve">
+    <value>Ballot administrator</value>
+  </data>
+  <data name="BallotDetailsBallotInfoPivotItem.Header" xml:space="preserve">
+    <value>Ballot details</value>
+  </data>
+  <data name="BallotDetailsDescriptionField.Text" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="BallotDetailsEditBallotButton.Label" xml:space="preserve">
+    <value>edit ballot</value>
+  </data>
+  <data name="BallotDetailsNoOptionResultsInfo.Text" xml:space="preserve">
+    <value>No results could be listed.</value>
+  </data>
+  <data name="BallotDetailsNoOptionsInfo.Text" xml:space="preserve">
+    <value>There are no ballot options defined.</value>
+  </data>
+  <data name="BallotDetailsPlaceVoteButton.Label" xml:space="preserve">
+    <value>place vote</value>
+  </data>
+  <data name="BallotDetailsPlaceVotePivotItem.Header" xml:space="preserve">
+    <value>Vote</value>
+  </data>
+  <data name="BallotDetailsSynchronizeBallotButton.Label" xml:space="preserve">
+    <value>sync</value>
+  </data>
+  <data name="BallotDetailsTitleField.Text" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="BallotDetailsVotingResultsPivotItem.Header" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="BallotMultipleChoiceStatusContent.Text" xml:space="preserve">
+    <value>This property defines whether participants are allowed to vote for more than one option of the ballot. If this property is deactivated, each participant can only vote for one option at a time.</value>
+  </data>
+  <data name="BallotMultipleChoiceStatusHeader.Text" xml:space="preserve">
+    <value>Multiple Choice:</value>
+  </data>
+  <data name="BallotPublicVotesStatusContent.Text" xml:space="preserve">
+    <value>This property defines whether participants are able to relate votes to users. If this property is deactivated, the votes will be anonymous, i.e. no user names are displayed in the results.</value>
+  </data>
+  <data name="BallotPublicVotesStatusHeader.Text" xml:space="preserve">
+    <value>Public: </value>
+  </data>
+  <data name="GroupDetailsAddBallotButton.Label" xml:space="preserve">
+    <value>add ballot</value>
   </data>
 </root>

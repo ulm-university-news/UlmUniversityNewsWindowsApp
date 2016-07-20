@@ -196,28 +196,49 @@
                         <TextBlock Grid.Column="0" 
                                    x:Name="BallotAdminField" 
                                    HorizontalAlignment="Left"
+                                   VerticalAlignment="Bottom"
                                    Style="{StaticResource ListTextStyle}"
                                    Text="{Binding AdminName}"/>
 
                         <!-- Typ - öffentlich ? -->
-                        <TextBlock Grid.Column="1"
+                        <!--<TextBlock Grid.Column="1"
                                    x:Uid="GroupDetailsBallotPublicVotesIndicator"
                                    Margin="5, 0, 5, 0"
                                    HorizontalAlignment="Right"
                                    TextAlignment="Right"
                                    Style="{StaticResource ListTextStyle}"
                                    Visibility="{Binding HasPublicVotes, TargetNullValue=Collapsed, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                   Text="PV" />
+                                   Text="PV" />-->
+                        <Image 
+                            Grid.Column="1"
+                            Source="/Assets/ResourceDetails/ic_public_black_36dp.png"
+                            Margin="5, 0, 5, 0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            Visibility="{Binding HasPublicVotes, TargetNullValue=Collapsed, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            MaxHeight="25"
+                            MaxWidth="25"
+                            />
 
                         <!-- Typ - multiple choice ? -->
-                        <TextBlock Grid.Column="2"
+                        <!--<TextBlock Grid.Column="2"
                                    x:Uid="GroupDetailsBallotMultipleChoiceIndicator"
                                    Margin="5, 0, 5, 0"
                                    HorizontalAlignment="Right"
                                    TextAlignment="Right"
                                    Style="{StaticResource ListTextStyle}"
                                    Visibility="{Binding IsMultipleChoice, TargetNullValue=Collapsed, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                   Text="MC" />
+                                   Text="MC" />-->
+                        <Image 
+                            Grid.Column="2"
+                            Source="/Assets/ResourceDetails/ic_code_black_36dp.png"
+                            Margin="5, 0, 5, 0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            Visibility="{Binding IsMultipleChoice, TargetNullValue=Collapsed, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            MaxHeight="25"
+                            MaxWidth="25"
+                            />
                     </Grid>
 
                 </Grid>

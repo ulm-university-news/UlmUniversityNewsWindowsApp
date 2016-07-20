@@ -197,8 +197,11 @@ namespace UlmUniversityNews.ErrorHandling
                 case ErrorCodes.OptionCreationHasFailedInBallotCreationProcess:
                     errorDescription = loader.GetString("ApplicationErrorOptionCreationHasFailedInBallotCreationProcessError");
                     break;
+                case ErrorCodes.OptionUpdatesErrorsOccurred:
+                    errorDescription = loader.GetString("ApplicationErrorOptionUpdatesErrorsOccurred");
+                    break;
                 case ErrorCodes.BadRequest:
-                    errorDescription = loader.GetString("ApplicationErrorBadRequestError");;
+                    errorDescription = loader.GetString("ApplicationErrorBadRequestError");
                     break;
                 case ErrorCodes.MethodNotAllowed:
                     errorDescription = loader.GetString("ApplicationErrorMethodNotAllowedError");

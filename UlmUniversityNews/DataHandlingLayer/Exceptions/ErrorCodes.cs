@@ -94,7 +94,8 @@ namespace DataHandlingLayer.Exceptions
         public const int OptionDataIncomplete = 4402;
         public const int OptionInvalidText = 4403;
         public const int OptionUserHasAlreadyVoted = 4406;
-        public const int OptionCreationHasFailedInBallotCreationProcess = 4499; // Client only error code
+        public const int OptionCreationHasFailedInBallotCreationProcess = 4498; // Client only error code
+        public const int OptionUpdatesErrorsOccurred = 4499; // Client only error code
 
         public const int ServerDatabaseFailure = 5000;
 

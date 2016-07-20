@@ -97,6 +97,7 @@
                         Height="5"
                         Minimum="0.0"
                         Maximum="1.0"
+                        Foreground="{StaticResource UUNBallotColor}"
                         Value="{Binding VoteResultPercentage}"/>
 
                     <Grid
@@ -155,12 +156,6 @@
         <CommandBar x:Name="GroupDetailsCommandBar"
 						Foreground="{StaticResource UNUCommandBarButtonColor}"
 						Background="{StaticResource UUNBallotColor}">
-            <AppBarToggleButton
-                x:Name="BallotDetailsSelectOptionsButton"
-                x:Uid="BallotDetailsSelectOptionsButton"
-                Icon="Bullets"
-                Label="select"
-                Click="BallotDetailsSelectOptionsButton_Click"/>
             <AppBarButton 
                 x:Name="BallotDetailsSynchronizeBallotButton"
                 x:Uid="BallotDetailsSynchronizeBallotButton"
@@ -175,13 +170,14 @@
                 Label="place vote"
                 Visibility="{Binding ElementName=BallotDetailsPlaceVoteButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding PlaceVotesCommand}"/>
-            <AppBarButton
-                x:Name="BallotDetailsDeleteOptionButton"
-                x:Uid="BallotDetailsDeleteOptionButton"
-                Visibility="Collapsed"
-                Icon="Delete"
-                Label="delete option"
-                Click="BallotDetailsDeleteOptionButton_Click"/>
+            <AppBarButton 
+                x:Name="BallotDetailsEditBallotButton"
+                x:Uid="BallotDetailsEditBallotButton"
+                Icon="Edit"
+                Label="edit ballot"
+                Visibility="{Binding ElementName=BallotDetailsEditBallotButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding SwitchToEditDialogCommand}"
+                />
         </CommandBar>
     </Page.BottomAppBar>
 
@@ -374,7 +370,7 @@
 
                                         <TextBlock
                                                 Grid.Column="1"
-                                                x:Uid="BallotDetailsGroupNameField"
+                                                x:Uid="BallotDetailsTitleField"
                                                 x:Name="BallotTitle"
                                                 Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                                 Text="Title"
@@ -417,7 +413,7 @@
 
                                         <TextBlock
                                                 Grid.Column="1"
-                                                x:Uid="BallotDetailsGroupNameField"
+                                                x:Uid="BallotDetailsDescriptionField"
                                                 x:Name="BallotDescription"
                                                 Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                                 Text="Description"
@@ -461,7 +457,7 @@
 
                                         <TextBlock
                                                 Grid.Column="1"
-                                                x:Uid="BallotDetailsGroupNameField"
+                                                x:Uid="BallotMultipleChoiceStatusHeader"
                                                 x:Name="BallotMultipleChoiceStatusHeader"
                                                 Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                                 Text="MultipleChoice:"
@@ -480,6 +476,7 @@
                                     <TextBlock
                                         Grid.Row="1"
                                         x:Name="BallotMultipleChoiceStatusContent"
+                                        x:Uid="BallotMultipleChoiceStatusContent"
                                         Style="{StaticResource TextInPropertyDescriptions}"
                                         Text="Diese Option gibt an, ob die Gruppenmitglieder mehrere Optionen dieser Abstimmungen wählen können. Wenn die Option deaktiviert ist, ist nur eine Abstimmungsoption möglich." />
 
@@ -513,7 +510,7 @@
 
                                         <TextBlock
                                                 Grid.Column="1"
-                                                x:Uid="BallotDetailsGroupNameField"
+                                                x:Uid="BallotPublicVotesStatusHeader"
                                                 x:Name="BallotPublicVotesStatusHeader"
                                                 Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                                 Text="Öffentlich:"
@@ -532,6 +529,7 @@
                                     <TextBlock
                                         Grid.Row="1"
                                         x:Name="BallotPublicVotesStatusContent"
+                                        x:Uid="BallotPublicVotesStatusContent"
                                         Style="{StaticResource TextInPropertyDescriptions}"
                                         Text="Diese Option gibt an, ob die Gruppenmitglieder sehen können, wer für welche Abstimmungsoptionen gestimmt hat. Wenn die Option deaktiviert ist, können die einzelnen Stimmen keine Teilnehmer zugeordnet werden und es wird nur die Anzahl der Stimmen angezeigt." />
 
@@ -557,20 +555,20 @@
                                         </Grid.ColumnDefinitions>
 
                                         <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetails/ic_info_black_36dp.png"
+                                                   Source="/Assets/ResourceDetails/ic_person_outline_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 
                                         <TextBlock
                                                 Grid.Column="1"
-                                                x:Uid="BallotDetailsGroupNameField"
+                                                x:Uid="BallotAdministratorField"
                                                 x:Name="BallotAdministrator"
                                                 Style="{StaticResource HeaderTextInPropertyDescriptions}"
                                                 Text="Abstimmungsadministrator"
                                                 />
                                     </Grid>
 
-                                    <!-- Titel -->
+                                    <!-- Admin Name -->
                                     <TextBlock
                                         Grid.Row="1"
                                         x:Name="BallotAdministratorContent"

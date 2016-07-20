@@ -21,6 +21,11 @@ namespace DataHandlingLayer.ViewModel
         /// Referenz einer Instanz der Klasse GroupController.
         /// </summary>
         private GroupController groupController;
+
+        /// <summary>
+        /// Referenz auf den lokalen Nutzer der Anwendung.
+        /// </summary>
+        private User localUser;
         #endregion Fields
 
         #region Properties
@@ -31,7 +36,11 @@ namespace DataHandlingLayer.ViewModel
         public int SelectedPivotItemIndex
         {
             get { return selectedPivotIndex; }
-            set { selectedPivotIndex = value; }
+            set
+            {
+                selectedPivotIndex = value;
+                checkCommandExecution();
+            }
         }
 
         private Group affectedGroup;
@@ -96,6 +105,16 @@ namespace DataHandlingLayer.ViewModel
             get { return synchronizeBallotCommand; }
             set { synchronizeBallotCommand = value; }
         }
+
+        private RelayCommand switchToEditDialogCommand;
+        /// <summary>
+        /// Befehl zum Wechseln auf den Bearbeitungsdialog der Abstimmung.
+        /// </summary>
+        public RelayCommand SwitchToEditDialogCommand
+        {
+            get { return switchToEditDialogCommand; }
+            set { switchToEditDialogCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -107,6 +126,7 @@ namespace DataHandlingLayer.ViewModel
             : base (navService, errorMapper)
         {
             groupController = new GroupController(this);
+            localUser = groupController.GetLocalUser();
 
             if (BallotOptionCollection == null)
                 BallotOptionCollection = new ObservableCollection<Option>();
@@ -120,6 +140,9 @@ namespace DataHandlingLayer.ViewModel
             SynchronizeBallotCommand = new AsyncRelayCommand(
                 param => executeSynchronizeBallotCommand(),
                 param => canSynchronizeBallot());
+            SwitchToEditDialogCommand = new RelayCommand(
+                param => executeSwitchToEditDialogCommand(),
+                param => canSwitchToEditDialog());
         }
 
         /// <summary>
@@ -260,6 +283,7 @@ namespace DataHandlingLayer.ViewModel
         {
             PlaceVotesCommand.OnCanExecuteChanged();
             SynchronizeBallotCommand.OnCanExecuteChanged();
+            SwitchToEditDialogCommand.RaiseCanExecuteChanged();
         }
 
         /// <summary>
@@ -365,6 +389,34 @@ namespace DataHandlingLayer.ViewModel
             {
                 hideIndeterminateProgressIndicator();
             }
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zum Wechsel auf den Bearbeitungsdialog für diese Abstimmung aktuell zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canSwitchToEditDialog()
+        {
+            // Nur Admin kann bearbeiten.
+            if (AffectedGroup != null && SelectedBallot != null && localUser != null &&
+                !AffectedGroup.Deleted &&
+                SelectedBallot.AdminId == localUser.Id && 
+                SelectedPivotItemIndex == 2)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl SwitchToEditDialogCommand aus. Wechsel auf den
+        /// Bearbeitungsdialog wird angestoßen.
+        /// </summary>
+        private void executeSwitchToEditDialogCommand()
+        {
+            string navigationParameter = "navParam?groupId=" + AffectedGroup.Id + "?ballotId=" + SelectedBallot.Id;
+            _navService.Navigate("AddAndEditBallot", navigationParameter);
         }
         #endregion CommandFunctionality
     }

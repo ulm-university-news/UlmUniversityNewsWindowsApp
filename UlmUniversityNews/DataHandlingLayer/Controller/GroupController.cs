@@ -1592,7 +1592,11 @@ namespace DataHandlingLayer.Controller
                     MarkGroupAsDeleted(groupId);
                 }
 
-                // TODO - Ballot not found
+                if (ex.ErrorCode == ErrorCodes.BallotNotFound)
+                {
+                    Debug.WriteLine("GetBallotsAsync: Ballot not found.");
+                    DeleteBallot(ballotId);
+                }
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -1840,7 +1844,11 @@ namespace DataHandlingLayer.Controller
                     MarkGroupAsDeleted(groupId);
                 }
 
-                // TODO Ballot not found
+                if (ex.ErrorCode == ErrorCodes.BallotNotFound)
+                {
+                    Debug.WriteLine("PlaceVoteAsync: Ballot seems to be deleted on the server.");
+                    DeleteBallot(ballotId);
+                }
 
                 // Weitere Fehlerbehandlungen für Vote-spezifische Fehler.
                 if (ex.ErrorCode == ErrorCodes.BallotUserHasAlreadyVoted)
@@ -2067,7 +2075,7 @@ namespace DataHandlingLayer.Controller
             if (jsonContent == null)
             {
                 Debug.WriteLine("CreateBallotOptionAsync: Failed to serialize option to json. Cannot continue.");
-                return successful;
+                throw new ClientException(ErrorCodes.JsonParserError, "Failed to create json document.");
             }
 
             // Setze Request zum Anlegen der Option ab.
@@ -2093,7 +2101,7 @@ namespace DataHandlingLayer.Controller
                 if (ex.ErrorCode == ErrorCodes.BallotNotFound)
                 {
                     Debug.WriteLine("CreateBallotOptionAsync: There seems to be no ballot with the specified id on the server.");
-                    // TODO
+                    DeleteBallot(ballotId);
                 }
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
@@ -2115,6 +2123,297 @@ namespace DataHandlingLayer.Controller
             }
 
             return successful;
+        }
+
+        /// <summary>
+        /// Sendet eine Anfrage zum Entfernene der angegebenen Abstimmungsoption an den Server.
+        /// Die Abstimmungsoption wird in den Datensätzen des Servers und lokal entfernt.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe zu der die Abstimmung gehört.</param>
+        /// <param name="ballotId">Die Id der Abstimmung, für die eine Abstimmungsoption entfernt wird.</param>
+        /// <param name="optionId">Die Id der Abstimmungsoption, die entfernt wird.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Löschvorgang fehlschlägt, oder
+        ///     Server die Anfrage ablehnt.</exception>
+        public async Task RemoveBallotOptionAsync(int groupId, int ballotId, int optionId)
+        {
+            // Setze Request zum Löschen der Abstimmungsoption ab.
+            try
+            {
+                await groupAPI.SendDeleteOptionRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    ballotId,
+                    optionId);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("RemoveBallotOptionAsync: Request failed. Error code is: {0} and msg is: {1}.", ex.ErrorCode, ex.Message);
+
+                // TODO Group Not found
+
+                // TODO Ballot Not found
+
+                if (ex.ErrorCode == ErrorCodes.OptionNotFound)
+                {
+                    Debug.WriteLine("Option seems to be already deleted on the server.");
+                    DeleteOption(optionId);
+                }
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            // Lösche Abstimmungsoption aus den lokalen Datensätzen.
+            DeleteOption(optionId);
+        }
+
+        /// <summary>
+        /// Führt Aktualisierung der Abstimmung aus. Es wird ermittelt welche Eigenschaften eine Aktualisierung 
+        /// erhalten haben. Die Aktualisierungen werden an den Server übermittelt, der die Aktualisierung auf
+        /// dem Serverdatensatz ausführt und die Gruppenmitglieder über die Änderung informiert.
+        /// Ebenso werden die Abstimmungsoptionen aktualisiert, falls Änderungen vorgenommen wurden.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Abstimmung gehört.</param>
+        /// <param name="oldBallot">Der Datensatz der Abstimmung, vor der Aktualisierung.</param>
+        /// <param name="newBallot">Der Datensatz mit den neu eingegebenen Daten. Enthält auch die festgelegten
+        ///     Abstimmungsoptionen.</param>
+        /// <returns>Liefert true, wenn die Aktualisierung erfolgreich war, ansonsten false.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Aktualisierung fehlgeschlagen ist, oder nur
+        ///     in Teilen erfolgreich durchgeführt werden konnte.</exception>
+        public async Task<bool> EditBallotAsync(int groupId, Ballot oldBallot, Ballot newBallot)
+        {
+            if (oldBallot == null || newBallot == null)
+                return false;
+
+            // Validiere zunächst die neu eingegebenen Daten. Bei Validierungsfehlern kann man hier gleich abbrechen.
+            clearValidationErrors();
+            newBallot.ClearValidationErrors();
+            newBallot.ValidateAll();
+            if (newBallot.HasValidationErrors())
+            {
+                reportValidationErrors(newBallot.GetValidationErrors());
+                return false;
+            }
+
+            // Generiere Ballot Objekt für die Aktualisierung. Dieses Objekt enthält nur die aktualisierten Eigenschaften.
+            bool requiresUpdate = true;
+            Ballot updatableBallot = perpareUpdatableBallotInstance(oldBallot, newBallot);
+            if (updatableBallot == null)
+            {
+                Debug.WriteLine("EditBallotAsync: No update required.");
+                requiresUpdate = false;
+            }
+
+            if (requiresUpdate)
+            {
+                // Erstelle JSON-Dokument für die Aktualisierung.
+                string jsonContent = jsonParser.ParseBallotToJson(updatableBallot);
+                if (jsonContent == null)
+                {
+                    Debug.WriteLine("EditBallotAsync: Failed to generate json document.");
+                    throw new ClientException(ErrorCodes.JsonParserError, "Failed to generate json document.");
+                }
+
+                // Setze Request zur Aktualisierung der Abstimmung ab.
+                string serverResponse = null;
+                try
+                {
+                    serverResponse = await groupAPI.SendUpdateBallotRequest(
+                        getLocalUser().ServerAccessToken,
+                        groupId,
+                        oldBallot.Id,
+                        jsonContent);
+                }
+                catch (APIException ex)
+                {
+                    Debug.WriteLine("EditBallotAsync: Failed request. Error code: {0}, msg is: '{1}'.", ex.ErrorCode, ex.Message);
+
+                    // TODO - group not found, ballot not found, ...
+
+                    throw new ClientException(ex.ErrorCode, ex.Message);
+                }
+
+                // Parse Antwort des Servers.
+                Ballot serverBallot = jsonParser.ParseBallotFromJson(serverResponse);
+                if (serverBallot != null)
+                {
+                    Debug.WriteLine("EditBallotAsync: Start local updating of ballot.");
+                    // Aktualisiere die Abstimmung.
+                    bool successful = UpdateBallot(serverBallot);
+                    if (!successful)
+                    {
+                        throw new ClientException(ErrorCodes.LocalDatabaseException, "Failed to update local ballot");
+                    }
+                }
+            }
+
+            // Führe noch eine Aktualisierung der Abstimmungsoptionen durch.
+            List<Option> currentOptions = GetOptions(oldBallot.Id, false);
+            // Extrahiere die Liste von Abstimmungsoptionen der neuen Abstimmung.
+            List<Option> newOptionList = newBallot.Options;
+
+            await SynchronizeBallotOptionsAsync(groupId, oldBallot.Id, currentOptions, newOptionList);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Bereitet ein Objekt vom Typ Ballot vor, welches alle Properties enthält, die sich geändert haben.
+        /// Die Methode bekommt eine alte Version eines Ballot Objekts und eine neue Version und ermittelt 
+        /// dann die Properties, die eine Aktualisierung erhalten haben und schreibt diese in eine neue Ballot
+        /// Instanz. Die von der Methode zurückgelieferte Ballot Instanz kann dann direkt für die Aktualisierung auf
+        /// dem Server verwendet werden. Achtung: Hat sich überhaupt keine Property geändert, so gibt die Methode null zurück.
+        /// </summary>
+        /// <param name="oldBallot">Das Ballot Objekt vor der Aktualisierung.</param>
+        /// <param name="newBallot">Das Ballot Objekt mit den aktuellen Werten.</param>
+        /// <returns>Ein Objekt der Klasse Ballot, bei dem nur die Eigenschaften mit neuem Wert gesetzt sind.
+        ///     Hat sich keine Eigenschaft geändert, so wird null zurückgegeben.</returns>
+        private Ballot perpareUpdatableBallotInstance(Ballot oldBallot, Ballot newBallot)
+        {
+            bool hasChanged = false;
+            Ballot updatedBallot = new Ballot();
+
+            if (oldBallot.Title != newBallot.Title)
+            {
+                hasChanged = true;
+                updatedBallot.Title = newBallot.Title;
+            }
+
+            if (oldBallot.Description != newBallot.Description)
+            {
+                hasChanged = true;
+                updatedBallot.Description = newBallot.Description;
+            }
+
+            if (oldBallot.IsClosed.HasValue && newBallot.IsClosed.HasValue && 
+                oldBallot.IsClosed.Value != newBallot.IsClosed.Value)
+            {
+                hasChanged = true;
+                updatedBallot.IsClosed = newBallot.IsClosed;
+            }
+
+            // Prüfe, ob sich überhaupt eine Property geändert hat.
+            if (!hasChanged)
+            {
+                Debug.WriteLine("perpareUpdatableBallotInstance: No property of ballot has changed. Method will return null.");
+                updatedBallot = null;
+            }
+
+            return updatedBallot;
+        }
+
+        /// <summary>
+        /// Führt eine Synchronisation der Abstimmungsoptionen einer Abstimmung anhand der übergebenen 
+        /// Listen durch. Hierbei dient die Liste der neuen Abstimmungsoptionen als Referenzwert.
+        /// Die Abstimmungsoptionen der Liste mit aktuellen (alten) Abstimmungsoptionen werden entfernt, 
+        /// sofern sie nicht mehr in der neuen Liste stehen. Neue Optionen, die nicht in der allten Liste stehen,
+        /// werden hinzugefügt. Entsprechende Anfragen werden an den Server geschickt.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Abstimmung gehört.</param>
+        /// <param name="ballotId">Die Id der Abstimmung, zu der die Abstimmungsoptionen gehören.</param>
+        /// <param name="oldOptionList">Die Liste der aktuell gespeichterten (d.h. alten) Abstimmungsoptionen der Abstimmung.</param>
+        /// <param name="newOptionList">Die Liste der neuen Abstimmungsoptionen. Dies ist die Referenz gegen die synchronisiert wird.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn nicht alle Abstimmungsoptionen erfolgreich 
+        ///     synchronisiert werden konnten.</exception>
+        public async Task SynchronizeBallotOptionsAsync(int groupId, int ballotId, List<Option> oldOptionList, List<Option> newOptionList)
+        {
+            List<Option> creatableOptions = new List<Option>();
+            List<Option> deletableOptions = new List<Option>();
+
+            if (oldOptionList != null && newOptionList != null)
+            {
+                foreach (Option newOption in newOptionList)
+                {
+                    bool isContained = false;
+
+                    foreach (Option currentOption in oldOptionList)
+                    {
+                        if (newOption.Text == currentOption.Text)
+                        {
+                            isContained = true;
+                        }
+                    }
+
+                    if (!isContained)
+                    {
+                        Debug.WriteLine("SynchronizeBallotOptionsAsync: Need to add option with text: '{0}'.", newOption.Text);
+                        creatableOptions.Add(newOption);
+                    }
+                }
+
+                foreach (Option currentOption in oldOptionList)
+                {
+                    bool isContained = false;
+
+                    foreach (Option newOption in newOptionList)
+                    {
+                        if (newOption.Text == currentOption.Text)
+                        {
+                            isContained = true;
+                        }
+                    }
+
+                    if (!isContained)
+                    {
+                        Debug.WriteLine("SynchronizeBallotOptionsAsync: Need to remove option with text: '{0}'.", currentOption.Text);
+                        deletableOptions.Add(currentOption);
+                    }
+                }
+            }
+
+            // Führe Aktionen aus. Anlegen von neuen Optionen und löschen von entfernten Optionen.
+            Task<bool> createOptionsResultTask = Task<bool>.Run(async () =>
+            {
+                bool optionInsertsSuccessful = true;
+                foreach (Option creatableOption in creatableOptions)
+                {
+                    try
+                    {
+                        // Erzeuge Option auf Server und lokal.
+                        bool successful = await CreateBallotOptionAsync(groupId, ballotId, creatableOption);
+                        if (!successful)
+                        {
+                            optionInsertsSuccessful = false;
+                        }                        
+                    }
+                    catch (ClientException ex)
+                    {
+                        Debug.WriteLine("SynchronizeBallotOptionsAsync: Request to create new option with text {0} failed.", creatableOption.Text);
+                        Debug.WriteLine("SynchronizeBallotOptionsAsync: Error code is: {0} and message: '{1}'.", ex.ErrorCode, ex.Message);
+                        optionInsertsSuccessful = false;
+                    }
+                }
+                return optionInsertsSuccessful;
+            });
+            Task<bool> deleteOptionsResultTask = Task<bool>.Run(async () =>
+            {
+                bool optionDeletionsSuccessful = true;
+                foreach (Option deletableOption in deletableOptions)
+                {
+                    try
+                    {
+                        // Entferne Option auf Server und lokal.
+                        await RemoveBallotOptionAsync(groupId, ballotId, deletableOption.Id);
+                    }
+                    catch (ClientException ex)
+                    {
+                        Debug.WriteLine("SynchronizeBallotOptionsAsync: Request to delete option with id {0} failed.", deletableOption.Id);
+                        Debug.WriteLine("SynchronizeBallotOptionsAsync: Error code is: {0} and message: '{1}'.", ex.ErrorCode, ex.Message);
+                        optionDeletionsSuccessful = false;
+                    }
+                }
+                return optionDeletionsSuccessful;
+            });
+
+            // Warte auf die Ergebnisse.
+            bool optionActionsSuccessful = true;
+            optionActionsSuccessful = optionActionsSuccessful && await createOptionsResultTask;
+            optionActionsSuccessful = optionActionsSuccessful && await deleteOptionsResultTask;
+
+            if (!optionActionsSuccessful)
+            {
+                // Werfe speziellen Fehler.
+                throw new ClientException(ErrorCodes.OptionUpdatesErrorsOccurred, "Could not perform all updates successfully.");
+            }
         }
         #endregion RemoteBallotMethods
 

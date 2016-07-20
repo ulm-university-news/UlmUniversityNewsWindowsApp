@@ -3414,6 +3414,8 @@ namespace DataHandlingLayer.Database
                 Debug.WriteLine("UpdateBallot: No valid data passed to the method.");
                 return;
             }
+            Debug.WriteLine("UpdateBallot: received data: {0}.", newBallot.ToString());
+            Debug.WriteLine("UpdateBallot: the is closed value: {0}.", newBallot.IsClosed.Value);
 
             // Frage das Mutex Objekt ab.
             Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
@@ -3433,11 +3435,17 @@ namespace DataHandlingLayer.Database
                         {
                             stmt.Bind(1, newBallot.Title);
                             stmt.Bind(2, newBallot.Description);
-                            stmt.Bind(3, (newBallot.IsClosed) == true ? 1 : 0);
-                            stmt.Bind(3, newBallot.AdminId);
+
+                            if (newBallot.IsClosed.HasValue)
+                                stmt.Bind(3, (newBallot.IsClosed.Value) == true ? 1 : 0);
+                            else
+                                stmt.Bind(3, 0);
+
+                            stmt.Bind(4, newBallot.AdminId);
+                            stmt.Bind(5, newBallot.Id);
 
                             if (stmt.Step() == SQLiteResult.DONE)
-                                Debug.WriteLine("UpdateBallot: Successfully updated the ballot with id {0}.", newBallot.Id);
+                                Debug.WriteLine("UpdateBallot: Successfully updated the ballot with id {0} in DB.", newBallot.Id);
                             else
                                 Debug.WriteLine("UpdateBallot: Failed to update the ballot with id {0}.", newBallot.Id);
                         }

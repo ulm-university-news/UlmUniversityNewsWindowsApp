@@ -1485,8 +1485,8 @@ Nachricht am: </value>
   <data name="AddAndEditConversationEditConversationStatus" xml:space="preserve">
     <value>Ändere Konversation</value>
   </data>
-  <data name="AddAndEditConversationIsClosedCheckBox.Content" xml:space="preserve">
-    <value>Konversation schließen</value>
+  <data name="AddAndEditConversationIsClosedCheckBox.Text" xml:space="preserve">
+    <value>Konversation geschlossen</value>
   </data>
   <data name="AddAndEditConversationIsClosedHint.Text" xml:space="preserve">
     <value>(geschlossen)</value>
@@ -1574,5 +1574,137 @@ Nachricht am: </value>
   </data>
   <data name="VE_BallotTitleIsNullValidationError" xml:space="preserve">
     <value>Bitte geben Sie einen Titel für die Abstimmung an.</value>
+  </data>
+  <data name="AddAndEditBallotAddBallotDrawerTitle.Text" xml:space="preserve">
+    <value>Abstimmung hinzufügen</value>
+  </data>
+  <data name="AddAndEditBallotAddBallotOptionButton.Label" xml:space="preserve">
+    <value>füge hinzu</value>
+  </data>
+  <data name="AddAndEditBallotAddDescription.Text" xml:space="preserve">
+    <value>Bitte geben Sie die Daten für die neue Abstimmung an. Beschreiben Sie den Sachverhalt, über den abgestimmt wird. Die mit einem * markierten Felder sind Pflichtfelder.</value>
+  </data>
+  <data name="AddAndEditBallotCreateBallotButton.Label" xml:space="preserve">
+    <value>anlegen</value>
+  </data>
+  <data name="AddAndEditBallotDeleteOptionButton.Label" xml:space="preserve">
+    <value>lösche option</value>
+  </data>
+  <data name="AddAndEditBallotDescriptionTextBox.Header" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="AddAndEditBallotDescriptionTextBox.PlaceholderText" xml:space="preserve">
+    <value>Beschreibung eingeben</value>
+  </data>
+  <data name="AddAndEditBallotDetailsPivotItem.Header" xml:space="preserve">
+    <value>Abstimmungsdaten</value>
+  </data>
+  <data name="AddAndEditBallotEditDescription.Text" xml:space="preserve">
+    <value>Der Dialog ermöglicht die Änderung der Daten der Abstimmung. Neue Abstimmungsoptionen können definiert werden oder bestehende entfernt werden. Wenn Nutzer nicht weiter abstimmen sollen, kann die Abstimmung geschlossen werden.</value>
+  </data>
+  <data name="AddAndEditBallotIsClosedCheckBox.Text" xml:space="preserve">
+    <value>Abstimmung geschlossen</value>
+  </data>
+  <data name="AddAndEditBallotIsClosedDescription.Text" xml:space="preserve">
+    <value>Wenn Sie die Abstimmung schließen können Teilnehmer der Gruppe nicht weiter für diese Abstimmung abstimmen.</value>
+  </data>
+  <data name="AddAndEditBallotIsClosedHeadline.Text" xml:space="preserve">
+    <value>Abstimmung schließen</value>
+  </data>
+  <data name="AddAndEditBallotMultipleChoiceCheckBoxText.Text" xml:space="preserve">
+    <value>Multiple Choice</value>
+  </data>
+  <data name="AddAndEditBallotMultipleChoiceDescription.Text" xml:space="preserve">
+    <value>Geben Sie an, ob Nutzer mehrere Abstimmungsoptionen wählen können, oder ob jeder Nutzer nur eine Wahlmöglichkeit besitzt.</value>
+  </data>
+  <data name="AddAndEditBallotNewOptionTextField.Header" xml:space="preserve">
+    <value>Abstimmungsoption</value>
+  </data>
+  <data name="AddAndEditBallotNewOptionTextField.PlaceholderText" xml:space="preserve">
+    <value>Abstimmungsoption hinzufügen</value>
+  </data>
+  <data name="AddAndEditBallotNextPivotItemButton.Label" xml:space="preserve">
+    <value>weiter</value>
+  </data>
+  <data name="AddAndEditBallotNoOptionsText.Text" xml:space="preserve">
+    <value>Es wurden noch keine Abstimmungsoptionen für die Abstimmung definiert.</value>
+  </data>
+  <data name="AddAndEditBallotOptionsDescription.Text" xml:space="preserve">
+    <value>Fügen Sie Abstimmungsoptionen zur Abstimmung hinzu. Abstimmungsoptionen können auch wieder entfernt werden. Eine Abstimmung sollte immer mindestens 2 Abstimmungsoptionen haben.</value>
+  </data>
+  <data name="AddAndEditBallotOptionsPivotItem.Header" xml:space="preserve">
+    <value>Abstimmungsoptionen</value>
+  </data>
+  <data name="AddAndEditBallotPublicVotesCheckBoxText.Text" xml:space="preserve">
+    <value>Öffentlich</value>
+  </data>
+  <data name="AddAndEditBallotPublicVotesDescription.Text" xml:space="preserve">
+    <value>Geben Sie an, ob bei der Anzeige der Abstimmungsergebnisse die Namen der Nutzer angezeigt werden sollen.</value>
+  </data>
+  <data name="AddAndEditBallotSaveChangesButton.Label" xml:space="preserve">
+    <value>speichern</value>
+  </data>
+  <data name="AddAndEditBallotSelectOptionsToggleButton.Label" xml:space="preserve">
+    <value>wähle</value>
+  </data>
+  <data name="AddAndEditBallotTitleTextBox.Header" xml:space="preserve">
+    <value>Titel *</value>
+  </data>
+  <data name="AddAndEditBallotTitleTextBox.PlaceholderText" xml:space="preserve">
+    <value>Titel eingeben</value>
+  </data>
+  <data name="AddAndEditConversationIsClosedHeadline.Text" xml:space="preserve">
+    <value>Konversation schließen</value>
+  </data>
+  <data name="ApplicationErrorOptionUpdatesErrorsOccurred" xml:space="preserve">
+    <value>Die Abstimmungsdaten konnte erfolgreich aktualisiert werden. Bei der Aktualisierung der Abstimmungsoptionen sind jedoch Fehler aufgetreten. Bitte geben Sie auf die Abstimmungsansicht und synchronisieren Sie die Abstimmung mit dem Server. Prüfen Sie dann, welche Optionen erfolgreich aktualisiert wurden und versuchen Sie die Aktualisierung erneut.</value>
+  </data>
+  <data name="BallotAdministratorField.Text" xml:space="preserve">
+    <value>Abstimmungsadministrator</value>
+  </data>
+  <data name="BallotDetailsBallotInfoPivotItem.Header" xml:space="preserve">
+    <value>Abstimmungsdetails</value>
+  </data>
+  <data name="BallotDetailsDescriptionField.Text" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="BallotDetailsEditBallotButton.Label" xml:space="preserve">
+    <value>bearbeiten</value>
+  </data>
+  <data name="BallotDetailsNoOptionResultsInfo.Text" xml:space="preserve">
+    <value>Es konnten keine Ergebnisse gelistet werden.</value>
+  </data>
+  <data name="BallotDetailsNoOptionsInfo.Text" xml:space="preserve">
+    <value>Es wurden keine Abstimmungsoptionen definiert.</value>
+  </data>
+  <data name="BallotDetailsPlaceVoteButton.Label" xml:space="preserve">
+    <value>abstimmen</value>
+  </data>
+  <data name="BallotDetailsPlaceVotePivotItem.Header" xml:space="preserve">
+    <value>Abstimmen</value>
+  </data>
+  <data name="BallotDetailsSynchronizeBallotButton.Label" xml:space="preserve">
+    <value>synchro-nisieren</value>
+  </data>
+  <data name="BallotDetailsTitleField.Text" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="BallotDetailsVotingResultsPivotItem.Header" xml:space="preserve">
+    <value>Ergebnis</value>
+  </data>
+  <data name="BallotMultipleChoiceStatusContent.Text" xml:space="preserve">
+    <value>Diese Option gibt an, ob die Gruppenmitglieder mehrere Optionen dieser Abstimmungen wählen können. Wenn die Option deaktiviert ist, ist nur eine Abstimmungsoption möglich.</value>
+  </data>
+  <data name="BallotMultipleChoiceStatusHeader.Text" xml:space="preserve">
+    <value>Multiple Choice:</value>
+  </data>
+  <data name="BallotPublicVotesStatusContent.Text" xml:space="preserve">
+    <value>Diese Option gibt an, ob die Gruppenmitglieder sehen können, wer für welche Abstimmungsoptionen gestimmt hat. Wenn die Option deaktiviert ist, können die einzelnen Stimmen keine Teilnehmer zugeordnet werden und es wird nur die Anzahl der Stimmen angezeigt.</value>
+  </data>
+  <data name="BallotPublicVotesStatusHeader.Text" xml:space="preserve">
+    <value>Öffentlich:</value>
+  </data>
+  <data name="GroupDetailsAddBallotButton.Label" xml:space="preserve">
+    <value>füge hinzu</value>
   </data>
 </root>

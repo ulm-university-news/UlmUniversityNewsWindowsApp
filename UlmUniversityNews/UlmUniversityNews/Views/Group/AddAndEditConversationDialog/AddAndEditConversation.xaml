@@ -174,23 +174,36 @@
                             </Grid>
 
                             <!-- Konversation geschlossen Check Box-->
-                            <Grid Grid.Row="2">
+                            <Grid Grid.Row="2" Margin="0, 5, 0, 0">
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <CheckBox 
+                                <TextBlock
                                     Grid.Row="0"
+                                    x:Name="AddAndEditConversationIsClosedHeadline"
+                                    x:Uid="AddAndEditConversationIsClosedHeadline"
+                                    Style="{StaticResource DialogInlineFontStyle}"
+                                    Text="Konversation schließen"
+                                    />
+
+                                <CheckBox 
+                                    Grid.Row="1"
                                     x:Name="AddAndEditConversationIsClosedCheckBox"
-                                    x:Uid="AddAndEditConversationIsClosedCheckBox"
+                                    Style="{StaticResource UUNCheckBoxStyle}"
                                     Visibility="{Binding IsEditDialog, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                    Content="Konversation schließen"
-                                    IsChecked="{Binding IsClosedChecked, Mode=TwoWay}"
-                                />
+                                    IsChecked="{Binding IsClosedChecked, Mode=TwoWay}">
+                                    <TextBlock 
+                                        x:Uid="AddAndEditConversationIsClosedCheckBox"
+                                        Style="{StaticResource DialogInlineFontStyle}"
+                                        Text="Konversation geschlossen"
+                                        />
+                                </CheckBox>
 
                                 <TextBlock 
-                                    Grid.Row="1"
+                                    Grid.Row="2"
                                     x:Name="AddAndEditConversationCloseConversationWarning"
                                     x:Uid="AddAndEditConversationCloseConversationWarning"
                                     Style="{StaticResource UniversityNewsUlmStandardText}"

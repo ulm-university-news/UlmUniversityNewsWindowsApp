@@ -63,6 +63,7 @@ namespace DataHandlingLayer.DataModel
         /// <summary>
         /// Der Name des Administrators der Abstimmung.
         /// </summary>
+        [JsonIgnore]
         public string AdminName
         {
             get { return adminName; }
@@ -124,19 +125,40 @@ namespace DataHandlingLayer.DataModel
 
         }
 
+        /// <summary>
+        /// ToString Methode für Abstimmungen.
+        /// </summary>
+        /// <returns>Generierten String mit Eigenschaftswerten.</returns>
+        public override string ToString()
+        {
+            return string.Format("Ballot: Id: {0}, Title: {1}, Description: {2}, IsMultipleChoice: {3}, HasPublicVotes: {4}, IsClosed: {5}, " +
+                "AdminId: {6}, AdminName: {7}.",
+                Id,
+                Title,
+                Description,
+                IsMultipleChoice,
+                HasPublicVotes,
+                IsClosed,
+                AdminId,
+                AdminName);            
+        }
+
         #region ValidationRules
         /// <summary>
         /// Validiert die Eigenschaft "Description" der Ballot Instanz.
         /// </summary>
         public void ValidateDescriptionProperty()
         {
-            if (!checkStringRange(
+            if (Description != null)
+            {
+                if (!checkStringRange(
                 Constants.Constants.MinBallotDescriptionLength,
                 Constants.Constants.MaxBallotDescriptionLength,
                 Description))
-            {
-                SetValidationError("Description", "VE_BallotDescriptionInvalidLengthValidationError");
-            }
+                {
+                    SetValidationError("Description", "VE_BallotDescriptionInvalidLengthValidationError");
+                }
+            }            
         }
 
         /// <summary>

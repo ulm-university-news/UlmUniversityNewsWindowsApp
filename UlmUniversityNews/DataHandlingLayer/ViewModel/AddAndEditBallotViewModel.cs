@@ -44,6 +44,18 @@ namespace DataHandlingLayer.ViewModel
             set { this.setProperty(ref this.isEditDialog, value); }
         }
 
+        private int selectedPivotItemIndex;
+        /// <summary>
+        /// Gibt den Index des aktuell aktiven PivotItems an.
+        /// Index 0 -> Abstimmungsdaten
+        /// Index 1 -> Abstimmungsoptionen
+        /// </summary>
+        public int SelectedPivotItemIndex
+        {
+            get { return selectedPivotItemIndex; }
+            set { this.setProperty(ref this.selectedPivotItemIndex, value); }
+        }
+
         #region InputRelatedProperties
         private string enteredTitle;
         /// <summary>
@@ -85,6 +97,16 @@ namespace DataHandlingLayer.ViewModel
         {
             get { return isPublicVotesSelected; }
             set { this.setProperty(ref this.isPublicVotesSelected, value); }
+        }
+
+        private bool isClosedSelected;
+        /// <summary>
+        /// Gibt an, ob die CheckBox für die IsClosed Eigenschaft aktuell gewählt ist.
+        /// </summary>
+        public bool IsClosedSelected
+        {
+            get { return isClosedSelected; }
+            set { this.setProperty(ref this.isClosedSelected, value); }
         }
 
         private string enteredOptionText;
@@ -237,6 +259,36 @@ namespace DataHandlingLayer.ViewModel
             {
                 AffectedGroup = await Task.Run(() => groupController.GetGroup(groupId));
                 EditableBallot = await Task.Run(() => groupController.GetBallot(ballotId, true));
+
+                if (EditableBallot != null)
+                {
+                    // Setze Eigenschaften.
+                    EnteredTitle = EditableBallot.Title;
+                    EnteredDescription = EditableBallot.Description;
+
+                    if (EditableBallot.IsMultipleChoice.HasValue && EditableBallot.IsMultipleChoice.Value == true)
+                        IsMultipleChoiceSelected = true;
+                    else
+                        IsMultipleChoiceSelected = false;
+
+                    if (EditableBallot.HasPublicVotes.HasValue && EditableBallot.HasPublicVotes.Value == true)
+                        IsPublicVotesSelected = true;
+                    else
+                        IsPublicVotesSelected = false;
+
+                    if (EditableBallot.IsClosed.HasValue && EditableBallot.IsClosed.Value == true)
+                        IsClosedSelected = true;
+                    else
+                        IsClosedSelected = false;
+
+                    if (EditableBallot.Options != null)
+                    {
+                        foreach (Option option in EditableBallot.Options)
+                        {
+                            BallotOptionsCollection.Add(option);
+                        }
+                    }
+                }                
             }
             catch (ClientException ex)
             {
@@ -261,6 +313,7 @@ namespace DataHandlingLayer.ViewModel
 
             ballot.IsMultipleChoice = IsMultipleChoiceSelected;
             ballot.HasPublicVotes = IsPublicVotesSelected;
+            ballot.IsClosed = IsClosedSelected;
 
             ballot.AdminId = groupController.GetLocalUser().Id;
 
@@ -326,6 +379,11 @@ namespace DataHandlingLayer.ViewModel
                         _navService.GoBack();
                     }
                 }
+                else
+                {
+                    // Wechsel auf Abstimmungsdaten-PivotItem.
+                    SelectedPivotItemIndex = 0;
+                }
             }
             catch (ClientException ex)
             {
@@ -349,7 +407,6 @@ namespace DataHandlingLayer.ViewModel
             if (AffectedGroup != null && !AffectedGroup.Deleted &&
                 IsEditDialog && 
                 EditableBallot != null && 
-                EditableBallot.IsClosed.HasValue && EditableBallot.IsClosed.Value == false &&
                 BallotOptionsCollection != null && BallotOptionsCollection.Count >= 2)
             {
                 return true;
@@ -358,9 +415,44 @@ namespace DataHandlingLayer.ViewModel
             return false;
         }
 
+        /// <summary>
+        /// Führt den Befehl zum Bearbeiten einer bestehenden Abstimmung aus.
+        /// Stößt den Bearbeitungsprozess an.
+        /// </summary>
         private async Task executeEditBallotAsync()
         {
-            // TODO
+            Ballot newBallot = generateBallotObjectFromEnteredData();
+            try
+            {
+                displayIndeterminateProgressIndicator();
+
+                bool successful = await Task.Run(() => groupController.EditBallotAsync(
+                    AffectedGroup.Id,
+                    EditableBallot,
+                    newBallot));
+
+                if (successful)
+                {
+                    if (_navService.CanGoBack())
+                    {
+                        _navService.GoBack();
+                    }
+                }
+                else
+                {
+                    // Wechsel auf das Abstimmungsdaten-PivotItem.
+                    SelectedPivotItemIndex = 0;
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("executeEditBallotAsync: Failed to perform update. Error code: {0}.", ex.ErrorCode);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
         }
 
         /// <summary>

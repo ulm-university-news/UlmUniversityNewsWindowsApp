@@ -166,64 +166,6 @@ namespace UlmUniversityNews.Views.Group
             {
                 DrawerLayout.OpenDrawer();
             }
-        }
-
-        private void BallotDetailsSelectOptionsButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (BallotDetailsMultipleChoiceList.Visibility == Visibility.Visible && 
-                BallotDetailsMultipleChoiceList.SelectionMode == ListViewSelectionMode.Single)
-            {
-                BallotDetailsMultipleChoiceList.SelectionMode = ListViewSelectionMode.Multiple;
-                
-                BallotDetailsPlaceVoteButton.Visibility = Visibility.Collapsed;
-                BallotDetailsDeleteOptionButton.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                BallotDetailsMultipleChoiceList.SelectionMode = ListViewSelectionMode.Single;
-
-                BallotDetailsPlaceVoteButton.Visibility = Visibility.Visible;
-                BallotDetailsDeleteOptionButton.Visibility = Visibility.Collapsed;
-            }
-
-            if (BallotDetailsSingleChoiceList.Visibility == Visibility.Visible && 
-                BallotDetailsSingleChoiceList.SelectionMode == ListViewSelectionMode.Single)
-            {
-                BallotDetailsSingleChoiceList.SelectionMode = ListViewSelectionMode.Multiple;
-                
-                BallotDetailsPlaceVoteButton.Visibility = Visibility.Collapsed;
-                BallotDetailsDeleteOptionButton.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                BallotDetailsSingleChoiceList.SelectionMode = ListViewSelectionMode.Single;
-                
-                BallotDetailsPlaceVoteButton.Visibility = Visibility.Visible;
-                BallotDetailsDeleteOptionButton.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        private void BallotDetailsDeleteOptionButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (BallotDetailsMultipleChoiceList.Visibility == Visibility.Visible)
-            {
-                foreach(var item in BallotDetailsMultipleChoiceList.SelectedItems)
-                {
-                    System.Diagnostics.Debug.WriteLine(item.GetType());
-                    DataHandlingLayer.DataModel.Option option = item as DataHandlingLayer.DataModel.Option;
-                    System.Diagnostics.Debug.WriteLine(option.Text);
-                }
-            }
-
-            if (BallotDetailsSingleChoiceList.Visibility == Visibility.Visible)
-            {
-                foreach (var item in BallotDetailsSingleChoiceList.SelectedItems)
-                {
-                    System.Diagnostics.Debug.WriteLine(item.GetType());
-                    DataHandlingLayer.DataModel.Option option = item as DataHandlingLayer.DataModel.Option;
-                    System.Diagnostics.Debug.WriteLine(option.Text);
-                }
-            }
-        }
+        }       
     }
 }
