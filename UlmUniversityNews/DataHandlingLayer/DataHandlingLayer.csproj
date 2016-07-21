@@ -170,6 +170,7 @@
     <Compile Include="ViewModel\ConversationDetailsViewModel.cs" />
     <Compile Include="ViewModel\DialogBaseViewModel.cs" />
     <Compile Include="ViewModel\GroupDetailsViewModel.cs" />
+    <Compile Include="ViewModel\GroupParticipantsViewModel.cs" />
     <Compile Include="ViewModel\GroupSettingsViewModel.cs" />
     <Compile Include="ViewModel\HomescreenViewModel.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />

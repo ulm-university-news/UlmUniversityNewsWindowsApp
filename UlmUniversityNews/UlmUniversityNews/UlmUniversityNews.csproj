@@ -130,6 +130,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Group\GroupParticipants.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Group\GroupSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -271,6 +275,9 @@
     </Compile>
     <Compile Include="Views\Group\GroupDetails.xaml.cs">
       <DependentUpon>GroupDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Group\GroupParticipants.xaml.cs">
+      <DependentUpon>GroupParticipants.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Group\GroupSettings.xaml.cs">
       <DependentUpon>GroupSettings.xaml</DependentUpon>
@@ -441,6 +448,7 @@
     <Content Include="Assets\conversationIcons\conversation_closed_admin_white.png" />
     <Content Include="Assets\conversationIcons\conversation_closed_white.png" />
     <Content Include="Assets\Drawer\feature.settings.png" />
+    <Content Include="Assets\extIcons\appbar.cancel.png" />
     <Content Include="Assets\extIcons\appbar.delete.png" />
     <Content Include="Assets\extIcons\appbar.door.enter.png" />
     <Content Include="Assets\extIcons\appbar.door.leave.png" />

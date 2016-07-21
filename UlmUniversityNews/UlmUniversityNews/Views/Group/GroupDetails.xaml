@@ -387,6 +387,13 @@
 
             <!-- Secondary commands -->
             <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="GroupDetailsManageParticipantsButton"
+                              x:Uid="GroupDetailsManageParticipantsButton"
+                              Icon="People"
+                              Label="teilnehmer verwalten"
+                              Visibility="{Binding ElementName=GroupDetailsManageParticipantsButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                              Command="{Binding SwichToGroupParticipantsViewCommand}"
+                              />
                 <AppBarButton
                 x:Name="GroupDetailsLeaveGroupButton"
                 x:Uid="GroupDetailsLeaveGroupButton"

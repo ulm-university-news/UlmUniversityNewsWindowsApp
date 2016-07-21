@@ -37,6 +37,11 @@ namespace UlmUniversityNews.Converters
                     // Setze normales group icon.
                     iconPath = "/Assets/groupIcons/g.png";
                 }
+
+                if (group.Deleted)
+                {
+                    iconPath = "/Assets/channelIcons/ic_deleted.png";
+                }
             }
 
             return iconPath;

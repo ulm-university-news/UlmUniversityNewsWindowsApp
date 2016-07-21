@@ -325,6 +325,7 @@ namespace UlmUniversityNews
             NavigationService.RegisterPage("AddAndEditConversation", typeof(Views.Group.AddAndEditConversationDialog.AddAndEditConversation));
             NavigationService.RegisterPage("BallotDetails", typeof(Views.Group.BallotDetails));
             NavigationService.RegisterPage("AddAndEditBallot", typeof(Views.Group.AddAndEditBallotDialog.AddAndEditBallot));
+            NavigationService.RegisterPage("GroupParticipants", typeof(Views.Group.GroupParticipants));
         }
 
         /// <summary>

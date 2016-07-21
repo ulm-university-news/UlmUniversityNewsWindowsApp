@@ -312,7 +312,7 @@ Dazu müssen Sie unten einen Nutzername angeben und die Nutzungsbedingungen akze
     <value>Wollen Sie diesen Kanal wirklich deabonnieren?</value>
   </data>
   <data name="ChannelDetailsUpdateAnnouncementsButton.Label" xml:space="preserve">
-    <value>aktualisiere nachrichten</value>
+    <value>synchro-nisieren</value>
   </data>
   <data name="DrawerMenuEntryApplicationSettings" xml:space="preserve">
     <value>Anwendungs-einstellungen</value>
@@ -1051,10 +1051,10 @@ Nachricht am: </value>
     <value>Damit die Einstellungen bezüglich der bevorzugten Sprache wirksam werden, starten Sie die Anwendung bitte neu.</value>
   </data>
   <data name="ChannelDetailsSynchronizeChannelInformationButton.Label" xml:space="preserve">
-    <value>aktuali-siere info</value>
+    <value>synchro-nisieren</value>
   </data>
   <data name="ChannelSearchSynchronizeChannelsButton.Label" xml:space="preserve">
-    <value>aktuali-sieren</value>
+    <value>synchro-nisieren</value>
   </data>
   <data name="HomescreenModeratorNoManagedChannelsInfo.Text" xml:space="preserve">
     <value>Es gibt noch keinen von Ihnen verwalteten Kanal. Sie können einen neuen Kanal anlegen, indem Sie auf den Button am unteren Ende der Seite klicken.</value>
@@ -1402,7 +1402,7 @@ Nachricht am: </value>
     <value>Wollen Sie die Gruppe wirklich löschen? Das kann nicht rückgängig gemacht werden.</value>
   </data>
   <data name="GroupDetailsSynchronizeButton.Label" xml:space="preserve">
-    <value>aktuali-sieren</value>
+    <value>synchro-nisieren</value>
   </data>
   <data name="GroupDetailsSynchronizeConversationStatus" xml:space="preserve">
     <value>Synchronisiere Konversationen</value>
@@ -1579,7 +1579,7 @@ Nachricht am: </value>
     <value>Abstimmung hinzufügen</value>
   </data>
   <data name="AddAndEditBallotAddBallotOptionButton.Label" xml:space="preserve">
-    <value>füge hinzu</value>
+    <value>hinzufügen</value>
   </data>
   <data name="AddAndEditBallotAddDescription.Text" xml:space="preserve">
     <value>Bitte geben Sie die Daten für die neue Abstimmung an. Beschreiben Sie den Sachverhalt, über den abgestimmt wird. Die mit einem * markierten Felder sind Pflichtfelder.</value>
@@ -1726,12 +1726,51 @@ Nachricht am: </value>
     <value>löschen</value>
   </data>
   <data name="GroupDetailsAddBallotButton.Label" xml:space="preserve">
-    <value>füge hinzu</value>
+    <value>hinzufügen</value>
   </data>
   <data name="GroupDetailsDeleteGroupLocallyWarning.Text" xml:space="preserve">
     <value>Es handelt sich hier um eine Gruppe, die keinen Repräsentanten auf dem Server mehr hat. Sie können diese Gruppe auch aus Ihren lokalen Datensätzen entfernen.</value>
   </data>
   <data name="GroupDetailsGroupDeletedHint.Text" xml:space="preserve">
     <value>(gelöscht)</value>
+  </data>
+  <data name="ConversationDetailsEditConversationButton.Label" xml:space="preserve">
+    <value>bearbeiten</value>
+  </data>
+  <data name="GroupDetailsManageParticipantsButton.Label" xml:space="preserve">
+    <value>teilnehmer verwalten</value>
+  </data>
+  <data name="GroupParticipantsAdminHeadline.Text" xml:space="preserve">
+    <value>Administrator</value>
+  </data>
+  <data name="GroupParticipantsDeleteParticipantsButton.Label" xml:space="preserve">
+    <value>entfernen</value>
+  </data>
+  <data name="GroupParticipantsDescription.Text" xml:space="preserve">
+    <value>Hier können Sie die Mitglieder der Gruppe einsehen und verwalten. Mitglieder können aus der Gruppe entfernt werden.</value>
+  </data>
+  <data name="GroupParticipantsHeadline.Text" xml:space="preserve">
+    <value>Gruppenmitglieder</value>
+  </data>
+  <data name="GroupParticipantsParticipantsHeadline.Text" xml:space="preserve">
+    <value>Teilnehmer</value>
+  </data>
+  <data name="GroupParticipantsRemoveParticipantFlyoutButton.Content" xml:space="preserve">
+    <value>Entfernen</value>
+  </data>
+  <data name="GroupParticipantsRemoveParticipantStatus" xml:space="preserve">
+    <value>Entferne Teilnehmer</value>
+  </data>
+  <data name="GroupParticipantsRemoveParticipantWarning.Text" xml:space="preserve">
+    <value>Wollen Sie die ausgewählten Teilnehmer wirklich von der Gruppe entfernen?</value>
+  </data>
+  <data name="GroupParticipantsSelectToggleButton.Label" xml:space="preserve">
+    <value>wählen</value>
+  </data>
+  <data name="GroupParticipantsSynchronizationButton.Label" xml:space="preserve">
+    <value>synchro-nisieren</value>
+  </data>
+  <data name="GroupParticipantsSynchronizationStatus" xml:space="preserve">
+    <value>Synchronisiere Teilnehmer</value>
   </data>
 </root>

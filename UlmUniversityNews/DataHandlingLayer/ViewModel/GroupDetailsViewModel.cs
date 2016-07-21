@@ -259,6 +259,16 @@ namespace DataHandlingLayer.ViewModel
             get { return switchToCreateBallotDialogCommand; }
             set { switchToCreateBallotDialogCommand = value; }
         }
+
+        private RelayCommand swichToGroupParticipantsViewCommand;
+        /// <summary>
+        /// Befehl zum Wechsel auf die Verwaltungsseite für Gruppenteilnehmer.
+        /// </summary>
+        public RelayCommand SwichToGroupParticipantsViewCommand
+        {
+            get { return swichToGroupParticipantsViewCommand; }
+            set { swichToGroupParticipantsViewCommand = value; }
+        }
         #endregion Commands 
 
         /// <summary>
@@ -309,6 +319,9 @@ namespace DataHandlingLayer.ViewModel
             SwitchToCreateBallotDialogCommand = new RelayCommand(
                 param => executeSwitchToCreateBallotDialogCommand(),
                 param => canSwitchToCreateBallotDialog());
+            SwichToGroupParticipantsViewCommand = new RelayCommand(
+                param => executeSwitchToGroupParticipantsView(),
+                param => canSwitchToGroupParticipantsView());
         }
 
         /// <summary>
@@ -646,6 +659,7 @@ namespace DataHandlingLayer.ViewModel
             ChangeToGroupSettingsCommand.RaiseCanExecuteChanged();
             ChangeToAddConversationDialog.RaiseCanExecuteChanged();
             SwitchToCreateBallotDialogCommand.RaiseCanExecuteChanged();
+            SwichToGroupParticipantsViewCommand.RaiseCanExecuteChanged();
         }
 
         /// <summary>
@@ -1055,6 +1069,31 @@ namespace DataHandlingLayer.ViewModel
         {
             string navigationParameter = "navParam?groupId=" + SelectedGroup.Id;
             _navService.Navigate("AddAndEditBallot", navigationParameter);
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zur Verwaltung der Mitglieder aktuell zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canSwitchToGroupParticipantsView()
+        {
+            if (SelectedGroup != null && !SelectedGroup.Deleted && 
+                IsGroupParticipant && !IsRemovedFromGroup && 
+                localUser.Id == SelectedGroup.GroupAdmin)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl SwitchToGroupParticipantsView aus. Stößt den
+        /// Wechsel auf die Verwaltungsseite für Gruppenteilnehmer an.
+        /// </summary>
+        private void executeSwitchToGroupParticipantsView()
+        {
+            _navService.Navigate("GroupParticipants", SelectedGroup.Id);
         }
         #endregion CommandFunctionality
 
