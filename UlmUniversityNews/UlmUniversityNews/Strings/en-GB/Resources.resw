@@ -300,7 +300,7 @@ To do that you just have to enter a user name below and accept the terms of user
     <value>subscribe channel</value>
   </data>
   <data name="ChannelDetailsUnsubscribeChannelButton.Label" xml:space="preserve">
-    <value>unsub-scribe</value>
+    <value>unsubscribe</value>
   </data>
   <data name="ChannelDetailsNoMessagesInChannelInfo.Text" xml:space="preserve">
     <value>This channel doesn't contain any messages.</value>

@@ -212,45 +212,47 @@
                 Label="subscribe channel"
                 Visibility="{Binding ChannelSubscribedStatus, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='inverse'}"
                 Command="{Binding SubscribeChannelCommand}" />
-            
-            <AppBarButton
+
+            <CommandBar.SecondaryCommands>
+                <AppBarButton
                 x:Name="UnsubscribeChannelButton"
                 x:Uid="ChannelDetailsUnsubscribeChannelButton"
                 Icon="UnFavorite"
                 Label="unsubscribe channel"
-                Visibility="{Binding CanUnsubscribeChannel, Converter={StaticResource BooleanToVisibilityConverter}}"> <!--Visibility="{Binding ElementName=UnsubscribeChannelButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" Command="{Binding UnsubscribeChannelCommand}"-->
-                <AppBarButton.Flyout>
-                    <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}">
-                        <Grid
+                Visibility="{Binding CanUnsubscribeChannel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <!--Visibility="{Binding ElementName=UnsubscribeChannelButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" Command="{Binding UnsubscribeChannelCommand}"-->
+                    <AppBarButton.Flyout>
+                        <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}">
+                            <Grid
                             VerticalAlignment="Stretch"
                             HorizontalAlignment="Stretch">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            
-                            <!-- Warnhinweis bezüglich Löschoperation. -->
-                            <TextBlock 
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Warnhinweis bezüglich Löschoperation. -->
+                                <TextBlock 
                                 Grid.Row="0"
                                 x:Name="UnsubscribeChannelWarning"
                                 x:Uid="ChannelDetailsUnsubscribeChannelWarning"
                                 Style="{StaticResource TextInFlyoutsStyle}" >
                                 Wollen Sie den Kanal wirklich deabonnieren?
-                            </TextBlock>
-                            
-                            <!-- Löschen Button-->
-                            <Button
+                                </TextBlock>
+
+                                <!-- Löschen Button-->
+                                <Button
                                 Grid.Row="1"
                                 x:Name="UnsubscribeChannelFlyoutButton"
                                 x:Uid="ChannelDetailsUnsubscribeChannelFlyoutButton"
                                 Style="{StaticResource FlyoutSingleButtonStyle}"
                                 Content="Delete"
                                 Command="{Binding UnsubscribeChannelCommand}"/>
-                        </Grid>
-                    </Flyout>
-                </AppBarButton.Flyout>
-            </AppBarButton>
-            
+                            </Grid>
+                        </Flyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
+            </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
 
@@ -295,8 +297,8 @@
               Background="{Binding Channel, Converter={StaticResource ChannelToDrawerMenuBackgroundConverter}}" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <!-- Drawer Icon -->
@@ -305,18 +307,35 @@
                    Style="{StaticResource DrawerIconStyle}"
                    Tapped="DrawerIcon_Tapped" />
 
-            <!-- Drawer Text -->
-            <TextBlock Grid.Column="1"
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Drawer Text -->
+                <TextBlock Grid.Column="0"
                        x:Uid="ChannelDetailsPageTitle"
                        Style="{StaticResource DrawerTextStyle}"
                        Text="{Binding Channel.Name, TargetNullValue='Details', FallbackValue='Details'}" />
-            
-            <!-- Gelöscht Markierung -->
-            <TextBlock Grid.Column="2"
+
+                <!-- Gelöscht Markierung -->
+                <TextBlock Grid.Column="1"
                        x:Uid="ChannelDetailsChannelMarkedAsDeletedText"
                        Style="{StaticResource DrawerTextStyle}"
-                       Visibility="{Binding Channel.Deleted, TargetNullValue='0', FallbackValue='0', Converter={StaticResource BooleanToVisibilityConverter}}" />
-          
+                       Visibility="{Binding Channel.Deleted, TargetNullValue=Collapsed, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            </Grid>
+
+            <!-- Gruppe als gelöscht markiert - Hinweis -->
+            <Image Grid.Column="2" 
+                   Source="/Assets/extIcons/appbar.delete.png"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Height="50"
+                   Width="50"
+                   Visibility="{Binding Channel.Deleted, TargetNullValue=Collapsed, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                   />
+
         </Grid> <!-- Ende Titelbereich Drawer -->
 
         <!--Inhalt der Seite und Inhalt des Drawer Menü-->

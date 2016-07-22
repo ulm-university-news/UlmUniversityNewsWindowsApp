@@ -433,7 +433,8 @@ namespace DataHandlingLayer.ViewModel
                 List<Conversation> conversations = await Task.Run(() => groupController.GetConversations(groupId));
                 if (conversations != null)
                 {
-                    // TODO sortieren
+                    // Sortieren.
+                    conversations = sortConversationsByApplicationSettings(conversations);
 
                     if (ConversationCollection == null)
                         ConversationCollection = new ObservableCollection<Conversation>();
@@ -466,7 +467,8 @@ namespace DataHandlingLayer.ViewModel
                 List<Ballot> ballots = await Task.Run(() => groupController.GetBallots(groupId, false));
                 if (ballots != null)
                 {
-                    // TODO sortieren 
+                    // Sortieren.
+                    ballots = sortBallotsByApplicationSettings(ballots); 
 
                     if (BallotCollection == null)
                         BallotCollection = new ObservableCollection<Ballot>();
@@ -501,7 +503,8 @@ namespace DataHandlingLayer.ViewModel
                 // Aktualisere Anzeige. Rufe synchronisierte Daten ab.
                 List<Conversation> conversations = await Task.Run(() => groupController.GetConversations(SelectedGroup.Id));
 
-                // TODO Sortieren.
+                // Sortieren.
+                conversations = sortConversationsByApplicationSettings(conversations);
 
                 ConversationCollection.Clear();
                 foreach (Conversation conv in conversations)
@@ -533,7 +536,8 @@ namespace DataHandlingLayer.ViewModel
                 // Aktualisere Anzeige. Rufe synchronisierte Daten ab.
                 List<Ballot> ballots = await Task.Run(() => groupController.GetBallots(SelectedGroup.Id, false));
 
-                // TODO Sortieren.
+                // Sortieren.
+                ballots = sortBallotsByApplicationSettings(ballots);
 
                 BallotCollection.Clear();
                 foreach (Ballot ballot in ballots)
@@ -629,6 +633,75 @@ namespace DataHandlingLayer.ViewModel
                 oldGroup.Deleted = newGroup.Deleted;
                 checkCommandExecution();
             }
+        }
+
+        /// <summary>
+        /// Sortiert die Liste von Konversationen anhand der aktuell gültigen Anwendungseinstellungen.
+        /// </summary>
+        /// <param name="conversations">Die zu sortierende Liste von Konversationen.</param>
+        /// <returns>Die sortierte Liste von Konversationen.</returns>
+        private List<Conversation> sortConversationsByApplicationSettings(List<Conversation> conversations)
+        {
+            AppSettings appSettings = groupController.GetApplicationSettings();
+
+            switch (appSettings.ConversationOrderSetting)
+            {
+                case DataModel.Enums.OrderOption.ALPHABETICAL:
+                    conversations = new List<Conversation>(
+                        from item in conversations
+                        orderby item.Title ascending 
+                        select item);
+                    break;
+                case DataModel.Enums.OrderOption.BY_NEW_MESSAGES_AMOUNT:
+                    conversations = new List<Conversation>(
+                        from item in conversations
+                        orderby item.AmountOfUnreadMessages descending, item.Title ascending
+                        select item);
+                    break;
+                default:
+                    conversations = new List<Conversation>(
+                        from item in conversations
+                        orderby item.Title ascending
+                        select item);
+                    break;
+            }
+
+            return conversations;
+        }
+
+        /// <summary>
+        /// Sortiert die Abstimmungen anhand der aktuell gültigen Anwendungseinstellungen.
+        /// </summary>
+        /// <param name="ballots">Die zu sortierende Liste von Abstimmungen.</param>
+        /// <returns>Die sortierte Liste von Abstimmungen.</returns>
+        private List<Ballot> sortBallotsByApplicationSettings(List<Ballot> ballots)
+        {
+            AppSettings appSettings = groupController.GetApplicationSettings();
+
+            switch (appSettings.BallotOrderSetting)
+            {
+                case DataModel.Enums.OrderOption.ALPHABETICAL:
+                    ballots = new List<Ballot>(
+                        from item in ballots
+                        orderby item.Title ascending
+                        select item);
+                    break;
+                case DataModel.Enums.OrderOption.BY_TYPE:
+                    ballots = new List<Ballot>(
+                        from item in ballots
+                        where item.IsMultipleChoice.HasValue && item.HasPublicVotes.HasValue
+                        orderby item.IsMultipleChoice descending, item.HasPublicVotes descending
+                        select item);
+                    break;
+                default:
+                    ballots = new List<Ballot>(
+                        from item in ballots
+                        orderby item.Title ascending
+                        select item);
+                    break;
+            }
+
+            return ballots;
         }
 
         /// <summary>

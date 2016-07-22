@@ -993,20 +993,20 @@
                     </PivotItem>
 
                     <!-- Pivotitem 4 - Events -->
-                    <PivotItem
+                    <!--<PivotItem
                         TabIndex="4"
                         Name="EventsPivotItem"
                         x:Uid="GroupDetailsEventsPivotItem"
                         Style="{StaticResource PivotItemStyle}"
                         Header="Events">
 
-                        <!-- Blende dieses PivotItem aus, wenn Nutzer nicht Teilnehmer der Gruppe ist.-->
+                        --><!-- Blende dieses PivotItem aus, wenn Nutzer nicht Teilnehmer der Gruppe ist.--><!--
                         <i:Interaction.Behaviors>
                             <common:HideablePivotItemBehavior x:Name="HidablePivotItemBehaviorElementEvents" Visible="{Binding IsGroupParticipant, UpdateSourceTrigger=PropertyChanged}" />
                         </i:Interaction.Behaviors>
 
-                        <!--TODO-->
-                    </PivotItem>
+                        --><!--TODO--><!--
+                    </PivotItem>-->
                 </Pivot>
             </Grid>
 

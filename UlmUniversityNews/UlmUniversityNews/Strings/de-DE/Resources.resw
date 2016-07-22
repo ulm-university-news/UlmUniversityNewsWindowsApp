@@ -300,7 +300,7 @@ Dazu müssen Sie unten einen Nutzername angeben und die Nutzungsbedingungen akze
     <value>abonniere kanal</value>
   </data>
   <data name="ChannelDetailsUnsubscribeChannelButton.Label" xml:space="preserve">
-    <value>deabonnie-re kanal</value>
+    <value>deabonniere kanal</value>
   </data>
   <data name="ChannelDetailsNoMessagesInChannelInfo.Text" xml:space="preserve">
     <value>Dieser Kanal enthält noch keine Nachrichten.</value>

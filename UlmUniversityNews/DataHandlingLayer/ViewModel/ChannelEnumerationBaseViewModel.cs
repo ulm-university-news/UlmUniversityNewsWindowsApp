@@ -60,7 +60,7 @@ namespace DataHandlingLayer.ViewModel
         /// <param name="channelId">Die Id des betroffenen Kanals.</param>
         public void PerformViewUpdateOnChannelDeletedEvent(int channelId)
         {
-            // Redraw herbeiführen durch Löschen und Wiedereinfügen. TODO: Gibt es hier nichts besseres?
+            // Redraw herbeiführen durch Löschen und Wiedereinfügen.
             Channel affectedChannel = ChannelCollection.Where(channel => channel.Id == channelId).FirstOrDefault();
             if (affectedChannel != null)
             {

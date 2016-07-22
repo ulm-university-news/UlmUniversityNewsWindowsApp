@@ -449,11 +449,13 @@
     <Content Include="Assets\conversationIcons\conversation_closed_white.png" />
     <Content Include="Assets\Drawer\feature.settings.png" />
     <Content Include="Assets\extIcons\appbar.cancel.png" />
+    <Content Include="Assets\extIcons\appbar.delete.black.png" />
     <Content Include="Assets\extIcons\appbar.delete.png" />
     <Content Include="Assets\extIcons\appbar.door.enter.png" />
     <Content Include="Assets\extIcons\appbar.door.leave.png" />
     <Content Include="Assets\extIcons\appbar.home.empty.png" />
     <Content Include="Assets\extIcons\appbar.information.png" />
+    <Content Include="Assets\extIcons\appbar.lock.black.png" />
     <Content Include="Assets\extIcons\appbar.lock.png" />
     <Content Include="Assets\extIcons\appbar.section.expand.png" />
     <Content Include="Assets\extIcons\appbar.transit.hazard.png" />

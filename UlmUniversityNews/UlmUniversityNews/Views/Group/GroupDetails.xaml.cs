@@ -96,8 +96,8 @@ namespace UlmUniversityNews.Views.Group
             HidablePivotItemBehaviorElementConversations.ClearValue(HideablePivotItemBehavior.VisibleProperty);
             HidablePivotItemBehaviorElementConversations.Visible = groupDetailsViewModel.IsGroupParticipant;
 
-            HidablePivotItemBehaviorElementEvents.ClearValue(HideablePivotItemBehavior.VisibleProperty);
-            HidablePivotItemBehaviorElementEvents.Visible = groupDetailsViewModel.IsGroupParticipant;
+            //HidablePivotItemBehaviorElementEvents.ClearValue(HideablePivotItemBehavior.VisibleProperty);
+            //HidablePivotItemBehaviorElementEvents.Visible = groupDetailsViewModel.IsGroupParticipant;
 
             HidablePivotItemBehaviorElementBallots.ClearValue(HideablePivotItemBehavior.VisibleProperty);
             HidablePivotItemBehaviorElementBallots.Visible = groupDetailsViewModel.IsGroupParticipant;

@@ -597,7 +597,8 @@
                                                 />
                                         </RadioButton>
 
-                                        <RadioButton
+                                        <!-- Wird erstmal nicht umgesetzt.-->
+                                        <!--<RadioButton
                                             x:Name="ApplicationSettingsConversationListSettingsOptionLatest"
                                             Style="{StaticResource UUNRadioButtonStyle}"
                                             IsChecked="{Binding IsConversationOrderOptionLatest, Mode=TwoWay}"
@@ -607,7 +608,7 @@
                                                 Style="{StaticResource DialogInlineFontStyle}"
                                                 Text="Nach Erstellungsdatum"
                                                 />
-                                        </RadioButton>
+                                        </RadioButton>-->
 
                                         <RadioButton
                                             x:Name="ApplicationSettingsConversationListSettingsOptionMsgAmount"
