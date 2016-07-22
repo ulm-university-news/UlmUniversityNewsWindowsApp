@@ -496,7 +496,7 @@ namespace DataHandlingLayer.ViewModel
             try
             {
                 // Führe Synchronisation durch.
-                await Task.Run(() => groupController.SynchronizeConversationsWithServerAsync(SelectedGroup.Id));
+                await Task.Run(() => groupController.SynchronizeConversationsWithServerAsync(SelectedGroup.Id, true));
 
                 // Aktualisere Anzeige. Rufe synchronisierte Daten ab.
                 List<Conversation> conversations = await Task.Run(() => groupController.GetConversations(SelectedGroup.Id));
@@ -528,7 +528,7 @@ namespace DataHandlingLayer.ViewModel
             try
             {
                 // Führe Synchronisation durch.
-                await Task.Run(() => groupController.SynchronizeBallotsWithServerAsync(SelectedGroup.Id));
+                await Task.Run(() => groupController.SynchronizeBallotsWithServerAsync(SelectedGroup.Id, true));
 
                 // Aktualisere Anzeige. Rufe synchronisierte Daten ab.
                 List<Ballot> ballots = await Task.Run(() => groupController.GetBallots(SelectedGroup.Id, false));
@@ -560,7 +560,7 @@ namespace DataHandlingLayer.ViewModel
             try
             {
                 // Synchronisiere Daten.
-                await Task.Run(() => groupController.SynchronizeGroupDetailsWithServerAsync(SelectedGroup.Id));
+                await Task.Run(() => groupController.SynchronizeGroupDetailsWithServerAsync(SelectedGroup.Id, true));
 
                 // Rufe synchronisierte Daten ab.
                 Group group = groupController.GetGroup(SelectedGroup.Id);
@@ -628,6 +628,17 @@ namespace DataHandlingLayer.ViewModel
             {
                 oldGroup.Deleted = newGroup.Deleted;
                 checkCommandExecution();
+            }
+        }
+
+        /// <summary>
+        /// Setzt das Flag HasNewEvent für die gewählte Gruppe zurück.
+        /// </summary>
+        public void ResetHasNewEventFlag()
+        {
+            if (SelectedGroup != null)
+            {
+                groupController.SetHasNewEventFlag(SelectedGroup.Id, false);
             }
         }
 

@@ -1773,4 +1773,7 @@ Nachricht am: </value>
   <data name="GroupParticipantsSynchronizationStatus" xml:space="preserve">
     <value>Synchronisiere Teilnehmer</value>
   </data>
+  <data name="HomescreenSynchronizeAllGroupsButton.Label" xml:space="preserve">
+    <value>synchro-nisieren</value>
+  </data>
 </root>

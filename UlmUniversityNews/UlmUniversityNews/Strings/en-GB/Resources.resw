@@ -1772,4 +1772,7 @@ date: </value>
   <data name="GroupParticipantsSynchronizationStatus" xml:space="preserve">
     <value>Synchronizing participants</value>
   </data>
+  <data name="HomescreenSynchronizeAllGroupsButton.Label" xml:space="preserve">
+    <value>sync all</value>
+  </data>
 </root>

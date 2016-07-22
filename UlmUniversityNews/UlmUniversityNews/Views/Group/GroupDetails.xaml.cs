@@ -174,6 +174,12 @@ namespace UlmUniversityNews.Views.Group
 
             // Deregistriere alle Push Notification Events.
             unsubscribeFromPushManagerEvents();
+
+            // Setzte das HasNewEvent Flag zurück.
+            if (groupDetailsViewModel != null)
+            {
+                groupDetailsViewModel.ResetHasNewEventFlag();
+            }
         }
 
         #region NavigationHelper-Registrierung

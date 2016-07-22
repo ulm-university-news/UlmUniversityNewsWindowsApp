@@ -127,6 +127,17 @@ namespace DataHandlingLayer.ViewModel
             get { return groupSelected; }
             set { groupSelected = value; }
         }
+
+        private AsyncRelayCommand synchronizeAllGroupsCommand;
+        /// <summary>
+        /// Befehl zur Synchronisation aller lokal verwalteter Gruppen, in 
+        /// denen der Nutzer Teilnehmer ist.
+        /// </summary>
+        public AsyncRelayCommand SynchronizeAllGroupsCommand
+        {
+            get { return synchronizeAllGroupsCommand; }
+            set { synchronizeAllGroupsCommand = value; }
+        }
         #endregion Commands
 
         /// <summary>
@@ -141,11 +152,12 @@ namespace DataHandlingLayer.ViewModel
             currentGroups = new Dictionary<int, Group>();
 
             // Initialisiere die Befehle.
-            searchChannelsCommand = new RelayCommand(param => executeSearchChannelsCommand(), param => canSearchChannels());
-            addGroupCommand = new RelayCommand(param => executeAddGroupCommand(), param => canAddGroup());
-            searchGroupsCommand = new RelayCommand(param => executeSearchGroupsCommand(), param => canSearchGroups());
-            channelSelected = new RelayCommand(param => executeChannelSelected(param), param => canSelectChannel());
-            groupSelected = new RelayCommand(param => executeGroupSelected(param), param => canSelectGroup());
+            SearchChannelsCommand = new RelayCommand(param => executeSearchChannelsCommand(), param => canSearchChannels());
+            AddGroupCommand = new RelayCommand(param => executeAddGroupCommand(), param => canAddGroup());
+            SearchGroupsCommand = new RelayCommand(param => executeSearchGroupsCommand(), param => canSearchGroups());
+            ChannelSelected = new RelayCommand(param => executeChannelSelected(param), param => canSelectChannel());
+            GroupSelected = new RelayCommand(param => executeGroupSelected(param), param => canSelectGroup());
+            SynchronizeAllGroupsCommand = new AsyncRelayCommand(param => executeSynchronizeAllGroupsCommandAsync(), param => canSynchronizeAllGroups());
         }
 
         /// <summary>
@@ -311,7 +323,7 @@ namespace DataHandlingLayer.ViewModel
                         Task<List<int>> localGroups = Task.Run(() => groupController.GetLocalGroupIdentifiers());
                         List<Group> modifiedGroups = await Task.Run(() => groupController.GetDirtyGroups());
                         List<int> localGroupSnapshot = await localGroups;
-                        updateViewModelGroupCollection(modifiedGroups, localGroupSnapshot);
+                        await updateViewModelGroupCollectionAsync(modifiedGroups, localGroupSnapshot);
 
                         // Setze Dirty-Flag zurück.
                         groupController.ResetDirtyFlagsOnGroups();
@@ -331,8 +343,10 @@ namespace DataHandlingLayer.ViewModel
         /// <param name="modifiedGroups">Die Gruppen, die seit dem letzten Vergleich geändert wurden.</param>
         /// <param name="localGroupSnapshot">Ein Snapshot über die Ids der aktuell im System verwalten Gruppen.</param>
         /// </summary>
-        private void updateViewModelGroupCollection(List<Group> modifiedGroups, List<int> localGroupSnapshot)
+        private async Task updateViewModelGroupCollectionAsync(List<Group> modifiedGroups, List<int> localGroupSnapshot)
         {
+            bool requiresReload = false;
+
             Debug.WriteLine("updateViewModelGroupCollection: Start. Collection has {0} elements.", GroupCollection.Count);
             // Gehe geänderte Gruppen durch.
             foreach (Group group in modifiedGroups)
@@ -342,6 +356,14 @@ namespace DataHandlingLayer.ViewModel
                     // Aktualisiere die für die View relevanten Properties.
                     updateViewRelatedGroupProperties(currentGroups[group.Id], group);
                     Debug.WriteLine("updateViewModelGroupCollection: Performed update on group with id {0}.", group.Id);
+
+                    if (currentGroups[group.Id].Deleted != group.Deleted)
+                    {
+                        Debug.WriteLine("updateViewModelGroupCollection: Seems that a group has been removed. " + 
+                            "The group with id {0} seems to be deleted.", group.Id);
+                        // Lade Collection neu, dass die Icons aktualisiert werden.
+                        requiresReload = true;
+                    }
                 }
                 else
                 {
@@ -349,6 +371,9 @@ namespace DataHandlingLayer.ViewModel
                     GroupCollection.Add(group);
                     currentGroups.Add(group.Id, group);
                     Debug.WriteLine("updateViewModelGroupCollection: Added group with id {0}.", group.Id);
+                    // Änderung: 22.07.16 Aufgrund der Problematik bezüglich der Sortierung wird die Liste auch 
+                    // in diesem Fall komplett neu geladen.
+                    requiresReload = true;
                 }
             }
 
@@ -364,6 +389,15 @@ namespace DataHandlingLayer.ViewModel
                     currentGroups.Remove(group.Id);
                     Debug.WriteLine("updateViewModelGroupCollection: Removed group with id {0}.", group.Id);
                 }
+            }
+
+            // Wenn eine Gruppe als gelöscht erkannt wurde, dann lade die komplette Collection neu.
+            // Ebenso, wenn eine neue Gruppe hinzugekommen ist.
+            if (requiresReload)
+            {
+                // Restrukturierung der Liste von Gruppen durch neu laden.
+                List<Group> localGroups = await Task.Run(() => groupController.GetAllGroups());
+                await reloadGroupCollectionCompletelyAsync(localGroups);
             }
 
             Debug.WriteLine("updateViewModelGroupCollection: Finished. Collection has {0} elements.", GroupCollection.Count);
@@ -401,6 +435,7 @@ namespace DataHandlingLayer.ViewModel
         {
             currentGroup.Name = newGroup.Name;
             currentGroup.Term = newGroup.Term;
+            currentGroup.HasNewEvent = newGroup.HasNewEvent;
         }
 
         /// <summary>
@@ -443,6 +478,7 @@ namespace DataHandlingLayer.ViewModel
             addGroupCommand.RaiseCanExecuteChanged();
             searchGroupsCommand.RaiseCanExecuteChanged();
             channelSelected.RaiseCanExecuteChanged();
+            SynchronizeAllGroupsCommand.OnCanExecuteChanged();
         }
 
         /// <summary>
@@ -565,6 +601,54 @@ namespace DataHandlingLayer.ViewModel
             if (selectedGroup != null)
             {
                 _navService.Navigate("GroupDetails", selectedGroup.Id);
+            }
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zur Synchronisation aller Gruppen aktuell zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canSynchronizeAllGroups()
+        {
+            if (SelectedPivotItemIndex == 1 && 
+                GroupCollection != null && GroupCollection.Count > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl SynchronizeAllGroupsCommand aus. Stößt die Synchronisation
+        /// aller Gruppendaten an.
+        /// </summary>
+        private async Task executeSynchronizeAllGroupsCommandAsync()
+        {
+            try
+            {
+                displayIndeterminateProgressIndicator();
+
+                await Task.Run(() => groupController.SynchronizeAllGroupsWithServer());
+
+                // Restrukturierung der Liste von Gruppen durch neu laden.
+                List<Group> localGroups = await Task.Run(() => groupController.GetAllGroups());
+
+                foreach (Group localGroup in localGroups)
+                {
+                    Debug.WriteLine("executeSynchronizeAllGroupsCommand: HasNewEvent flag: {0}.", localGroup.HasNewEvent);
+                }
+
+                await reloadGroupCollectionCompletelyAsync(localGroups);
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("executeSynchronizeAllGroupsCommand: Sync failed. Error code is: {0}.", ex.ErrorCode);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
             }
         }
         #endregion CommandFunctionality

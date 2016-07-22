@@ -110,7 +110,7 @@ namespace DataHandlingLayer.Controller
             {
                 Debug.WriteLine("Error during serialization from group object to json string. Could " +
                     "not create a group. Execution is aborted.");
-                return false;
+                throw new ClientException(ErrorCodes.JsonParserError, "Failed to generate json document.");
             }
 
             // Absetzen des Erstellungsrequests.
@@ -196,7 +196,8 @@ namespace DataHandlingLayer.Controller
             }
             catch (APIException ex)
             {
-                Debug.WriteLine("SearchGroupsAsync: Request to server failed.");
+                Debug.WriteLine("SearchGroupsAsync: Request to server failed. "
+                    + "Error code: {0} and msg: '{1}'.", ex.ErrorCode, ex.Message);
                 // Abbilden auf ClientException.
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -289,12 +290,8 @@ namespace DataHandlingLayer.Controller
                 userController.StoreUsersLocally(participants);
                 StoreGroupLocally(group);
 
-                // Füge Teilnehmer der Gruppe hinzu.
+                // Füge Teilnehmer der Gruppe hinzu. Hierbei wird auch der lokale Nutzer als Teilnehmer eingetragen.
                 AddParticipantsToGroup(groupId, participants);
-
-                // TODO - check if this last call can be removed. User should already be added toghether with the other participants.
-                // Trage Nutzer selbst als Teilnehmer ein.
-                AddParticipantToGroup(groupId, getLocalUser());
             }
             catch (ClientException ex)
             {
@@ -307,7 +304,7 @@ namespace DataHandlingLayer.Controller
                 // Trage den Nutzer wieder von der Gruppe aus.
                 await RemoveParticipantFromGroupAsync(groupId, getLocalUser().Id);
 
-                return false;
+                throw new ClientException(ex.ErrorCode, ex.Message);
             }
 
             // Frage noch Konversationen-Daten ab.
@@ -376,8 +373,8 @@ namespace DataHandlingLayer.Controller
                     Debug.WriteLine("This means participant is already removed.");
 
                     ChangeActiveStatusOfParticipant(groupId, participantId, false);
-
-                    return true;
+                    // Markiere Gruppe als gelöscht.
+                    MarkGroupAsDeleted(groupId);
                 }
 
                 Debug.WriteLine("RemoveParticipantFromGroupAsync: Request has failed or was rejected.");
@@ -444,7 +441,6 @@ namespace DataHandlingLayer.Controller
                     ModificationDate = affectedGroup.ModificationDate,
                     GroupNotificationSetting = affectedGroup.GroupNotificationSetting,
                     Deleted = affectedGroup.Deleted,
-                    NumberOfUnreadMessages = affectedGroup.NumberOfUnreadMessages,
                     Participants = affectedGroup.Participants,
                     Password = affectedGroup.Password,
                     Term = affectedGroup.Term,
@@ -603,7 +599,7 @@ namespace DataHandlingLayer.Controller
             if (jsonContent == null)
             {
                 Debug.WriteLine("UpdateGroupAsync: Group object could not be translated to a json document.");
-                return false;
+                throw new ClientException(ErrorCodes.JsonParserError, "Could not generate json document.");
             }
 
             // Server Request.
@@ -628,25 +624,14 @@ namespace DataHandlingLayer.Controller
             }
 
             // Führe lokale Aktualisierung des Datensatzes aus.
-            try
+            Group updatedGroup = base.jsonParser.ParseGroupFromJson(serverResponse);
+            if (updatedGroup == null)
             {
-                Group updatedGroup = base.jsonParser.ParseGroupFromJson(serverResponse);
-                if (updatedGroup == null)
-                {
-                    throw new ClientException(ErrorCodes.JsonParserError, "Couldn't parse server response.");
-                }
-
-                // Notification settings bleiben unverändert.
-                // updatedGroup.GroupNotificationSetting = oldGroup.GroupNotificationSetting;
-
-                // Speichere neuen Datensatz ab.
-                groupDBManager.UpdateGroup(updatedGroup, false);
+                throw new ClientException(ErrorCodes.JsonParserError, "Couldn't parse server response.");
             }
-            catch (DatabaseException ex)
-            {
-                Debug.WriteLine("UpdateGroupAsync: Failed to store updated resource.");
-                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
-            }
+
+            // Speichere neuen Datensatz ab.
+            UpdateGroup(updatedGroup, false);
 
             return true;
         }
@@ -719,6 +704,7 @@ namespace DataHandlingLayer.Controller
         {
             Debug.WriteLine("SynchronizeGroupParticipantsAsync: Start synchronisation.");
             Stopwatch sw = Stopwatch.StartNew();
+            bool performedUpdate = false;
 
             // Frage zunächst die neuesten Teilnehmer-Informationen vom Server ab.
             List<User> participants = await GetParticipantsOfGroupAsync(groupId, false);
@@ -729,14 +715,14 @@ namespace DataHandlingLayer.Controller
             Dictionary<int, User> participantsDirectory = GetParticipantsLookupDirectory(groupId);
             // Aktualisiere die Teilnehmerdaten bezüglich der lokalen Gruppe.
             foreach (User participant in participants)
-            {
-                
+            {                
                 if (!participantsDirectory.ContainsKey(participant.Id) && participant.Active)
                 {
                     // Füge den Teilnehmer der Gruppe hinzu.
                     AddParticipantToGroup(groupId, participant);
                     Debug.WriteLine("SynchronizeGroupParticipantsAsync: Need to add participant with user id {0} " + 
                         "to the group with id {1}.", participant.Id, groupId);
+                    performedUpdate = true;
                 }
                 else
                 {
@@ -746,6 +732,7 @@ namespace DataHandlingLayer.Controller
                         ChangeActiveStatusOfParticipant(groupId, participant.Id, true);
                         Debug.WriteLine("SynchronizeGroupParticipantsAsync: Need to set participant with user id {0} " + 
                             "as an active participant again for group with id {1}.", participant.Id, groupId);
+                        performedUpdate = true;
                     }
 
                     if (currentParticipant.Active && !participant.Active)
@@ -753,8 +740,15 @@ namespace DataHandlingLayer.Controller
                         ChangeActiveStatusOfParticipant(groupId, participant.Id, false);
                         Debug.WriteLine("SynchronizeGroupParticipantsAsync: Need to set participant with user id {0} " + 
                             "inactive in group with id {1}.", participant.Id, groupId);
+                        performedUpdate = true;
                     }
                 }            
+            }
+
+            if (performedUpdate)
+            {
+                // Es gab Änderungen, über die der Nutzer informiert werden sollte.
+                SetHasNewEventFlag(groupId, true);
             }
 
             sw.Stop();
@@ -793,6 +787,127 @@ namespace DataHandlingLayer.Controller
             // Lösche die Gruppe lokal. Löscht automatisch alle mit der Gruppe verknüpften Daten mit.
             DeleteGroupLocally(groupId);
         }
+
+        /// <summary>
+        /// Prüft, ob die Daten der Gruppe noch aktuell sind. Vergleicht die Daten mit 
+        /// den vom Server abgefragten aktuellsten Daten. Wenn Änderungen bestehen, dann werden
+        /// die lokalen Datensätze aktualisiert. 
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe für die die Synchronisation durchgeführt werden soll.</param>
+        /// <param name="syncParticipants">Gibt an, ob zudem die Teilnehmerinformationen der Gruppe synchronisiert werden sollen.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Synchronisation fehlgeschlagen ist.</exception>
+        public async Task SynchronizeGroupDetailsWithServerAsync(int groupId, bool syncParticipants)
+        {
+            Debug.WriteLine("SynchronizeGroupDetailsWithServerAsync: Start synchronisation.");
+            if (syncParticipants)
+            {
+                // Synchronisiere die lokalen Teilnehmerdaten.
+                await SynchronizeGroupParticipantsAsync(groupId);
+            }
+
+            // Hole neuste Gruppendaten vom Server.
+            Group referenceGroup = await GetGroupAsync(groupId, false);
+
+            // Hole Gruppendaten aus lokalen Datenstätzen.
+            Group localGroup = GetGroup(groupId);
+
+            if (localGroup.ModificationDate.CompareTo(referenceGroup.ModificationDate) < 0)
+            {
+                Debug.WriteLine("SynchronizeGroupDetailsWithServerAsync: Need to update local group data for group with id {0}.", groupId);
+
+                UpdateGroup(referenceGroup, false);
+
+                // Es gab Änderungen, über die der Nutzer informiert werden soll.
+                SetHasNewEventFlag(groupId, true);
+            }
+            else
+            {
+                Debug.WriteLine("SynchronizeGroupDetailsWithServerAsync: No need to update the group.");
+            }
+
+            Debug.WriteLine("SynchronizeGroupDetailsWithServerAsync: Finished synchronisation.");
+        }
+
+        /// <summary>
+        /// Stößt die Synchronisation aller Gruppen an, in denen der Nutzer aktuell Teilnehmer ist.
+        /// </summary>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Synchronisation nicht für alle
+        ///     Gruppen erfolgreich abgeschlossen werden konnte.</exception>
+        public async Task SynchronizeAllGroupsWithServer()
+        {
+            Debug.WriteLine("SynchronizeAllGroupsWithServer: Start new synchronization.");
+            Stopwatch sw = Stopwatch.StartNew();
+            User localUser = getLocalUser();
+
+            // Frage zunächst alle Gruppen ab, die lokal vorhanden sind.
+            List<Group> groups = GetAllGroups();
+
+            // Verwalte eine Liste von Tasks.
+            List<Task<bool>> tasks = new List<Task<bool>>();
+
+            // Starte für jede Gruppe, die nicht als gelöscht markiert ist und für die der 
+            // Nutzer ein aktiver Teilnehmer ist, eine Synchronisation.
+            foreach (Group localGroup in groups)
+            {
+                if (!localGroup.Deleted && IsActiveParticipant(localGroup.Id, localUser.Id))
+                {
+                    Debug.WriteLine("SynchronizeAllGroupsWithServer: Start task for group with id {0}.", localGroup.Id);
+
+                    Task<bool> task = Task<bool>.Run(async () =>
+                    {
+                        bool successful = true;
+                        try
+                        {
+                            // Synchronisiere zuerst die Teilnehmer.
+                            await SynchronizeGroupParticipantsAsync(localGroup.Id);
+                            // Synchronisiere die Gruppeninformationen.
+                            await SynchronizeGroupDetailsWithServerAsync(localGroup.Id, false);
+                            // Synchronisiere die Konversationen.
+                            await SynchronizeConversationsWithServerAsync(localGroup.Id, false);
+                            // Synchronisiere die Abstimmungen.
+                            await SynchronizeBallotsWithServerAsync(localGroup.Id, false);
+                        }
+                        catch (ClientException ex)
+                        {
+                            Debug.WriteLine("SynchronizeAllGroupsWithServer: Sync failed for group with id {0}. " + 
+                                "Error code is: {1}.", localGroup.Id, ex.ErrorCode);
+
+                            // Gebe Meldung nur aus, wenn es einen allgemeinen Fehler gegeben hat.
+                            if (ex.ErrorCode == ErrorCodes.ServerUnreachable || ex.ErrorCode == ErrorCodes.ServerDatabaseFailure || 
+                                ex.ErrorCode == ErrorCodes.JsonParserError || ex.ErrorCode == ErrorCodes.LocalDatabaseException)
+                            {
+                                successful = false;
+                            }
+                        }
+                        return successful;
+                    });
+
+                    tasks.Add(task);
+                }
+            }
+
+            // Frage Ergebnisse der Synchronisation ab.
+            bool synchronisationSuccessful = true;
+            int pos = 0;
+            foreach (Task<bool> task in tasks)
+            {
+                bool result = await task;
+                synchronisationSuccessful = synchronisationSuccessful && result;
+
+                Debug.WriteLine("SynchronizeAllGroupsWithServer: Result of synchronization at position {0} is: {1}.", pos, result);
+                pos++;
+            }
+
+            if (!synchronisationSuccessful)
+            {
+                Debug.WriteLine("SynchronizeAllGroupsWithServer: Not all synchronizations were executed successful.");
+                throw new ClientException(ErrorCodes.GroupSynchronizationOfAllGroupsFailed, "Synchronization failed.");
+            }
+
+            sw.Stop();
+            Debug.WriteLine("SynchronizeAllGroupsWithServer: Synchronization successful. Required time: {0} ms.",
+                sw.Elapsed.TotalMilliseconds);
+        }
         #endregion RemoteGroupMethods
 
         #region RemoteConversationMethods
@@ -827,7 +942,7 @@ namespace DataHandlingLayer.Controller
             if (jsonContent == null)
             {
                 Debug.WriteLine("CreateConversationAsync: Failed to create a json object.");
-                return false;
+                throw new ClientException(ErrorCodes.JsonParserError, "Failed to create json document.");
             }
 
             // Setze Request an den Server ab.
@@ -863,6 +978,10 @@ namespace DataHandlingLayer.Controller
                     bool successful = StoreConversation(groupId, createdConv);
                     if (!successful)
                         await UpdateUserDataAndStoreConversationAsync(groupId, createdConv);
+                }
+                else
+                {
+                    throw new ClientException(ErrorCodes.JsonParserError, "Failed to parse response document of server.");
                 }
             }
 
@@ -910,7 +1029,7 @@ namespace DataHandlingLayer.Controller
             if (jsonContent == null)
             {
                 Debug.WriteLine("UpdateConversationAsync: Failed to create json document.");
-                return false;
+                throw new ClientException(ErrorCodes.JsonParserError, "Failed to generate json document.");
             }
 
             // Setze Request an den Server ab.
@@ -956,7 +1075,10 @@ namespace DataHandlingLayer.Controller
                             throw new ClientException(ErrorCodes.LocalDatabaseException, "Couldn't update conversation.");
                     }
                 }
-
+                else
+                {
+                    throw new ClientException(ErrorCodes.JsonParserError, "Error parsing the response document from the server.");
+                }
             }
 
             return true;
@@ -1125,14 +1247,20 @@ namespace DataHandlingLayer.Controller
         /// wieder auf einen Stand bringen.
         /// </summary>
         /// <param name="groupId">Die Id der Gruppe, für die die Datensätze synchronisiert werden sollen.</param>
+        /// <param name="syncParticipants">Gibt an, ob auch die Teilnehmerinformationen der Gruppe synchronisiert werden sollen.</param>
         /// <exception cref="ClientException">Wirft ClientException, wenn Synchronisation fehlschlägt.</exception>
-        public async Task SynchronizeConversationsWithServerAsync(int groupId)
+        public async Task SynchronizeConversationsWithServerAsync(int groupId, bool syncParticipants)
         {
             Debug.WriteLine("SynchronizeConversationsWithServerAsync: Start synchronisation.");
-            // Synchronisiere die lokalen Teilnehmerdaten, so dass es dort keine Probleme gibt.
-            await SynchronizeGroupParticipantsAsync(groupId);
+            bool requiresNewEventFlag = false;
 
-            // Frage zunächst die neuesten Konversationsdaten vom Server ab.
+            if (syncParticipants)
+            {
+                // Synchronisiere die lokalen Teilnehmerdaten, so dass es dort keine Probleme gibt.
+                await SynchronizeGroupParticipantsAsync(groupId);
+            }
+
+            // Frage zunächst die neuesten Konversationsdaten vom Server ab. Fragt auch die Nachrichten direkt mit ab.
             List<Conversation> referenceList = await GetConversationsAsync(groupId, true, false);
             
             // Frage lokale Datensätze ab.
@@ -1160,11 +1288,12 @@ namespace DataHandlingLayer.Controller
                 {
                     // Hinzufügen.
                     newConversations.Add(refConversation);
+                    requiresNewEventFlag = true;
                     Debug.WriteLine("SynchronizeConversationsWithServerAsync: Need to add conversation with id {0}.", refConversation.Id);                  
                 }
             }
 
-            // Markiere Konversationen als gelöscht, wenn sie auf dem Server nicht mehr vorhanden sind.
+            // Lösche Konversationen, wenn sie auf dem Server nicht mehr vorhanden sind.
             foreach (Conversation currentConv in currentList)
             {
                 bool isStored = false;
@@ -1180,10 +1309,8 @@ namespace DataHandlingLayer.Controller
 
                 if (!isStored)
                 {
-                    // Markiere als gelöscht (setze auf closed).
-                    currentConv.IsClosed = true;
-                    // Führe Markierung durch Aktualisierung aus.
-                    updatableConversations.Add(currentConv);
+                    DeleteConversation(currentConv.Id);
+                    requiresNewEventFlag = true;
                     Debug.WriteLine("SynchronizeConversationsWithServerAsync: Conversation with id {0} seems to be deleted on the server.", currentConv.Id);
                 }
             }
@@ -1208,7 +1335,14 @@ namespace DataHandlingLayer.Controller
                     try
                     {
                         // Die Methode fügt nur die Nachrichten hinzu, die noch nicht lokal gespeichert sind.
-                        StoreConversationMessages(groupId, conv.Id, conv.ConversationMessages);
+                        bool performedUpdate = StoreConversationMessages(groupId, conv.Id, conv.ConversationMessages);
+                        if (performedUpdate)
+                        {
+                            Debug.WriteLine("SynchronizeConversationsWithServerAsync: Updated conversation messages for conversation " + 
+                                "with id {0}.", conv.Id);
+                            // Einer bereits vorhandenen Konversation wurden neue Nachrichten hinzugefügt.
+                            requiresNewEventFlag = true;
+                        }
                     } catch(ClientException ex)
                     {
                         Debug.WriteLine("SynchronizeConversationsWithServerAsync: Failed to update messages " + 
@@ -1224,7 +1358,7 @@ namespace DataHandlingLayer.Controller
                     // Führe Methode aus zur Aktualisierung der Nachrichten aus.
                     try
                     {
-                        // Die Methode fügt nur die Nachrichten hinzu, die noch nicht lokal gespeichert sind.
+                        // Speichere alle Nachrichten ab, die die neu eingefügte Konversation hat. HasNewEvent Flag muss hier nicht erneut gesetzt werden.
                         StoreConversationMessages(groupId, conv.Id, conv.ConversationMessages);
                     }
                     catch (ClientException ex)
@@ -1236,48 +1370,13 @@ namespace DataHandlingLayer.Controller
                 }
             }
 
+            if (requiresNewEventFlag)
+            {
+                // Setze HasNewEvent Flag.
+                SetHasNewEventFlag(groupId, true);
+            }
+
             Debug.WriteLine("SynchronizeConversationsWithServerAsync. Finished.");
-        }
-
-        /// <summary>
-        /// Prüft, ob die Daten der Gruppe noch aktuell sind. Vergleicht die Daten mit 
-        /// den vom Server abgefragten aktuellsten Daten. Wenn Änderungen bestehen, dann werden
-        /// die lokalen Datensätze aktualisiert. 
-        /// </summary>
-        /// <param name="groupId">Die Id der Gruppe für die die Synchronisation durchgeführt werden soll.</param>
-        /// <exception cref="ClientException">Wirft ClientException, wenn Synchronisation fehlgeschlagen ist.</exception>
-        public async Task SynchronizeGroupDetailsWithServerAsync(int groupId)
-        {
-            Debug.WriteLine("SynchronizeGroupDetailsWithServerAsync: Start synchronisation.");
-            // Synchronisiere die lokalen Teilnehmerdaten.
-            await SynchronizeGroupParticipantsAsync(groupId);
-
-            // Hole neuste Gruppendaten vom Server.
-            Group referenceGroup = await GetGroupAsync(groupId, false);
-
-            // Hole Gruppendaten aus lokalen Datenstätzen.
-            Group localGroup = GetGroup(groupId);
-
-            if (localGroup.ModificationDate.CompareTo(referenceGroup.ModificationDate) < 0)
-            {
-                Debug.WriteLine("SynchronizeGroupDetailsWithServerAsync: Need to update local group data for group with id {0}.", groupId);
-
-                try
-                {
-                    groupDBManager.UpdateGroup(referenceGroup, false);
-                }
-                catch (DatabaseException ex)
-                {
-                    Debug.WriteLine("Failed to update the group with id {0}.", groupId);
-                    throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
-                }
-            }
-            else
-            {
-                Debug.WriteLine("SynchronizeGroupDetailsWithServerAsync: No need to update the group.");
-            }
-
-            Debug.WriteLine("SynchronizeGroupDetailsWithServerAsync: Finished synchronisation.");
         }
 
         /// <summary>
@@ -1364,19 +1463,26 @@ namespace DataHandlingLayer.Controller
             {
                 ConversationMessage convMsg = base.jsonParser.ParseConversationMessageFromJson(serverResponse);
 
-                int highestMessageNr = GetHighestMessageNumberOfConversation(conversationId);
-                if (highestMessageNr + 1 != convMsg.MessageNumber)
+                if (convMsg != null)
                 {
-                    Debug.WriteLine("SendConversationMessageAsync: Seems there are more new messages on the server.");
-                    List<ConversationMessage> conversationMessages = await GetConversationMessagesAsync(groupId, conversationId, highestMessageNr, false);
-                    // Speichere die Nachrichten ab.
-                    StoreConversationMessages(groupId, conversationId, conversationMessages);
+                    int highestMessageNr = GetHighestMessageNumberOfConversation(conversationId);
+                    if (highestMessageNr + 1 != convMsg.MessageNumber)
+                    {
+                        Debug.WriteLine("SendConversationMessageAsync: Seems there are more new messages on the server.");
+                        List<ConversationMessage> conversationMessages = await GetConversationMessagesAsync(groupId, conversationId, highestMessageNr, false);
+                        // Speichere die Nachrichten ab.
+                        StoreConversationMessages(groupId, conversationId, conversationMessages);
+                    }
+                    else
+                    {
+                        // Speichere die Nachricht ab.
+                        StoreConversationMessage(convMsg);
+                    }
                 }
                 else
                 {
-                    // Speichere die Nachricht ab.
-                    StoreConversationMessage(convMsg);
-                }
+                    throw new ClientException(ErrorCodes.JsonParserError, "Failed to parse server response to conversation message.");
+                }                
             }
 
             return true;
@@ -1648,14 +1754,19 @@ namespace DataHandlingLayer.Controller
         /// Die lokalen Datensätze werden auf die vom Server angepasst.
         /// </summary>
         /// <param name="groupId">Die Id der Gruppe, für die die Synchronisation der Abstimmungen durchgeführt werden soll.</param>
+        /// <param name="syncParticipants">Gibt an, ob die Teilnehmerinformationen ebenfalls synchronisiert werden sollen.</param>
         /// <exception cref="ClientException">Wirft ClientException, wenn Synchronisation fehlschlägt.</exception>
-        public async Task SynchronizeBallotsWithServerAsync(int groupId)
+        public async Task SynchronizeBallotsWithServerAsync(int groupId, bool syncParticipants)
         {
             Stopwatch sw = Stopwatch.StartNew();
             Debug.WriteLine("SynchronizeBallotsWithServerAsync: Start.");
+            bool requiresHasNewEventFlag = false;
 
-            // Synchronisiere zunächst die Teilnehmer-Information, das es bei den Einfügeoperationen zu keinen Problemen kommt.
-            await SynchronizeGroupParticipantsAsync(groupId);
+            if (syncParticipants)
+            {
+                // Synchronisiere zunächst die Teilnehmer-Information, das es bei den Einfügeoperationen zu keinen Problemen kommt.
+                await SynchronizeGroupParticipantsAsync(groupId);
+            }
 
             // Frage zunächst die Abstimmungen mit Subressourcen vom Server ab.
             List<Ballot> referenceBallots = await GetBallotsAsync(groupId, true, false);
@@ -1682,6 +1793,7 @@ namespace DataHandlingLayer.Controller
                 if (!isContained)
                 {
                     newBallots.Add(refernceBallot);
+                    requiresHasNewEventFlag = true;
                 }
             }
 
@@ -1722,6 +1834,7 @@ namespace DataHandlingLayer.Controller
                 {
                     // Entferne Abstimmung aus lokalen Datensätzen.
                     DeleteBallot(localBallot.Id);
+                    requiresHasNewEventFlag = true;
                 }
             }
 
@@ -1733,7 +1846,7 @@ namespace DataHandlingLayer.Controller
                 if (referenceBallot.Options != null)
                 {
                     // Synchronisiere Abstimmungsoptionen dieser Abstimmung.
-                    SynchronizeLocalOptionsOfBallot(referenceBallot.Id, referenceBallot.Options);
+                    SynchronizeLocalOptionsOfBallot(groupId, referenceBallot.Id, referenceBallot.Options);
 
                     // Synchronisiere Votes der Abstimmungsoptionen dieser Abstimmung.
                     foreach (Option refOption in referenceBallot.Options)
@@ -1741,9 +1854,14 @@ namespace DataHandlingLayer.Controller
                         if (refOption.VoterIds == null)
                             refOption.VoterIds = new List<int>();
 
-                        SynchronizeLocalVotesForOption(referenceBallot.Id, refOption.Id, refOption.VoterIds);
+                        SynchronizeLocalVotesForOption(groupId, referenceBallot.Id, refOption.Id, refOption.VoterIds);
                     }
                 }
+            }
+
+            if (requiresHasNewEventFlag)
+            {
+                SetHasNewEventFlag(groupId, true);
             }
 
             sw.Stop();
@@ -1791,13 +1909,13 @@ namespace DataHandlingLayer.Controller
             if (referenceBallot != null && referenceBallot.Options != null)
             {
                 // Aktualisiere noch die Optionen und die Votes.
-                SynchronizeLocalOptionsOfBallot(ballotId, referenceBallot.Options);
+                SynchronizeLocalOptionsOfBallot(groupId, ballotId, referenceBallot.Options);
 
                 foreach (Option option in referenceBallot.Options)
                 {
                     if (option.VoterIds != null)
                     {
-                        SynchronizeLocalVotesForOption(ballotId, option.Id, option.VoterIds);
+                        SynchronizeLocalVotesForOption(groupId, ballotId, option.Id, option.VoterIds);
                     }
                 }
             }
@@ -2004,7 +2122,7 @@ namespace DataHandlingLayer.Controller
             if (jsonContent == null)
             {
                 Debug.WriteLine("CreateBallotAsync: Couldn't serialize ballot object to json. Cannot continue.");
-                return successful;
+                throw new ClientException(ErrorCodes.JsonParserError, "Failed to generate json document.");
             }
 
             // Setze Request zum Anlegen der Abstimmung ab.
@@ -2044,6 +2162,10 @@ namespace DataHandlingLayer.Controller
                         throw new ClientException(ErrorCodes.LocalDatabaseException, "Failed to store ballot with id " + serverBallot.Id + ".");
                     }
                 }
+                else
+                {
+                    throw new ClientException(ErrorCodes.JsonParserError, "Failed to parse server response.");
+                }
             }
 
             // Sende noch die Requests zum Anlegen der Abstimmungsoptionen.
@@ -2060,6 +2182,7 @@ namespace DataHandlingLayer.Controller
                     catch (ClientException ex)
                     {
                         // Nicht die ganze Ausführung abbrechen bei fehlgeschlagenem Request.
+                        // Versuche den Rest der Optionen dennoch erfolgreich anzulegen.
                         Debug.WriteLine("CreateBallotAsync: Failed to store a ballot option. " + 
                             "The option with id {0} could not be created. Msg is: {1}.", option.Id, ex.Message);
                         successfullyCreatedOptions = false;
@@ -2068,7 +2191,7 @@ namespace DataHandlingLayer.Controller
 
                 if (!successfullyCreatedOptions)
                 {
-                    // Werfe Fehler mit entsprechendem Fehlercode.
+                    // Werfe Fehler mit entsprechendem Fehlercode. Hinweis, dass nicht alle Optionen angelegt wurden.
                     throw new ClientException(ErrorCodes.OptionCreationHasFailedInBallotCreationProcess, "Failed to store options.");
                 }
             }
@@ -2152,6 +2275,10 @@ namespace DataHandlingLayer.Controller
                         throw new ClientException(ErrorCodes.LocalDatabaseException, 
                             "CreateBallotOptionAsync: Failed to store option with id {0}." + serverOption.Id);
                     }
+                }
+                else
+                {
+                    throw new ClientException(ErrorCodes.JsonParserError, "Failed to parse server response.");
                 }
             }
 
@@ -2276,6 +2403,10 @@ namespace DataHandlingLayer.Controller
                     {
                         throw new ClientException(ErrorCodes.LocalDatabaseException, "Failed to update local ballot");
                     }
+                }
+                else
+                {
+                    throw new ClientException(ErrorCodes.JsonParserError, "Failed to parse server response");
                 }
             }
 
@@ -2444,7 +2575,7 @@ namespace DataHandlingLayer.Controller
 
             if (!optionActionsSuccessful)
             {
-                // Werfe speziellen Fehler.
+                // Werfe speziellen Fehler. Eine der Operationen konnte nicht durchgeführt werden.
                 throw new ClientException(ErrorCodes.OptionUpdatesErrorsOccurred, "Could not perform all updates successfully.");
             }
         }
@@ -2612,6 +2743,25 @@ namespace DataHandlingLayer.Controller
             catch (DatabaseException ex)
             {
                 Debug.WriteLine("StoreGroupLocally: Failed to store the group.");
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Aktualisiert den lokalen Datensatz der Gruppe.
+        /// </summary>
+        /// <param name="updatedGroup">Objekt der Klasse Group mit den aktualisierten Daten.</param>
+        /// <param name="updateNotificationSettings">Gibt an, ob ebenfalls die Benachrichtigungseinstellungen der Gruppe
+        ///     aktualisiert werden sollen.</param>
+        public void UpdateGroup(Group updatedGroup, bool updateNotificationSettings)
+        {
+            try
+            {
+                groupDBManager.UpdateGroup(updatedGroup, updateNotificationSettings);
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("UpdateGroup: Failed to update the group. Msg is: '{0}'.", ex.Message);
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
         }
@@ -2828,23 +2978,14 @@ namespace DataHandlingLayer.Controller
         /// <exception cref="ClientException">Wirft ClientException, wenn Änderung fehlschlägt.</exception>
         public void ChangeNotificationSettingsForGroup(int groupId, NotificationSetting newSetting)
         {
-            try
-            {
-                // Frage Daten ab.
-                Group group = GetGroup(groupId);
+            // Frage Daten ab.
+            Group group = GetGroup(groupId);
 
-                // Setze neue Einstellungen.
-                group.GroupNotificationSetting = newSetting;
+            // Setze neue Einstellungen.
+            group.GroupNotificationSetting = newSetting;
 
-                // Speichere neue Einstellungen.
-                groupDBManager.UpdateGroup(group, true);
-
-            }
-            catch (DatabaseException ex)
-            {
-                Debug.WriteLine("ChangeNotificationSettingsForGroup: Failed to change notification settings of group.");
-                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
-            }
+            // Speichere neue Einstellungen.
+            UpdateGroup(group, true);
         }
 
         /// <summary>
@@ -2854,20 +2995,30 @@ namespace DataHandlingLayer.Controller
         /// <exception cref="ClientException">Wirft ClientException, wenn das Markieren fehlschlägt.</exception>
         public void MarkGroupAsDeleted(int groupId)
         {
+            Group group = GetGroup(groupId);
+
+            // Setze Deleted Flag.
+            group.Deleted = true;
+
+            // Speichere Datensatz ab.
+            UpdateGroup(group, false);
+        }
+
+        /// <summary>
+        /// Setzt das Flag HasNewEvent der angegebenen Gruppe auf einen neuen Wert.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, für die das Flag gesetzt werden soll.</param>
+        /// <param name="newValue">Der neue Wert des Flags.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Flag nicht gesetzt werden kann.</exception>
+        public void SetHasNewEventFlag(int groupId, bool newValue)
+        {
             try
             {
-                Group group = GetGroup(groupId);
-
-                // Setze Deleted Flag.
-                group.Deleted = true;
-
-                // Speichere Datensatz ab.
-                groupDBManager.UpdateGroup(group, false);
-
+                groupDBManager.SetHasNewEventFlagOnGroup(groupId, newValue);
             }
             catch (DatabaseException ex)
             {
-                Debug.WriteLine("MarkGroupAsDeleted: Failed to mark group as deleted. Msg is {0}.", ex.Message);
+                Debug.WriteLine("SetHasNewEventFlag: Failed to set new flag value for group with id {0}.", groupId);
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
         }
@@ -3063,9 +3214,21 @@ namespace DataHandlingLayer.Controller
         /// <param name="groupId">Die Id der Gruppe, zu der diese Nachrichten gehören.</param>
         /// <param name="conversationId">Die Id der Konversation, zu der die Nachrichten abgespeichert werden sollen.</param>
         /// <param name="conversationMessages">Die übergebene Menge von zu speichernden Konversationsnachrichten.</param>
+        /// <returns>Liefert true, wenn eine Speicherungsoperation durchgeführt wurde. Liefert false,
+        ///     wenn keine Operation durchgeführt wurde (da z.B. gar keine Änderung nötig war).</returns>
         /// <exception cref="ClientException">Wirft ClientException, wenn Speicherung fehlschlägt.</exception>
-        public void StoreConversationMessages(int groupId, int conversationId, List<ConversationMessage> conversationMessages)
+        public bool StoreConversationMessages(int groupId, int conversationId, List<ConversationMessage> conversationMessages)
         {
+            // Prüfe, ob Nachrichten überhaupt aktualisiert werden müssen.
+            int localHighestMsgNr = GetHighestMessageNumberOfConversation(conversationId);
+            int referenceHighestMsgNr = conversationMessages.Max<ConversationMessage>(item => item.MessageNumber);
+
+            if (localHighestMsgNr == referenceHighestMsgNr)
+            {
+                Debug.WriteLine("StoreConversationMessages: No storing of conversation messages necessary.");
+                return false;
+            }
+
             // Prüfe zunächst, ob alle Autoren lokal vorhanden sind.
             Dictionary<int, User> participantDirectory = GetParticipantsLookupDirectory(groupId);
 
@@ -3090,6 +3253,8 @@ namespace DataHandlingLayer.Controller
                 Debug.WriteLine("StoreConversationMessages: Couldn't store conversation messages.");
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
+
+            return true;
         }
 
         /// <summary>
@@ -3301,18 +3466,20 @@ namespace DataHandlingLayer.Controller
         /// angegebenen Abstimmung gehören. Die Abstimmungsoptionen werden gegen die übergebene
         /// Referenzliste synchronisiert. 
         /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Abstimmung gehört.</param>
         /// <param name="ballotId">Die Id der Abstimmung, zu der die Abstimmungsoptionen gehören.</param>
         /// <param name="referenceOptions">Die Liste von Abstimmungsoptionen, die als Referenzwert dienen, und gegen die
         ///     synchronisiert wird.</param>
         /// <exception cref="ClientException">Wirft ClientException, wenn Synchronisierung fehlschlägt.</exception>
         /// <exception cref="ArgumentNullException">Wirft ArgumentNullException, wenn Liste null ist.</exception>
-        public void SynchronizeLocalOptionsOfBallot(int ballotId, List<Option> referenceOptions)
+        public void SynchronizeLocalOptionsOfBallot(int groupId, int ballotId, List<Option> referenceOptions)
         {
             if (referenceOptions == null)
             {
                 Debug.WriteLine("SynchronizeLocalOptionsOfBallot: Invalid parameter. referenceList is null.");
                 throw new ArgumentNullException("referenceList is null");
             }
+            bool requiresNewEventFlag = false;
 
             // Frage alle lokalen Optionen dieser Abstimmung ab.
             List<Option> localOptions = GetOptions(ballotId, false);
@@ -3337,6 +3504,7 @@ namespace DataHandlingLayer.Controller
                 if (!isContained)
                 {
                     newOptions.Add(referenceOption);
+                    requiresNewEventFlag = true;
                 }
             }
 
@@ -3360,7 +3528,14 @@ namespace DataHandlingLayer.Controller
                 if (!isContained)
                 {
                     DeleteOption(localOption.Id);
+                    requiresNewEventFlag = true;
                 }
+            }
+
+            if (requiresNewEventFlag)
+            {
+                // Setze flag, so dass Nutzer über Änderung informiert wird.
+                SetHasNewEventFlag(groupId, true);
             }
         }
 
@@ -3368,17 +3543,19 @@ namespace DataHandlingLayer.Controller
         /// Führt eine Synchronisation der lokal gespeicherten Votes für eine Abstimmungsoption durch. Die
         /// Votes werden gegen die übergebene Referenzliste synchronisiert.
         /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Abstimmun gehört.</param>
         /// <param name="ballotId">Die Id der Abstimmung, zu der die Abstimmungsoption gehört.</param>
         /// <param name="optionId">Die Id der Abstimmungsoption für die die Votes synchronisiert werden soll.</param>
         /// <param name="referenceVotes">Die Referenzliste an Votes, gegen die die Synchronisation durchgeführt wird.</param>
         /// <exception cref="ClientException">Wirft ClientException, wenn Synchronisiation fehlschlägt.</exception>
-        public void SynchronizeLocalVotesForOption(int ballotId, int optionId, List<int> referenceVotes)
+        public void SynchronizeLocalVotesForOption(int groupId, int ballotId, int optionId, List<int> referenceVotes)
         {
             if (referenceVotes == null)
             {
                 Debug.WriteLine("SynchronizeLocalVotesForOption: No valid data passed to the method.");
                 throw new ArgumentNullException("reference list is null.");
             }
+            bool requiresNewEventFlag = false;
 
             // Frage zunächst die Votes ab für diese Abstimmungsoption.
             List<User> localVoters = GetVotersForOption(optionId);
@@ -3401,6 +3578,7 @@ namespace DataHandlingLayer.Controller
                     Debug.WriteLine("SynchronizeLocalVotesForOption: Need to add vote for option with id {0} " + 
                         "the added vote is {1}.", optionId, referenceVote);
                     AddVote(ballotId, optionId, referenceVote);
+                    requiresNewEventFlag = true;
                 }
             }
 
@@ -3422,7 +3600,14 @@ namespace DataHandlingLayer.Controller
                     Debug.WriteLine("SynchronizeLocalVotesForOption: Need to remove vote for option with id {0} " + 
                         "the remove vote is {1}.", optionId, localVoter.Id);
                     RemoveVote(optionId, localVoter.Id);
+                    requiresNewEventFlag = true;
                 }
+            }
+
+            if (requiresNewEventFlag)
+            {
+                // Setzte Flag.
+                SetHasNewEventFlag(groupId, true);
             }
         }
 

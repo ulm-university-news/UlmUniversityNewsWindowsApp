@@ -239,6 +239,7 @@ namespace DataHandlingLayer.Database
                                     ModificationDate = DatabaseManager.DateTimeFromSQLite((string)getGroupStmt["ModificationDate"]),
                                     Term = (string)getGroupStmt["Term"],
                                     Deleted = ((long)getGroupStmt["Deleted"] == 1) ? true : false,
+                                    HasNewEvent = ((long)getGroupStmt["HasNewEvent"] == 1) ? true : false,
                                     GroupAdmin = Convert.ToInt32(getGroupStmt["GroupAdmin_User_Id"]),
                                     GroupNotificationSetting = (NotificationSetting)Enum.ToObject(typeof(NotificationSetting), getGroupStmt["NotificationSettings_NotifierId"]),
                                 };
@@ -323,6 +324,7 @@ namespace DataHandlingLayer.Database
                                     ModificationDate = DatabaseManager.DateTimeFromSQLite((string)stmt["ModificationDate"]),
                                     Term = (string)stmt["Term"],
                                     Deleted = ((long)stmt["Deleted"] == 1) ? true : false,
+                                    HasNewEvent = ((long)stmt["HasNewEvent"] == 1) ? true : false,
                                     GroupAdmin = Convert.ToInt32(stmt["GroupAdmin_User_Id"]),
                                     GroupNotificationSetting = (NotificationSetting)Enum.ToObject(typeof(NotificationSetting), stmt["NotificationSettings_NotifierId"]),
                                 };
@@ -446,6 +448,7 @@ namespace DataHandlingLayer.Database
                                     ModificationDate = DatabaseManager.DateTimeFromSQLite((string)stmt["ModificationDate"]),
                                     Term = (string)stmt["Term"],
                                     Deleted = ((long)stmt["Deleted"] == 1) ? true : false,
+                                    HasNewEvent = ((long)stmt["HasNewEvent"] == 1) ? true : false,
                                     GroupAdmin = Convert.ToInt32(stmt["GroupAdmin_User_Id"]),
                                     GroupNotificationSetting = (NotificationSetting)Enum.ToObject(typeof(NotificationSetting), stmt["NotificationSettings_NotifierId"]),
                                 };
@@ -627,6 +630,71 @@ namespace DataHandlingLayer.Database
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Setzt den Wert des Flags HasNewEvent für die spezifizierte Gruppe neu.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, bei der das Flag neu gesetzt werden soll.</param>
+        /// <param name="newValue">Der neue Wert des Flags.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Flag nicht gesetzt werden kann.</exception>
+        public void SetHasNewEventFlagOnGroup(int groupId, bool newValue)
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"UPDATE ""Group"" 
+                            SET HasNewEvent=?, IsDirty=?  
+                            WHERE Id=? AND HasNewEvent<>?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, (newValue) ? 1 : 0);   // 1 = true, 0 = false.
+                            stmt.Bind(2, 1);    // isDirty auf true setzen
+                            stmt.Bind(3, groupId);
+                            stmt.Bind(4, (newValue) ? 1 : 0);
+
+                            if (stmt.Step() == SQLiteResult.DONE)
+                                Debug.WriteLine("SetHasNewEventFlagOnGroup: Successfully set flag to new value {0} " +
+                                    "in group with id {1}.", newValue, groupId);
+                            else
+                                Debug.WriteLine("SetHasNewEventFlagOnGroup: Failed to set flag to new value {0} " + 
+                                    "in group with id {1}.", newValue, groupId);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SetHasNewEventFlagOnGroup: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("SetHasNewEventFlagOnGroup: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("SetHasNewEventFlagOnGroup: Mutex timeout.");
+                throw new DatabaseException("Timeout: Failed to get access to DB.");
+            }
+
+            sw.Stop();
+            Debug.WriteLine("SetHasNewEventFlagOnGroup: Required time: {0} ms.", sw.Elapsed.TotalMilliseconds);
         }
 
         /// <summary>

@@ -456,6 +456,7 @@
     <Content Include="Assets\extIcons\appbar.information.png" />
     <Content Include="Assets\extIcons\appbar.lock.png" />
     <Content Include="Assets\extIcons\appbar.section.expand.png" />
+    <Content Include="Assets\extIcons\appbar.transit.hazard.png" />
     <Content Include="Assets\extIcons\appbar.user.delete.png" />
     <Content Include="Assets\extIcons\license.txt" />
     <Content Include="Assets\groupIcons\g.png" />

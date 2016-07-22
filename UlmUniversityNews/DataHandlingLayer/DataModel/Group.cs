@@ -133,16 +133,16 @@ namespace DataHandlingLayer.DataModel
             set { this.setProperty(ref this.deleted, value); }
         }
 
-        private int numberOfUnreadMessages;
+        private bool hasNewEvent;
         /// <summary>
-        /// Die Anzahl an ungelesenen Nachrichten innerhalb der Gruppe.
-        /// Dabei handelt es sich um Nachrichten von Konversationen.
-        /// </summary>
+        /// Gibt an, ob ein neues Ereignis für diese Gruppe registriert wurde, welches vom Nutzer 
+        /// sehr wahrscheinlich noch nicht wahrgenommen wurde.
+        /// </summar>
         [JsonIgnore]
-        public int NumberOfUnreadMessages
+        public bool HasNewEvent
         {
-            get { return numberOfUnreadMessages; }
-            set { this.setProperty(ref this.numberOfUnreadMessages, value); }
+            get { return hasNewEvent; }
+            set { this.setProperty(ref this.hasNewEvent, value); }
         }
 
         private List<User> participants;
