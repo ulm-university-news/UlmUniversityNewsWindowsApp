@@ -212,6 +212,7 @@
     <Compile Include="Converters\DrawerMenuEntryNameToLocalizedStringConverter.cs" />
     <Compile Include="Converters\FacultyEnumToComboBoxItemIndexConverter.cs" />
     <Compile Include="Converters\FacultyToLocalizedStringConverter.cs" />
+    <Compile Include="Converters\GroupToDrawerMenuBackgroundConverter.cs" />
     <Compile Include="Converters\GroupToGroupAdminStringConverter.cs" />
     <Compile Include="Converters\GroupToIconPathConverter.cs" />
     <Compile Include="Converters\GroupTypeEnumToComboBoxItemIndexConverter.cs" />

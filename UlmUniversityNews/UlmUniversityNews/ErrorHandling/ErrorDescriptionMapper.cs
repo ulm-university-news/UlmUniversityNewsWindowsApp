@@ -110,6 +110,9 @@ namespace UlmUniversityNews.ErrorHandling
                 case ErrorCodes.ChannelDataIncomplete:
                     errorDescription = loader.GetString("ApplicationErrorChannelDataIncompleteError");
                     break;
+                case ErrorCodes.ChannelSynchronizationOfAllChannelsFailed:
+                    errorDescription = loader.GetString("ApplicationErrorChannelSynchronizationOfAllChannelsFailed");
+                    break;
                 case ErrorCodes.ReminderNotFound:
                     errorDescription = loader.GetString("ApplicationErrorReminderNotFoundError");
                     break;
@@ -148,6 +151,9 @@ namespace UlmUniversityNews.ErrorHandling
                     break;
                 case ErrorCodes.GroupAdminRightsTransferHasFailed:
                     errorDescription = loader.GetString("ApplicationErrorGroupAdminRightsTransferHasFailedError");
+                    break;
+                case ErrorCodes.GroupSynchronizationOfAllGroupsFailed:
+                    errorDescription = loader.GetString("ApplicationErrorGroupSynchronizationOfAllGroupsFailed");
                     break;
                 case ErrorCodes.ConversationNotFound:
                     errorDescription = loader.GetString("ApplicationErrorConversationNotFoundError");

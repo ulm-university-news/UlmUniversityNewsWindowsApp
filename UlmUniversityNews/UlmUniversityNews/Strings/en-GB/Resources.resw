@@ -1733,6 +1733,12 @@ date: </value>
   <data name="GroupDetailsGroupDeletedHint.Text" xml:space="preserve">
     <value>(deleted)</value>
   </data>
+  <data name="ApplicationErrorChannelSynchronizationOfAllChannelsFailed" xml:space="preserve">
+    <value>The synchronization of the channel data could not be performed successfully for all the subscribed channels. Please try again.</value>
+  </data>
+  <data name="ApplicationErrorGroupSynchronizationOfAllGroupsFailed" xml:space="preserve">
+    <value>The synchronization of the group data could not be performed successfully for all groups. Please try again.</value>
+  </data>
   <data name="ConversationDetailsEditConversationButton.Label" xml:space="preserve">
     <value>edit</value>
   </data>
@@ -1771,6 +1777,9 @@ date: </value>
   </data>
   <data name="GroupParticipantsSynchronizationStatus" xml:space="preserve">
     <value>Synchronizing participants</value>
+  </data>
+  <data name="HomescreenSynchronizeAllChannelsButton.Label" xml:space="preserve">
+    <value>sync all</value>
   </data>
   <data name="HomescreenSynchronizeAllGroupsButton.Label" xml:space="preserve">
     <value>sync all</value>

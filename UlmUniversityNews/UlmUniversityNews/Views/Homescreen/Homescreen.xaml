@@ -40,20 +40,28 @@
         <CommandBar x:Name="HomescreenCommandBar"
                     Foreground="{StaticResource UNUCommandBarButtonColor}"
                     Background="{StaticResource UniUlmMainBackgroundColor}">
+            <AppBarButton 
+                x:Name="SynchronizeAllGroups"
+                x:Uid="HomescreenSynchronizeAllGroupsButton"
+                Icon="Sync"
+                Label="sync all" 
+                Visibility="{Binding HasSynchronizeAllGroupsOption, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding SynchronizeAllGroupsCommand}"
+                />
+            <AppBarButton 
+                x:Name="SynchronizeAllChannels"
+                x:Uid="HomescreenSynchronizeAllChannelsButton"
+                Icon="Sync"
+                Label="sync all"
+                Visibility="{Binding HasSynchronizeAllChannelsOption, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding SynchronizeAllChannelsCommand}"
+                />
             <AppBarButton x:Name="SearchChannels"
                           x:Uid="HomescreenSearchChannelsButton"
                           Icon="Find"
                           Label="search channel"
                           Visibility="{Binding ElementName=SearchChannels, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                           Command="{Binding SearchChannelsCommand}" />
-            <AppBarButton 
-                x:Name="SynchronizeAllGroups"
-                x:Uid="HomescreenSynchronizeAllGroupsButton"
-                Icon="Sync"
-                Label="sync all" 
-                Visibility="{Binding ElementName=SynchronizeAllGroups, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
-                Command="{Binding SynchronizeAllGroupsCommand}"
-                />
             <AppBarButton x:Name="SearchGroups"
                           x:Uid="HomescreenSearchGroupsButton"
                           Icon="Find"

@@ -49,6 +49,7 @@ namespace DataHandlingLayer.Exceptions
         public const int ChannelInvalidStartDate = 3016;
         public const int ChannelInvalidEndDate = 3017;
         public const int ChannelNameAlreadyExists = 3018;
+        public const int ChannelSynchronizationOfAllChannelsFailed = 3099;  // Client only error code
 
         // Announcements:
         public const int AnnouncementNotFound = 3100;

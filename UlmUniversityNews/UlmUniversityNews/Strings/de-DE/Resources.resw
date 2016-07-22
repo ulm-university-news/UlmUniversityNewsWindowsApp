@@ -1734,6 +1734,12 @@ Nachricht am: </value>
   <data name="GroupDetailsGroupDeletedHint.Text" xml:space="preserve">
     <value>(gelöscht)</value>
   </data>
+  <data name="ApplicationErrorChannelSynchronizationOfAllChannelsFailed" xml:space="preserve">
+    <value>Die Synchronisation der Kanaldaten konnte nicht für alle abonnierten Kanäle erfolgreich ausgeführt werden. Bitte versuchen Sie es erneut.</value>
+  </data>
+  <data name="ApplicationErrorGroupSynchronizationOfAllGroupsFailed" xml:space="preserve">
+    <value>Die Synchronisation der Gruppendaten konnte nicht für alle Gruppen erfolgreich ausgeführt werden. Bitte versuchen Sie es erneut.</value>
+  </data>
   <data name="ConversationDetailsEditConversationButton.Label" xml:space="preserve">
     <value>bearbeiten</value>
   </data>
@@ -1772,6 +1778,9 @@ Nachricht am: </value>
   </data>
   <data name="GroupParticipantsSynchronizationStatus" xml:space="preserve">
     <value>Synchronisiere Teilnehmer</value>
+  </data>
+  <data name="HomescreenSynchronizeAllChannelsButton.Label" xml:space="preserve">
+    <value>synchro-nisieren</value>
   </data>
   <data name="HomescreenSynchronizeAllGroupsButton.Label" xml:space="preserve">
     <value>synchro-nisieren</value>

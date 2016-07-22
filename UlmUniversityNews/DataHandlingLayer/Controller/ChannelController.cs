@@ -1312,6 +1312,107 @@ namespace DataHandlingLayer.Controller
             // Wenn Löschrequest an Server erfolgreich, dann markiere den Kanal lokal als gelöscht.
             MarkChannelAsDeleted(channelId);
         }
+
+        /// <summary>
+        /// Stößt die Synchronisation aller Kanäle an, die der Nutzer abonniert hat.
+        /// </summary>
+        /// <returns>Wirft ClientException, wenn Synchronisation nicht für alle
+        ///     Gruppen erfolgreich abgeschlossen werden konnte.</returns>
+        public async Task SynchronizeAllChannelsAsync()
+        {
+            Debug.WriteLine("SynchronizeAllChannelsAsync: Start new synchronization.");
+            Stopwatch sw = Stopwatch.StartNew();
+            User localUser = getLocalUser();
+
+            // Frage zunächst alle Kanäle ab, die der lokale Nutzer abonniert hat.
+            List<Channel> channels = GetMyChannels();
+
+            // Verwalte eine Liste von Tasks.
+            List<Task<bool>> tasks = new List<Task<bool>>();
+
+            // Starte für jeden Kanal, den der Nutzer abonniert hat und der nicht gelöscht ist, eine Synchronisation.
+            foreach (Channel localChannel in channels)
+            {
+                if (!localChannel.Deleted)
+                {
+                    Debug.WriteLine("SynchronizeAllChannelsAsync: Start task for channel with id {0}.", localChannel.Id);
+
+                    Task<bool> task = Task<bool>.Run(async () =>
+                    {
+                        bool successful = true;
+                        try
+                        {
+                            // Synchronisiere zunächst die Moderatoren des Kanals.
+                            List<Moderator> responsibleModerators = await GetResponsibleModeratorsAsync(localChannel.Id);
+                            SynchronizeResponsibleModerators(localChannel.Id, responsibleModerators);
+
+                            // Synchronisiere Kanalinformationen.
+                            Channel referenceChannel = await GetChannelInfoAsync(localChannel.Id);
+                            if (referenceChannel != null)
+                            {
+                                if (DateTimeOffset.Compare(localChannel.ModificationDate, referenceChannel.ModificationDate) < 0)
+                                {
+                                    // Aktualisierung erforderlich.
+                                    Debug.WriteLine("SynchronizeAllChannelsAsync: Need to update channel with id: {0}.", localChannel.Id);
+                                    ReplaceLocalChannelWhileKeepingNotificationSettings(referenceChannel);
+                                }
+                                else
+                                {
+                                    Debug.WriteLine("SynchronizeAllChannelsAsync: No update for channel with id {0} required.", localChannel.Id);
+                                }
+                            }
+
+                            // Synchronisiere Nachrichten.
+                            // Extrahiere als erstes die aktuell höchste MessageNr einer Announcement in diesem Kanal.
+                            int maxMsgNr = 0;
+                            maxMsgNr = GetHighestMsgNrForChannel(localChannel.Id);
+                            Debug.WriteLine("SynchronizeAllChannelsAsync: Perform update announcement operation with max messageNumber of {0}.", maxMsgNr);
+
+                            // Frage die Announcements ab.
+                            List<Announcement> receivedAnnouncements = await GetAnnouncementsOfChannelAsync(localChannel.Id, maxMsgNr, false);
+
+                            if (receivedAnnouncements != null && receivedAnnouncements.Count > 0)
+                            {
+                                await StoreReceivedAnnouncementsAsync(receivedAnnouncements);
+                            }
+                        }
+                        catch (ClientException ex)
+                        {
+                            Debug.WriteLine("SynchronizeAllChannelsAsync: Sync failed for channel with id {0}. " +
+                                "Error code is: {1}.", localChannel.Id, ex.ErrorCode);
+
+                            // Gebe Meldung nur aus, wenn es einen allgemeinen Fehler gegeben hat.
+                            if (ex.ErrorCode == ErrorCodes.ServerUnreachable || ex.ErrorCode == ErrorCodes.ServerDatabaseFailure ||
+                                ex.ErrorCode == ErrorCodes.JsonParserError || ex.ErrorCode == ErrorCodes.LocalDatabaseException)
+                            {
+                                successful = false;
+                            }
+                        }
+                        return successful;
+                    });
+
+                    tasks.Add(task);
+                }
+            }
+
+            // Frage Ergebnisse der Synchronisation ab.
+            bool synchronisationSuccessful = true;
+            int pos = 0;
+            foreach (Task<bool> task in tasks)
+            {
+                bool result = await task;
+                synchronisationSuccessful = synchronisationSuccessful && result;
+
+                Debug.WriteLine("SynchronizeAllChannelsAsync: Result of synchronization at position {0} is: {1}.", pos, result);
+                pos++;
+            }
+
+            if (!synchronisationSuccessful)
+            {
+                Debug.WriteLine("SynchronizeAllChannelsAsync: Not all synchronizations were executed successful.");
+                throw new ClientException(ErrorCodes.ChannelSynchronizationOfAllChannelsFailed, "Synchronization failed.");
+            }
+        }
         #endregion RemoteChannelFunctions
 
         #region RemoteAnnouncementFunctions

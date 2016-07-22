@@ -28,6 +28,7 @@
         <valueconverter:ZeroIntegerToVisibilityConverter x:Key="ZeroIntegerToVisibilityConverter" />
         <valueconverter:ConversationToIconPathConverter x:Key="ConversationToIconPathConverter" />
         <valueconverter:BallotToIconPathConverter x:Key="BallotToIconPathConverter" />
+        <valueconverter:GroupToDrawerMenuBackgroundConverter x:Key="GroupToDrawerMenuBackgroundConverter" />
 
         <!-- Layout eines Eintrages einer Konversations-Ressource in der Detailansicht einer Gruppe.-->
         <DataTemplate x:Key="ConversationListItemStyle">
@@ -260,9 +261,9 @@
 
     <!-- CommandBar -->
     <Page.BottomAppBar>
-        <CommandBar x:Name="ChannelSettingsCommandBar"
+        <CommandBar x:Name="GroupDetailsCommandBar"
 						Foreground="{StaticResource UNUCommandBarButtonColor}"
-						Background="{StaticResource UniUlmMainBackgroundColor}">
+						Background="{Binding SelectedGroup, Converter={StaticResource GroupToDrawerMenuBackgroundConverter}}">
             <AppBarButton
                 x:Name="GroupDetailsDeleteGroupLocallyButton"
                 x:Uid="GroupDetailsDeleteGroupLocallyButton"
@@ -450,7 +451,8 @@
         </Grid.RowDefinitions>
 
         <!-- Titelbereich - Drawer -->
-        <Grid Grid.Row="0" Style="{StaticResource DrawerMenuTitleBar}">
+        <Grid Grid.Row="0" Style="{StaticResource DrawerMenuTitleBar}" 
+              Background="{Binding SelectedGroup, Converter={StaticResource GroupToDrawerMenuBackgroundConverter}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />

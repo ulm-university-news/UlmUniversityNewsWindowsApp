@@ -56,6 +56,28 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
+        private bool hasSynchronizeAllGroupsOption;
+        /// <summary>
+        /// Gibt an, ob der Nutzer die Möglickeit hat, die Synchronisation aller Gruppen auszuführen,
+        /// in denen er Teilnehmer ist.
+        /// </summary>
+        public bool HasSynchronizeAllGroupsOption
+        {
+            get { return hasSynchronizeAllGroupsOption; }
+            set { this.setProperty(ref this.hasSynchronizeAllGroupsOption, value); }
+        }
+
+        private bool hasSynchronizeAllChannelsOption;
+        /// <summary>
+        /// Gibt an, ob der Nutzer die Möglickeit hat, die Synchronisation aller Kanäle auszuführen,
+        /// die er abonniert hat.
+        /// </summary>
+        public bool HasSynchronizeAllChannelsOption
+        {
+            get { return hasSynchronizeAllChannelsOption; }
+            set { this.setProperty(ref this.hasSynchronizeAllChannelsOption, value); }
+        }
+
         private ObservableCollection<Group> groupCollection;
         /// <summary>
         /// Liste von Gruppenobjekten, in denen der lokale Nutzer Teilnehmer ist.
@@ -138,6 +160,17 @@ namespace DataHandlingLayer.ViewModel
             get { return synchronizeAllGroupsCommand; }
             set { synchronizeAllGroupsCommand = value; }
         }
+
+        private AsyncRelayCommand synchronizeAllChannelsCommand;
+        /// <summary>
+        /// Befehl zur Synchronisation aller lokal verwalteten Kanäle, die
+        /// der Nutzer abonniert hat.
+        /// </summary>
+        public AsyncRelayCommand SynchronizeAllChannelsCommand
+        {
+            get { return synchronizeAllChannelsCommand; }
+            set { synchronizeAllChannelsCommand = value; }
+        }
         #endregion Commands
 
         /// <summary>
@@ -158,6 +191,7 @@ namespace DataHandlingLayer.ViewModel
             ChannelSelected = new RelayCommand(param => executeChannelSelected(param), param => canSelectChannel());
             GroupSelected = new RelayCommand(param => executeGroupSelected(param), param => canSelectGroup());
             SynchronizeAllGroupsCommand = new AsyncRelayCommand(param => executeSynchronizeAllGroupsCommandAsync(), param => canSynchronizeAllGroups());
+            SynchronizeAllChannelsCommand = new AsyncRelayCommand(param => executeSynchronizeAllChannelsCommandAsync(), param => canSynchronizeAllChannels());
         }
 
         /// <summary>
@@ -225,6 +259,8 @@ namespace DataHandlingLayer.ViewModel
                 Debug.WriteLine("Error during loading process of subscribed channels.");
                 displayError(e.ErrorCode);
             }
+
+            checkCommandExecution();
         }
 
         /// <summary>
@@ -335,7 +371,8 @@ namespace DataHandlingLayer.ViewModel
                 Debug.WriteLine("Error during loading process of my groups");
                 displayError(ex.ErrorCode);
             }
-            
+
+            checkCommandExecution();
         }
 
         /// <summary>
@@ -479,6 +516,18 @@ namespace DataHandlingLayer.ViewModel
             searchGroupsCommand.RaiseCanExecuteChanged();
             channelSelected.RaiseCanExecuteChanged();
             SynchronizeAllGroupsCommand.OnCanExecuteChanged();
+
+            if (canSynchronizeAllGroups())
+                HasSynchronizeAllGroupsOption = true;
+            else
+                HasSynchronizeAllGroupsOption = false;
+
+            SynchronizeAllChannelsCommand.OnCanExecuteChanged();
+
+            if (canSynchronizeAllChannels())
+                HasSynchronizeAllChannelsOption = true;
+            else
+                HasSynchronizeAllChannelsOption = false;
         }
 
         /// <summary>
@@ -644,6 +693,49 @@ namespace DataHandlingLayer.ViewModel
             catch (ClientException ex)
             {
                 Debug.WriteLine("executeSynchronizeAllGroupsCommand: Sync failed. Error code is: {0}.", ex.ErrorCode);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
+            }
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zur Synchronisation aller abonnierten
+        /// Kanäle zur Verfügung steht.
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canSynchronizeAllChannels()
+        {
+            if (SelectedPivotItemIndex == 0 && 
+                ChannelCollection != null && ChannelCollection.Count > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl SynchronizeAllChannelsCommandAsync aus. Stößt die Synchronisation
+        /// aller abonnierten Kanäle an.
+        /// </summary>
+        private async Task executeSynchronizeAllChannelsCommandAsync()
+        {
+            try
+            {
+                displayIndeterminateProgressIndicator();
+
+                await Task.Run(() => channelController.SynchronizeAllChannelsAsync());
+
+                // Lade Kanalliste neu.
+                List<Channel> channels = await Task.Run(() => channelController.GetMyChannels());
+                await reloadChannelCollectionCompletelyAsync(channels);
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("executeSynchronizeAllChannelsCommandAsync: Sync failed. Error code is: {0}.", ex.ErrorCode);
                 displayError(ex.ErrorCode);
             }
             finally
