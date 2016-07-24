@@ -981,7 +981,7 @@ date: </value>
     <value>The channel was deleted from the server. There will be no new messages for this channel. However, you can keep the local version of the channel.</value>
   </data>
   <data name="ChannelDetailsDeleteChannelWarning.Text" xml:space="preserve">
-    <value>There is no more represenation of this channel on the server. Do you want to remove the channel from the local datasets? The corresponding data will be deleted and can not be accessed anymore.</value>
+    <value>There is no represenation of this channel on the server anymore. Do you want to remove the channel from the local datasets? The corresponding data will be deleted and can not be accessed anymore.</value>
   </data>
   <data name="ChannelDetailsNoReminderInChannelInfo.Text" xml:space="preserve">
     <value>There are no reminder for this channel so far.</value>
@@ -1353,7 +1353,7 @@ date: </value>
     <value>The specified group could not be found on the server. The group has probably been deleted on the server.</value>
   </data>
   <data name="ApplicationErrorGroupParticipantNotFoundError" xml:space="preserve">
-    <value>The specified participant of the group could not be found on the server. It is possible that the participant has already left the group.</value>
+    <value>The specified participant of the group could not be found on the server. It seems that you were removed from the group by the administrator.</value>
   </data>
   <data name="ApplicationErrorInvalidGroupAdminError" xml:space="preserve">
     <value>An error occurred in the determination of the group administrator.</value>
@@ -1527,7 +1527,7 @@ date: </value>
     <value>The specified ballot could not be found on the server. It is possible that the ballot has been deleted on the server.</value>
   </data>
   <data name="ApplicationErrorBallotUserHasAlreadyVotedError" xml:space="preserve">
-    <value>Only one option can be selected at a time. Please try again.</value>
+    <value>Only one option can be selected at a time. Please synchronize the ballot and try again.</value>
   </data>
   <data name="BallotDetailsPlaceVotesStatus" xml:space="preserve">
     <value>Saving selection</value>
@@ -1783,5 +1783,8 @@ date: </value>
   </data>
   <data name="HomescreenSynchronizeAllGroupsButton.Label" xml:space="preserve">
     <value>sync all</value>
+  </data>
+  <data name="GroupDetailsDeleteGroupLocallyRemovedParticipantWarning.Text" xml:space="preserve">
+    <value>You were removed from the group by the administrator. Do you want to delete the group from your local datasets?</value>
   </data>
 </root>

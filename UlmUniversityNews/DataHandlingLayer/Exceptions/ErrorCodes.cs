@@ -75,15 +75,15 @@ namespace DataHandlingLayer.Exceptions
         public const int GroupIncorrectPassword = 4008;
         public const int GroupMissingPassword = 4009;
         public const int GroupParticipantNotFound = 4010;
-        public const int GroupAdminNotAllowedToExit = 4097; // Client only error code
+        public const int GroupAdminNotAllowedToExit = 4011;
         public const int GroupAdminRightsTransferHasFailed = 4098;  // Client only error code
         public const int GroupSynchronizationOfAllGroupsFailed = 4099;  // Client only error code
 
         public const int ConversationNotFound = 4100;
         public const int ConversationDataIncomplete = 4102;
         public const int ConversationInvalidTitle = 4103;
-        public const int ConversationStorageFailedDueToMissingAdmin = 4198; // Client only error code
-        public const int ConversationIsClosed = 4199; // Client only error code
+        public const int ConversationIsClosed = 4104;
+        public const int ConversationStorageFailedDueToMissingAdmin = 4199; // Client only error code
 
         public const int BallotNotFound = 4300;
         public const int BallotDataIncomplete = 4302;

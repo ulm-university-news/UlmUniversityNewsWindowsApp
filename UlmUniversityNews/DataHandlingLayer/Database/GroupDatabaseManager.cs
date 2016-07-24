@@ -1302,6 +1302,70 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Gibt an, ob ein Datensatz zu der Konversation mit der angegebenen Id in der Datenbank
+        /// gespeichert ist.
+        /// </summary>
+        /// <param name="conversationId">Die Id der Konversation.</param>
+        /// <returns>Liefert true, wenn die Konversation gespeichert ist, ansonsten false.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abfrage fehlschlägt.</exception>
+        public bool IsConversationStored(int conversationId)
+        {
+            bool isStored = false;
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT COUNT(*) AS amount 
+                            FROM Conversation 
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, conversationId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                int amount = Convert.ToInt32(stmt["amount"]);
+                                if (amount == 1)
+                                {
+                                    isStored = true;
+                                }
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("IsConversationStored: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("IsConversationStored: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("IsConversationStored: Mutex timeout.");
+                throw new DatabaseException("IsConversationStored: Timeout: Failed to get access to DB.");
+            }
+
+            return isStored;
+        }
+
+        /// <summary>
         /// Aktualisiert die Konversation, zu welcher der übergebenen Datensatz gehört.
         /// Ersetzt die alten Daten durch die im Objekt übergebenen Daten. Bei Änderungen
         /// des Gruppenadministrators muss darauf geachtet werden, dass der Teilnehmer der Gruppe
@@ -1834,6 +1898,7 @@ namespace DataHandlingLayer.Database
                 Debug.WriteLine("StoreConversationMessage: No valid object passed to method.");
                 return;
             }
+            bool successful = true;
 
             // Frage das Mutex Objekt ab.
             Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
@@ -1868,10 +1933,16 @@ namespace DataHandlingLayer.Database
                             insertToMsgStmt.Bind(4, (int)conversationMsg.MessagePriority);
                             insertToMsgStmt.Bind(5, 0); // Read auf false zu Beginn.
 
-                            if (insertToMsgStmt.Step() != SQLiteResult.DONE)
-                                Debug.WriteLine("StoreConversationMessage: Failed to store message part of conversation message with id {0}.", conversationMsg.Id);
-                            else
+                            if (insertToMsgStmt.Step() == SQLiteResult.DONE)
+                            {
                                 Debug.WriteLine("StoreConversationMessage: Successfully stored message part of conversation msg with id {0}.", conversationMsg.Id);
+                            }
+                            else
+                            {
+                                Debug.WriteLine("StoreConversationMessage: Failed to store message part of conversation message with id {0}.", conversationMsg.Id);
+                                successful = false;
+                            }
+
 
                             // Füge in Conversation Message Tabelle ein.
                             insertToConvMsgStmt.Bind(1, conversationMsg.MessageNumber);
@@ -1879,16 +1950,34 @@ namespace DataHandlingLayer.Database
                             insertToConvMsgStmt.Bind(3, conversationMsg.AuthorId);
                             insertToConvMsgStmt.Bind(4, conversationMsg.Id);
 
-                            if (insertToConvMsgStmt.Step() != SQLiteResult.DONE)
-                                Debug.WriteLine("StoreConversationMessage: Failed to store conv message part of conversation msg with id {0}.", conversationMsg.Id);
-                            else
+                            if (insertToConvMsgStmt.Step() == SQLiteResult.DONE)
+                            {
                                 Debug.WriteLine("StoreConversationMessage: Successfully stored conv message part of conversation msg with id {0}.", conversationMsg.Id);
+                            }
+                            else
+                            {
+                                Debug.WriteLine("StoreConversationMessage: Failed to store conv message part of conversation msg with id {0}.", conversationMsg.Id);
+                                successful = false;
+                            }
                         }
 
-                        // Commit der Transaktion.
-                        using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                        if (successful)
                         {
-                            statement.Step();
+                            // Commit der Transaktion.
+                            using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                            {
+                                statement.Step();
+                                Debug.WriteLine("StoreConversationMessage: Performed insert.");
+                            }
+                        }
+                        else
+                        {
+                            // Rollback der Transaktion.
+                            using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                            {
+                                statement.Step();
+                                Debug.WriteLine("StoreConversationMessage: Performed rollback.");
+                            }
                         }
                     }
                     catch (SQLiteException sqlEx)
@@ -1940,6 +2029,7 @@ namespace DataHandlingLayer.Database
                 Debug.WriteLine("BulkInsertConversationMessages: No data to store.");
                 return;
             }
+            bool successful = true;
 
             // Frage das Mutex Objekt ab.
             Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
@@ -2000,7 +2090,12 @@ namespace DataHandlingLayer.Database
                                 insertToMsgStmt.Bind(4, (int)conversationMsg.MessagePriority);
                                 insertToMsgStmt.Bind(5, 0); // Read auf false zu Beginn.
 
-                                insertToMsgStmt.Step();
+                                if (insertToMsgStmt.Step() != SQLiteResult.DONE)
+                                {
+                                    Debug.WriteLine("BulkInsertConversationMessages: Failed to store message part of " + 
+                                        "convMsg with id {0}.", conversationMsg.Id);
+                                    successful = false;
+                                }
 
                                 // Füge in Conversation Message Tabelle ein.
                                 insertToConvMsgStmt.Bind(1, conversationMsg.MessageNumber);
@@ -2008,7 +2103,12 @@ namespace DataHandlingLayer.Database
                                 insertToConvMsgStmt.Bind(3, conversationMsg.AuthorId);
                                 insertToConvMsgStmt.Bind(4, conversationMsg.Id);
 
-                                insertToConvMsgStmt.Step();
+                                if (insertToConvMsgStmt.Step() != SQLiteResult.DONE)
+                                {
+                                    Debug.WriteLine("BulkInsertConversationMessages: Failed to store conversation message part of " +
+                                        "convMsg with id {0}.", conversationMsg.Id);
+                                    successful = false;
+                                }
 
                                 // Setze statements zurück für nächste Iteration.
                                 insertToMsgStmt.Reset();
@@ -2016,12 +2116,24 @@ namespace DataHandlingLayer.Database
                             }
                         }
 
-                        // Commit der Transaktion.
-                        using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                        if (successful)
                         {
-                            statement.Step();
-                            Debug.WriteLine("BulkInsertConversationMessages: Successfully inserted {0} conversation messages " + 
-                                "via bulk insert into conversation with id {1}.", conversationMessages.Count, conversationId);
+                            // Commit der Transaktion.
+                            using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                            {
+                                statement.Step();
+                                Debug.WriteLine("BulkInsertConversationMessages: Successfully inserted {0} conversation messages " +
+                                    "via bulk insert into conversation with id {1}.", conversationMessages.Count, conversationId);
+                            }
+                        }
+                        else
+                        {
+                            // Rollback der Transaktion.
+                            using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                            {
+                                statement.Step();
+                                Debug.WriteLine("BulkInsertConversationMessages: Rollback required. Couldn't perform storage.");
+                            }
                         }
                     }
                     catch (SQLiteException sqlEx)

@@ -67,6 +67,66 @@ namespace DataHandlingLayer.Controller
             return getLocalUser();
         }
 
+        /// <summary>
+        /// Behandelt gruppenbezogene Fehler, die insbesondere vom Server an den Client zurückgeliefert werden können.
+        /// Für die behandelten Fehler wird eine fest definierte Aktion ausgeführt.
+        /// Die behandelten Fehler sind:
+        /// GroupNotFound -> Markiere Gruppe als gelöscht
+        /// GroupParticipantNotFound -> Setze Status des lokalen Nutzers in der Gruppe auf inaktiv
+        /// ConversationNotFound -> Lösche die Konversation aus den lokalen Datensätzen
+        /// BallotNotFound -> Lösche die Abstimmung aus den lokalen Datensätzen
+        /// ConversationIsClosed -> Markiere die Konversation lokal als geschlossen.
+        /// BallotIsClosed -> Markiere die Abstimmung lokal als geschlossen.
+        /// 
+        /// Wenn eine andere Aktion auf einen der genannten Fehler gewünscht ist, so muss dieser 
+        /// explizit behandelt werden und diese Methode darf dann nicht gerufen werden.
+        /// </summary>
+        /// <param name="errorCode">Der Fehlercode, den der Server gemeldet hat.</param>
+        /// <param name="groupId">Die Id der Gruppe, sofern für die Fehlerbehandlung relevant, sonst null.</param>
+        /// <param name="conversationId">Die Id der Konversation, sofern für die Fehlerbehandlung relevant, sonst null.</param>
+        /// <param name="ballotId">Die Id der Abstimmung, sofern für die Fehlerbehandlung relevant, sonst null.</param>
+        private void handleGroupRelatedErrors(int errorCode, int? groupId, int? conversationId, int? ballotId)
+        {
+            if (groupId.HasValue && errorCode == ErrorCodes.GroupNotFound)
+            {
+                Debug.WriteLine("handleGroupRelatedErrors: Seems the group has been deleted on the server. " + 
+                    "The group with id {0} will be marked as deleted.", groupId.Value);
+                MarkGroupAsDeleted(groupId.Value);
+            }
+            else if (groupId.HasValue && errorCode == ErrorCodes.GroupParticipantNotFound)
+            {
+                User localUser = getLocalUser();
+                Debug.WriteLine("handleGroupRelatedErrors: Seems the local user is not an active particpant of the " +
+                    "group anymore. The status of the user with id {0} will be changed to inactive for the group with " + 
+                    "id {1}.", localUser.Id, groupId.Value);
+                ChangeActiveStatusOfParticipant(groupId.Value, localUser.Id, false);
+            }
+            else if (conversationId.HasValue && errorCode == ErrorCodes.ConversationNotFound)
+            {
+                Debug.WriteLine("handleGroupRelatedErrors: Seems the conversation has been deleted on the sever. " + 
+                    "The conversation with id {0} will be deleted locally.", conversationId.Value);
+                DeleteConversation(conversationId.Value);
+            }
+            else if (ballotId.HasValue && errorCode == ErrorCodes.BallotNotFound)
+            {
+                Debug.WriteLine("handleGroupRelatedErrors: Seems the ballot has been deleted on the server. " + 
+                    "The ballot with id {0} will be deleted locally.", ballotId.Value);
+                DeleteBallot(ballotId.Value);
+            }
+            else if (conversationId.HasValue && errorCode == ErrorCodes.ConversationIsClosed)
+            {
+                Debug.WriteLine("handleGroupRelatedErrors: Seems the conversation has been closed by the conversation admin. " + 
+                    "The conversation with id {0} will be closed locally.", conversationId.Value);
+                MarkConversationAsClosed(conversationId.Value);
+            }
+            else if (ballotId.HasValue && errorCode == ErrorCodes.BallotClosed)
+            {
+                Debug.WriteLine("handleGroupRelatedErrors: Seems the ballot has been closed by the ballot admin. " +
+                    "The ballot with id {0} will be closed locally.", ballotId.Value);
+                MarkBallotAsClosed(ballotId.Value);
+            }
+        }
+
         #region RemoteGroupMethods
         /// <summary>
         /// Anlegen einer neuen Gruppe im System. Die Daten der Gruppe
@@ -236,6 +296,9 @@ namespace DataHandlingLayer.Controller
             catch (APIException ex)
             {
                 Debug.WriteLine("GetGroupAsync: Request to server failed.");
+
+                handleGroupRelatedErrors(ex.ErrorCode, id, null, null);
+
                 // Abbilden auf ClientException.
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -376,6 +439,13 @@ namespace DataHandlingLayer.Controller
                     // Markiere Gruppe als gelöscht.
                     MarkGroupAsDeleted(groupId);
                 }
+                else if (ex.ErrorCode == ErrorCodes.GroupParticipantNotFound)
+                {
+                    Debug.WriteLine("RemoveParticipantFromGroupAsync: Participant seems to be already removed from the group.");
+                    ChangeActiveStatusOfParticipant(groupId, participantId, false);
+                    // Brich hier gleich ab.
+                    return true;
+                }
 
                 Debug.WriteLine("RemoveParticipantFromGroupAsync: Request has failed or was rejected.");
                 throw new ClientException(ex.ErrorCode, ex.Message);
@@ -398,6 +468,7 @@ namespace DataHandlingLayer.Controller
         public async Task LeaveGroupAsync(int groupId)
         {
             User localUser = getLocalUser();
+            bool hasLeft = false;
 
             // Hole die betroffene Gruppe aus dem lokalen Speicher.
             Group affectedGroup = GetGroup(groupId);
@@ -465,6 +536,7 @@ namespace DataHandlingLayer.Controller
                     localUser.ServerAccessToken,
                     groupId,
                     localUser.Id);
+                hasLeft = true;
 
                 Debug.WriteLine("LeaveGroupAsync: Successfully left group with id {0}.", groupId);
             }
@@ -472,17 +544,27 @@ namespace DataHandlingLayer.Controller
             {
                 if (ex.ErrorCode == ErrorCodes.GroupNotFound)
                 {
-                    // Kann Gruppe einfach entfernen.
-                    DeleteGroupLocally(groupId);
-                    
-                    return;
+                    Debug.WriteLine("LeaveGroupAsync: The group with id {0} seems to be deleted " + 
+                        "from the server. The leaving process can then be considered successful.");
+                    hasLeft = true;
                 }
-
-                throw new ClientException(ex.ErrorCode, ex.Message);
+                else if (ex.ErrorCode == ErrorCodes.GroupParticipantNotFound)
+                {
+                    Debug.WriteLine("LeaveGroupAsync: The user seems to be already removed from the group. " +
+                        "The leaving process can then be considered successful.");
+                    hasLeft = true;
+                }
+                else
+                {
+                    throw new ClientException(ex.ErrorCode, ex.Message);
+                }
             }
 
             // Entferne die Gruppe aus den lokalen Datensätzen. Zugehörige Daten werden kaskadierend gelöscht.
-            DeleteGroupLocally(groupId);
+            if (hasLeft)
+            {
+                DeleteGroupLocally(groupId);
+            }
         }
 
         /// <summary>
@@ -507,14 +589,9 @@ namespace DataHandlingLayer.Controller
             }
             catch (APIException ex)
             {
-                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
-                {
-                    Debug.WriteLine("GetParticipantsOfGroup: Group with id {0} seems to be deleted.", groupId);
-                    // Markiere Gruppe lokal als gelöscht.
-                    MarkGroupAsDeleted(groupId);
-                }
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, null, null);
 
-                Debug.WriteLine("GetParticipantsOfGroup: Request to server failed.");
+                Debug.WriteLine("GetParticipantsOfGroup: Request to server failed. Error code: {0}. ", ex.ErrorCode);
                 // Abbilden auf ClientException.
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -613,13 +690,9 @@ namespace DataHandlingLayer.Controller
             }
             catch (APIException ex)
             {
-                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
-                {
-                    Debug.WriteLine("UpdateGroupAsync: Group seems to be deleted from the server.");
-                    // Markiere Gruppe lokal als gelöscht.
-                    MarkGroupAsDeleted(oldGroup.Id);
-                }
-
+                //Keine explizite Behandlung von GroupNotFound, GroupParticipantNotFound, ... hier, 
+                //da nur Admin normal diese Funktionalität ausführen kann.
+                Debug.WriteLine("UpdateGroupAsync: Request failed. Error code: {0}, status code: {1}.", ex.ErrorCode, ex.ResponseStatusCode);
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
 
@@ -958,11 +1031,7 @@ namespace DataHandlingLayer.Controller
             {
                 Debug.WriteLine("CreateConversationAsync: Request failed. Error code is {0}.", ex.ErrorCode);
 
-                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
-                {
-                    Debug.WriteLine("CreateConversationAsync: Request failed due to group not found.");
-                    MarkGroupAsDeleted(groupId);
-                }
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, null, null);
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -1044,12 +1113,9 @@ namespace DataHandlingLayer.Controller
             }
             catch (APIException ex)
             {
-                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
-                {
-                    Debug.WriteLine("UpdateConversationAsync: Group not found on server. Group probably deleted.");
-                    // Behandlung von Not Found. Gruppe wahrscheinlich gelöscht.
-                    MarkGroupAsDeleted(groupId);
-                }
+                Debug.WriteLine("UpdateConversationAsync: Request failed. Error code: {0}.", ex.ErrorCode);
+
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, oldConversation.Id, null);
 
                 // Bilde ab auf ClientException.
                 throw new ClientException(ex.ErrorCode, ex.Message);
@@ -1183,9 +1249,9 @@ namespace DataHandlingLayer.Controller
             }
             catch (APIException ex)
             {
-                Debug.WriteLine("GetConversationMessages: Request to server failed.");
+                Debug.WriteLine("GetConversationMessages: Request to server failed. Error code: {0}.", ex.ErrorCode);
 
-                // TODO case Conversation not found, group not found.
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, conversationId, null);
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -1227,7 +1293,7 @@ namespace DataHandlingLayer.Controller
             {
                 Debug.WriteLine("GetConversationsAsync: Request to server failed.");
 
-                // TODO case Conversation not found, group not found.
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, null, null);
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -1428,32 +1494,10 @@ namespace DataHandlingLayer.Controller
             }
             catch (APIException ex)
             {
-                Debug.WriteLine("SendConversationMessageAsync: Request to create conversation message failed.");
+                Debug.WriteLine("SendConversationMessageAsync: Request to create conversation message failed. " + 
+                    "Error code: {0}.", ex.ErrorCode);
 
-                // TODO: Fälle: GroupNotFound, ConversationNotFound, Conversation Locked.
-                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
-                {
-                    Debug.WriteLine("SendConversationMessageAsync: Group seems to be deleted on the server.");
-                    // Markiere die Gruppe lokal als gelöscht.
-                    MarkGroupAsDeleted(groupId);
-                }
-
-                if (ex.ErrorCode == ErrorCodes.ConversationNotFound)
-                {
-                    Debug.WriteLine("SendConversationMessageAsync: Conversation seems to be deleted on the server.");
-                    // Markiere Conversation lokal als geschlossen.
-                    MarkConversationAsClosed(conversationId);
-                }
-
-                // Wenn Konversation geschlossen ist, erhält man User Forbidden.
-                if (ex.ErrorCode == ErrorCodes.UserForbidden)
-                {
-                    Debug.WriteLine("SendConversationMessageAsync: Cannot send message into a conversation that is closed.");
-                    // Markiere Conversation als geschlossen.
-                    MarkConversationAsClosed(conversationId);
-                    // Wandle Status Code um.
-                    ex.ErrorCode = ErrorCodes.ConversationIsClosed;
-                }
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, conversationId, null);
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -1591,7 +1635,26 @@ namespace DataHandlingLayer.Controller
             {
                 Debug.WriteLine("DeleteConversationAsync: Failed to delete conversation with id {0}.", conversationId);
 
-                // TODO
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    Debug.WriteLine("DeleteConversationAsync: Group with id {0} seems to be deleted on the server.", groupId);
+                    MarkGroupAsDeleted(groupId);
+
+                    // Lösche dennoch auch Konversation lokal.
+                    DeleteConversation(conversationId);
+                }
+                else if (ex.ErrorCode == ErrorCodes.ConversationNotFound)
+                {
+                    Debug.WriteLine("DeleteConversationAsync: Conversation with id {0} seems to be already deleted.", conversationId);
+                    // Lösche Konversation lokal.
+                    DeleteConversation(conversationId);
+                    // Breche hier ab.
+                    return;
+                }
+                else
+                {
+                    handleGroupRelatedErrors(ex.ErrorCode, groupId, conversationId, null);
+                }
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -1628,12 +1691,7 @@ namespace DataHandlingLayer.Controller
             {
                 Debug.WriteLine("GetBallotsAsync: Request failed. Error code is {0}.", ex.ErrorCode);
 
-                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
-                {
-                    Debug.WriteLine("GetBallotsAsync: Group not found.");
-                    // Markiere Gruppe lokal als gelöscht.
-                    MarkGroupAsDeleted(groupId);
-                }
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, null, null);
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }        
@@ -1676,14 +1734,7 @@ namespace DataHandlingLayer.Controller
             {
                 Debug.WriteLine("GetBallotAsync: Request failed. Error code is {0}.", ex.ErrorCode);
 
-                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
-                {
-                    Debug.WriteLine("GetBallotAsync: Group not found.");
-                    // Markiere Gruppe lokal als gelöscht.
-                    MarkGroupAsDeleted(groupId);
-                }
-
-                // TODO Ballot not found
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, null, ballotId);
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -1724,18 +1775,7 @@ namespace DataHandlingLayer.Controller
             {
                 Debug.WriteLine("GetOptionsForBallotAsync: Request failed. Error code is {0}.", ex.ErrorCode);
 
-                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
-                {
-                    Debug.WriteLine("GetBallotsAsync: Group not found.");
-                    // Markiere Gruppe lokal als gelöscht.
-                    MarkGroupAsDeleted(groupId);
-                }
-
-                if (ex.ErrorCode == ErrorCodes.BallotNotFound)
-                {
-                    Debug.WriteLine("GetBallotsAsync: Ballot not found.");
-                    DeleteBallot(ballotId);
-                }
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, null, ballotId);
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -1988,25 +2028,20 @@ namespace DataHandlingLayer.Controller
             {
                 Debug.WriteLine("PlaceVoteAsync: Failed to place vote. Request failed. Error code is: {0}.", ex.ErrorCode);
 
-                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
-                {
-                    Debug.WriteLine("RemoveVoteAsync: Group seems to be deleted on the server.");
-                    // Markiere Gruppe lokal als gelöscht.
-                    MarkGroupAsDeleted(groupId);
-                }
-
-                if (ex.ErrorCode == ErrorCodes.BallotNotFound)
-                {
-                    Debug.WriteLine("PlaceVoteAsync: Ballot seems to be deleted on the server.");
-                    DeleteBallot(ballotId);
-                }
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, null, ballotId);
 
                 // Weitere Fehlerbehandlungen für Vote-spezifische Fehler.
                 if (ex.ErrorCode == ErrorCodes.BallotUserHasAlreadyVoted)
                 {
-                    Debug.WriteLine("RemoveVoteAsync: Server data sets have already linked this option and the user. " +
-                        "Start updating the  local data sets.");
-                    successful = true;
+                    Debug.WriteLine("PlaceVoteAsync: The user has already placed a vote in the ballot. " +
+                        "The ballot is a single choice ballot and does not allow multiple votes.");
+                    // Reiche Fehler nur an ViewModel weiter.
+                }
+
+                if (ex.ErrorCode == ErrorCodes.OptionNotFound)
+                {
+                    Debug.WriteLine("PlaceVoteAsync: Seems that the option with id {0} has been deleted on the server.", optionId);
+                    // Reiche Fehler nur an ViewModel weiter.
                 }
                 
                 if (!successful)
@@ -2063,15 +2098,13 @@ namespace DataHandlingLayer.Controller
             {
                 Debug.WriteLine("RemoveVoteAsync: Failed to remove vote. Request failed. Error code is {0}.", ex.ErrorCode);
 
-                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
-                {
-                    Debug.WriteLine("RemoveVoteAsync: Group seems to be deleted on the server.");
-                    // Markiere Gruppe lokal als gelöscht.
-                    MarkGroupAsDeleted(groupId);
-                }
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, null, ballotId);
 
-                // TODO Ballot not found
-                // - eventuell weitere Fehlerbehandlungen für vote spezifische Fehler?
+                if (ex.ErrorCode == ErrorCodes.OptionNotFound)
+                {
+                    Debug.WriteLine("RemoveVoteAsync: Seems that the option with id {0} has been deleted on the server.", optionId);
+                    // Reiche Fehler nur an ViewModel weiter.
+                }
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -2138,11 +2171,8 @@ namespace DataHandlingLayer.Controller
             }
             catch (APIException ex)
             {
-                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
-                {
-                    Debug.WriteLine("CreateBallotAsync: The group with id {0} seems to be deleted on the server.", groupId);
-                    MarkGroupAsDeleted(groupId);
-                }
+                Debug.WriteLine("CreateBallotAsync: Request failed. Error code is: {0}.", ex.ErrorCode);
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, null, null);
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -2248,17 +2278,9 @@ namespace DataHandlingLayer.Controller
             }
             catch (APIException ex)
             {
-                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
-                {
-                    Debug.WriteLine("CreateBallotOptionAsync: The group with id {0} seems to be deleted on the server.", groupId);
-                    MarkGroupAsDeleted(groupId);
-                }
-
-                if (ex.ErrorCode == ErrorCodes.BallotNotFound)
-                {
-                    Debug.WriteLine("CreateBallotOptionAsync: There seems to be no ballot with the specified id on the server.");
-                    DeleteBallot(ballotId);
-                }
+                Debug.WriteLine("CreateBallotOptionAsync: Request failed. Error code is: {0}, ResponseCode: {1}.",
+                    ex.ErrorCode, ex.ResponseStatusCode);
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, null, ballotId);
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -2309,9 +2331,7 @@ namespace DataHandlingLayer.Controller
             {
                 Debug.WriteLine("RemoveBallotOptionAsync: Request failed. Error code is: {0} and msg is: {1}.", ex.ErrorCode, ex.Message);
 
-                // TODO Group Not found
-
-                // TODO Ballot Not found
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, null, ballotId);
 
                 if (ex.ErrorCode == ErrorCodes.OptionNotFound)
                 {
@@ -2386,8 +2406,7 @@ namespace DataHandlingLayer.Controller
                 catch (APIException ex)
                 {
                     Debug.WriteLine("EditBallotAsync: Failed request. Error code: {0}, msg is: '{1}'.", ex.ErrorCode, ex.Message);
-
-                    // TODO - group not found, ballot not found, ...
+                    handleGroupRelatedErrors(ex.ErrorCode, groupId, null, oldBallot.Id);
 
                     throw new ClientException(ex.ErrorCode, ex.Message);
                 }
@@ -2605,7 +2624,14 @@ namespace DataHandlingLayer.Controller
                 Debug.WriteLine("DeleteBallotAsync: Failed to delete ballot. Error code: {0} and msg: '{1}'.", 
                     ex.ErrorCode, ex.Message);
 
-                // TODO 
+                if (ex.ErrorCode == ErrorCodes.BallotNotFound)
+                {
+                    Debug.WriteLine("DeleteBallotAsync: The ballot seems to be deleted on the server.");
+                    DeleteBallot(ballotId);
+                    return;
+                }
+
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, null, ballotId);
 
                 throw new ClientException(ex.ErrorCode, ex.Message);
             }
@@ -2997,11 +3023,14 @@ namespace DataHandlingLayer.Controller
         {
             Group group = GetGroup(groupId);
 
-            // Setze Deleted Flag.
-            group.Deleted = true;
+            if (group != null)
+            {
+                // Setze Deleted Flag.
+                group.Deleted = true;
 
-            // Speichere Datensatz ab.
-            UpdateGroup(group, false);
+                // Speichere Datensatz ab.
+                UpdateGroup(group, false);
+            }
         }
 
         /// <summary>
@@ -3130,6 +3159,11 @@ namespace DataHandlingLayer.Controller
                     Debug.WriteLine("StoreConversationMessage: Cannot store conversation message without author reference.");
                     return false;
                 }
+                if (!groupDBManager.IsConversationStored(conversationMsg.ConversationId))
+                {
+                    Debug.WriteLine("StoreConversationMessage: Cannot store conversation message without conversation reference.");
+                    return false;
+                }
 
                 int highestMessageNr = GetHighestMessageNumberOfConversation(conversationMsg.ConversationId);
                 if (highestMessageNr != conversationMsg.MessageNumber)
@@ -3194,11 +3228,14 @@ namespace DataHandlingLayer.Controller
             {
                 Conversation conv = GetConversation(conversationId, false);
 
-                // Setze Closed Flag.
-                conv.IsClosed = true;
+                if (conv != null)
+                {
+                    // Setze Closed Flag.
+                    conv.IsClosed = true;
 
-                // Aktualisiere Datensatz.
-                groupDBManager.UpdateConversation(conv);
+                    // Aktualisiere Datensatz.
+                    groupDBManager.UpdateConversation(conv);
+                }
             }
             catch (DatabaseException ex)
             {
@@ -3788,6 +3825,26 @@ namespace DataHandlingLayer.Controller
             }
 
             return updatedSuccessfully;
+        }
+
+        /// <summary>
+        /// Markiert eine lokal gespeicherte Abstimmung als geschlossen.
+        /// </summary>
+        /// <param name="ballotId">Die Id der Abstimmung, die als geschlossen markiert werden soll.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abstimmung nicht als geschlossen 
+        ///     markiert werden konnte.</exception>
+        public void MarkBallotAsClosed(int ballotId)
+        {
+            Ballot ballot = GetBallot(ballotId, false);
+
+            if (ballot != null)
+            {
+                // Setze Closed Flag.
+                ballot.IsClosed = true;
+
+                // Aktualisere Datensatz.
+                UpdateBallot(ballot);
+            }
         }
 
         /// <summary>

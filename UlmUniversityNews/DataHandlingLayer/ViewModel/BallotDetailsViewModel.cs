@@ -375,6 +375,13 @@ namespace DataHandlingLayer.ViewModel
             {
                 hideIndeterminateProgressIndicator();
                 Debug.WriteLine("executePlaceVotesCommand: Failed to place votes. Msg is {0}.", ex.Message);
+
+                if (ex.ErrorCode == ErrorCodes.BallotClosed)
+                {
+                    // Aktualisiere View.
+                    SelectedBallot.IsClosed = true;
+                }
+
                 displayError(ex.ErrorCode);
             }
         }

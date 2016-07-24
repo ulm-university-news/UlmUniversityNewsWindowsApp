@@ -652,7 +652,7 @@ namespace DataHandlingLayer.Controller
                         {
                             Debug.WriteLine("handleConversationMessageNewPushMsgAsync: Trying to retrieve the missing data.");
                             // Versuche Nachricht mit Abruf der notwendigen Daten zu speichern.
-                            await groupController.SynchronizeGroupParticipantsAsync(groupId);
+                            await groupController.SynchronizeConversationsWithServerAsync(groupId, true);
                             groupController.StoreConversationMessage(messages.First());
                         }
                     }

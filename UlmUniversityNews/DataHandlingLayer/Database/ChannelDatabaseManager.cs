@@ -1659,6 +1659,7 @@ namespace DataHandlingLayer.Database
                 Debug.WriteLine("No valid announcement object passed to the StoreAnnouncement method.");
                 return;
             }
+            bool successful = true;
 
             // Frage das Mutex Objekt ab.
             Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
@@ -1686,7 +1687,12 @@ namespace DataHandlingLayer.Database
                             insertMessageStmt.Bind(4, (int)announcement.MessagePriority);
                             insertMessageStmt.Bind(5, 0);   // Nachricht noch nicht gelesen.
 
-                            insertMessageStmt.Step();
+                            if (insertMessageStmt.Step() != SQLiteResult.DONE)
+                            {
+                                Debug.WriteLine("StoreAnnouncement: Failed to store message part of announcement with " + 
+                                    "id {0}.", announcement.Id);
+                                successful = false;
+                            }
                         }
 
                         // Speichere Daten in Announcement Tabelle.
@@ -1699,14 +1705,32 @@ namespace DataHandlingLayer.Database
                             insertAnnouncementStmt.Bind(4, announcement.AuthorId);
                             insertAnnouncementStmt.Bind(5, announcement.Id);
 
-                            insertAnnouncementStmt.Step();
+                            if (insertAnnouncementStmt.Step() != SQLiteResult.DONE)
+                            {
+                                Debug.WriteLine("StoreAnnouncement: Failed to store announcement part of announcement with " +
+                                    "id {0}.", announcement.Id);
+                                successful = false;
+                            }
                         }
 
                         // Commit der Transaktion.
-                        using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                        if (successful)
                         {
-                            statement.Step();
-                            Debug.WriteLine("Announcement with id {0} stored.", announcement.Id);
+                            using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                            {
+                                statement.Step();
+                                Debug.WriteLine("StoreAnnouncement: Announcement with id {0} stored.", announcement.Id);
+                            }
+                        }
+                        else
+                        {
+                            // Rollback der Transaktion.
+                            using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                            {
+                                statement.Step();
+                                Debug.WriteLine("StoreAnnouncement: Announcement with id {0} could not be stored. " + 
+                                    "Rollback required.", announcement.Id);
+                            }
                         }
                     }
                     catch (SQLiteException sqlEx)
@@ -1754,9 +1778,10 @@ namespace DataHandlingLayer.Database
         {
             if(announcements == null || announcements.Count == 0)
             {
-                Debug.WriteLine("No announcements to insert in BulkInsertOfAnnouncements.");
+                Debug.WriteLine("BulkInsertOfAnnouncements: No announcements to insert in BulkInsertOfAnnouncements.");
                 return;
             }
+            bool successful = true;
 
             // Frage das Mutex Objekt ab.
             Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
@@ -1791,7 +1816,11 @@ namespace DataHandlingLayer.Database
                             insertMessageStmt.Bind(5, 0);   // Nachricht noch nicht gelesen.
 
                             if (insertMessageStmt.Step() != SQLiteResult.DONE)
-                                Debug.WriteLine("Failed to store the current announcement with id {0}.", announcement.Id);
+                            {
+                                Debug.WriteLine("BulkInsertOfAnnouncements: Failed to store the message part of the current announcement with id {0}.",
+                                    announcement.Id);
+                                successful = false;
+                            }                                
 
                             insertAnnouncementStmt.Bind(1, announcement.MessageNumber);
                             insertAnnouncementStmt.Bind(2, announcement.ChannelId);
@@ -1800,22 +1829,38 @@ namespace DataHandlingLayer.Database
                             insertAnnouncementStmt.Bind(5, announcement.Id);
 
                             if (insertAnnouncementStmt.Step() != SQLiteResult.DONE)
-                                Debug.WriteLine("Failed to store the current announcement with id {0}.", announcement.Id);
+                            {
+                                Debug.WriteLine("BulkInsertOfAnnouncements: Failed to store the announcement part of the current announcement with id {0}.",
+                                    announcement.Id);
+                                successful = false;
+                            }
 
                             insertMessageStmt.Reset();
                             insertAnnouncementStmt.Reset();
                         }
 
                         // Commit der Transaktion.
-                        using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                        if (successful)
                         {
-                            statement.Step();
-                            Debug.WriteLine("Stored {0} announcements in the database.", announcements.Count);
+                            using (var statement = conn.Prepare("COMMIT TRANSACTION"))
+                            {
+                                statement.Step();
+                                Debug.WriteLine("BulkInsertOfAnnouncements: Stored {0} announcements in the database.", announcements.Count);
+                            }
+                        }
+                        else
+                        {
+                            // Rollback der Transaktion.
+                            using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
+                            {
+                                statement.Step();
+                                Debug.WriteLine("BulkInsertOfAnnouncements: Couldn't store announcements. Rollback required.");
+                            }
                         }
                     }
                     catch (SQLiteException sqlEx)
                     {
-                        Debug.WriteLine("SQLiteException has occurred in BulkInsertOfAnnouncements. Exception message is: {0}.", sqlEx.Message);
+                        Debug.WriteLine("BulkInsertOfAnnouncements: SQLiteException has occurred in BulkInsertOfAnnouncements. Exception message is: {0}.", sqlEx.Message);
                         // Rollback der Transaktion.
                         using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))
                         {
@@ -1826,7 +1871,7 @@ namespace DataHandlingLayer.Database
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine("Exception has occurred in BulkInsertOfAnnouncements. " +
+                        Debug.WriteLine("BulkInsertOfAnnouncements: Exception has occurred in BulkInsertOfAnnouncements. " +
                             "Exception message is: {0}, and stack trace is {1}.", ex.Message, ex.StackTrace);
                         // Rollback der Transaktion.
                         using (var statement = conn.Prepare("ROLLBACK TRANSACTION"))

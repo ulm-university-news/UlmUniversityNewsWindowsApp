@@ -409,6 +409,7 @@ namespace DataHandlingLayer.ViewModel
             {
                 if (ex.ErrorCode == ErrorCodes.ConversationIsClosed)
                 {
+                    // Aktualisiere View
                     SelectedConversation.IsClosed = true;
                 }
 

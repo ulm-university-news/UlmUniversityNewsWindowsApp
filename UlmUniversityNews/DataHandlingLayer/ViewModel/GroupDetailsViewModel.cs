@@ -342,10 +342,21 @@ namespace DataHandlingLayer.ViewModel
 
                 try
                 {
-                    if (groupController.IsActiveParticipant(loadedGroup.Id, groupController.GetLocalUser().Id))
+                    if (groupController.GetGroup(loadedGroup.Id) != null)
                     {
-                        Debug.WriteLine("User seems to be an active participant of the group.");
+                        Debug.WriteLine("The group exists in the local datasets.");
                         IsGroupParticipant = true;
+
+                        if (groupController.IsActiveParticipant(loadedGroup.Id, groupController.GetLocalUser().Id))
+                        {
+                            Debug.WriteLine("User seems to be an active participant of the group.");
+                            IsRemovedFromGroup = false;
+                        }
+                        else
+                        {
+                            Debug.WriteLine("User seems to be an inactive participant of the group.");
+                            IsRemovedFromGroup = true;
+                        }
 
                         // Frage noch die Teilnehmer ab.
                         List<User> participants = await Task.Run(() => groupController.GetActiveParticipantsOfGroup(loadedGroup.Id));
@@ -515,6 +526,19 @@ namespace DataHandlingLayer.ViewModel
             catch (ClientException ex)
             {
                 Debug.WriteLine("SynchronizeConversations: Execution failed.");
+
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    // Aktualisiere View.
+                    SelectedGroup.Deleted = true;
+                }
+
+                if (ex.ErrorCode == ErrorCodes.GroupParticipantNotFound)
+                {
+                    // Aktualisiere View.
+                    IsRemovedFromGroup = true;
+                }
+
                 displayError(ex.ErrorCode);
             }
         }
@@ -548,6 +572,19 @@ namespace DataHandlingLayer.ViewModel
             catch (ClientException ex)
             {
                 Debug.WriteLine("SynchronizeBallotsAsync: Execution failed.");
+
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    // Aktualisiere View.
+                    SelectedGroup.Deleted = true;
+                }
+
+                if (ex.ErrorCode == ErrorCodes.GroupParticipantNotFound)
+                {
+                    // Aktualisiere View.
+                    IsRemovedFromGroup = true;
+                }
+
                 displayError(ex.ErrorCode);
             }
         }
@@ -575,6 +612,18 @@ namespace DataHandlingLayer.ViewModel
             catch (ClientException ex)
             {
                 Debug.WriteLine("SynchronizeGroupInformationAsync: Failed to synchronize group info.");
+
+                if (ex.ErrorCode == ErrorCodes.GroupParticipantNotFound)
+                {
+                    // Aktualisiere View
+                    IsRemovedFromGroup = true;
+                }
+                if (ex.ErrorCode == ErrorCodes.GroupNotFound)
+                {
+                    // Aktualisiere View
+                    SelectedGroup.Deleted = true;
+                }
+
                 displayError(ex.ErrorCode);
             }
         }
@@ -1089,6 +1138,7 @@ namespace DataHandlingLayer.ViewModel
         {
             if (SelectedGroup != null && 
                 !SelectedGroup.Deleted && 
+                !IsRemovedFromGroup && 
                 SelectedPivotItemName == "ConversationPivotItem")
             {
                 return true;
@@ -1129,6 +1179,7 @@ namespace DataHandlingLayer.ViewModel
         {
             if (SelectedGroup != null &&
                 !SelectedGroup.Deleted && 
+                !IsRemovedFromGroup &&
                 SelectedPivotItemName == "BallotsPivotItem")
             {
                 if (SelectedGroup.Type == DataModel.Enums.GroupType.TUTORIAL)

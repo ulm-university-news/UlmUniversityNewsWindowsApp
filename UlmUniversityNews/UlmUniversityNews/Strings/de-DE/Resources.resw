@@ -1354,7 +1354,7 @@ Nachricht am: </value>
     <value>Die angegebene Gruppe konnte auf dem Server nicht gefunden werden. Die Gruppe wurde wahrscheinlich auf dem Server gelöscht.</value>
   </data>
   <data name="ApplicationErrorGroupParticipantNotFoundError" xml:space="preserve">
-    <value>Der angegebene Teilnehmer der Gruppe konnte auf dem Server nicht gefunden werden. Es ist möglich, dass der Teilnehmer die Gruppe bereits verlassen hat.</value>
+    <value>Der angegebene Teilnehmer der Gruppe konnte auf dem Server nicht gefunden werden. Der Administrator hat Sie offenbar aus der Gruppe entfernt.</value>
   </data>
   <data name="ApplicationErrorInvalidGroupAdminError" xml:space="preserve">
     <value>Es ist ein Fehler bei der Bestimmung des Gruppenadministrators aufgetreten.</value>
@@ -1528,7 +1528,7 @@ Nachricht am: </value>
     <value>Die angegebene Abstimmung konnte auf dem Server nicht gefunden werden. Es ist möglich, dass die Abstimmung gelöscht wurde.</value>
   </data>
   <data name="ApplicationErrorBallotUserHasAlreadyVotedError" xml:space="preserve">
-    <value>Die Abstimmung ist so eingestellt, dass nur eine Option zu einem Zeitpunkt angewählt sein kann. Bitte versuchen Sie es erneut.</value>
+    <value>Die Abstimmung ist so eingestellt, dass nur eine Option zu einem Zeitpunkt angewählt sein kann. Bitte synchronisieren Sie die Abstimmung und versuchen Sie es erneut.</value>
   </data>
   <data name="BallotDetailsPlaceVotesStatus" xml:space="preserve">
     <value>Speichere Auswahl</value>
@@ -1784,5 +1784,8 @@ Nachricht am: </value>
   </data>
   <data name="HomescreenSynchronizeAllGroupsButton.Label" xml:space="preserve">
     <value>synchro-nisieren</value>
+  </data>
+  <data name="GroupDetailsDeleteGroupLocallyRemovedParticipantWarning.Text" xml:space="preserve">
+    <value>Sie wurden vom Administrator aus der Gruppe entfernt. Wollen Sie die Gruppe aus Ihren lokalen Datensätzen entfernen?</value>
   </data>
 </root>

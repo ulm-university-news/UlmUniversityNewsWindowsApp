@@ -283,10 +283,20 @@
                             <!-- Warnhinweis bezüglich Gruppe löschen. -->
                             <TextBlock 
                                 Grid.Row="0"
-                                x:Name="DeleteGroupLocallyWarning"
+                                x:Name="DeleteGroupDeletedGroupWarning"
                                 x:Uid="GroupDetailsDeleteGroupLocallyWarning"
+                                Visibility="{Binding SelectedGroup.Deleted, FallbackValue=Collapsed, TargetNullValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"
                                 Style="{StaticResource TextInFlyoutsStyle}" >
                                 Es handelt sich hier um eine Gruppe, die keinen Repräsentanten auf dem Server mehr hat. Sie können diese Gruppe auch aus Ihren lokalen Datensätzen entfernen.
+                            </TextBlock>
+
+                            <TextBlock 
+                                Grid.Row="0"
+                                x:Name="DeleteGroupRemovedParticipantWarning"
+                                x:Uid="GroupDetailsDeleteGroupLocallyRemovedParticipantWarning"
+                                Visibility="{Binding IsRemovedFromGroup, FallbackValue=Collapsed, TargetNullValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Style="{StaticResource TextInFlyoutsStyle}" >
+                                Sie wurden vom Administrator aus der Gruppe entfernt. Wollen Sie die Gruppe aus Ihren lokalen Datensätzen entfernen? 
                             </TextBlock>
 
                             <!-- Verlassen Button-->

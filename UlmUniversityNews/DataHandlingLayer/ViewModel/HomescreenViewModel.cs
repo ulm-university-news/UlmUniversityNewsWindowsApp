@@ -496,7 +496,7 @@ namespace DataHandlingLayer.ViewModel
                 case OrderOption.BY_TYPE:
                     groups = new List<Group>(
                         from item in groups
-                        orderby item.Type ascending
+                        orderby item.Type ascending, item.Name ascending 
                         select item);
                     break;
             }
