@@ -229,14 +229,24 @@ namespace DataHandlingLayer.ViewModel
                         type = GroupType.TUTORIAL;
                     }
 
-                    // Starte online Suche.
-                    List<Group> retrievedGroups = await groupController.SearchGroupsAsync(
-                        SearchTerm,
-                        type
-                        );
+                    // Es sollte zumindest eine der Checkboxen gewählt sein.
+                    if (WorkingGroupSelected || TutorialGroupSelected)
+                    {
+                        // Starte online Suche.
+                        List<Group> retrievedGroups = await groupController.SearchGroupsAsync(
+                            SearchTerm,
+                            type
+                            );
 
-                    // Aktualisiere Anzeige.
-                    updateGroupsCollection(retrievedGroups);
+                        // Aktualisiere Anzeige.
+                        updateGroupsCollection(retrievedGroups);
+                    }
+                    else
+                    {
+                        Debug.WriteLine("executeSearchGroupsCommandAsync: Not searching for working groups " + 
+                            "and not searching for tutorial groups cannot provide a result.");
+                        Groups.Clear();
+                    }                    
                 }
                 else if (SearchForIdEnabled)
                 {

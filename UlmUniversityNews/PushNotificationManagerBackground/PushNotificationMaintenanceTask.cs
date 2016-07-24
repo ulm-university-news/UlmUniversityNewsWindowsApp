@@ -59,6 +59,7 @@ namespace PushNotificationManagerBackground
 
                 // Testweise: Speichere Datum der letzten Ausführung in LocalSettings, um zu prüfen, ob die Task ausgeführt wird.
                 Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                Debug.WriteLine("LastMaintenanceDate is: {0}.", localSettings.Values["lastMaintenanceDate"].ToString());
                 localSettings.Values["lastMaintenanceDate"] = DateTimeOffset.Now.ToString();
             }
             catch(Exception ex)

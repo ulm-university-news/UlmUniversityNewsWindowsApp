@@ -1784,6 +1784,12 @@ date: </value>
   <data name="HomescreenSynchronizeAllGroupsButton.Label" xml:space="preserve">
     <value>sync all</value>
   </data>
+  <data name="ChannelSearchInputBox.PlaceholderText" xml:space="preserve">
+    <value>Search for channel name</value>
+  </data>
+  <data name="ChannelSearchStartSearchButton.Label" xml:space="preserve">
+    <value>search</value>
+  </data>
   <data name="GroupDetailsDeleteGroupLocallyRemovedParticipantWarning.Text" xml:space="preserve">
     <value>You were removed from the group by the administrator. Do you want to delete the group from your local datasets?</value>
   </data>

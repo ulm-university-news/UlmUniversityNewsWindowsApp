@@ -160,9 +160,34 @@ namespace UlmUniversityNews.Views.ChannelSearch
                 }
                 // Keyboard soll nicht mehr angezeigt wird.
                 InputPane.GetForCurrentView().TryHide();
+
+                // Small workaround to make buttons visible even if lost focus does not fire.
+                ChannelSearchBox_LostFocus(null, null);
             }
         }
 
+        /// <summary>
+        /// Event-Handler, der das Event LostFocus der ChannelSearchBox behandelt.
+        /// Blendet die ausgeblendeten Buttons wieder ein.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void ChannelSearchBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            OrderByChannelType.Visibility = Visibility.Collapsed;
+            ChannelSearchSynchronizeChannelsButton.Visibility = Visibility.Collapsed;
+        }
 
+        /// <summary>
+        /// Event-Handler, der das Event GotFocus der ChannelSearchBox behandelt.
+        /// Blendet während der Eingabe nicht benötigte Buttons aus.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void ChannelSearchBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            OrderByChannelType.Visibility = Visibility.Visible;
+            ChannelSearchSynchronizeChannelsButton.Visibility = Visibility.Visible;
+        }
     }
 }

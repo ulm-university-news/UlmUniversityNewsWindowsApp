@@ -48,6 +48,13 @@
                 Icon="Shuffle"
                 IsChecked="{Binding OrderByTypeChecked, Mode=TwoWay}"
                 Command="{Binding ReorderChannelsCommand}" />
+            <AppBarButton 
+                x:Name="ChannelSearchStartSearchButton"
+                x:Uid="ChannelSearchStartSearchButton"
+                Icon="Find"
+                Label="search"
+                Command="{Binding StartChannelSearchCommand}"
+                />
         </CommandBar>
     </Page.BottomAppBar>
 
@@ -99,33 +106,23 @@
                     Height="Auto">
                     <Grid
                         VerticalAlignment="Top"
-                        Height="60px"
+                        Height="60"
                         Margin="19, 0, 19, 0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="4*" />
-                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <TextBox
                             Background="White"
                             Grid.Column="0"
                             x:Name="ChannelSearchBox"
+                            x:Uid="ChannelSearchInputBox"
                             KeyDown="ChannelSearchBox_KeyDown"
+                            GotFocus="ChannelSearchBox_GotFocus"
+                            LostFocus="ChannelSearchBox_LostFocus"
                             InputScope="Search"            
                             Text="{Binding SearchTerm, FallbackValue='', TargetNullValue='', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                         </TextBox>
-                        <Button
-                            Grid.Column="1"
-                            Margin="5,0,0,0"
-                            x:Name="ChannelSearchButton"
-                            MinWidth="40"
-                            HorizontalContentAlignment="Stretch" 
-                            HorizontalAlignment="Stretch"
-                            Command="{Binding StartChannelSearchCommand}" BorderThickness="0">
-                            <Button.Background>
-                                <ImageBrush Stretch="None" 
-                                            ImageSource="/Assets/ButtonIcons/feature.search.png"/>
-                            </Button.Background>
-                        </Button>
+                        
                     </Grid>
                 </StackPanel>
 

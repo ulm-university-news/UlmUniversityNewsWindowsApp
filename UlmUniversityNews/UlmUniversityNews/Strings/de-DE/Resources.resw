@@ -1785,6 +1785,12 @@ Nachricht am: </value>
   <data name="HomescreenSynchronizeAllGroupsButton.Label" xml:space="preserve">
     <value>synchro-nisieren</value>
   </data>
+  <data name="ChannelSearchInputBox.PlaceholderText" xml:space="preserve">
+    <value>Suche nach Kanalname</value>
+  </data>
+  <data name="ChannelSearchStartSearchButton.Label" xml:space="preserve">
+    <value>suchen</value>
+  </data>
   <data name="GroupDetailsDeleteGroupLocallyRemovedParticipantWarning.Text" xml:space="preserve">
     <value>Sie wurden vom Administrator aus der Gruppe entfernt. Wollen Sie die Gruppe aus Ihren lokalen Datensätzen entfernen?</value>
   </data>

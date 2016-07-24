@@ -69,6 +69,12 @@ namespace UlmUniversityNews.Views.Group
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            // Erforderlich wegen Caching. Falls Seite aus Cache geladen wird und Drawer war offen
+            // bleibt er sonst offen.
+            if (DrawerLayout.IsDrawerOpen)
+            {
+                DrawerLayout.CloseDrawer();
+            }
         }
 
         /// <summary>
