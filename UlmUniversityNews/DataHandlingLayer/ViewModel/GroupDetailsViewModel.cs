@@ -118,7 +118,19 @@ namespace DataHandlingLayer.ViewModel
             get { return hasDeleteLocallyOption; }
             set { this.setProperty(ref this.hasDeleteLocallyOption, value); }
         }
-        
+
+        private bool isDeletionOrRemovalNotificationShown;
+        /// <summary>
+        /// Gibt an, ob der Hinweis bezüglich einer Löschung der Gruppe oder 
+        /// bezüglich der Entfernung des lokalen Nutzer aus der Gruppe durch den Admin 
+        /// aktuell angezeigt wird.
+        /// </summary>
+        public bool IsDeletionOrRemovalNotificationShown
+        {
+            get { return isDeletionOrRemovalNotificationShown; }
+            set { this.setProperty(ref this.isDeletionOrRemovalNotificationShown, value); }
+        }
+
         private string enteredPassword;
         /// <summary>
         /// Das vom Nutzer eingegebene Passwort.
@@ -287,6 +299,12 @@ namespace DataHandlingLayer.ViewModel
 
             localUser = groupController.GetLocalUser();
 
+            if (BallotCollection == null)
+                BallotCollection = new ObservableCollection<Ballot>();
+
+            if (ConversationCollection == null)
+                ConversationCollection = new ObservableCollection<Conversation>();
+
             // Erzeuge Befehle.
             JoinGroupCommand = new AsyncRelayCommand(
                 param => executeJoinGroupCommandAsync(),
@@ -397,7 +415,6 @@ namespace DataHandlingLayer.ViewModel
             try
             {
                 Group loadedGroup = await Task.Run(() => groupController.GetGroup(groupId));
-                Debug.WriteLine("Loaded group is: " + loadedGroup.Name);
 
                 SelectedGroup = loadedGroup;  
                 
@@ -407,6 +424,12 @@ namespace DataHandlingLayer.ViewModel
                     {
                         IsRemovedFromGroup = false;
                         Debug.WriteLine("LoadGroupFromLocalStorageAsync: local user still active in this group.");
+
+                        if (SelectedGroup.Deleted)
+                        {
+                            Debug.WriteLine("LoadGroupFromLocalStorageAsync: Group is marked as deleted.");
+                            displayDeletionNotification();
+                        }
                     }
                     else
                     {
@@ -415,10 +438,12 @@ namespace DataHandlingLayer.ViewModel
                         {
                             IsRemovedFromGroup = true;
                             Debug.WriteLine("LoadGroupFromLocalStorageAsync: local user seems to be removed from this group.");
+                            displayRemovedFromGroupNotification();
                         }
                         else
                         {
                             Debug.WriteLine("LoadGroupFromLocalStorageAsync: Group is already deleted.");
+                            displayDeletionNotification();
                         }
                     }
                 }
@@ -448,11 +473,16 @@ namespace DataHandlingLayer.ViewModel
                     conversations = sortConversationsByApplicationSettings(conversations);
 
                     if (ConversationCollection == null)
+                    {
                         ConversationCollection = new ObservableCollection<Conversation>();
+                    }
 
                     foreach (Conversation conversation in conversations)
                     {
-                        ConversationCollection.Add(conversation);
+                        if (conversation != null)
+                        {
+                            ConversationCollection.Add(conversation);
+                        }
                     }
 
                     // Test: Führe Synchronisation durch.
@@ -482,11 +512,16 @@ namespace DataHandlingLayer.ViewModel
                     ballots = sortBallotsByApplicationSettings(ballots); 
 
                     if (BallotCollection == null)
+                    {
                         BallotCollection = new ObservableCollection<Ballot>();
+                    }                        
 
                     foreach (Ballot ballot in ballots)
                     {
-                        BallotCollection.Add(ballot);
+                        if (ballot != null)
+                        {
+                            BallotCollection.Add(ballot);
+                        }
                     }
                 }
             }
@@ -560,13 +595,27 @@ namespace DataHandlingLayer.ViewModel
                 // Aktualisere Anzeige. Rufe synchronisierte Daten ab.
                 List<Ballot> ballots = await Task.Run(() => groupController.GetBallots(SelectedGroup.Id, false));
 
-                // Sortieren.
-                ballots = sortBallotsByApplicationSettings(ballots);
-
-                BallotCollection.Clear();
-                foreach (Ballot ballot in ballots)
+                if (ballots != null)
                 {
-                    BallotCollection.Add(ballot);
+                    // Sortieren.
+                    ballots = sortBallotsByApplicationSettings(ballots);
+
+                    if (BallotCollection != null)
+                    {
+                        BallotCollection.Clear();
+                        foreach (Ballot ballot in ballots)
+                        {
+                            BallotCollection.Add(ballot);
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("SynchronizeBallotsAsync: BallotCollection is null.");
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("SynchronizeBallotsAsync: Ballots from GetBallots is null.");
                 }
             }
             catch (ClientException ex)
@@ -764,6 +813,44 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
+        /// <summary>
+        /// Prüft, ob der Hinweis bezüglich der Löschung der Gruppe angezeigt werden muss.
+        /// Falls das der Fall ist, wird der Hinweis angezeigt.
+        /// </summary>
+        private void displayDeletionNotification()
+        {
+            if (SelectedGroup == null)
+                return;
+
+            if (!groupController.IsDeletionNoticed(SelectedGroup.Id))
+            {
+                // Öffne Flyout
+                IsDeletionOrRemovalNotificationShown = true;
+
+                // Setze Flag auf true. Nutzer hat den Hinweis gesehen.
+                groupController.SetDeletionNoticed(SelectedGroup.Id, true);
+            }
+        }
+
+        /// <summary>
+        /// Prüft, ob der Hinweis, dass der lokale Nutzer aus der Gruppe entfernt wurde, angezeigt werden muss.
+        /// Falls das der Fall ist, wird der Hinweis angezeigt.
+        /// </summary>
+        private void displayRemovedFromGroupNotification()
+        {
+            if (SelectedGroup == null)
+                return;
+
+            if (!groupController.IsRemovalFromGroupNoticed(SelectedGroup.Id))
+            {
+                // Öffne Flyout
+                IsDeletionOrRemovalNotificationShown = true;
+
+                // Setze Flag auf true. Nutzer hat den Hinweis gesehen.
+                groupController.SetRemovedFromGroupNoticed(SelectedGroup.Id, true);
+            }
+        }
+
         #region CommandFunctionality
         /// <summary>
         /// Hilfsmethode, welche die Prüfung der Ausführbarkeit von Befehlen
@@ -841,6 +928,8 @@ namespace DataHandlingLayer.ViewModel
 
                     // Lade Konversationsdaten.
                     await LoadConversationsAsync(SelectedGroup.Id);
+                    // Lade Abstimmungen.
+                    await LoadBallotsAsync(SelectedGroup.Id);
                 }
             }
             catch (ClientException ex)

@@ -448,6 +448,36 @@
     </Page.BottomAppBar>
     
     <Grid x:Name="LayoutRoot">
+        <!-- Flyout, welches angezeigt wird, falls die Gruppe gelöscht wurde, oder der lokale Nutzer aus der Gruppe entfernt wurde. Dieses ist direkt an das LayoutRoot Grid gebunden.-->
+        <FlyoutBase.AttachedFlyout>
+            <Flyout FlyoutPresenterStyle="{StaticResource FlyoutStyle}"
+                    common:FlyoutHelper.IsOpen="{Binding IsDeletionOrRemovalNotificationShown, Mode=TwoWay}"
+                    common:FlyoutHelper.Parent="{Binding ElementName=LayoutRoot}">
+                <Grid
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
+                    <!-- Nachricht, die angezeigt wird, falls die Gruppe als gelöscht markiert wurde. -->
+                    <TextBlock 
+                                Grid.Row="0"
+                                x:Name="DeletedGroupNotification"
+                                x:Uid="GroupDetailsDeletedGroupNotification"
+                                Visibility="{Binding SelectedGroup.Deleted, FallbackValue=Collapsed, TargetNullValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Style="{StaticResource TextInFlyoutsStyle}" >
+                                Die Gruppe wurde auf dem Server gelöscht. Sie können den Kanal jedoch noch in ihren lokalen Datensätzen
+                                gespeichert lassen.
+                    </TextBlock>
+                    <!-- Nachricht, die angezeigt wird, falls der lokale Nutzer aus der Gruppe entfernt wurde.-->
+                    <TextBlock 
+                                Grid.Row="0"
+                                x:Name="LocalUserRemovedFromGroupNotification"
+                                x:Uid="GroupDetailsLocalUserRemovedFromGroupNotification"
+                                Visibility="{Binding IsRemovedFromGroup, FallbackValue=Collapsed, TargetNullValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Style="{StaticResource TextInFlyoutsStyle}" >
+                                Sie wurden vom Gruppenadministrator aus der Gruppe entfernt. Die Gruppendaten sind noch in den lokalen Datensätzen vorhanden. Sie erhalten jedoch keine Aktualisierungen mehr.
+                    </TextBlock>
+                </Grid>
+            </Flyout>
+        </FlyoutBase.AttachedFlyout>
 
         <Grid.ChildrenTransitions>
             <TransitionCollection>

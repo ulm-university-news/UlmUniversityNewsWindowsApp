@@ -409,6 +409,111 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Gibt an, ob zu der Id ein Datensatz einer Gruppe gespeichert ist.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <returns>Liefert true, wenn ein Datensatz hierfür gespeichert ist, ansonsten false.</returns>
+        public bool IsGroupStored(int groupId)
+        {
+            bool isStored = false;
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT COUNT(*) AS amount 
+                            FROM ""Group"" 
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, groupId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                int amount = Convert.ToInt32(stmt["amount"]);
+
+                                if (amount == 1)
+                                    isStored = true;
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("IsGroupStored: SQLiteException occurred. Message is: {0}.", sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("IsGroupStored: Exception occurred. Message is: {0} and Stack Trace: {1}.",
+                            ex.Message, ex.StackTrace);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+
+            return isStored;
+        }
+
+        /// <summary>
+        /// Löschen der Gruppe mit der angegebnen Id aus der lokalen Datenbank.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, die gelöscht werden soll.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn der Vorgang fehlschlägt.</exception>
+        public void DeleteGroup(int groupId)
+        {
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"DELETE FROM ""Group"" 
+                            Where Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, groupId);
+
+                            if (stmt.Step() != SQLiteResult.DONE)
+                                Debug.WriteLine("Failed to delete group with id {0}.", groupId);
+                            else
+                                Debug.WriteLine("Successfully deleted the group with id {0}.", groupId);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("DeleteGroup: SQLiteException occurred. Message is: {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("DeleteGroup: Exception occurred. Message is: {0} and Stack Trace: {1}.",
+                            ex.Message, ex.StackTrace);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+        }
+
+        #region FlagHandlingInGroup
+        /// <summary>
         /// Gibt alle Datensätze von Gruppen zurück, die das IsDirty Flag gesetzt haben.
         /// Liefert nur die Gruppendaten und keine Informationen über die Teilnehmer der Gruppe.
         /// </summary>
@@ -529,110 +634,6 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
-        /// Gibt an, ob zu der Id ein Datensatz einer Gruppe gespeichert ist.
-        /// </summary>
-        /// <param name="groupId">Die Id der Gruppe.</param>
-        /// <returns>Liefert true, wenn ein Datensatz hierfür gespeichert ist, ansonsten false.</returns>
-        public bool IsGroupStored(int groupId)
-        {
-            bool isStored = false;
-
-            // Frage das Mutex Objekt ab.
-            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
-
-            // Fordere Zugriff auf die Datenbank an.
-            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
-            {
-                using (SQLiteConnection conn = DatabaseManager.GetConnection())
-                {
-                    try
-                    {
-                        string query = @"SELECT COUNT(*) AS amount 
-                            FROM ""Group"" 
-                            WHERE Id=?;";
-
-                        using (var stmt = conn.Prepare(query))
-                        {
-                            stmt.Bind(1, groupId);
-
-                            if (stmt.Step() == SQLiteResult.ROW)
-                            {
-                                int amount = Convert.ToInt32(stmt["amount"]);
-
-                                if (amount == 1)
-                                    isStored = true;
-                            }
-                        }
-                    }
-                    catch (SQLiteException sqlEx)
-                    {
-                        Debug.WriteLine("IsGroupStored: SQLiteException occurred. Message is: {0}.", sqlEx.Message);
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine("IsGroupStored: Exception occurred. Message is: {0} and Stack Trace: {1}.",
-                            ex.Message, ex.StackTrace);
-                    }
-                    finally
-                    {
-                        mutex.ReleaseMutex();
-                    }
-                }
-            }
-
-            return isStored;
-        }
-
-        /// <summary>
-        /// Löschen der Gruppe mit der angegebnen Id aus der lokalen Datenbank.
-        /// </summary>
-        /// <param name="groupId">Die Id der Gruppe, die gelöscht werden soll.</param>
-        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn der Vorgang fehlschlägt.</exception>
-        public void DeleteGroup(int groupId)
-        {
-            // Frage das Mutex Objekt ab.
-            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
-
-            // Fordere Zugriff auf die Datenbank an.
-            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
-            {
-                using (SQLiteConnection conn = DatabaseManager.GetConnection())
-                {
-                    try
-                    {
-                        string query = @"DELETE FROM ""Group"" 
-                            Where Id=?;";
-
-                        using (var stmt = conn.Prepare(query))
-                        {
-                            stmt.Bind(1, groupId);
-
-                            if (stmt.Step() != SQLiteResult.DONE)
-                                Debug.WriteLine("Failed to delete group with id {0}.", groupId);
-                            else
-                                Debug.WriteLine("Successfully deleted the group with id {0}.", groupId);
-                        }
-                    }
-                    catch (SQLiteException sqlEx)
-                    {
-                        Debug.WriteLine("DeleteGroup: SQLiteException occurred. Message is: {0}.", sqlEx.Message);
-                        throw new DatabaseException(sqlEx.Message);
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine("DeleteGroup: Exception occurred. Message is: {0} and Stack Trace: {1}.",
-                            ex.Message, ex.StackTrace);
-                        throw new DatabaseException(ex.Message);
-                    }
-                    finally
-                    {
-                        mutex.ReleaseMutex();
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Setzt den Wert des Flags HasNewEvent für die spezifizierte Gruppe neu.
         /// </summary>
         /// <param name="groupId">Die Id der Gruppe, bei der das Flag neu gesetzt werden soll.</param>
@@ -667,7 +668,7 @@ namespace DataHandlingLayer.Database
                                 Debug.WriteLine("SetHasNewEventFlagOnGroup: Successfully set flag to new value {0} " +
                                     "in group with id {1}.", newValue, groupId);
                             else
-                                Debug.WriteLine("SetHasNewEventFlagOnGroup: Failed to set flag to new value {0} " + 
+                                Debug.WriteLine("SetHasNewEventFlagOnGroup: Failed to set flag to new value {0} " +
                                     "in group with id {1}.", newValue, groupId);
                         }
                     }
@@ -696,6 +697,243 @@ namespace DataHandlingLayer.Database
             sw.Stop();
             Debug.WriteLine("SetHasNewEventFlagOnGroup: Required time: {0} ms.", sw.Elapsed.TotalMilliseconds);
         }
+
+        /// <summary>
+        /// Setzt das Flag DeletionNoticed für die Gruppe mit der angegebenen Id auf den neuen Wert.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, für die der Flag Wert gesetzt werden soll.</param>
+        /// <param name="flagValue">Der neue Flag Wert.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Flag nicht gesetzt werden konnte.</exception>
+        public void SetDeletionNoticedFlagOnGroup(int groupId, bool flagValue)
+        {
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"UPDATE ""Group"" 
+                            SET DeletionNoticed=? 
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, (flagValue) ? 1 : 0);
+                            stmt.Bind(2, groupId);
+
+                            if (stmt.Step() == SQLiteResult.DONE)
+                                Debug.WriteLine("SetDeletionNoticedFlagOnGroup: New flag value {0} set on group with id {1}.", flagValue, groupId);
+                            else
+                                Debug.WriteLine("SetDeletionNoticedFlagOnGroup: Failed to set new flag value on group with id {0}.", groupId);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SetDeletionNoticedFlagOnGroup: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("SetDeletionNoticedFlagOnGroup: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("SetDeletionNoticedFlagOnGroup: Mutex timeout.");
+                throw new DatabaseException("SetDeletionNoticedFlagOnGroup: Timeout: Failed to get access to DB.");
+            }
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Wert des Flags DeletionNoticed gesetzt ist für die Gruppe, die durch
+        /// die angegebene Id spezifiziert ist.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <returns>Liefert true, wenn das Flag gesetzt ist, sonst false.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Flag Wert nicht abgerufen werden konnte.</exception>
+        public bool IsDeletionNoticed(int groupId)
+        {
+            bool isNoticed = false;
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT DeletionNoticed 
+                            FROM ""Group"" 
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, groupId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                int flagValue = Convert.ToInt32(stmt["DeletionNoticed"]);
+                                isNoticed = (flagValue == 1) ? true : false;
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("IsDeletionNoticed: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("IsDeletionNoticed: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("IsDeletionNoticed: Mutex timeout.");
+                throw new DatabaseException("IsDeletionNoticed: Timeout: Failed to get access to DB.");
+            }
+
+            return isNoticed;
+        }
+
+        /// <summary>
+        /// Setzt den Wert des Flags RemovedFromGroupNoticed in der Gruppe, die durch die 
+        /// angegebene Id identifiziert wird.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <param name="flagValue">Der neue Wert des Flags.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Flag nicht gesetzt werden konnte.</exception>
+        public void SetRemovedFromGroupNoticedFlagOnGroup(int groupId, bool flagValue)
+        {
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"UPDATE ""Group"" 
+                            SET RemovedFromGroupNoticed=? 
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, (flagValue) ? 1 : 0);
+                            stmt.Bind(2, groupId);
+
+                            if (stmt.Step() == SQLiteResult.DONE)
+                                Debug.WriteLine("SetRemovedFromGroupNoticedFlagOnGroup: Successfully set new flag value {0} on group " +
+                                    "with id {1}.", flagValue, groupId);
+                            else
+                                Debug.WriteLine("SetRemovedFromGroupNoticedFlagOnGroup: Failed to set new flag value on group with id {0}.", groupId);
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("SetRemovedFromGroupNoticedFlagOnGroup: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("SetRemovedFromGroupNoticedFlagOnGroup: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("SetRemovedFromGroupNoticedFlagOnGroup: Mutex timeout.");
+                throw new DatabaseException("SetRemovedFromGroupNoticedFlagOnGroup: Timeout: Failed to get access to DB.");
+            }
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Wert des Flags RemovedFromGroupNoticed gesetzt ist für die Gruppe, die durch
+        /// die angegebene Id spezifiziert ist.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <returns>Liefert true, wenn das Flag gesetzt ist, sonst false.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Flag Wert nicht abgerufen werden konnte.</exception>
+        public bool IsRemovalFromGroupNoticed(int groupId)
+        {
+            bool isNoticed = false;
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT RemovedFromGroupNoticed 
+                            FROM ""Group"" 
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, groupId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                int flagValue = Convert.ToInt32(stmt["RemovedFromGroupNoticed"]);
+                                isNoticed = (flagValue == 1) ? true : false;
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("IsRemovalFromGroupNoticed: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("IsRemovalFromGroupNoticed: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("IsRemovalFromGroupNoticed: Mutex timeout.");
+                throw new DatabaseException("IsRemovalFromGroupNoticed: Timeout: Failed to get access to DB.");
+            }
+
+            return isNoticed;
+        }
+        #endregion FlagHandlingInGroup
 
         /// <summary>
         /// Liefert alle Teilnehmer der Gruppe mit der angegebnen Id in Form einer Liste zurück.

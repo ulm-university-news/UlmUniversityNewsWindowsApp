@@ -1793,4 +1793,10 @@ date: </value>
   <data name="GroupDetailsDeleteGroupLocallyRemovedParticipantWarning.Text" xml:space="preserve">
     <value>You were removed from the group by the administrator. Do you want to delete the group from your local datasets?</value>
   </data>
+  <data name="GroupDetailsDeletedGroupNotification.Text" xml:space="preserve">
+    <value>The group has been deleted on the server. You can keep the group data in your local datasets.</value>
+  </data>
+  <data name="GroupDetailsLocalUserRemovedFromGroupNotification.Text" xml:space="preserve">
+    <value>You have been removed from the group by the administrator. The group data is still stored in your local datasets. However, the data will not be updated anymore.</value>
+  </data>
 </root>

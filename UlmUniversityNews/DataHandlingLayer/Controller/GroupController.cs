@@ -2987,6 +2987,13 @@ namespace DataHandlingLayer.Controller
                 if (groupDBManager.RetrieveActiveStatusOfParticipant(groupId, participantId).HasValue)
                 {
                     groupDBManager.ChangeActiveStatusOfParticipant(groupId, participantId, active);
+
+                    User localUser = getLocalUser();
+                    if (localUser.Id == participantId && active == false)
+                    {
+                        Debug.WriteLine("ChangeActiveStatusOfParticipant: Seems like the local user has been removed from the group.");
+                        SetRemovedFromGroupNoticed(groupId, false);
+                    }
                 }
             }
             catch (DatabaseException ex)
@@ -3007,11 +3014,14 @@ namespace DataHandlingLayer.Controller
             // Frage Daten ab.
             Group group = GetGroup(groupId);
 
-            // Setze neue Einstellungen.
-            group.GroupNotificationSetting = newSetting;
+            if (group != null)
+            {
+                // Setze neue Einstellungen.
+                group.GroupNotificationSetting = newSetting;
 
-            // Speichere neue Einstellungen.
-            UpdateGroup(group, true);
+                // Speichere neue Einstellungen.
+                UpdateGroup(group, true);
+            }
         }
 
         /// <summary>
@@ -3030,6 +3040,9 @@ namespace DataHandlingLayer.Controller
 
                 // Speichere Datensatz ab.
                 UpdateGroup(group, false);
+
+                // Setze DeletionNoticed Flag auf false.
+                SetDeletionNoticed(groupId, false);
             }
         }
 
@@ -3050,6 +3063,90 @@ namespace DataHandlingLayer.Controller
                 Debug.WriteLine("SetHasNewEventFlag: Failed to set new flag value for group with id {0}.", groupId);
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Setzt das Flag DeletionNoticed der angegebenen Gruppe auf einen neuen Wert.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, für die das Flag gesetzt werden soll.</param>
+        /// <param name="newValue">Der neue Wert des Flags.</param>
+        public void SetDeletionNoticed(int groupId, bool newValue)
+        {
+            try
+            {
+                groupDBManager.SetDeletionNoticedFlagOnGroup(groupId, newValue);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("SetDeletionNoticed: Failed to set new flag value {0} for the group " + 
+                    "with id {1}. Msg is '{2}'.", newValue, groupId, ex.Message);
+                // Gebe Fehler hier nicht weiter. Keine kritische Aktion. Fehler muss auch nicht angezeigt werden.
+            }
+        }
+
+        /// <summary>
+        /// Gibt an, ob das Flag DeletionNoticed in der angegebenen Gruppe gesetzt ist.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <returns>Liefert true, wenn das Flag gesetzt ist, ansonsten false.</returns>
+        public bool IsDeletionNoticed(int groupId)
+        {
+            bool isNoticed = false;
+
+            try
+            {
+                isNoticed = groupDBManager.IsDeletionNoticed(groupId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("IsDeletionNoticed: Failed to retrieve the flag value. " + 
+                    "Msg is: '{0}'.", ex.Message);
+                // Gebe Fehler hier nicht weiter. Keine kritische Aktion. Fehler muss auch nicht angezeigt werden.
+            }
+
+            return isNoticed;
+        }
+
+        /// <summary>
+        /// Setzt das Flag RemovedFromGroupNoticed der angegebenen Gruppe auf einen neuen Wert.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, für die das Flag gesetzt werden soll.</param>
+        /// <param name="newValue">Der neue Wert des Flags.</param>
+        public void SetRemovedFromGroupNoticed(int groupId, bool newValue)
+        {
+            try
+            {
+                groupDBManager.SetRemovedFromGroupNoticedFlagOnGroup(groupId, newValue);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("SetRemovedFromGroupNoticed: Failed to set new flag value {0} for the group " +
+                   "with id {1}. Msg is '{2}'.", newValue, groupId, ex.Message);
+                // Gebe Fehler hier nicht weiter. Keine kritische Aktion. Fehler muss auch nicht angezeigt werden.
+            }
+        }
+
+        /// <summary>
+        /// Gibt an, ob das Flag RemovedFromGroupNoticed in der angegebenen Gruppe gesetzt ist.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <returns>Liefert true, wenn das Flag gesetzt ist, ansonsten false.</returns>
+        public bool IsRemovalFromGroupNoticed(int groupId)
+        {
+            bool isNoticed = false;
+
+            try
+            {
+                isNoticed = groupDBManager.IsRemovalFromGroupNoticed(groupId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("IsRemovalFromGroupNoticed: Failed to retrieve the flag value. " +
+                    "Msg is: '{0}'.", ex.Message);
+                // Gebe Fehler hier nicht weiter. Keine kritische Aktion. Fehler muss auch nicht angezeigt werden.
+            }
+
+            return isNoticed;
         }
         #endregion LocalGroupMethods
 
