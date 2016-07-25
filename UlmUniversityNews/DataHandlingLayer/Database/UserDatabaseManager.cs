@@ -80,6 +80,70 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Ruft das Nutzerobjekt ab, das über die angegebene Id identifiziert wird.
+        /// Im Objekt sind jedoch nur die Eigenschaften Id und Name gesetzt.
+        /// </summary>
+        /// <param name="userId">Die Id des Nutzers.</param>
+        /// <returns>Ein Objekt vom Typ User.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, falls Abruf fehlschlägt.</exception>
+        public User GetUser(int userId)
+        {
+            User user = null;
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT * 
+                            FROM User 
+                            WHERE Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, userId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                user = new User()
+                                {
+                                    Id = userId,
+                                    Name = (string)stmt["Name"]
+                                };
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetUser: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetUser: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("GetUser: Mutex timeout.");
+                throw new DatabaseException("GetUser: Timeout: Failed to get access to DB.");
+            }
+
+            return user;
+        }
+
+        /// <summary>
         /// Speichert einen Nutzerdatensatz in der Datenbank ab.
         /// </summary>
         /// <param name="user">Der zu speichernde Datensatz als Objekt der Klasse User.</param>

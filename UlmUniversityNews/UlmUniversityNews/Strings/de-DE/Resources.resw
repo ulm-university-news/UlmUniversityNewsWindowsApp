@@ -1800,4 +1800,19 @@ Nachricht am: </value>
   <data name="GroupDetailsLocalUserRemovedFromGroupNotification.Text" xml:space="preserve">
     <value>Sie wurden vom Gruppenadministrator aus der Gruppe entfernt. Die Gruppendaten sind noch in den lokalen Datensätzen vorhanden. Sie erhalten jedoch keine Aktualisierungen mehr.</value>
   </data>
+  <data name="PushNotificationConversationNew" xml:space="preserve">
+    <value>Neue Konversation:</value>
+  </data>
+  <data name="PushNotificationParticipantLeft" xml:space="preserve">
+    <value>Teilnehmer hat Gruppe verlassen:</value>
+  </data>
+  <data name="PushNotificationParticipantNew" xml:space="preserve">
+    <value>Neuer Teilnehmer in Gruppe:</value>
+  </data>
+  <data name="PushNotificationParticipantRemoved" xml:space="preserve">
+    <value>Teilnehmer von Gruppe entfernt:</value>
+  </data>
+  <data name="PushNotificationReceivedGroupDeleted" xml:space="preserve">
+    <value>Die Gruppe wurde gelöscht</value>
+  </data>
 </root>

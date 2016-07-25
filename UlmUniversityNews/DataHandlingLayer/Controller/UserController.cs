@@ -129,5 +129,28 @@ namespace DataHandlingLayer.Controller
                 throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
             }
         }
+
+        /// <summary>
+        /// Liefert das Nutzerobjekt zum Nutzer, der durch die angegebene Id identifiziert wird.
+        /// </summary>
+        /// <param name="userId">Die Id des Nutzers.</param>
+        /// <returns>Ein Objekt vom Typ User.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abruf fehlschlägt.</exception>
+        public User GetUser(int userId)
+        {
+            User user = null;
+
+            try
+            {
+                user = userDBManager.GetUser(userId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetUser: Failed to retrieve user object with id {0}.", userId);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
+            return user;
+        }
     }
 }

@@ -1799,4 +1799,19 @@ date: </value>
   <data name="GroupDetailsLocalUserRemovedFromGroupNotification.Text" xml:space="preserve">
     <value>You have been removed from the group by the administrator. The group data is still stored in your local datasets. However, the data will not be updated anymore.</value>
   </data>
+  <data name="PushNotificationConversationNew" xml:space="preserve">
+    <value>New conversation:</value>
+  </data>
+  <data name="PushNotificationParticipantLeft" xml:space="preserve">
+    <value>Participant left group:</value>
+  </data>
+  <data name="PushNotificationParticipantNew" xml:space="preserve">
+    <value>Participant joined group:</value>
+  </data>
+  <data name="PushNotificationParticipantRemoved" xml:space="preserve">
+    <value>Participant was removed from group:</value>
+  </data>
+  <data name="PushNotificationReceivedGroupDeleted" xml:space="preserve">
+    <value>The group has been deleted</value>
+  </data>
 </root>

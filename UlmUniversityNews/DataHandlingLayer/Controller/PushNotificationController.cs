@@ -51,6 +51,8 @@ namespace DataHandlingLayer.Controller
                 return handledSuccessfully;
             }
 
+            Debug.WriteLine("HandlePushNotificationAsync: Received message of type: {0}.", receivedNotificationMessage.PushType);
+
             // Lese als erstes den Typ der empfangenen Push Nachricht aus. Behandle die PushNachricht nach Typ.
             PushType pushType = receivedNotificationMessage.PushType;
             switch (pushType)
@@ -59,6 +61,7 @@ namespace DataHandlingLayer.Controller
                     handledSuccessfully = await handleAnnouncementNewPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.ANNOUNCEMENT_DELETED:
+                    // Aktuell nicht unterstützt.
                     break;
                 case PushType.CHANNEL_CHANGED:
                     handledSuccessfully = await handleChannelChangedPushMsgAsync(receivedNotificationMessage);
@@ -70,31 +73,43 @@ namespace DataHandlingLayer.Controller
                     handledSuccessfully = await handleModeratorAddedPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.MODERATOR_CHANGED:
+                    // Aktuell nicht unterstützt.
                     break;
                 case PushType.MODERATOR_REMOVED:
                     handledSuccessfully = handleModeratorRemovedPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.GROUP_DELETED:
+                    handledSuccessfully = handleGroupDeletedPushMsg(receivedNotificationMessage);
                     break;
                 case PushType.GROUP_CHANGED:
+                    handledSuccessfully = await handleGroupChangedPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.PARTICIPANT_NEW:
+                    handledSuccessfully = await handleParticipantNewPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.PARTICIPANT_LEFT:
+                    handledSuccessfully = handleParticipantLeftPushMsg(receivedNotificationMessage);
                     break;
                 case PushType.PARTICIPANT_REMOVED:
+                    handledSuccessfully = handleParticipantLeftPushMsg(receivedNotificationMessage);
                     break;
                 case PushType.PARTICIPANT_CHANGED:
+                    // Aktuell nicht unterstützt.
                     break;
                 case PushType.CONVERSATION_NEW:
+                    handledSuccessfully = await handleConversationNewPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.CONVERSATION_CHANGED:
+                    handledSuccessfully = await handleConversationChangedPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.CONVERSATION_CHANGED_ALL:
+                    handledSuccessfully = await handleConversationChangedAllPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.CONVERSATION_CLOSED:
+                    // Aktuell nicht unterstützt. Wird über CONVERSATION_CHANGED abgedeckt.
                     break;
                 case PushType.CONVERSATION_DELETED:
+                    handledSuccessfully = handleConversationDeletedPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.CONVERSATION_MESSAGE_NEW:
                     handledSuccessfully = await handleConversationMessageNewPushMsgAsync(receivedNotificationMessage);
@@ -181,6 +196,26 @@ namespace DataHandlingLayer.Controller
                     // Informieren bei Kanal-Löschung.
                     notificationRequired = true;
                     break;
+                case PushType.GROUP_DELETED:
+                    // Informieren bei Gruppen-Löschung.
+                    notificationRequired = true;
+                    break;
+                case PushType.PARTICIPANT_NEW:
+                    // Informieren bei Teilnehmer hinzugefügt.
+                    notificationRequired = true;
+                    break;
+                case PushType.PARTICIPANT_LEFT:
+                    // Informiere bei Teilnehmer ausgetreten.
+                    notificationRequired = true;
+                    break;
+                case PushType.PARTICIPANT_REMOVED:
+                    // Informiere bei Teilnehmer ausgetreten.
+                    notificationRequired = true;
+                    break;
+                case PushType.CONVERSATION_NEW:
+                    // Informiere bei neuer Konversation.
+                    notificationRequired = true;
+                    break;
             }
 
             return notificationRequired;
@@ -209,7 +244,22 @@ namespace DataHandlingLayer.Controller
                 case PushType.CONVERSATION_MESSAGE_NEW:
                     string groupName = getGroupName(msg.Id1);
                     string conversationTitle = getConversationTitle(msg.Id2);
-                    headline = groupName + " -> " + conversationTitle;
+                    headline = groupName + ": " + conversationTitle;
+                    break;
+                case PushType.GROUP_DELETED:
+                    headline = getGroupName(msg.Id1);
+                    break;
+                case PushType.PARTICIPANT_NEW:
+                    headline = getGroupName(msg.Id1);
+                    break;
+                case PushType.PARTICIPANT_LEFT:
+                    headline = getGroupName(msg.Id1);
+                    break;
+                case PushType.PARTICIPANT_REMOVED:
+                    headline = getGroupName(msg.Id1);
+                    break;
+                case PushType.CONVERSATION_NEW:
+                    headline = getGroupName(msg.Id1);
                     break;
             }
 
@@ -239,9 +289,58 @@ namespace DataHandlingLayer.Controller
                 case PushType.CONVERSATION_MESSAGE_NEW:
                     localizationKey = "PushNotificationReceivedConversationMessageNew";
                     break;
+                case PushType.GROUP_DELETED:
+                    localizationKey = "PushNotificationReceivedGroupDeleted";
+                    break;
+                case PushType.PARTICIPANT_NEW:
+                    localizationKey = "PushNotificationParticipantNew";
+                    break;
+                case PushType.PARTICIPANT_LEFT:
+                    localizationKey = "PushNotificationParticipantLeft";                    
+                    break;
+                case PushType.PARTICIPANT_REMOVED:
+                    localizationKey = "PushNotificationParticipantRemoved";
+                    break;
+                case PushType.CONVERSATION_NEW:
+                    localizationKey = "PushNotificationConversationNew";
+                    break;
             }
 
             return localizationKey;
+        }
+
+        /// <summary>
+        /// Gibt einen von der bevorzugten Sprache unabhängigen String zurück, der an die
+        /// Beschreibung der Benachrichtigung angehängt wird.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Den anzuhängenden String.</returns>
+        public string GetResourceAppendix(PushMessage msg)
+        {
+            string resourceAppendix = string.Empty;
+
+            switch (msg.PushType)
+            {
+                case PushType.PARTICIPANT_NEW:
+                    // Id2 ist die Id des betroffenen Teilnehmers.
+                    int participantId = msg.Id2;
+                    resourceAppendix = getParticipantName(participantId);
+                    break;
+                case PushType.PARTICIPANT_LEFT:
+                    // Id2 ist die Id des betroffenen Teilnehmers.
+                    resourceAppendix = getParticipantName(msg.Id2);
+                    break;
+                case PushType.PARTICIPANT_REMOVED:
+                    // Id2 ist die Id des betroffenen Teilnehmers.
+                    resourceAppendix = getParticipantName(msg.Id2);
+                    break;
+                case PushType.CONVERSATION_NEW:
+                    // Id2 ist die Id der neuen Konversation.
+                    resourceAppendix = getConversationTitle(msg.Id2);
+                    break;
+            }
+
+            return resourceAppendix;
         }
 
         /// <summary>
@@ -411,6 +510,33 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Gibt den Namen des Teilnehmers zurück, der über die angegebene Id identifziert wird.
+        /// </summary>
+        /// <param name="participantId">Die Id des Teilnehmers.</param>
+        /// <returns>Der Name des Teilnehmers.</returns>
+        private string getParticipantName(int participantId)
+        {
+            string participantName = string.Empty;
+
+            try
+            {
+                UserController userController = new UserController();
+                User user = userController.GetUser(participantId);
+                if (user != null)
+                {
+                    participantName = user.Name;
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("getConversationTitle: Couldn't extract participant name.");
+                Debug.WriteLine("Msg is: {0}.", ex.Message);
+            }
+
+            return participantName;
+        }
+
+        /// <summary>
         /// Gibt den Namen der Gruppe zurück, die durch die Id eindeutig identifiziert ist.
         /// </summary>
         /// <param name="groupId"></param>
@@ -434,6 +560,7 @@ namespace DataHandlingLayer.Controller
             return groupName;
         }
 
+        #region ChannelBasedHandlers
         /// <summary>
         /// Behandelt eine eingehende Push Nachricht vom Typ ANNOUNCEMENT_NEW. Ruft für den betroffenen Kanal
         /// die neusten Announcements vom Server ab und speichert diese in der lokalen Datenbank ab.
@@ -612,12 +739,9 @@ namespace DataHandlingLayer.Controller
 
             return true;
         }
+        #endregion
 
-        private async Task<bool> handleModeratorChangedPushMsgAsync(PushMessage msg)
-        {
-            // TODO
-            return false;
-        }
+        #region GroupBasedHandlers
 
         /// <summary>
         /// Behandelt eine eingehende Push Nachricht vom Typ CONVERSATION_MESSAGE_NEW. Ruft die
@@ -672,5 +796,253 @@ namespace DataHandlingLayer.Controller
 
             return true;
         }
+
+        /// <summary>
+        /// Behandelt eine eingehende Push-Nachricht vom Typ GROUP_DELETED. Markiert
+        /// die entsprechende Gruppe als gelöscht in den lokalen Datensätzen.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private bool handleGroupDeletedPushMsg(PushMessage msg)
+        {
+            int groupId = msg.Id1;
+
+            try
+            {
+                // Markiere Gruppe als gelöscht.
+                groupController.MarkGroupAsDeleted(groupId);
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of GroupDeleted push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Nachricht vom Typ GROUP_CHANGED. Fragt die neusten Gruppendaten 
+        /// vom Server ab. Aktualisiert den lokalen Datensatz der Gruppe.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private async Task<bool> handleGroupChangedPushMsgAsync(PushMessage msg)
+        {
+            int groupId = msg.Id1;
+
+            try
+            {
+                // Frage neuste Gruppendaten ab.
+                Group newGroup = await groupController.GetGroupAsync(groupId, false);
+
+                // Aktualisiere den Datensatz der Gruppe.
+                groupController.UpdateGroup(newGroup, false);
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of GroupChanged push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Nachricht vom Typ PARTICIPANT_NEW. Fragt die Teilnehmer 
+        /// vom Server ab. Fügt den neuen Teilnehmer auch lokal der Gruppe hinzu.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private async Task<bool> handleParticipantNewPushMsgAsync(PushMessage msg)
+        {
+            int groupId = msg.Id1;
+            int participantId = msg.Id2;
+
+            try
+            {
+                // Frage zunächst die Teilnehmer der Gruppe ab.
+                List<User> participants = await groupController.GetParticipantsOfGroupAsync(groupId, false);
+
+                if (participants != null && participants.Count > 0)
+                {
+                    User addedParticipant = participants.Find(item => item.Id == participantId);
+
+                    // Füge Nutzer der Gruppe hinzu.
+                    if (addedParticipant != null)
+                    {
+                        groupController.AddParticipantToGroup(groupId, addedParticipant);
+                    }                    
+                }
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of ParticipantNew push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Nachricht vom Typ PARTICIPANT_LEFT. Setzt den betroffenen
+        /// Teilnehmer lokal auf inaktiv.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private bool handleParticipantLeftPushMsg(PushMessage msg)
+        {
+            int groupId = msg.Id1;
+            int participantId = msg.Id2;
+
+            try
+            {
+                // Frage lokale Teilnehmer ab.
+                Dictionary<int, User> participantsLookupDir = groupController.GetParticipantsLookupDirectory(groupId);
+
+                if (participantsLookupDir != null && participantsLookupDir.ContainsKey(participantId))
+                {
+                    // Setze Teilnehmer auf inaktiv.
+                    groupController.ChangeActiveStatusOfParticipant(groupId, participantId, false);
+                }
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of ParticipantLeft push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Nachricht vom Typ CONVERSATION_NEW. Ruft die Daten der neuen 
+        /// Konversation ab und speichert sie lokal ab.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private async Task<bool> handleConversationNewPushMsgAsync(PushMessage msg)
+        {
+            int groupId = msg.Id1;
+            int conversationId = msg.Id2;
+
+            try
+            {
+                // Frage die Daten zur Konversation ab.
+                Conversation conversation = await groupController.GetConversationAsync(groupId, conversationId);
+
+                if (conversation != null)
+                {
+                    bool successful = groupController.StoreConversation(groupId, conversation);
+                    if (!successful)
+                    {
+                        Debug.WriteLine("handleConversationNewPushMsgAsync: Fallback behavior.");
+                        await groupController.SynchronizeConversationsWithServerAsync(groupId, true);
+                    }
+                }
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of ConversationNew push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Nachricht vom Typ CONVERSATION_CHANGED. Ruft die Daten der geänderten 
+        /// Konversation ab und aktualisiert den lokalen Datensatz der Konversation.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private async Task<bool> handleConversationChangedPushMsgAsync(PushMessage msg)
+        {
+            int groupId = msg.Id1;
+            int conversationId = msg.Id2;
+
+            try
+            {
+                // Frage Daten der geänderten Konversation ab.
+                Conversation conv = await groupController.GetConversationAsync(groupId, conversationId);
+
+                if (conv != null)
+                {
+                    bool successful = groupController.UpdateConversation(groupId, conv);
+                    if (!successful)
+                    {
+                        Debug.WriteLine("handleConversationChangedPushMsgAsync: Fallback behavior.");
+                        await groupController.SynchronizeConversationsWithServerAsync(groupId, true);
+                    }
+                }
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of ConversationChanged push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Nachricht vom Typ CONVERSATION_CHANGED_ALL. Stößt eine Synchronisation 
+        /// der Konversationen der betroffenen Gruppe an.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private async Task<bool> handleConversationChangedAllPushMsgAsync(PushMessage msg)
+        {
+            int groupId = msg.Id1;
+
+            try
+            {
+                // Führe Synchronisation der Konversationen der Gruppe aus.
+                await groupController.SynchronizeConversationsWithServerAsync(groupId, true);
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of ConversationChangedAll push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Nachricht vom Typ CONVERSATION_DELETED. Löscht die 
+        /// betroffene Konversation aus den lokalen Datensätzen.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private bool handleConversationDeletedPushMsgAsync(PushMessage msg)
+        {
+            int groupId = msg.Id1;
+            int conversationId = msg.Id2;
+
+            try
+            {
+                // Lösche Konversation aus den lokalen Datensätzen.
+                groupController.DeleteConversation(conversationId);
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of ConversationDeleted push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+        #endregion
+
+
     }
 }

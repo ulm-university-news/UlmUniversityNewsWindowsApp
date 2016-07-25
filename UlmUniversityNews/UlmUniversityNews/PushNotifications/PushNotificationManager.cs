@@ -222,10 +222,35 @@ namespace UlmUniversityNews.PushNotifications
         ///     die Benutzerbenachrichtigung durchgeführt wird.</param>
         private void performUserNotification(PushMessage pushMsg)
         {
-            // Ermittle Überschrift und Ressourcen-Schlüssel für Nachrichteninhalt.
-            string headline = pushController.GetUserNotificationHeadline(pushMsg);
-            string resourceKey = pushController.GetUserNotificationContentLocalizationKey(pushMsg);
-            showToastNotification(headline, resourceKey);
+            string headline = null;
+            string resourceKey = null;
+            string resourceAppendix = null;
+
+            switch (pushMsg.PushType)
+            {
+                case PushType.ANNOUNCEMENT_NEW:
+                    // Ermittle Überschrift und Ressourcen-Schlüssel für Nachrichteninhalt.
+                    headline = pushController.GetUserNotificationHeadline(pushMsg);
+                    resourceKey = pushController.GetUserNotificationContentLocalizationKey(pushMsg);
+                    // Toast mit Ankündigung.
+                    showToastNotification(headline, resourceKey);
+                    break;
+                case PushType.CONVERSATION_MESSAGE_NEW:
+                    // Ermittle Überschrift und Ressourcen-Schlüssel für Nachrichteninhalt.
+                    headline = pushController.GetUserNotificationHeadline(pushMsg);
+                    resourceKey = pushController.GetUserNotificationContentLocalizationKey(pushMsg);
+                    // Toast mit Ankündigung.
+                    showToastNotification(headline, resourceKey);
+                    break;
+                default:
+                    // Ermittle Überschrift und Ressourcen-Schlüssel für Nachrichteninhalt.
+                    headline = pushController.GetUserNotificationHeadline(pushMsg);
+                    resourceKey = pushController.GetUserNotificationContentLocalizationKey(pushMsg);
+                    resourceAppendix = pushController.GetResourceAppendix(pushMsg);
+                    // Ghost Toast.
+                    showSilentToastNotification(headline, resourceKey, resourceAppendix);
+                    break;
+            }
         }
 
         /// <summary>
@@ -258,6 +283,39 @@ namespace UlmUniversityNews.PushNotifications
 
             var toast = new ToastNotification(toastDescriptor);
             var toastNotifier = ToastNotificationManager.CreateToastNotifier();
+            toastNotifier.Show(toast);
+        }
+
+        /// <summary>
+        /// Zeige den Text in einer ToastNotification an, um den Nutzer über ein Ereignis zu informieren.
+        /// Die Toast Nachricht wird dem Nutzer nicht angekündigt. Sie erscheint direkt im Action-Center.
+        /// </summary>
+        /// <param name="headline">Die anzuzeigende Überschrift.</param>
+        /// <param name="resourceKey">Der Ressourcenschlüssel für den Inhalt der Benachrichtigung.</param>
+        /// <param name="resourceAppendix">Bietet die Möglichkeit, einen sprachenunabhängigen String noch an
+        ///     das Ende der Beschreibung anzuhängen. Das kann z.B. verwendet werden, um den Namen eines Nutzers 
+        ///     anzuhängen. Der Paremeter kann aber auch null sein.</param>
+        private void showSilentToastNotification(string headline, string resourceKey, string resourceAppendix)
+        {
+            // Für den Anfang, sende nur eine ToastNotification mit dem Typ der PushNachricht und mache weiter nichts.
+            var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText02);
+
+            if (resourceAppendix == null)
+                resourceAppendix = string.Empty;
+
+            // Setze den Text - Headline.
+            var txtNodes = toastDescriptor.GetElementsByTagName("text");
+            txtNodes[0].AppendChild(toastDescriptor.CreateTextNode(headline));
+
+            // Setze den Text - Inhalt.
+            var loader = Windows.ApplicationModel.Resources.ResourceLoader.GetForViewIndependentUse("Resources");
+            string content = loader.GetString(resourceKey);
+            txtNodes[1].AppendChild(toastDescriptor.CreateTextNode(content + " " + resourceAppendix));
+            
+            var toast = new ToastNotification(toastDescriptor);
+            toast.SuppressPopup = true; // Ghost toast.
+            var toastNotifier = ToastNotificationManager.CreateToastNotifier();          
+
             toastNotifier.Show(toast);
         }
     }

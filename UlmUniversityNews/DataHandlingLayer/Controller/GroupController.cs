@@ -1226,6 +1226,49 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Ruft den Datensatz zur Konversation mit der angegebenen Id vom Server ab.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Konversation gehört.</param>
+        /// <param name="conversationId">Die Id der Konversation.</param>
+        /// <returns>Eine Instanz der Klasse Conversation mit den abgerufenen Daten.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Abruf fehlschlägt, oder
+        ///     Anfrage vom Server abgelehnt wird.</exception>
+        public async Task<Conversation> GetConversationAsync(int groupId, int conversationId)
+        {
+            Conversation conv = null;
+
+            string serverResponse = null;
+            try
+            {
+                serverResponse = await groupAPI.SendGetConversationRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    conversationId,
+                    false);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("GetConversationAsync: Request failed. Error code is: {0}.", ex.ErrorCode);
+
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, conversationId, null);
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            if (serverResponse != null)
+            {
+                conv = jsonParser.ParseConversationFromJson(serverResponse);
+
+                if (conv == null)
+                {
+                    throw new ClientException(ErrorCodes.JsonParserError, "GetConversationAsync: Failed to parse server response.");
+                }
+            }
+
+            return conv;
+        }
+
+        /// <summary>
         /// Ruft die Konversationsnachrichten der angegebenen Konversation vom Server ab. Der Abruf
         /// kann durch die Nachrichtennummer eingeschränkt werden. Es werden nur die Nachrichten abgerufen,
         /// die eine höhere Nachrichtennummer haben, als die die angegeben wird.
@@ -3303,6 +3346,12 @@ namespace DataHandlingLayer.Controller
                 {
                     // Fehlende Daten.
                     Debug.WriteLine("UpdateConversation: Cannot perform update due to missing reference data.");
+                    return false;
+                }
+                if (!groupDBManager.IsGroupStored(groupId))
+                {
+                    // Fehlender Gruppendatensatz.
+                    Debug.WriteLine("UpdateConversation: Cannot perform update due to missing group dataset.");
                     return false;
                 }
 
