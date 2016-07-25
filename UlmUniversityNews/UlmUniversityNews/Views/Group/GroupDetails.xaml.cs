@@ -124,6 +124,36 @@ namespace UlmUniversityNews.Views.Group
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            // Für den Typvergleich, siehe hier: http://stackoverflow.com/questions/983030/type-checking-typeof-gettype-or-is
+            if (e.NavigationParameter != null && e.NavigationParameter.GetType() == typeof(string))
+            {
+               await groupDetailsViewModel.LoadGroupFromTemporaryCacheAsync(e.NavigationParameter as string);
+            }
+            else if (e.NavigationParameter != null && e.NavigationParameter.GetType() == typeof(int))
+            {
+                int groupId = Convert.ToInt32(e.NavigationParameter);
+                await groupDetailsViewModel.LoadGroupFromLocalStorageAsync(groupId);
+
+                determineLastActivePivotItem(e);
+
+                // Lade Konversationen.
+                await groupDetailsViewModel.LoadConversationsAsync(groupId);
+
+                // Lade Abstimmungen.
+                await groupDetailsViewModel.LoadBallotsAsync(groupId);
+            }          
+
+            // Registriere Seite für relevante Push Notification Events.
+            subscribeToPushManagerEvents();
+        }
+
+        /// <summary>
+        /// Ermittelt, ob gespeichert ist, welches PivotItem zuletzt aktiv war.
+        /// Ist das der Fall, so wird dieses beim Laden der Seite wieder aktiv gesetzt.
+        /// </summary>
+        /// <param name="e">Die Parameter des Ladevorgangs.</param>
+        private void determineLastActivePivotItem(LoadStateEventArgs e)
+        {
             // Prüfe, ob ein Index gespeichert ist, der angibt, auf welchem PivotItem der Nutzer zuletzt war.
             if (e.PageState != null &&
                 e.PageState.Keys.Contains("PivotIndex") &&
@@ -136,26 +166,6 @@ namespace UlmUniversityNews.Views.Group
                 if (successful && GroupDetailsPivot != null)
                     GroupDetailsPivot.SelectedIndex = selectedIndex;
             }
-
-            // Für den Typvergleich, siehe hier: http://stackoverflow.com/questions/983030/type-checking-typeof-gettype-or-is
-            if (e.NavigationParameter != null && e.NavigationParameter.GetType() == typeof(string))
-            {
-               await groupDetailsViewModel.LoadGroupFromTemporaryCacheAsync(e.NavigationParameter as string);
-            }
-            else if (e.NavigationParameter != null && e.NavigationParameter.GetType() == typeof(int))
-            {
-                int groupId = Convert.ToInt32(e.NavigationParameter);
-                await groupDetailsViewModel.LoadGroupFromLocalStorageAsync(groupId);
-
-                // Lade Konversationen.
-                await groupDetailsViewModel.LoadConversationsAsync(groupId);
-
-                // Lade Abstimmungen.
-                await groupDetailsViewModel.LoadBallotsAsync(groupId);
-            }
-
-            // Registriere Seite für relevante Push Notification Events.
-            subscribeToPushManagerEvents();
         }
 
         /// <summary>

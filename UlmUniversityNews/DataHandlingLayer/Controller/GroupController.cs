@@ -376,9 +376,12 @@ namespace DataHandlingLayer.Controller
                 List<Conversation> conversations = await GetConversationsAsync(groupId, true, false);
                 groupDBManager.BulkInsertConversations(groupId, conversations);
 
-                foreach (Conversation conversation in conversations)
+                if (conversations != null)
                 {
-                    StoreConversationMessages(groupId, conversation.Id, conversation.ConversationMessages);
+                    foreach (Conversation conversation in conversations)
+                    {
+                        StoreConversationMessages(groupId, conversation.Id, conversation.ConversationMessages);
+                    }
                 }
             }
             catch (DatabaseException ex)
@@ -3355,7 +3358,11 @@ namespace DataHandlingLayer.Controller
         {
             // Prüfe, ob Nachrichten überhaupt aktualisiert werden müssen.
             int localHighestMsgNr = GetHighestMessageNumberOfConversation(conversationId);
-            int referenceHighestMsgNr = conversationMessages.Max<ConversationMessage>(item => item.MessageNumber);
+            int referenceHighestMsgNr = 0;
+            if (conversationMessages != null && conversationMessages.Count > 0)
+            {
+                referenceHighestMsgNr = conversationMessages.Max<ConversationMessage>(item => item.MessageNumber);
+            }
 
             if (localHighestMsgNr == referenceHighestMsgNr)
             {
