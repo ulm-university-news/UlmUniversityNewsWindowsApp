@@ -40,16 +40,54 @@ namespace PushNotificationManagerBackground
             // Soll der Nutzer benachrichtigt werden?
             if(handledSuccessfully && pushController.IsUserNotificationRequired(pm))
             {
-                string headline = pushController.GetUserNotificationHeadline(pm);
-                string resourceKey = pushController.GetUserNotificationContentLocalizationKey(pm);
-                showToastNotification(headline, resourceKey);
+                performUserNotification(pushController, pm);
             }
 
             Debug.WriteLine("Finished background task.");
             // Task als abgeschlossen kennzeichnen.
             deferral.Complete();
         }
-        
+
+        /// <summary>
+        /// Führt die Nutzerbenachrichtigung über eine eingegangene Push Nachricht und die 
+        /// damit verbundene Aktion durch. 
+        /// </summary>
+        /// <param name="pushController">Referenz auf die Instanz des PushNotificationController.</param>
+        /// <param name="pushMsg">Die eingegangene Push-Nachricht, für die
+        ///     die Benutzerbenachrichtigung durchgeführt wird.</param>
+        private void performUserNotification(PushNotificationController pushController, PushMessage pushMsg)
+        {
+            string headline = null;
+            string resourceKey = null;
+            string resourceAppendix = null;
+
+            switch (pushMsg.PushType)
+            {
+                case PushType.ANNOUNCEMENT_NEW:
+                    // Ermittle Überschrift und Ressourcen-Schlüssel für Nachrichteninhalt.
+                    headline = pushController.GetUserNotificationHeadline(pushMsg);
+                    resourceKey = pushController.GetUserNotificationContentLocalizationKey(pushMsg);
+                    // Toast mit Ankündigung.
+                    showToastNotification(headline, resourceKey);
+                    break;
+                case PushType.CONVERSATION_MESSAGE_NEW:
+                    // Ermittle Überschrift und Ressourcen-Schlüssel für Nachrichteninhalt.
+                    headline = pushController.GetUserNotificationHeadline(pushMsg);
+                    resourceKey = pushController.GetUserNotificationContentLocalizationKey(pushMsg);
+                    // Toast mit Ankündigung.
+                    showToastNotification(headline, resourceKey);
+                    break;
+                default:
+                    // Ermittle Überschrift und Ressourcen-Schlüssel für Nachrichteninhalt.
+                    headline = pushController.GetUserNotificationHeadline(pushMsg);
+                    resourceKey = pushController.GetUserNotificationContentLocalizationKey(pushMsg);
+                    resourceAppendix = pushController.GetResourceAppendix(pushMsg);
+                    // Ghost Toast.
+                    showSilentToastNotification(headline, resourceKey, resourceAppendix);
+                    break;
+            }
+        }
+
         /// <summary>
         /// Zeige den Text in einer ToastNotification an, um den Nutzer über ein Ereignis zu informieren.
         /// </summary>
@@ -73,7 +111,40 @@ namespace PushNotificationManagerBackground
             var toastNotifier = ToastNotificationManager.CreateToastNotifier();
             toastNotifier.Show(toast);
         }
-        
+
+        /// <summary>
+        /// Zeige den Text in einer ToastNotification an, um den Nutzer über ein Ereignis zu informieren.
+        /// Die Toast Nachricht wird dem Nutzer nicht angekündigt. Sie erscheint direkt im Action-Center.
+        /// </summary>
+        /// <param name="headline">Die anzuzeigende Überschrift.</param>
+        /// <param name="resourceKey">Der Ressourcenschlüssel für den Inhalt der Benachrichtigung.</param>
+        /// <param name="resourceAppendix">Bietet die Möglichkeit, einen sprachenunabhängigen String noch an
+        ///     das Ende der Beschreibung anzuhängen. Das kann z.B. verwendet werden, um den Namen eines Nutzers 
+        ///     anzuhängen. Der Paremeter kann aber auch null sein.</param>
+        private void showSilentToastNotification(string headline, string resourceKey, string resourceAppendix)
+        {
+            // Für den Anfang, sende nur eine ToastNotification mit dem Typ der PushNachricht und mache weiter nichts.
+            var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText02);
+
+            if (resourceAppendix == null)
+                resourceAppendix = string.Empty;
+
+            // Setze den Text - Headline.
+            var txtNodes = toastDescriptor.GetElementsByTagName("text");
+            txtNodes[0].AppendChild(toastDescriptor.CreateTextNode(headline));
+
+            // Setze den Text - Inhalt.
+            var loader = Windows.ApplicationModel.Resources.ResourceLoader.GetForViewIndependentUse("Resources");
+            string content = loader.GetString(resourceKey);
+            txtNodes[1].AppendChild(toastDescriptor.CreateTextNode(content + " " + resourceAppendix));
+
+            var toast = new ToastNotification(toastDescriptor);
+            toast.SuppressPopup = true; // Ghost toast.
+            var toastNotifier = ToastNotificationManager.CreateToastNotifier();
+
+            toastNotifier.Show(toast);
+        }
+
         /// <summary>
         /// Behandelt den Abbruch der Hintergrundaufgabe.
         /// </summary>

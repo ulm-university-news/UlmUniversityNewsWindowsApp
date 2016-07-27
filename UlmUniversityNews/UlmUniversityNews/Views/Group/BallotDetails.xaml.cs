@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using DataHandlingLayer.ViewModel;
+using Windows.ApplicationModel.Core;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -105,6 +106,8 @@ namespace UlmUniversityNews.Views.Group
             if (ballotId != -1 && groupId != -1)
             {
                 await ballotDetailsViewModel.LoadBallotAsync(groupId, ballotId);
+
+                subscribeToPushManagerEvents();
             }
         }
 
@@ -121,6 +124,8 @@ namespace UlmUniversityNews.Views.Group
             // Speichere Pivot-Index zwischen, so dass man ihn beim nächsten Aufruf der Seite wieder aktiv setzen kann.
             if (e.PageState != null && BallotDetailsPivot != null)
                 e.PageState["PivotIndex"] = BallotDetailsPivot.SelectedIndex;
+
+            unsubscribeFromPushManagerEvents();
         }
 
         #region NavigationHelper-Registrierung
@@ -148,6 +153,52 @@ namespace UlmUniversityNews.Views.Group
             this.navigationHelper.OnNavigatedFrom(e);
         }
 
+        #endregion
+
+        #region PushNotificationManagerEvents
+        /// <summary>
+        /// Abonniere für die BallotDetails View relevante Events, die vom PushNotificationManager bereitgestellt werden.
+        /// Beim Empfangen dieser Events wird die BallotDetails View ihren Zustand aktualisieren.
+        /// </summary>
+        private void subscribeToPushManagerEvents()
+        {
+            PushNotifications.PushNotificationManager pushManager = PushNotifications.PushNotificationManager.GetInstance();
+            pushManager.BallotOptionNew += pushManager_ReloadBallotDetailsView;
+            pushManager.BallotOptionVote += pushManager_ReloadBallotDetailsView;
+        }
+
+        /// <summary>
+        /// Deabonniere alle Events des PushNotificationManager, für die sich die View registriert hat.
+        /// </summary>
+        private void unsubscribeFromPushManagerEvents()
+        {
+            PushNotifications.PushNotificationManager pushManager = PushNotifications.PushNotificationManager.GetInstance();
+            pushManager.BallotOptionNew -= pushManager_ReloadBallotDetailsView;
+            pushManager.BallotOptionVote -= pushManager_ReloadBallotDetailsView;
+        }
+
+        /// <summary>
+        /// Behandelt abstimmungsbezogene Events, die eine Aktualisierung der Detailsseite erfordern.
+        /// Wenn es sich bei der betroffenen Gruppe um die aktuell angezeigte Gruppe handelt und 
+        /// die geladene Abstimmung der betroffenen Abstimmung entspricht, so wird diese Aktualisierung angestoßen.
+        /// </summary>
+        /// <param name="sender">Der Sender des Events, d.h. hier der PushNotificationManager.</param>
+        /// <param name="e">Eventparameter.</param>
+        private async void pushManager_ReloadBallotDetailsView(object sender, PushNotifications.EventArgClasses.BallotRelatedEventArgs e)
+        {
+            if (ballotDetailsViewModel != null &&
+                ballotDetailsViewModel.AffectedGroup != null && ballotDetailsViewModel.SelectedBallot != null &&
+                ballotDetailsViewModel.AffectedGroup.Id == e.GroupId && 
+                ballotDetailsViewModel.SelectedBallot.Id == e.BallotId)
+            {
+                // Ausführung auf UI-Thread abbilden.
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                    {
+                        await ballotDetailsViewModel.LoadBallotAsync(e.GroupId, e.BallotId);
+                    });
+            }
+        }
         #endregion
 
         /// <summary>

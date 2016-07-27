@@ -710,6 +710,110 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Setzt das Flag HasNewEvent für die gewählte Gruppe zurück.
+        /// </summary>
+        public void ResetHasNewEventFlag()
+        {
+            if (SelectedGroup != null)
+            {
+                groupController.SetHasNewEventFlag(SelectedGroup.Id, false);
+            }
+        }
+
+        /// <summary>
+        /// Aktualisiert die Daten der Gruppe. Holt die neusten
+        /// Daten aus der lokalen Datenbank und aktualisiert die View entsprechend.
+        /// Methode muss im UI-Thread ausgeführt werden.
+        /// </summary>
+        public void ReloadGroupDetails()
+        {
+            if (SelectedGroup != null)
+            {
+                try
+                {
+                    Group group = groupController.GetGroup(SelectedGroup.Id);
+
+                    if (group != null)
+                    {
+                        // Aktualisiere Eigenschaften.
+                        updateViewRelatedGroupProperties(SelectedGroup, group);
+                    }
+                }
+                catch (ClientException ex)
+                {
+                    Debug.WriteLine("ReloadGroupDetails: Failed to reload group details. " + 
+                        "Error code is: {0}.", ex.ErrorCode);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Lädt die Collection von Konversationen neu.
+        /// Diese Methode muss auf dem UI-Thread ausgeführt werden.
+        /// </summary>
+        public void ReloadConversationCollection()
+        {
+            if (SelectedGroup == null)
+                return;
+
+            try
+            {
+                // Aktualisere Anzeige. Rufe neuste Daten ab.
+                List<Conversation> conversations = groupController.GetConversations(SelectedGroup.Id);
+
+                // Sortieren.
+                conversations = sortConversationsByApplicationSettings(conversations);
+
+                if (ConversationCollection != null)
+                {
+                    ConversationCollection.Clear();
+                    foreach (Conversation conv in conversations)
+                    {
+                        ConversationCollection.Add(conv);
+                    }
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("ReloadConversationCollection: Execution failed." + 
+                    "Error code is: {0}.", ex.ErrorCode);
+            }
+        }
+
+        /// <summary>
+        /// Lädt die Collection von Abstimmungen neu.
+        /// Diese Methode muss auf dem UI-Thread ausgeführt werden.
+        /// </summary>
+        public void ReloadBallotCollection()
+        {
+            if (SelectedGroup == null)
+                return;
+
+            try
+            {
+                // Aktualisiere Anzeige. Rufe neuste Daten ab.
+                List<Ballot> ballots = groupController.GetBallots(SelectedGroup.Id, false);
+
+                // Sortieren.
+                ballots = sortBallotsByApplicationSettings(ballots);
+
+                if (BallotCollection != null)
+                {
+                    BallotCollection.Clear();
+                    foreach (Ballot ballot in ballots)
+                    {
+                        BallotCollection.Add(ballot);
+                    }
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("ReloadBallotCollection: Execution failed." +
+                    "Error code is: {0}.", ex.ErrorCode);
+            }
+        }
+
+        /// <summary>
         /// Aktualisiert die für die View relevanten Eigenschaften der Gruppeninstanzen.
         /// Führt somit eine Aktualisierung der Anzeige aus.
         /// Muss im UI-Thread ausgeführt werden.
@@ -800,17 +904,6 @@ namespace DataHandlingLayer.ViewModel
             }
 
             return ballots;
-        }
-
-        /// <summary>
-        /// Setzt das Flag HasNewEvent für die gewählte Gruppe zurück.
-        /// </summary>
-        public void ResetHasNewEventFlag()
-        {
-            if (SelectedGroup != null)
-            {
-                groupController.SetHasNewEventFlag(SelectedGroup.Id, false);
-            }
         }
 
         /// <summary>
@@ -906,7 +999,6 @@ namespace DataHandlingLayer.ViewModel
             }
 
             Debug.WriteLine("Execute join group command called.");
-            Debug.WriteLine("Entered password is " + EnteredPassword);
 
             try
             {

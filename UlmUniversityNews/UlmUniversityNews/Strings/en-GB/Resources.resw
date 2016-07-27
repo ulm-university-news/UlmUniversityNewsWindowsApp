@@ -1302,10 +1302,10 @@ date: </value>
     <value>Please enter the password of the group.</value>
   </data>
   <data name="GroupDetailsPasswordEntryDialog.PrimaryButtonText" xml:space="preserve">
-    <value>join</value>
+    <value>Join</value>
   </data>
   <data name="GroupDetailsPasswordEntryDialog.SecondaryButtonText" xml:space="preserve">
-    <value>cancel</value>
+    <value>Cancel</value>
   </data>
   <data name="GroupDetailsPasswordEntryDialog.Title" xml:space="preserve">
     <value>Join group</value>
@@ -1803,13 +1803,13 @@ date: </value>
     <value>New conversation:</value>
   </data>
   <data name="PushNotificationParticipantLeft" xml:space="preserve">
-    <value>Participant left group:</value>
+    <value>Participant left:</value>
   </data>
   <data name="PushNotificationParticipantNew" xml:space="preserve">
-    <value>Participant joined group:</value>
+    <value>Participant joined:</value>
   </data>
   <data name="PushNotificationParticipantRemoved" xml:space="preserve">
-    <value>Participant was removed from group:</value>
+    <value>Participant was removed:</value>
   </data>
   <data name="PushNotificationReceivedGroupDeleted" xml:space="preserve">
     <value>The group has been deleted</value>

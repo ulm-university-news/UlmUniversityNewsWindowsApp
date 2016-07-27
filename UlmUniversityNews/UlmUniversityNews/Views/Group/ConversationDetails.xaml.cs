@@ -150,7 +150,7 @@ namespace UlmUniversityNews.Views.Group
         /// </summary>
         /// <param name="sender">Der Sender des Events, d.h. hier der PushNotificationManager.</param>
         /// <param name="e">Eventparameter.</param>
-        private async void PushManager_ReceivedConversationMessage(object sender, PushNotifications.EventArgClasses.ConversationMessageNewEventArgs e)
+        private async void PushManager_ReceivedConversationMessage(object sender, PushNotifications.EventArgClasses.ConversationRelatedEventArgs e)
         {
             if (conversationDetailsViewModel != null && 
                 conversationDetailsViewModel.SelectedConversation != null && 

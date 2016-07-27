@@ -139,6 +139,16 @@ namespace UlmUniversityNews.Views.Homescreen
             pushManager.ReceivedAnnouncement += pushManager_ReceivedAnnouncement;
             pushManager.ChannelDeleted += pushManager_ChannelDeleted;
             pushManager.ChannelChanged += pushManager_ChannelChanged;
+            pushManager.GroupDeleted += pushManager_GroupUpdateRequired;
+            pushManager.ParticipantNew += pushManager_GroupUpdateRequired;
+            pushManager.ParticipantLeft += pushManager_GroupUpdateRequired;
+            pushManager.ConversationNew += pushManager_GroupUpdateRequired;
+            pushManager.ConversationDeleted += pushManager_GroupUpdateRequired;
+            pushManager.ReceivedConversationMessage += pushManager_GroupUpdateRequired;
+            pushManager.BallotNew += pushManager_GroupUpdateRequired;
+            pushManager.BallotOptionNew += pushManager_GroupUpdateRequired;
+            pushManager.BallotOptionVote += pushManager_GroupUpdateRequired;
+            pushManager.BallotDeleted += pushManager_GroupUpdateRequired;
         }
 
         /// <summary>
@@ -151,6 +161,16 @@ namespace UlmUniversityNews.Views.Homescreen
             pushManager.ReceivedAnnouncement -= pushManager_ReceivedAnnouncement;
             pushManager.ChannelDeleted -= pushManager_ChannelDeleted;
             pushManager.ChannelChanged -= pushManager_ChannelChanged;
+            pushManager.GroupDeleted -= pushManager_GroupUpdateRequired;
+            pushManager.ParticipantNew -= pushManager_GroupUpdateRequired;
+            pushManager.ParticipantLeft -= pushManager_GroupUpdateRequired;
+            pushManager.ConversationNew -= pushManager_GroupUpdateRequired;
+            pushManager.ConversationDeleted -= pushManager_GroupUpdateRequired;
+            pushManager.ReceivedConversationMessage -= pushManager_GroupUpdateRequired;
+            pushManager.BallotNew -= pushManager_GroupUpdateRequired;
+            pushManager.BallotOptionNew -= pushManager_GroupUpdateRequired;
+            pushManager.BallotOptionVote -= pushManager_GroupUpdateRequired;
+            pushManager.BallotDeleted -= pushManager_GroupUpdateRequired;
         }
 
         /// <summary>
@@ -206,6 +226,24 @@ namespace UlmUniversityNews.Views.Homescreen
                     Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                     {
                         await homescreenViewModel.PerformViewUpdateOnChannelChangedEventAsync(e.ChannelId);
+                    });
+            }
+        }
+
+        /// <summary>
+        /// Event-Handler, der von verschiedenen gruppen-basierten Events genutzt werden kann. Der Handler
+        /// stößt die Aktualisierung der vom Event betroffenen Gruppe an.
+        /// </summary>
+        /// <param name="sender">Der Sender des Events, d.h. hier der PushNotificationManager.</param>
+        /// <param name="e">Eventparameter.</param>
+        async void pushManager_GroupUpdateRequired(object sender, PushNotifications.EventArgClasses.GroupRelatedEventArgs e)
+        {
+            if (homescreenViewModel != null)
+            {
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                    {
+                        homescreenViewModel.UpdateIndividualGroupInCollection(e.GroupId);
                     });
             }
         }

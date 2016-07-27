@@ -1303,10 +1303,10 @@ Nachricht am: </value>
     <value>Bitte geben Sie das Passwort für die Gruppe an.</value>
   </data>
   <data name="GroupDetailsPasswordEntryDialog.PrimaryButtonText" xml:space="preserve">
-    <value>beitreten</value>
+    <value>Beitreten</value>
   </data>
   <data name="GroupDetailsPasswordEntryDialog.SecondaryButtonText" xml:space="preserve">
-    <value>abbrechen</value>
+    <value>Abbrechen</value>
   </data>
   <data name="GroupDetailsPasswordEntryDialog.Title" xml:space="preserve">
     <value>Gruppe beitreten</value>
@@ -1804,13 +1804,13 @@ Nachricht am: </value>
     <value>Neue Konversation:</value>
   </data>
   <data name="PushNotificationParticipantLeft" xml:space="preserve">
-    <value>Teilnehmer hat Gruppe verlassen:</value>
+    <value>Teilnehmer ausgetreten:</value>
   </data>
   <data name="PushNotificationParticipantNew" xml:space="preserve">
-    <value>Neuer Teilnehmer in Gruppe:</value>
+    <value>Neuer Teilnehmer:</value>
   </data>
   <data name="PushNotificationParticipantRemoved" xml:space="preserve">
-    <value>Teilnehmer von Gruppe entfernt:</value>
+    <value>Teilnehmer entfernt:</value>
   </data>
   <data name="PushNotificationReceivedGroupDeleted" xml:space="preserve">
     <value>Die Gruppe wurde gelöscht</value>

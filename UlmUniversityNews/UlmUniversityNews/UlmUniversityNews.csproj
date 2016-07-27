@@ -240,9 +240,11 @@
     <Compile Include="NavigationService\NavigationService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PushNotifications\EventArgClasses\AnnouncementReceivedEventArgs.cs" />
+    <Compile Include="PushNotifications\EventArgClasses\BallotRelatedEventArgs.cs" />
     <Compile Include="PushNotifications\EventArgClasses\ChannelChangedEventArgs.cs" />
     <Compile Include="PushNotifications\EventArgClasses\ChannelDeletedEventArgs.cs" />
-    <Compile Include="PushNotifications\EventArgClasses\ConversationMessageNewEventArgs.cs" />
+    <Compile Include="PushNotifications\EventArgClasses\ConversationRelatedEventArgs.cs" />
+    <Compile Include="PushNotifications\EventArgClasses\GroupRelatedEventArgs.cs" />
     <Compile Include="PushNotifications\PushNotificationManager.cs" />
     <Compile Include="Views\About\AboutUniversityNews.xaml.cs">
       <DependentUpon>AboutUniversityNews.xaml</DependentUpon>

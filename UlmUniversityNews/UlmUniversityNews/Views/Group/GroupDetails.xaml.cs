@@ -229,6 +229,12 @@ namespace UlmUniversityNews.Views.Group
             // Registriere PushNotification Events, die für die GroupDetails View von Interesse sind.
             PushNotificationManager pushManager = PushNotificationManager.GetInstance();
             pushManager.ReceivedConversationMessage += PushManager_ReceivedConversationMessage;
+            pushManager.ParticipantNew += pushManager_UpdateOfGroupDetailsRequired;
+            pushManager.ParticipantLeft += pushManager_UpdateOfGroupDetailsRequired;
+            pushManager.ConversationNew += pushManager_ReloadConversationList;
+            pushManager.ConversationDeleted += pushManager_ReloadConversationList;
+            pushManager.BallotNew += pushManager_ReloadBallotList;
+            pushManager.BallotDeleted += pushManager_ReloadBallotList;
         }
 
         /// <summary>
@@ -239,6 +245,12 @@ namespace UlmUniversityNews.Views.Group
             // Deregistriere PushNotification Events, die für die GroupDetails View von Interesse sind.
             PushNotificationManager pushManager = PushNotificationManager.GetInstance();
             pushManager.ReceivedConversationMessage -= PushManager_ReceivedConversationMessage;
+            pushManager.ParticipantNew -= pushManager_UpdateOfGroupDetailsRequired;
+            pushManager.ParticipantLeft -= pushManager_UpdateOfGroupDetailsRequired;
+            pushManager.ConversationNew -= pushManager_ReloadConversationList;
+            pushManager.ConversationDeleted -= pushManager_ReloadConversationList;
+            pushManager.BallotNew -= pushManager_ReloadBallotList;
+            pushManager.BallotDeleted -= pushManager_ReloadBallotList;
         }
 
         /// <summary>
@@ -247,7 +259,7 @@ namespace UlmUniversityNews.Views.Group
         /// </summary>
         /// <param name="sender">Der Sender des Events, d.h. hier der PushNotificationManager.</param>
         /// <param name="e">Eventparameter.</param>
-        private async void PushManager_ReceivedConversationMessage(object sender, PushNotifications.EventArgClasses.ConversationMessageNewEventArgs e)
+        private async void PushManager_ReceivedConversationMessage(object sender, PushNotifications.EventArgClasses.ConversationRelatedEventArgs e)
         {
             if (groupDetailsViewModel != null)
             {
@@ -256,6 +268,69 @@ namespace UlmUniversityNews.Views.Group
                     Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                     {
                         await groupDetailsViewModel.UpdateNumberOfUnreadConversationMessagesAsync();
+                    });
+            }
+        }
+
+        /// <summary>
+        /// Behandelt gruppenbezogene Events, die eine Aktualisierung der angezeigten Gruppendaten erfordern.
+        /// Wenn es sich bei der betroffenen Gruppe um die aktuell angezeigte Gruppe handelt, so wird diese Aktualisierung angestoßen.
+        /// </summary>
+        /// <param name="sender">Der Sender des Events, d.h. hier der PushNotificationManager.</param>
+        /// <param name="e">Eventparameter.</param>
+        private async void pushManager_UpdateOfGroupDetailsRequired(object sender, PushNotifications.EventArgClasses.GroupRelatedEventArgs e)
+        {
+            if (groupDetailsViewModel != null && 
+                groupDetailsViewModel.SelectedGroup != null && 
+                groupDetailsViewModel.SelectedGroup.Id == e.GroupId)
+            {
+                // Ausführung auf UI-Thread abbilden.
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                    {
+                        groupDetailsViewModel.ReloadGroupDetails();
+                    });
+            }
+        }
+
+        /// <summary>
+        /// Behandelt konversationenbezogene Events, die eine Aktualisierung der angezeigten Konversationen erfordern.
+        /// Wenn es sich bei der betroffenen Gruppe um die aktuell angezeigte Gruppe handelt, so wird diese Aktualisierung angestoßen.
+        /// </summary>
+        /// <param name="sender">Der Sender des Events, d.h. hier der PushNotificationManager.</param>
+        /// <param name="e">Eventparameter.</param>
+        private async void pushManager_ReloadConversationList(object sender, PushNotifications.EventArgClasses.ConversationRelatedEventArgs e)
+        {
+            if (groupDetailsViewModel != null &&
+                groupDetailsViewModel.SelectedGroup != null &&
+                groupDetailsViewModel.SelectedGroup.Id == e.GroupId)
+            {
+                // Ausführung auf UI-Thread abbilden.
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                    {
+                        groupDetailsViewModel.ReloadConversationCollection();
+                    });
+            }
+        }
+
+        /// <summary>
+        /// Behandelt abstimmungsbezogene Events, die eine Aktualisierung der angezeigten Abstimmungen erfordern.
+        /// Wenn es sich bei der betroffenen Gruppe um die aktuell angezeigte Gruppe handelt, so wird diese Aktualisierung angestoßen.
+        /// </summary>
+        /// <param name="sender">Der Sender des Events, d.h. hier der PushNotificationManager.</param>
+        /// <param name="e">Eventparameter.</param>
+        private async void pushManager_ReloadBallotList(object sender, PushNotifications.EventArgClasses.BallotRelatedEventArgs e)
+        {
+            if (groupDetailsViewModel != null &&
+                groupDetailsViewModel.SelectedGroup != null &&
+                groupDetailsViewModel.SelectedGroup.Id == e.GroupId)
+            {
+                // Ausführung auf UI-Thread abbilden.
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                    {
+                        groupDetailsViewModel.ReloadBallotCollection();
                     });
             }
         }

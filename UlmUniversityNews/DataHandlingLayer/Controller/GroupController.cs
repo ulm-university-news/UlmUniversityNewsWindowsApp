@@ -401,7 +401,6 @@ namespace DataHandlingLayer.Controller
             try
             {
                 List<Ballot> ballots = await GetBallotsAsync(groupId, true, false);
-                Debug.WriteLine("JoinGroupAsync: Ballots is: {0}.", ballots);
                 StoreBallots(groupId, ballots);
             }
             catch (ClientException ex)
@@ -4003,7 +4002,7 @@ namespace DataHandlingLayer.Controller
         /// </summary>
         /// <param name="groupId">Die Id der Gruppe, der die Abstimmungen zugeordnet sind.</param>
         /// <param name="includingSubresources">Gibt an, ob die Subressourcen (Options und Votes) ebenfalls abgerufen werden sollen.</param>
-        /// <returns>Eine Liste von Objekten des Typs Ballot.</returns>
+        /// <returns>Eine Liste von Objekten des Typs Ballot. Die Liste kann auch leer sein.</returns>
         /// <exception cref="ClientException">Wirft ClientException, wenn Abruf fehlschlägt.</exception>
         public List<Ballot> GetBallots(int groupId, bool includingSubresources)
         {

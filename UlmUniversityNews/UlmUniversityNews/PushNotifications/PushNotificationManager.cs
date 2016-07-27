@@ -42,7 +42,16 @@ namespace UlmUniversityNews.PushNotifications
         public event EventHandler<AnnouncementReceivedEventArgs> ReceivedAnnouncement;
         public event EventHandler<ChannelDeletedEventArgs> ChannelDeleted;
         public event EventHandler<ChannelChangedEventArgs> ChannelChanged;
-        public event EventHandler<ConversationMessageNewEventArgs> ReceivedConversationMessage;
+        public event EventHandler<GroupRelatedEventArgs> GroupDeleted;
+        public event EventHandler<GroupRelatedEventArgs> ParticipantNew;
+        public event EventHandler<GroupRelatedEventArgs> ParticipantLeft;
+        public event EventHandler<ConversationRelatedEventArgs> ReceivedConversationMessage;
+        public event EventHandler<ConversationRelatedEventArgs> ConversationNew;
+        public event EventHandler<ConversationRelatedEventArgs> ConversationDeleted;
+        public event EventHandler<BallotRelatedEventArgs> BallotNew;
+        public event EventHandler<BallotRelatedEventArgs> BallotOptionNew;
+        public event EventHandler<BallotRelatedEventArgs> BallotOptionVote;
+        public event EventHandler<BallotRelatedEventArgs> BallotDeleted;
         #endregion Events
 
         /// <summary>
@@ -206,7 +215,43 @@ namespace UlmUniversityNews.PushNotifications
                         break;
                     case PushType.CONVERSATION_MESSAGE_NEW:
                         // Sende ReceivedConverstionMessage Event.
-                        ReceivedConversationMessage?.Invoke(this, new ConversationMessageNewEventArgs(pushMsg.Id1, pushMsg.Id2));
+                        ReceivedConversationMessage?.Invoke(this, new ConversationRelatedEventArgs(pushMsg.Id1, pushMsg.Id2));
+                        break;
+                    case PushType.GROUP_DELETED:
+                        GroupDeleted?.Invoke(this, new GroupRelatedEventArgs(pushMsg.Id1));
+                        break;
+                    case PushType.PARTICIPANT_NEW:
+                        ParticipantNew?.Invoke(this, new GroupRelatedEventArgs(pushMsg.Id1));
+                        break;
+                    case PushType.PARTICIPANT_LEFT:
+                        ParticipantLeft?.Invoke(this, new GroupRelatedEventArgs(pushMsg.Id1));
+                        break;
+                    case PushType.PARTICIPANT_REMOVED:
+                        ParticipantLeft?.Invoke(this, new GroupRelatedEventArgs(pushMsg.Id1));
+                        break;
+                    case PushType.CONVERSATION_NEW:
+                        ConversationNew?.Invoke(this, new ConversationRelatedEventArgs(pushMsg.Id1, pushMsg.Id2));
+                        break;
+                    case PushType.CONVERSATION_DELETED:
+                        ConversationDeleted?.Invoke(this, new ConversationRelatedEventArgs(pushMsg.Id1, pushMsg.Id2));
+                        break;
+                    case PushType.BALLOT_NEW:
+                        BallotNew?.Invoke(this, new BallotRelatedEventArgs(pushMsg.Id1, pushMsg.Id2));
+                        break;
+                    case PushType.BALLOT_OPTION_NEW:
+                        BallotOptionNew?.Invoke(this, new BallotRelatedEventArgs(pushMsg.Id1, pushMsg.Id2));
+                        break;
+                    case PushType.BALLOT_OPTION_ALL:
+                        BallotOptionNew?.Invoke(this, new BallotRelatedEventArgs(pushMsg.Id1, pushMsg.Id2));
+                        break;
+                    case PushType.BALLOT_OPTION_VOTE:
+                        BallotOptionVote?.Invoke(this, new BallotRelatedEventArgs(pushMsg.Id1, pushMsg.Id2));
+                        break;
+                    case PushType.BALLOT_OPTION_VOTE_ALL:
+                        BallotOptionVote?.Invoke(this, new BallotRelatedEventArgs(pushMsg.Id1, pushMsg.Id2));
+                        break;
+                    case PushType.BALLOT_DELETED:
+                        BallotDeleted?.Invoke(this, new BallotRelatedEventArgs(pushMsg.Id1, pushMsg.Id2));
                         break;
                     default:
                         break;

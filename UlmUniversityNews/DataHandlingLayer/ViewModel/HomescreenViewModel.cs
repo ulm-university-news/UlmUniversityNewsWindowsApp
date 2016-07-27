@@ -347,7 +347,7 @@ namespace DataHandlingLayer.ViewModel
                         Debug.WriteLine("LoadMyGroupsAsync: Reloading completely.");
                         // Restrukturierung der Liste von Gruppen durch neu laden.
                         List<Group> localGroups = await Task.Run(() => groupController.GetAllGroups());
-                        await reloadGroupCollectionCompletelyAsync(localGroups);
+                        await ReloadGroupCollectionCompletelyAsync(localGroups);
 
                         // Aktualisiere die nun für die View geltenden Einstellungen.
                         cachedGroupOrderSettings = currentAppSettings.GroupOrderSetting;
@@ -434,7 +434,7 @@ namespace DataHandlingLayer.ViewModel
             {
                 // Restrukturierung der Liste von Gruppen durch neu laden.
                 List<Group> localGroups = await Task.Run(() => groupController.GetAllGroups());
-                await reloadGroupCollectionCompletelyAsync(localGroups);
+                await ReloadGroupCollectionCompletelyAsync(localGroups);
             }
 
             Debug.WriteLine("updateViewModelGroupCollection: Finished. Collection has {0} elements.", GroupCollection.Count);
@@ -442,10 +442,10 @@ namespace DataHandlingLayer.ViewModel
 
         /// <summary>
         /// Lädt die Collection von Gruppen-Objekten neu mit den Daten aus der übergebenen Liste
-        /// von Gruppen-Objekten.
+        /// von Gruppen-Objekten. Die Ausführung muss auf dem UI-Thread erfolgen.
         /// </summary>
         /// <param name="newGroups">Die Datensätze, mit denen die Collection neu geladen wird.</param>
-        protected async Task reloadGroupCollectionCompletelyAsync(List<Group> newGroups)
+        public async Task ReloadGroupCollectionCompletelyAsync(List<Group> newGroups)
         {
             // Sortiere eingegebene Daten nach aktuellen Anwendungseinstellungen.
             newGroups = await Task.Run(() => sortGroupsByApplicationSettings(newGroups));
@@ -458,6 +458,48 @@ namespace DataHandlingLayer.ViewModel
             {
                 GroupCollection.Add(group);
                 currentGroups.Add(group.Id, group);
+            }
+        }
+
+        /// <summary>
+        /// Aktualisiert eine einzelne Gruppeninstanz, die in der an die View gebundenen Collection
+        /// gespeichert ist. Es wird die Gruppeninstanz aktualisiert, die über die angegebenen Id identifiziert
+        /// wird. Die Ausführung muss auf dem UI-Thread erfolgen.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, die in der Collection aktualisiert werden soll.</param>
+        public void UpdateIndividualGroupInCollection(int groupId)
+        {
+            Debug.WriteLine("UpdateIndividualGroupInCollection: Start with group id: {0}.", groupId);
+
+            if (currentGroups.ContainsKey(groupId) &&
+                GroupCollection != null && GroupCollection.Count > 0)
+            {
+                // Rufe die aktuellsten Gruppendaten ab.
+                Group group = null;
+                try
+                {
+                    group = groupController.GetGroup(groupId);
+                }
+                catch (ClientException ex)
+                {
+                    Debug.WriteLine("UpdateIndividualGroupInCollection: Failed to retrieve group. " + 
+                        "Error code is {0}.", ex.ErrorCode);
+                }
+
+                if (group != null)
+                {
+                    // Suche den Index der Gruppe in der aktuellen Collection.
+                    int index = GroupCollection.IndexOf(currentGroups[groupId]);
+
+                    // Ersetze Gruppen Objekt in Collection.
+                    GroupCollection.RemoveAt(index);
+                    GroupCollection.Insert(index, group);
+
+                    // Ersetze Gruppe auch in Lookup Verzeichnis.
+                    currentGroups[groupId] = group;
+
+                    Debug.WriteLine("UpdateIndividualGroupInCollection: Successfully updated individual group.");
+                }                
             }
         }
 
@@ -688,7 +730,7 @@ namespace DataHandlingLayer.ViewModel
                     Debug.WriteLine("executeSynchronizeAllGroupsCommand: HasNewEvent flag: {0}.", localGroup.HasNewEvent);
                 }
 
-                await reloadGroupCollectionCompletelyAsync(localGroups);
+                await ReloadGroupCollectionCompletelyAsync(localGroups);
             }
             catch (ClientException ex)
             {
