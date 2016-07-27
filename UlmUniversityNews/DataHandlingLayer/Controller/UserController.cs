@@ -1,4 +1,5 @@
-﻿using DataHandlingLayer.Controller.ValidationErrorReportInterface;
+﻿using DataHandlingLayer.API;
+using DataHandlingLayer.Controller.ValidationErrorReportInterface;
 using DataHandlingLayer.Database;
 using DataHandlingLayer.DataModel;
 using DataHandlingLayer.Exceptions;
@@ -18,6 +19,11 @@ namespace DataHandlingLayer.Controller
         /// Eine Referenz auf eine Instanz der Klasse UserDatabaseManager.
         /// </summary>
         UserDatabaseManager userDBManager;
+
+        /// <summary>
+        /// Referenz auf Instanz der UserAPI Klasse.
+        /// </summary>
+        UserAPI userAPI;
         #endregion Fields
 
         /// <summary>
@@ -37,6 +43,41 @@ namespace DataHandlingLayer.Controller
             : base (errorReport)
         {
             userDBManager = new UserDatabaseManager();
+        }
+
+        /// <summary>
+        /// Ruft den Datensatz zum Nutzer mit der angegebenen Id vom Server ab.
+        /// </summary>
+        /// <param name="userId">Die Id des Nutzers, dessen Datensatz abgerufen werden soll.</param>
+        /// <returns>Ein Objekt der Klasse User mit den abgerufenen Daten.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn der Abruf fehlschlägt.</exception>
+        public async Task<User> GetUserAsync(int userId)
+        {
+            User user = null;
+
+            string serverResponse = null;
+            try {
+                serverResponse = await userAPI.SendGetUserRequestAsync(
+                    getLocalUser().ServerAccessToken,
+                    userId);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("GetUserAsync: Request failed. Status code: {0} and error code: {1}.", ex.ResponseStatusCode, ex.ErrorCode);
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            if (serverResponse != null)
+            {
+                user = jsonParser.ParseUserFromJson(serverResponse);
+
+                if (user == null)
+                {
+                    throw new ClientException(ErrorCodes.JsonParserError, "Failed to parse server response.");
+                }
+            }
+
+            return user;
         }
 
         /// <summary>

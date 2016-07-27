@@ -1836,6 +1836,50 @@ namespace DataHandlingLayer.Controller
         }
 
         /// <summary>
+        /// Fragt den Datensatz zur Abstimmungsoption mit der angegebenen Id vom REST Server ab.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Abstimmung gehört.</param>
+        /// <param name="ballotId">Die Id der Abstimmung, zu der die Option gehört.</param>
+        /// <param name="optionId">Die Id der Abstimmungsoption, die abgefragt werden soll.</param>
+        /// <returns>Ein Objekt vom Typ Option.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn der Request fehlgeschlagen ist
+        ///     oder vom Server abgelehnt wurde.</exception>
+        public async Task<Option> GetOptionAsync(int groupId, int ballotId, int optionId)
+        {
+            Option option = null;
+
+            string serverResponse = null;
+            try
+            {
+                serverResponse = await groupAPI.SendGetOptionRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    ballotId,
+                    optionId);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("GetOptionAsync: Request failed. Error code is {0}.", ex.ErrorCode);
+
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, null, ballotId);
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            if (serverResponse != null)
+            {
+                option = jsonParser.ParseOptionFromJson(serverResponse);
+
+                if (option == null)
+                {
+                    throw new ClientException(ErrorCodes.JsonParserError, "Couldn't parse server response");
+                }
+            }
+
+            return option;
+        }
+
+        /// <summary>
         /// Führt eine Synchronisierung der Abstimmungen der angegebenen Gruppe mit den Daten vom Server durch.
         /// Die lokalen Datensätze werden auf die vom Server angepasst.
         /// </summary>
@@ -2684,6 +2728,51 @@ namespace DataHandlingLayer.Controller
 
             // Lösche Abstimmung lokal.
             DeleteBallot(ballotId);
+        }
+
+        /// <summary>
+        /// Ruft die Liste der Nutzer, die für die angegebene Abstimmungsoption gestimmt haben, vom 
+        /// REST Server ab.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, zu der die Abstimmung gehört.</param>
+        /// <param name="ballotId">Die Id der Abstimmung, zu der die Abstimmungsoption gehört.</param>
+        /// <param name="optionId">Die Id der Abstimmungsoption, zu der die Nutzer abgefragt werden sollen.</param>
+        /// <returns>Eine Liste von Nutzern. Die Liste kann auch leer sein.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, falls Request fehlschlägt oder vom Server
+        ///     abgelehnt wurde.</exception>
+        public async Task<List<User>> GetVotersForOptionAsync(int groupId, int ballotId, int optionId)
+        {
+            List<User> voters = null;
+
+            string serverResponse = null;
+            try
+            {
+                serverResponse = await groupAPI.SendGetVotersRequest(
+                    getLocalUser().ServerAccessToken,
+                    groupId,
+                    ballotId,
+                    optionId,
+                    false);
+            }
+            catch (APIException ex)
+            {
+                Debug.WriteLine("GetVotersForOptionAsync: Request failed. Error code is: {0}.", ex.ErrorCode);
+                handleGroupRelatedErrors(ex.ErrorCode, groupId, null, ballotId);
+
+                throw new ClientException(ex.ErrorCode, ex.Message);
+            }
+
+            if (serverResponse != null)
+            {
+                voters = jsonParser.ParseUserListFromJson(serverResponse);
+
+                if (voters == null)
+                {
+                    throw new ClientException(ErrorCodes.JsonParserError, "Failed to parse server response.");
+                }
+            }
+
+            return voters;
         }
         #endregion RemoteBallotMethods
 
@@ -3864,7 +3953,15 @@ namespace DataHandlingLayer.Controller
                 }
                 else
                 {
-                    Debug.WriteLine("StoreBallot: Is Ballot already stored?");
+                    if (groupDBManager.IsBallotStored(ballot.Id))
+                    {
+                        Debug.WriteLine("StoreBallot: Ballot is already stored.");
+                        return true;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("StoreBallot: Cannot store without corresponding group.");
+                    }
                 }
             }
             catch (DatabaseException ex)

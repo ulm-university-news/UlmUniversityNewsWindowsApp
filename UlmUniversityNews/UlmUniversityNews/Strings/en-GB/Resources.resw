@@ -1814,4 +1814,13 @@ date: </value>
   <data name="PushNotificationReceivedGroupDeleted" xml:space="preserve">
     <value>The group has been deleted</value>
   </data>
+  <data name="PushNotificationBallotNew" xml:space="preserve">
+    <value>New ballot:</value>
+  </data>
+  <data name="PushNotificationOptionAll" xml:space="preserve">
+    <value>Options changed in:</value>
+  </data>
+  <data name="PushNotificationOptionNew" xml:space="preserve">
+    <value>New option in:</value>
+  </data>
 </root>

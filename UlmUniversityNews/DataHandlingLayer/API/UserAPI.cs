@@ -79,7 +79,7 @@ namespace DataHandlingLayer.API
         /// <param name="userId">Die Id des Nutzeraccounts, der aktualisiert werden soll.</param>
         /// <param name="serverAccessToken">Das Zugriffstoken des Anfragers mittels dem er auf dem Server identifiziert wird.</param>
         /// <param name="jsonContent">Das Json Patch Dokument.</param>
-        /// <returns></returns>
+        /// <returns>Die Antwort des Servers im JSON Format bei erfolgreichem Request. Hier die aktualisierte Nutzer-Ressource.</returns>
         public async Task<String> SendUpdateUserRequestAsync(int userId, string serverAccessToken, string jsonContent)
         {
             // Erstelle einen Http-Request.
@@ -124,6 +124,25 @@ namespace DataHandlingLayer.API
             }
 
             return responseContent;
+        }
+
+        /// <summary>
+        /// Sende eine Anfrage an den Server, um den Datensatz des Nutzers abzufragen, der durch die 
+        /// angegebene Id identifiziert ist.
+        /// </summary>
+        /// <param name="serverAccessToken">Das Zugriffstoken des Anfragers.</param>
+        /// <param name="userId">Die Id des Nutzers, dessen Datensatz abgefragt werden soll.</param>
+        /// <returns>Die Antwort des Strings als Server. Hier die abgefragte Nutzer-Ressource.</returns>
+        /// <exception cref="APIException">Wirft APIException, wenn Anfrage fehlschlägt, oder der Server diese ablehnt.</exception>
+        public async Task<string> SendGetUserRequestAsync(string serverAccessToken, int userId)
+        {
+            string serverResponse = await base.SendHttpGetRequestAsync(
+                serverAccessToken,
+                "/user/" + userId.ToString(),
+                null,
+                false);
+
+            return serverResponse;
         }
     }
 }

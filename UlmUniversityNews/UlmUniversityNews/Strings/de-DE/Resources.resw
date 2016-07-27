@@ -1815,4 +1815,13 @@ Nachricht am: </value>
   <data name="PushNotificationReceivedGroupDeleted" xml:space="preserve">
     <value>Die Gruppe wurde gelöscht</value>
   </data>
+  <data name="PushNotificationBallotNew" xml:space="preserve">
+    <value>Neue Abstimmung:</value>
+  </data>
+  <data name="PushNotificationOptionAll" xml:space="preserve">
+    <value>Abstimmungsoptionen geändert in:</value>
+  </data>
+  <data name="PushNotificationOptionNew" xml:space="preserve">
+    <value>Neue Abstimmungsoption in:</value>
+  </data>
 </root>

@@ -73,5 +73,18 @@ namespace DataHandlingLayer.DataModel
         {
 
         }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("Push Message: ");
+            sb.AppendLine("     -> Push Type: " + PushType);
+            sb.AppendLine("     -> Id1: " + Id1);
+            sb.AppendLine("     -> Id2: " + Id2);
+            sb.AppendLine("     -> Id3: " + Id3);
+
+            return sb.ToString();
+        }
     }
 }

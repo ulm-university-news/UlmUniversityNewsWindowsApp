@@ -51,7 +51,8 @@ namespace DataHandlingLayer.Controller
                 return handledSuccessfully;
             }
 
-            Debug.WriteLine("HandlePushNotificationAsync: Received message of type: {0}.", receivedNotificationMessage.PushType);
+            Debug.WriteLine("HandlePushNotificationAsync: Received message: \n {0}.", receivedNotificationMessage.ToString());
+
 
             // Lese als erstes den Typ der empfangenen Push Nachricht aus. Behandle die PushNachricht nach Typ.
             PushType pushType = receivedNotificationMessage.PushType;
@@ -115,26 +116,37 @@ namespace DataHandlingLayer.Controller
                     handledSuccessfully = await handleConversationMessageNewPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.BALLOT_NEW:
+                    handledSuccessfully = await handleBallotNewPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.BALLOT_CHANGED:
+                    handledSuccessfully = await handleBallotChangedPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.BALLOT_CHANGED_ALL:
+                    handledSuccessfully = await handleBallotChangedAllPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.BALLOT_OPTION_NEW:
+                    handledSuccessfully = await handleOptionNewPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.BALLOT_OPTION_ALL:
+                    handledSuccessfully = await handleOptionAllPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.BALLOT_OPTION_DELETED:
+                    handledSuccessfully = handleOptionDeletedPushMsg(receivedNotificationMessage);
                     break;
                 case PushType.BALLOT_OPTION_VOTE:
+                    handledSuccessfully = await handleOptionVotePushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.BALLOT_OPTION_VOTE_ALL:
+                    handledSuccessfully = await handleOptionVoteAllPushMsgAsync(receivedNotificationMessage);
                     break;
                 case PushType.BALLOT_CLOSED:
+                    // Aktuell nicht unterstützt. Wird über BALLOT_CHANGED abgedeckt.
                     break;
                 case PushType.BALLOT_DELETED:
+                    handledSuccessfully = handleBallotDeletedPushMsg(receivedNotificationMessage);
                     break;
                 case PushType.USER_CHANGED:
+                    handledSuccessfully = await handleUserChangedPushMsgAsync(receivedNotificationMessage);
                     break;
                 default:
                     break;
@@ -216,6 +228,18 @@ namespace DataHandlingLayer.Controller
                     // Informiere bei neuer Konversation.
                     notificationRequired = true;
                     break;
+                case PushType.BALLOT_NEW:
+                    // Informiere bei neuer Abstimmung.
+                    notificationRequired = true;
+                    break;
+                case PushType.BALLOT_OPTION_NEW:
+                    // Informiere bei neuer Abstimmungsoption.
+                    notificationRequired = true;
+                    break;
+                case PushType.BALLOT_OPTION_ALL:
+                    // Informiere bei großer Anzahl geänderter Abstimmungsoptionen.
+                    notificationRequired = true;
+                    break;
             }
 
             return notificationRequired;
@@ -261,6 +285,15 @@ namespace DataHandlingLayer.Controller
                 case PushType.CONVERSATION_NEW:
                     headline = getGroupName(msg.Id1);
                     break;
+                case PushType.BALLOT_NEW:
+                    headline = getGroupName(msg.Id1);
+                    break;
+                case PushType.BALLOT_OPTION_NEW:
+                    headline = getGroupName(msg.Id1);
+                    break;
+                case PushType.BALLOT_OPTION_ALL:
+                    headline = getGroupName(msg.Id1);
+                    break;
             }
 
             return headline;
@@ -304,6 +337,15 @@ namespace DataHandlingLayer.Controller
                 case PushType.CONVERSATION_NEW:
                     localizationKey = "PushNotificationConversationNew";
                     break;
+                case PushType.BALLOT_NEW:
+                    localizationKey = "PushNotificationBallotNew";
+                    break;
+                case PushType.BALLOT_OPTION_NEW:
+                    localizationKey = "PushNotificationOptionNew";
+                    break;
+                case PushType.BALLOT_OPTION_ALL:
+                    localizationKey = "PushNotificationOptionAll";
+                    break;
             }
 
             return localizationKey;
@@ -337,6 +379,18 @@ namespace DataHandlingLayer.Controller
                 case PushType.CONVERSATION_NEW:
                     // Id2 ist die Id der neuen Konversation.
                     resourceAppendix = getConversationTitle(msg.Id2);
+                    break;
+                case PushType.BALLOT_NEW:
+                    // Id2 ist die Id der neuen Abstimmung.
+                    resourceAppendix = getBallotTitle(msg.Id2);
+                    break;
+                case PushType.BALLOT_OPTION_NEW:
+                    // Id2 ist die Id der betroffenen Abstimmung.
+                    resourceAppendix = getBallotTitle(msg.Id2);
+                    break;
+                case PushType.BALLOT_OPTION_ALL:
+                    // Id2 ist die Id der betroffenen Abstimmung.
+                    resourceAppendix = getBallotTitle(msg.Id2);
                     break;
             }
 
@@ -560,6 +614,32 @@ namespace DataHandlingLayer.Controller
             return groupName;
         }
 
+        /// <summary>
+        /// Gibt den Titel der Abstimmung an, die durch die angegebene Id identifiziert ist.
+        /// </summary>
+        /// <param name="ballotId">Die Id der Abstimmung.</param>
+        /// <returns>Der Titel der Abstimmung.</returns>
+        public string getBallotTitle(int ballotId)
+        {
+            string ballotTitle = string.Empty;
+            try
+            {
+                Ballot ballot = groupController.GetBallot(ballotId, false);
+
+                if (ballot != null)
+                {
+                    ballotTitle = ballot.Title;
+                }
+            }
+            catch (ClientException ex)
+            {
+                Debug.WriteLine("getBallotTitle: Couldn't extract ballot title.");
+                Debug.WriteLine("Msg is: {0}.", ex.Message);
+            }
+
+            return ballotTitle;
+        }
+
         #region ChannelBasedHandlers
         /// <summary>
         /// Behandelt eine eingehende Push Nachricht vom Typ ANNOUNCEMENT_NEW. Ruft für den betroffenen Kanal
@@ -779,11 +859,19 @@ namespace DataHandlingLayer.Controller
                             await groupController.SynchronizeConversationsWithServerAsync(groupId, true);
                             groupController.StoreConversationMessage(messages.First());
                         }
+                        else
+                        {
+                            // Setze HasNewEvent Flag.
+                            groupController.SetHasNewEventFlag(groupId, true);
+                        }
                     }
                     else
                     {
                         // Speichere die Nachrichten ab.
                         groupController.StoreConversationMessages(groupId, conversationId, messages);
+
+                        // Setze HasNewEvent Flag.
+                        groupController.SetHasNewEventFlag(groupId, true);
                     }
                 }
             }
@@ -837,8 +925,14 @@ namespace DataHandlingLayer.Controller
                 // Frage neuste Gruppendaten ab.
                 Group newGroup = await groupController.GetGroupAsync(groupId, false);
 
-                // Aktualisiere den Datensatz der Gruppe.
-                groupController.UpdateGroup(newGroup, false);
+                if (newGroup != null)
+                {
+                    // Aktualisiere den Datensatz der Gruppe.
+                    groupController.UpdateGroup(newGroup, false);
+
+                    // Setze das HasNewEvent Flag.
+                    groupController.SetHasNewEventFlag(groupId, true);
+                }
             }
             catch (ClientException ex)
             {
@@ -874,6 +968,9 @@ namespace DataHandlingLayer.Controller
                     if (addedParticipant != null)
                     {
                         groupController.AddParticipantToGroup(groupId, addedParticipant);
+
+                        // Setze HasNewEvent Flag.
+                        groupController.SetHasNewEventFlag(groupId, true);
                     }                    
                 }
             }
@@ -907,6 +1004,9 @@ namespace DataHandlingLayer.Controller
                 {
                     // Setze Teilnehmer auf inaktiv.
                     groupController.ChangeActiveStatusOfParticipant(groupId, participantId, false);
+
+                    // Setze HasNewEvent Flag.
+                    groupController.SetHasNewEventFlag(groupId, true);
                 }
             }
             catch (ClientException ex)
@@ -943,6 +1043,11 @@ namespace DataHandlingLayer.Controller
                         Debug.WriteLine("handleConversationNewPushMsgAsync: Fallback behavior.");
                         await groupController.SynchronizeConversationsWithServerAsync(groupId, true);
                     }
+                    else
+                    {
+                        // Setze HasNewEvent Flag in Gruppe.
+                        groupController.SetHasNewEventFlag(groupId, true);
+                    }
                 }
             }
             catch (ClientException ex)
@@ -978,6 +1083,11 @@ namespace DataHandlingLayer.Controller
                     {
                         Debug.WriteLine("handleConversationChangedPushMsgAsync: Fallback behavior.");
                         await groupController.SynchronizeConversationsWithServerAsync(groupId, true);
+                    }
+                    else
+                    {
+                        // Setze HasNewEvent flag.
+                        groupController.SetHasNewEventFlag(groupId, true);
                     }
                 }
             }
@@ -1031,6 +1141,9 @@ namespace DataHandlingLayer.Controller
             {
                 // Lösche Konversation aus den lokalen Datensätzen.
                 groupController.DeleteConversation(conversationId);
+
+                // Setze HasNewEvent Flag.
+                groupController.SetHasNewEventFlag(groupId, true);
             }
             catch (ClientException ex)
             {
@@ -1041,8 +1154,370 @@ namespace DataHandlingLayer.Controller
 
             return true;
         }
+
+        /// <summary>
+        /// Behandelt eine eingehende Nachricht vom Typ BALLOT_NEW. Ruft die Daten der neuen 
+        /// Abstimmung ab. Speichert die Abstimmung in den lokalen Datensätzen.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private async Task<bool> handleBallotNewPushMsgAsync(PushMessage msg)
+        {
+            int groupId = msg.Id1;
+            int ballotId = msg.Id2;
+
+            try
+            {
+                // Frage zunächst die Daten der Abstimmung ab.
+                Ballot ballot = await groupController.GetBallotAsync(groupId, ballotId, false, false);
+
+                if (ballot != null)
+                {
+                    // Speichere die Abstimmungsdaten ab.
+                    bool successful = groupController.StoreBallot(groupId, ballot);
+                    if (!successful)
+                    {
+                        Debug.WriteLine("handleBallotNewPushMsgAsync: Fallback behavior.");
+                        await groupController.SynchronizeBallotsWithServerAsync(groupId, true);
+                    }
+                    else
+                    {
+                        // Setze HasNewEvent Flag.
+                        groupController.SetHasNewEventFlag(groupId, true);
+                    }
+                }
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of BallotNew push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Nachricht vom Typ BALLOT_CHANGED. Ruft die Daten der geänderten 
+        /// Abstimmung ab. Aktualisiert die lokalen Datensätze.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private async Task<bool> handleBallotChangedPushMsgAsync(PushMessage msg)
+        {
+            int groupId = msg.Id1;
+            int ballotId = msg.Id2;
+
+            try
+            {
+                // Frage zunächst die Daten der Abstimmung ab.
+                Ballot ballot = await groupController.GetBallotAsync(groupId, ballotId, false, false);
+
+                if (ballot != null)
+                {
+                    bool successful = groupController.UpdateBallot(ballot);
+                    if (!successful)
+                    {
+                        Debug.WriteLine("handleBallotChangedPushMsgAsync: Fallback behavior.");
+                        await groupController.SynchronizeBallotsWithServerAsync(groupId, true);
+                    }
+                    else
+                    {
+                        // Setze HasNewEvent Flag.
+                        groupController.SetHasNewEventFlag(groupId, true);
+                    }
+                }
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of BallotChanged push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Nachricht vom Typ BALLOT_CHANGED_ALL. Stößt eine Synchronisation 
+        /// aller Abstimmungen der betroffenen Gruppe an.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private async Task<bool> handleBallotChangedAllPushMsgAsync(PushMessage msg)
+        {
+            int groupId = msg.Id1;
+
+            try
+            {
+                // Stoße Synchronisation der Abstimmungsdaten aller Abstimmungen der Gruppe an.
+                await groupController.SynchronizeBallotsWithServerAsync(groupId, true);
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of BallotChangedAll push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Nachricht vom Typ BALLOT_OPTION_NEW. Fragt die Daten
+        /// der neuen Abstimmungsoption ab und speichert diese lokal.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private async Task<bool> handleOptionNewPushMsgAsync(PushMessage msg)
+        {
+            int groupId = msg.Id1;
+            int ballotId = msg.Id2;
+            int optionId = msg.Id3;
+
+            try
+            {
+                // Frage Daten der Abstimmungsoption vom Server ab.
+                Option option = await groupController.GetOptionAsync(groupId, ballotId, optionId);
+
+                if (option != null)
+                {
+                    // Speichere die Abstimmungsoption lokal ab.
+                    bool successful = groupController.StoreOption(ballotId, option, false);
+                    if (!successful)
+                    {
+                        Debug.WriteLine("handleOptionNewPushMsgAsync: Fallback behavior.");
+                        // Synchronisiere die betroffene Abstimmung komplett.
+                        await groupController.SynchronizeBallotWithServerAsync(groupId, ballotId);
+                    }
+                    else
+                    {
+                        // Setze das HasNewEventFlag für die Gruppe.
+                        groupController.SetHasNewEventFlag(groupId, true);
+                    }
+                }
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of OptionNew push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Nachricht vom Typ BALLOT_OPTION_ALL. Stößt eine Synchronisation
+        /// der betroffenen Abstimmung an.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private async Task<bool> handleOptionAllPushMsgAsync(PushMessage msg)
+        {
+            int groupId = msg.Id1;
+            int ballotId = msg.Id2;
+
+            try
+            {
+                // Stoße Synchronisation der gesamten Abstimmung an.
+                await groupController.SynchronizeBallotWithServerAsync(groupId, ballotId);
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of OptionAll push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Nachricht vom Typ BALLOT_OPTION_DELETED. Löscht die angegebene
+        /// Abstimmungsoption aus den lokalen Datensätzen.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private bool handleOptionDeletedPushMsg(PushMessage msg)
+        {
+            int groupId = msg.Id1;
+            int ballotId = msg.Id2;
+            int optionId = msg.Id3;
+
+            try
+            {
+                // Lösche Abstimmungsoption lokal.
+                groupController.DeleteOption(optionId);
+
+                // Setze HasNewEvent Flag.
+                groupController.SetHasNewEventFlag(groupId, true);
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of OptionDeleted push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Nachricht vom Typ BALLOT_OPTION_VOTE. Fragt die Nutzer ab,
+        /// die für die betroffene Abstimmungsoption gestimmt haben. Synchronisiert dann die lokalen Datensätze
+        /// für diese Abstimmungsoption.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private async Task<bool> handleOptionVotePushMsgAsync(PushMessage msg)
+        {
+            int groupId = msg.Id1;
+            int ballotId = msg.Id2;
+            int optionId = msg.Id3;
+
+            try
+            {
+                // Frage Liste von Nutzern ab, die für diese Abstimmungsoption gestimmt haben.
+                List<User> voters = await groupController.GetVotersForOptionAsync(groupId, ballotId, optionId);
+
+                if (voters != null && voters.Count > 0)
+                {
+                    List<int> voterIds = new List<int>();
+                    foreach (User voter in voters)
+                    {
+                        voterIds.Add(voter.Id);
+                    }
+
+                    // Synchronisiere die Votes für die betroffene Abstimmungsoption.
+                    groupController.SynchronizeLocalVotesForOption(groupId, ballotId, optionId, voterIds);
+                }
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of OptionVote push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Nachricht vom Typ BALLOT_OPTION_VOTE_ALL. 
+        /// Stößt eine Synchronisation der Votes für jede der Optionen der Abstimmung an.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private async Task<bool> handleOptionVoteAllPushMsgAsync(PushMessage msg)
+        {
+            int groupId = msg.Id1;
+            int ballotId = msg.Id2;
+
+            try
+            {
+                // Frage Options und zugehörige Votes für diese Abstimmung ab.
+                List<Option> options = await groupController.GetOptionsForBallotAsync(groupId, ballotId, true, false);
+
+                if (options != null && options.Count > 0)
+                {
+                    // Gehe Optionen durch und Synchronisiere die Votes für jede Option.
+                    foreach (Option option in options)
+                    {
+                        List<int> referenceVotes = null;
+                        if (option.VoterIds == null)
+                        {
+                            // Leere Liste.
+                            referenceVotes = new List<int>();
+                        }
+                        else
+                        {
+                            referenceVotes = option.VoterIds;
+                        }
+
+                        // Synchronisiere die Votes für die betroffene Abstimmungsoption.
+                        groupController.SynchronizeLocalVotesForOption(groupId, ballotId, option.Id, referenceVotes);
+                    }
+                }
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of OptionVoteAll push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Behandelt eine eingehende Nachricht vom Typ BALLOT_DELETED.
+        /// Löscht die angegebene Abstimmung aus den lokalen Datensätzen.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private bool handleBallotDeletedPushMsg(PushMessage msg)
+        {
+            int groupId = msg.Id1;
+            int ballotId = msg.Id2;
+
+            try
+            {
+                // Lösche Abstimmung aus den lokalen Datensätzen.
+                groupController.DeleteBallot(ballotId);
+
+                // Setze das HasNewEvent Flag.
+                groupController.SetHasNewEventFlag(groupId, true);
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of BallotDeleted push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
         #endregion
 
+        #region UserRelatedHandlers
+
+        /// <summary>
+        /// Behandelt eine eingehende Nachricht vom Typ USER_CHANGED. 
+        /// Ruft den neusten Datensatz des Nutzers ab und aktualisiert die lokalen Datensätze.
+        /// </summary>
+        /// <param name="msg">Die empfangene Push Nachricht.</param>
+        /// <returns>Liefert true, wenn Behandlung erfolgreich, ansonsten false.</returns>
+        private async Task<bool> handleUserChangedPushMsgAsync(PushMessage msg)
+        {
+            int userId = msg.Id1;
+
+            try
+            {
+                UserController userController = new UserController();
+                User affectedUser = await userController.GetUserAsync(userId);
+
+                if (affectedUser != null)
+                {
+                    List<User> tmpUsers = new List<User>();
+                    tmpUsers.Add(affectedUser);
+                    
+                    // Verwende Operation, die abhängig von den lokalen Datensätzen entweder den 
+                    // Nutzer einfügt oder den Datensatz aktualisiert.
+                    userController.AddOrUpdateUsers(tmpUsers);
+                }
+            }
+            catch (ClientException ex)
+            {
+                // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
+                Debug.WriteLine("Handling of UserChanged push message failed. Message is {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        #endregion
 
     }
 }
