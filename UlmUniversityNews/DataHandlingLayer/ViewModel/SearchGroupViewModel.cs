@@ -141,6 +141,11 @@ namespace DataHandlingLayer.ViewModel
             // Erzeuge Instanz von GroupController.
             groupController = new GroupController();
 
+            if (Groups == null)
+            {
+                Groups = new ObservableCollection<Group>();
+            }
+
             // Setze initiale Parameter.
             WorkingGroupSelected = true;
             TutorialGroupSelected = true;
@@ -245,7 +250,10 @@ namespace DataHandlingLayer.ViewModel
                     {
                         Debug.WriteLine("executeSearchGroupsCommandAsync: Not searching for working groups " + 
                             "and not searching for tutorial groups cannot provide a result.");
-                        Groups.Clear();
+                        if (Groups != null)
+                        {
+                            Groups.Clear();
+                        }
                     }                    
                 }
                 else if (SearchForIdEnabled)
@@ -271,7 +279,10 @@ namespace DataHandlingLayer.ViewModel
                 if (ex.ErrorCode == ErrorCodes.GroupNotFound && SearchForIdEnabled)
                 {
                     Debug.WriteLine("No group with this id found.");
-                    Groups.Clear();
+                    if (Groups != null)
+                    {
+                        Groups.Clear();
+                    }
                 }
                 else
                 {
@@ -303,13 +314,16 @@ namespace DataHandlingLayer.ViewModel
             // Cast object to group.
             Group selectedGroup = selectedItem as Group;
 
-            string key = "testKey";
-            // Store to temporary cache.
-            await Common.TemporaryCacheManager.StoreObjectInTmpCacheAsync(key, selectedGroup);
+            if (selectedGroup != null)
+            {
+                string key = "testKey";
+                // Store to temporary cache.
+                await Common.TemporaryCacheManager.StoreObjectInTmpCacheAsync(key, selectedGroup);
 
-            // Stoße Navigation an.
-            if (_navService != null)
-                _navService.Navigate("GroupDetails", key);
+                // Stoße Navigation an.
+                if (_navService != null)
+                    _navService.Navigate("GroupDetails", key);
+            }            
         }
         #endregion CommandFunctionality
     }

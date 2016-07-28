@@ -45,17 +45,16 @@
                     <!-- Spalte für restliche Information-->
                 </Grid.ColumnDefinitions>
 
-                <!-- Icon -->
+                <!-- Icon - Spalte 1 -->
                 <Image Source="{Binding Converter={StaticResource ConversationToIconPathConverter}}" 
                        Grid.Column="0"
                        Margin="5, 5, 0, 5"
-                       Height="70px"
-                       Width="70px"
+                       Height="70"
+                       Width="70"
                        HorizontalAlignment="Center"
-                       VerticalAlignment="Center"/>
-                <!-- TODO - remove hard coded sizes of icons-->
+                       VerticalAlignment="Center"/>    <!-- TODO - remove hard coded sizes of icons-->
 
-                <!-- andere Informationen -->
+                <!-- andere Informationen - Spalte 2 -->
                 <Grid Grid.Column="1" Margin="10,0,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -68,8 +67,8 @@
                     <!-- Anzeige für Name und Icon für ungelsesen Nachrichten -->
                     <Grid Grid.Row="0" VerticalAlignment="Top" Margin="0, 7, 0, 0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="4*" />
-                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
                         <!-- Name -->
@@ -86,12 +85,13 @@
                         <!-- Anzahl ungelesener Nachrichten -->
                         <Grid
                             Grid.Column="1"
+                            Margin="5"
                             x:Name="UnreadConversationMessagesIcon"
                             Visibility="{Binding AmountOfUnreadMessages, FallbackValue=Collapsed, TargetNullValue=Collapsed, Converter={StaticResource ZeroIntegerToVisibilityConverter}}">
                             <Ellipse 
                                 Fill="Gray" 
-                                Height="33px"
-                                Width="33px"
+                                Height="30"
+                                Width="30"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center" />
                             <!-- Hintergrund der Anzeige der ungelesenen Nachrichten-->
@@ -116,7 +116,7 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- Typ -->
+                        <!-- Admin Name -->
                         <TextBlock Grid.Column="0" 
                                    x:Name="ConversationAdminField" 
                                    HorizontalAlignment="Left"
@@ -143,17 +143,16 @@
                     <!-- Spalte für restliche Information-->
                 </Grid.ColumnDefinitions>
 
-                <!-- Icon -->
+                <!-- Icon - Spalte 1-->
                 <Image Source="{Binding Converter={StaticResource BallotToIconPathConverter}}" 
                        Grid.Column="0"
                        Margin="5, 5, 0, 5"
-                       Height="70px"
-                       Width="70px"
+                       Height="70"
+                       Width="70"
                        HorizontalAlignment="Center"
-                       VerticalAlignment="Center"/>
-                <!-- TODO - remove hard coded sizes of icons-->
+                       VerticalAlignment="Center"/>  <!-- TODO - remove hard coded sizes of icons-->
 
-                <!-- andere Informationen -->
+                <!-- andere Informationen - Spalte 2 -->
                 <Grid Grid.Column="1" Margin="10,0,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
