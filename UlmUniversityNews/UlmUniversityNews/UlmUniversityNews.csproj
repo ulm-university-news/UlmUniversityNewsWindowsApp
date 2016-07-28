@@ -322,23 +322,6 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\AppIcons\AppLogoUni-106-106.png" />
-    <Content Include="Assets\AppIcons\AppLogoUni-120-120.png" />
-    <Content Include="Assets\AppIcons\AppLogoUni-50-50.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\AppIcons\AppLogoUni-70-70.png" />
-    <Content Include="Assets\AppIcons\AppLogoUni.png" />
-    <Content Include="Assets\AppIcons\Logo-Uni.png" />
-    <Content Include="Assets\AppIcons\SquareLogoUniversityNews.scale-100.png" />
-    <Content Include="Assets\AppIcons\SquareLogoUniversityNews.scale-140.png" />
-    <Content Include="Assets\AppIcons\SquareLogoUniversityNews.scale-240.png" />
-    <Content Include="Assets\AppIcons\UUNLogoInfoanzeige-24-24.scale-100.png" />
-    <Content Include="Assets\AppIcons\UUNLogoInfoanzeige-24-24.scale-140.png" />
-    <Content Include="Assets\AppIcons\UUNLogoInfoanzeige-24-24.scale-240.png" />
-    <Content Include="Assets\AppIcons\UUNLogoInfoanzeige-33-33.png" />
-    <Content Include="Assets\AppIcons\UUNLogoInfoanzeige-58-58.png" />
-    <Content Include="Assets\AppIcons\welcome_screen.png" />
     <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5.scale-100.png" />
     <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5.scale-140.png" />
     <Content Include="Assets\AppLogoNeu\AppLogoIcon_v5.scale-240.png" />
@@ -508,6 +491,10 @@
     <Content Include="Assets\ResourceDetails\ic_account_circle_black_36dp.scale-140.png" />
     <Content Include="Assets\ResourceDetails\ic_account_circle_black_36dp.scale-180.png" />
     <Content Include="Assets\ResourceDetails\ic_account_circle_black_36dp.scale-240.png" />
+    <Content Include="Assets\ResourceDetails\ic_adjust_black_36dp.scale-100.png" />
+    <Content Include="Assets\ResourceDetails\ic_adjust_black_36dp.scale-140.png" />
+    <Content Include="Assets\ResourceDetails\ic_adjust_black_36dp.scale-180.png" />
+    <Content Include="Assets\ResourceDetails\ic_adjust_black_36dp.scale-240.png" />
     <Content Include="Assets\ResourceDetails\ic_assessment_black_36dp.scale-100.png" />
     <Content Include="Assets\ResourceDetails\ic_assessment_black_36dp.scale-140.png" />
     <Content Include="Assets\ResourceDetails\ic_assessment_black_36dp.scale-180.png" />
@@ -528,6 +515,14 @@
     <Content Include="Assets\ResourceDetails\ic_details_black_36dp.scale-140.png" />
     <Content Include="Assets\ResourceDetails\ic_details_black_36dp.scale-180.png" />
     <Content Include="Assets\ResourceDetails\ic_details_black_36dp.scale-240.png" />
+    <Content Include="Assets\ResourceDetails\ic_done_all_black_36dp.scale-100.png" />
+    <Content Include="Assets\ResourceDetails\ic_done_all_black_36dp.scale-140.png" />
+    <Content Include="Assets\ResourceDetails\ic_done_all_black_36dp.scale-180.png" />
+    <Content Include="Assets\ResourceDetails\ic_done_all_black_36dp.scale-240.png" />
+    <Content Include="Assets\ResourceDetails\ic_error_black_24dp.scale-100.png" />
+    <Content Include="Assets\ResourceDetails\ic_error_black_24dp.scale-140.png" />
+    <Content Include="Assets\ResourceDetails\ic_error_black_24dp.scale-180.png" />
+    <Content Include="Assets\ResourceDetails\ic_error_black_24dp.scale-240.png" />
     <Content Include="Assets\ResourceDetails\ic_event_black_36dp.scale-100.png" />
     <Content Include="Assets\ResourceDetails\ic_event_black_36dp.scale-140.png" />
     <Content Include="Assets\ResourceDetails\ic_event_black_36dp.scale-180.png" />

@@ -324,7 +324,7 @@ namespace DataHandlingLayer.Database
                             {
                                 stmt.Bind(1, user.Name);
                                 stmt.Bind(2, user.Name);
-                                stmt.Bind(2, user.Id);
+                                stmt.Bind(3, user.Id);
 
                                 if (stmt.Step() != SQLiteResult.DONE)
                                     Debug.WriteLine("UpdateUsers: Failed to update user with id {0}.", user.Id);

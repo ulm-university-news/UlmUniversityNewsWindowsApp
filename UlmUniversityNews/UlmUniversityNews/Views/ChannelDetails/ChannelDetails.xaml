@@ -385,9 +385,9 @@
                                 HorizontalContentAlignment="Stretch"
                                 HorizontalAlignment="Stretch"
                                 RenderTransformOrigin="0.5, 0.5"
-                                ScrollViewer.VerticalScrollBarVisibility="{Binding ShowScrollBar, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='ScrollBar'}"> <!-- TODO Data Binding-->
+                                ScrollViewer.VerticalScrollBarVisibility="{Binding ShowScrollBar, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='ScrollBar'}"> 
                                 <ListView.RenderTransform>
-                                    <RotateTransform x:Name="AnnouncementListRotation" Angle="{Binding ListRotationAngle, UpdateSourceTrigger=PropertyChanged}"/>    <!-- TODO Data Binding-->
+                                    <RotateTransform x:Name="AnnouncementListRotation" Angle="{Binding ListRotationAngle, UpdateSourceTrigger=PropertyChanged}"/>   
                                 </ListView.RenderTransform>
                                 <ListView.ItemContainerStyle>
                                     <Style TargetType="ListViewItem">

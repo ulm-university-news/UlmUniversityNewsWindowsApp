@@ -33,6 +33,7 @@ namespace DataHandlingLayer.Controller
             : base()
         {
             userDBManager = new UserDatabaseManager();
+            userAPI = new UserAPI();
         }
 
         /// <summary>
@@ -43,6 +44,7 @@ namespace DataHandlingLayer.Controller
             : base (errorReport)
         {
             userDBManager = new UserDatabaseManager();
+            userAPI = new UserAPI();
         }
 
         /// <summary>

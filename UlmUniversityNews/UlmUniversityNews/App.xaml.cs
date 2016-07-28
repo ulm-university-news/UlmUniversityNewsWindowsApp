@@ -107,6 +107,10 @@ namespace UlmUniversityNews
             // LocalUserDatabaseManager.InsertTestLocalUser();
             // Test end
 
+            // TODO Test start
+            // LocalUserDatabaseManager.InsertTestLocalUserEmulator();
+            // Test end
+
             // Prüfe, ob bereits ein lokaler Nutzer angelegt ist.
             bool localUserExists = checkLocalUserExistence();
 
@@ -126,7 +130,7 @@ namespace UlmUniversityNews
                 // Verknüpfen Sie den Frame mit einem SuspensionManager-Schlüssel.
                 SuspensionManager.RegisterFrame(rootFrame, "AppFrame");
 
-                // TODO: diesen Wert auf eine Cachegröße ändern, die für Ihre Anwendung geeignet ist
+                // Diesen Wert auf eine Cachegröße ändern, die für Ihre Anwendung geeignet ist
                 // siehe: https://msdn.microsoft.com/en-us/library/system.windows.controls.frame.cachesize%28v=vs.95%29.aspx
                 rootFrame.CacheSize = 5;
 

@@ -105,8 +105,8 @@
                         Grid.Column="1">
                         <Ellipse 
                                 Fill="Gray" 
-                                Height="30px"
-                                Width="30px"
+                                Height="30"
+                                Width="30"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center" />
                         <!-- Hintergrund der Anzeige der Anzahl Stimmen-->
@@ -513,7 +513,7 @@
                                         </Grid.ColumnDefinitions>
 
                                         <Image Grid.Column="0"
-                                                   Source="/Assets/ResourceDetails/ic_code_black_36dp.png"
+                                                   Source="/Assets/ResourceDetails/ic_done_all_black_36dp.png"
                                                    Style="{StaticResource EnumerationOfPropertiesIconStyle}"
                                                    />
 

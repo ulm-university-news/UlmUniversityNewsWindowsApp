@@ -231,7 +231,7 @@
                                    Text="MC" />-->
                         <Image 
                             Grid.Column="2"
-                            Source="/Assets/ResourceDetails/ic_code_black_36dp.png"
+                            Source="/Assets/ResourceDetails/ic_done_all_black_36dp.png"
                             Margin="5, 0, 5, 0"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Bottom"
@@ -702,11 +702,53 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                    <!-- Gruppenname -->
+                                <!-- Gruppen-Id -->
+                                <Grid
+                                    Grid.Row="0"
+                                    Style="{StaticResource EnumerationOfPropertiesGridStyle}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Icon und Title für Gruppen-Id. -->
+                                    <Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Image Grid.Column="0"
+                                                   Source="/Assets/ResourceDetails/ic_adjust_black_36dp.png"
+                                                   Style="{StaticResource EnumerationOfPropertiesIconStyle}"
+                                                   />
+
+                                        <TextBlock
+                                                Grid.Column="1"
+                                                x:Uid="GroupDetailsGroupIdField"
+                                                x:Name="GroupIdField"
+                                                Style="{StaticResource HeaderTextInPropertyDescriptions}"
+                                                Text="Id"
+                                                />
+                                    </Grid>
+
+                                    <TextBlock
+                                            Grid.Row="1"
+                                            x:Name="GroupIdContent"
+                                            Style="{StaticResource TextInPropertyDescriptions}"
+                                            Text="{Binding Id, TargetNullValue='', FallbackValue=''}" />
+
+                                    <Line Grid.Row="2"
+                                              Style="{StaticResource EnumerationOfPropertiesSeperatorStyle}" />
+                                </Grid>
+
+                                <!-- Gruppenname -->
                                     <Grid
-                                        Grid.Row="0"
+                                        Grid.Row="1"
                                         Style="{StaticResource EnumerationOfPropertiesGridStyle}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
@@ -747,7 +789,7 @@
 
                                     <!-- Gruppentyp -->
                                     <Grid
-                                        Grid.Row="1"
+                                        Grid.Row="2"
                                         Style="{StaticResource EnumerationOfPropertiesGridStyle}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
@@ -787,7 +829,7 @@
 
                                     <!-- Gruppenbeschreibung -->
                                     <Grid
-                                        Grid.Row="2"
+                                        Grid.Row="3"
                                         Style="{StaticResource EnumerationOfPropertiesGridStyle}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
@@ -827,7 +869,7 @@
 
                                     <!-- Semester -->
                                     <Grid
-                                        Grid.Row="3"
+                                        Grid.Row="4"
                                         Style="{StaticResource EnumerationOfPropertiesGridStyle}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
@@ -867,7 +909,7 @@
 
                                     <!-- Erstellungsdatum -->
                                     <Grid
-                                        Grid.Row="4"
+                                        Grid.Row="5"
                                         Style="{StaticResource EnumerationOfPropertiesGridStyle}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
@@ -907,7 +949,7 @@
 
                                     <!-- Änderungsdatum -->
                                     <Grid
-                                        Grid.Row="5"
+                                        Grid.Row="6"
                                         Style="{StaticResource EnumerationOfPropertiesGridStyle}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
@@ -948,7 +990,7 @@
 
                                     <!-- Gruppen-Admin -->
                                     <Grid
-                                        Grid.Row="6"
+                                        Grid.Row="7"
                                         Visibility="{Binding ElementName=GroupAdminContent, Path=Text, Converter={StaticResource StringToVisibilityConverter}}"
                                         Style="{StaticResource EnumerationOfPropertiesGridStyle}">
                                         <Grid.RowDefinitions>
@@ -989,7 +1031,7 @@
 
                                     <!-- Teilnehmer der Gruppe -->
                                     <Grid
-                                        Grid.Row="7"
+                                        Grid.Row="8"
                                         Visibility="{Binding ElementName=GroupParticipantsContent, Path=Text, Converter={StaticResource StringToVisibilityConverter}}"
                                         Style="{StaticResource EnumerationOfPropertiesGridStyle}">
                                         <Grid.RowDefinitions>

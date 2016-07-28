@@ -483,7 +483,7 @@
 
                         <!-- Icon - Benachrichtigung über neues Ereignis -->
                         <Image Grid.Column="1"
-                               Source="/Assets/extIcons/appbar.transit.hazard.png"
+                               Source="/Assets/ResourceDetails/ic_error_black_24dp.png"
                                Margin="5"
                                Height="30"
                                Width="30"
