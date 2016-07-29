@@ -1826,4 +1826,8 @@ date: </value>
   <data name="GroupDetailsGroupIdField.Text" xml:space="preserve">
     <value>Group-Id</value>
   </data>
+  <data name="ApplicationErrorModeratorForbiddenError" xml:space="preserve">
+    <value>The server has rejected the request. You don't have the required permissions to perform this action. It is possible that the privileges for managing the channel have been revoked. Please navigate to the homescreen and synchronize your managed channels.</value>
+    <comment>Der Server hat die Anfrage abgelehnt. Sie haben nicht die erforderlichen Rechte für diese Aktion. Es ist möglich, dass Ihnen die Verwaltungsrechte über den Kanal entzogen wurden. Bitte gehen Sie auf die Übersichtsseite der verwalteten Kanäle und führen Sie eine Synchronisation durch.</comment>
+  </data>
 </root>

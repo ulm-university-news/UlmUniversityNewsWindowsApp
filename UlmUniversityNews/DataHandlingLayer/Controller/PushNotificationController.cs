@@ -776,6 +776,14 @@ namespace DataHandlingLayer.Controller
                     {
                         if (moderator.Id == moderatorId)
                         {
+                            ModeratorController moderatorController = new ModeratorController();
+                            if (!moderatorController.IsModeratorStored(moderatorId))
+                            {
+                                Debug.WriteLine("handleModeratorAddedPushMsgAsync: Need to store moderator with id {0} first.", moderator.Id);
+                                // Speichere den Moderator zunächst ab.
+                                moderatorController.StoreModerator(moderator);
+                            }
+
                             // Füge den Moderator dem Kanal hinzu.
                             channelController.AddModeratorToChannel(channelId, moderator);
                         }
@@ -785,7 +793,7 @@ namespace DataHandlingLayer.Controller
             catch (ClientException ex)
             {
                 // Keine weitere Fehlerbehandlung hier, da dies Operationen im Hintergrund ablaufen.
-                Debug.WriteLine("Handling of Moderator_Added push message failed. Message is {0}.", ex.Message);
+                Debug.WriteLine("handleModeratorAddedPushMsgAsync: Handling of Moderator_Added push message failed. Message is {0}.", ex.Message);
                 return false;
             }
 

@@ -1827,4 +1827,7 @@ Nachricht am: </value>
   <data name="GroupDetailsGroupIdField.Text" xml:space="preserve">
     <value>Gruppen-Id</value>
   </data>
+  <data name="ApplicationErrorModeratorForbiddenError" xml:space="preserve">
+    <value>Der Server hat die Anfrage abgelehnt. Sie haben nicht die erforderlichen Rechte für diese Aktion. Es ist möglich, dass Ihnen die Verwaltungsrechte über den Kanal entzogen wurden. Bitte gehen Sie auf die Übersichtsseite der verwalteten Kanäle und führen Sie eine Synchronisation durch.</value>
+  </data>
 </root>

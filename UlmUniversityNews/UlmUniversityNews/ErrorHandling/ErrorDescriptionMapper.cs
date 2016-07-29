@@ -47,6 +47,9 @@ namespace UlmUniversityNews.ErrorHandling
                 case ErrorCodes.UserForbidden:
                     errorDescription = loader.GetString("ApplicationErrorUserForbiddenError");
                     break;
+                case ErrorCodes.ModeratorForbidden:
+                    errorDescription = loader.GetString("ApplicationErrorModeratorForbiddenError");
+                    break;
                 case ErrorCodes.UserDataIncomplete:
                     errorDescription = loader.GetString("ApplicationErrorUserDataIncompleteError");
                     break;
