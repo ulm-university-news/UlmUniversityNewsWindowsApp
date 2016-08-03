@@ -29,13 +29,29 @@ namespace UlmUniversityNews.Converters
                 User currentLocalUser = LocalUser.GetInstance().GetCachedLocalUserObject();
                 if (currentLocalUser != null && group.GroupAdmin == currentLocalUser.Id)
                 {
-                    // Setze Administrator icon.
-                    iconPath = "/Assets/groupIcons/g_admin.png";
+                    if (group.Type == GroupType.WORKING)
+                    {
+                        // Setze Administrator icon.
+                        iconPath = "/Assets/groupIcons/group_working_admin.png";
+                    }
+                    else
+                    {
+                        // Setze Administrator icon.
+                        iconPath = "/Assets/groupIcons/group_tutorial_admin.png";
+                    }
                 }
                 else
                 {
-                    // Setze normales group icon.
-                    iconPath = "/Assets/groupIcons/g.png";
+                    if (group.Type == GroupType.WORKING)
+                    {
+                        // Setze normales group icon.
+                        iconPath = "/Assets/groupIcons/group_working.png";
+                    }
+                    else
+                    {
+                        // Setze normales group icon.
+                        iconPath = "/Assets/groupIcons/group_tutorial.png";
+                    }
                 }
 
                 if (group.Deleted)
