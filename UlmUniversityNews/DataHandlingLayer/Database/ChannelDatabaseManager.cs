@@ -2093,6 +2093,79 @@ namespace DataHandlingLayer.Database
         }
 
         /// <summary>
+        /// Fragt alle Benachrichtigungen ab, die dem Kanal mit der angegebenen Id zugeordnet sind.
+        /// Die Abfrage kann durch den Nachrichtennummer Parameter eingeschränkt werden, so dass nur Benachrichtigungen mit
+        /// einer höhreren Nachrichtennummer als der angegebenen abgerufen werden.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, für den die Benachrichtigungen abgefragt werden sollen.</param>
+        /// <param name="messageNr">Die Nachrichtennummer, aber der die Nachrichten abgerufen werden sollen.</param>
+        /// <returns>Eine Liste von Objekten des Typs Announcement.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Abruf fehlschlägt.</exception>
+        public List<Announcement> GetAnnouncementsOfChannel(int channelId, int messageNr)
+        {
+            List<Announcement> announcements = new List<Announcement>();
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT * 
+                            FROM Message AS m JOIN Announcement AS a ON m.Id=a.Message_Id 
+                            WHERE Channel_Id=? AND MessageNumber > ?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, channelId);
+                            stmt.Bind(2, messageNr);
+
+                            while (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                int id = Convert.ToInt32(stmt["Id"]);
+                                string text = (string)stmt["Text"];
+                                DateTimeOffset creationDate = DatabaseManager.DateTimeFromSQLite(stmt["CreationDate"].ToString());
+                                Priority priority = (Priority)Enum.ToObject(typeof(Priority), stmt["Priority"]);
+                                bool read = ((long)stmt["Read"] == 1) ? true : false;
+                                int messageNrDB = Convert.ToInt32(stmt["MessageNumber"]);
+                                int authorId = Convert.ToInt32(stmt["Author_Moderator_Id"]);
+                                string title = (string)stmt["Title"];
+
+                                Announcement announcement = new Announcement(id, text, messageNrDB, creationDate, priority, read, channelId, authorId, title);
+                                announcements.Add(announcement);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetAnnouncementsOfChannel: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetAnnouncementsOfChannel: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("GetAnnouncementsOfChannel: Mutex timeout.");
+                throw new DatabaseException("GetAnnouncementsOfChannel: Timeout: Failed to get access to DB.");
+            }
+
+            return announcements;
+        }
+
+        /// <summary>
         /// Holt die angegebene Anzahl an aktuellesten Announcements aus der Datenbank. Die aktuellesten
         /// Announcements sind dabei diejenigen, die zeitlich gesehen zuletzt gesendet wurden. Über den Offset 
         /// kann angegeben werden, dass diese Anzahl an Announcements übersprungen werden soll. Das ist für das 

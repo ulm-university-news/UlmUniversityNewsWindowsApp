@@ -297,19 +297,23 @@ namespace DataHandlingLayer.ViewModel
             if (Channel == null)
                 return;
 
-            // Extrahiere als erstes die aktuell höchste MessageNr einer Announcement in diesem Kanal.
-            int maxMsgNr = 0;
-            maxMsgNr = channelController.GetHighestMsgNrForChannel(Channel.Id);
-            Debug.WriteLine("Perform update announcement operation with max messageNumber of {0}.", maxMsgNr);
+            // Stoße Synchronisation an.
+            await channelController.SynchronizeAnnouncementsWithServerAsync(Channel.Id, withCaching);
 
-            // Frage die Announcements ab.
-            List<Announcement> receivedAnnouncements = await channelController.GetAnnouncementsOfChannelAsync(Channel.Id, maxMsgNr, withCaching);
+            // Aktualisiere die Anzeige.
+            // Bestimme zunächst die höchste Nachrichtennummer, die aktuell in der Collection steht.
+            int highestMsgNr = 0;
+            if (Announcements != null && Announcements.Count > 0)
+                highestMsgNr = Announcements.Max(item => item.MessageNumber);
 
-            if (receivedAnnouncements != null && receivedAnnouncements.Count > 0)
+            Debug.WriteLine("updateAnnouncementsAsync: The current max msg number is: {0}.", highestMsgNr);
+
+            // Rufe die fehlenden Nachrichten ab.
+            List<Announcement> missingAnnouncements = channelController.GetAnnouncementsOfChannel(Channel.Id, highestMsgNr);
+            // Füge der Collection hinzu.
+            foreach (Announcement announcement in missingAnnouncements)
             {
-                await Task.Run(() => channelController.StoreReceivedAnnouncementsAsync(receivedAnnouncements));
-
-                foreach (Announcement announcement in receivedAnnouncements)
+                if (Announcements != null)
                 {
                     Announcements.Insert(0, announcement);
                 }

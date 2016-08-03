@@ -1736,6 +1736,27 @@ namespace DataHandlingLayer.Controller
 
             return true;
         }
+
+        /// <summary>
+        /// Führt eine Synchronisation der Benachrichtigungen eines Kanals mit dem Server durch.
+        /// Schickt einen Request an den Server, um die neuesten Benachrichtigungen abzurufen und speichert diese lokal ab.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals, für den die Synchronisation ausgeführt werden soll.</param>
+        /// <param name="withCaching">Gibt an, ob Caching bei diesem Request erlaubt sein soll.</param>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Fehler bei der Synchronisation auftritt.</exception>
+        public async Task SynchronizeAnnouncementsWithServerAsync(int channelId, bool withCaching)
+        {
+            int highestMsgNr = GetHighestMsgNrForChannel(channelId);
+
+            // Rufe Announcements ab, die höhere MessageNr haben.
+            List<Announcement> announcements = await GetAnnouncementsOfChannelAsync(channelId, highestMsgNr, withCaching);
+
+            if (announcements != null && announcements.Count > 0)
+            {
+                // Speichere Nachrichten ab.
+                await StoreReceivedAnnouncementsAsync(announcements);
+            }
+        }
         #endregion RemoteAnnouncementFunctions
 
         #region LocalAnnouncementFunctions
@@ -1806,8 +1827,33 @@ namespace DataHandlingLayer.Controller
             catch(DatabaseException ex)
             {
                 // Gebe Exception nicht an den Aufrufer weiter.
-                Debug.WriteLine("Retrieval of announcements has failed. Message is {0}.", ex.Message);
+                Debug.WriteLine("GetAllAnnouncementsOfChannel: Retrieval of announcements has failed. Message is {0}.", ex.Message);
             }
+            return announcements;
+        }
+
+        /// <summary>
+        /// Ruft die Benachrichtigungen des Kanals mit der angegebenen Id ab. Die Abfrage kann durch
+        /// die Nachrichtennummer eingeschränkt werden. Es werden nur die Benachrichtigungen abgerufen, die
+        /// eine höhere Nachrichtennummer als die angegebene Nachrichtennummer besitzen.
+        /// </summary>
+        /// <param name="channelId">Die Id des Kanals.</param>
+        /// <param name="messageNr">Die Nachrichtennummer, ab der die Benachrichtigungen abgefragt werden sollen.</param>
+        /// <returns>Eine Liste von Announcement Objekten. Die Liste kann auch leer sein.</returns>
+        /// <exception cref="ClientException">Wirft ClientException, wenn Benachrichtigungen nicht erfolgreich abgerufen werden konnten.</exception>
+        public List<Announcement> GetAnnouncementsOfChannel(int channelId, int messageNr)
+        {
+            List<Announcement> announcements = null;
+            try
+            {
+                announcements = channelDatabaseManager.GetAnnouncementsOfChannel(channelId, messageNr);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetAnnouncementsOfChannel: Retrieval of announcements has failed. Message is {0}.", ex.Message);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+
             return announcements;
         }
 
