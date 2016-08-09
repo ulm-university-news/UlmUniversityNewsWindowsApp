@@ -1795,7 +1795,7 @@ Nachricht am: </value>
     <value>Sie wurden vom Administrator aus der Gruppe entfernt. Wollen Sie die Gruppe aus Ihren lokalen Datensätzen entfernen?</value>
   </data>
   <data name="GroupDetailsDeletedGroupNotification.Text" xml:space="preserve">
-    <value>Die Gruppe wurde auf dem Server gelöscht. Sie können den Kanal jedoch noch in ihren lokalen Datensätzen gespeichert lassen.</value>
+    <value>Die Gruppe wurde auf dem Server gelöscht. Sie können die Gruppe jedoch noch in ihren lokalen Datensätzen gespeichert lassen.</value>
   </data>
   <data name="GroupDetailsLocalUserRemovedFromGroupNotification.Text" xml:space="preserve">
     <value>Sie wurden vom Gruppenadministrator aus der Gruppe entfernt. Die Gruppendaten sind noch in den lokalen Datensätzen vorhanden. Sie erhalten jedoch keine Aktualisierungen mehr.</value>

@@ -13,6 +13,6 @@
     <DeviceId>A6BAF594-9315-40C3-AD16-F5B8A425A7AB</DeviceId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DeviceId>A6BAF594-9315-40C3-AD16-F5B8A425A7AB</DeviceId>
+    <DeviceId>D363CCA4-0764-4F2C-9EE1-12E55E13C0FC</DeviceId>
   </PropertyGroup>
 </Project>

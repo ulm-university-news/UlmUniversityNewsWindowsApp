@@ -145,6 +145,9 @@ namespace UlmUniversityNews.Views.Group
 
             // Registriere Seite für relevante Push Notification Events.
             subscribeToPushManagerEvents();
+
+            // Prüfe ob Auto sync notwendig, und führe ihn gegebenenfalls aus.
+            await groupDetailsViewModel.PerformAutoSync();
         }
 
         /// <summary>

@@ -484,9 +484,6 @@ namespace DataHandlingLayer.ViewModel
                             ConversationCollection.Add(conversation);
                         }
                     }
-
-                    // Test: Führe Synchronisation durch.
-                    // await SynchronizeConversations();
                 }
             }
             catch (ClientException ex)
@@ -533,10 +530,69 @@ namespace DataHandlingLayer.ViewModel
         }
 
         /// <summary>
+        /// Prüft, ob eine Synchronisation der Gruppendaten automatisch vom System ausgeführt werden soll.
+        /// Falls ja, wird die automatische Synchronisation der Gruppe ausgeführt.
+        /// </summary>
+        public async Task PerformAutoSync()
+        {
+            if (SelectedGroup == null)
+                return;
+
+            if (IsGroupParticipant && !IsRemovedFromGroup && !SelectedGroup.Deleted)
+            {
+                try
+                {
+                    DateTimeOffset currentDate = DateTimeOffset.Now;
+                    DateTimeOffset lastSyncDate = groupController.GetLastAutoSyncDate(SelectedGroup.Id);
+                    Debug.WriteLine("PerformAutoSync: Last sync date: {0}, current date: {1}.", currentDate, lastSyncDate);
+
+                    if (currentDate.Day != lastSyncDate.Day ||
+                       currentDate.Month != lastSyncDate.Month ||
+                       currentDate.Year != lastSyncDate.Year)
+                    {
+                        displayIndeterminateProgressIndicator();
+
+                        Debug.WriteLine("PerformAutoSync: Need to perform auto sync for group with id {0}.", SelectedGroup.Id);
+                        // Setzte Datum der letzten Synchronisation neu.
+                        groupController.SetLastAutoSyncDate(SelectedGroup.Id, currentDate);
+
+                        // Synchronisiere Gruppeninformation. Zuerst, um die Teilnehmerinfo als erstes zu aktualisieren.
+                        await SynchronizeGroupInformationAsync(false);
+
+                        // Sychronisiere Konversationen.
+                        await SynchronizeConversationsAsync(false);
+
+                        // Synchronisiere Abstimmungen.
+                        await SynchronizeBallotsAsync(false);
+                    }
+                    else
+                    {
+                        Debug.WriteLine("PerformAutoSync: No need for the auto sync of group.");
+                    }
+                }
+                catch (ClientException ex)
+                {
+                    Debug.WriteLine("PerformAutoSync: Sync failed. Msg is {0}.", ex.Message);
+                    Debug.WriteLine("PerformAutoSync: Error code is: {0}.", ex.ErrorCode);
+                    // Zeige Fehler nicht an.
+                }
+                finally
+                {
+                    hideIndeterminateProgressIndicator();
+                }
+            }
+            else
+            {
+                Debug.WriteLine("PerformAutoSync: Conditions for auto sync not met.");
+            }            
+        }
+
+        /// <summary>
         /// Stößt eine Synchronisation der Konversationsressourcen dieser Gruppe mit dem Server an.
         /// Aktualisiert anschließend die Anzeige.
         /// </summary>
-        public async Task SynchronizeConversationsAsync()
+        /// <param name="showError">Gibt an, ob Fehler dem Nutzer angezeigt werden sollen.</param>
+        public async Task SynchronizeConversationsAsync(bool showError)
         {
             if (SelectedGroup == null)
                 return;
@@ -574,7 +630,8 @@ namespace DataHandlingLayer.ViewModel
                     IsRemovedFromGroup = true;
                 }
 
-                displayError(ex.ErrorCode);
+                if (showError)
+                    displayError(ex.ErrorCode);
             }
         }
 
@@ -582,7 +639,8 @@ namespace DataHandlingLayer.ViewModel
         /// Stößt eine Synchronisation der Abstimmungsressourcen dieser Gruppe mit dem Server an.
         /// Aktualisiert anschließend die Anzeige.
         /// </summary>
-        public async Task SynchronizeBallotsAsync()
+        /// <param name="showErrors">Gibt an, ob mögliche Fehler dem Nutzer angezeigt werden sollen.</param>
+        public async Task SynchronizeBallotsAsync(bool showErrors)
         {
             if (SelectedGroup == null)
                 return;
@@ -634,7 +692,8 @@ namespace DataHandlingLayer.ViewModel
                     IsRemovedFromGroup = true;
                 }
 
-                displayError(ex.ErrorCode);
+                if (showErrors)
+                    displayError(ex.ErrorCode);
             }
         }
 
@@ -642,7 +701,8 @@ namespace DataHandlingLayer.ViewModel
         /// Stößt eine Synchronisation der Gruppendaten dieser Gruppe mit dem Server an.
         /// Aktualisiert anschließend die Anzeige.
         /// </summary>
-        public async Task SynchronizeGroupInformationAsync()
+        /// <param name="showErrors">Gibt an, ob mögliche Fehler dem Nutzer angezeigt werden sollen.</param>
+        public async Task SynchronizeGroupInformationAsync(bool showErrors)
         {
             if (SelectedGroup == null)
                 return;
@@ -673,7 +733,8 @@ namespace DataHandlingLayer.ViewModel
                     SelectedGroup.Deleted = true;
                 }
 
-                displayError(ex.ErrorCode);
+                if (showErrors)
+                    displayError(ex.ErrorCode);
             }
         }
 
@@ -1156,15 +1217,15 @@ namespace DataHandlingLayer.ViewModel
                 {
                     case "ConversationPivotItem":
                         displayIndeterminateProgressIndicator("GroupDetailsSynchronizeConversationStatus");
-                        await SynchronizeConversationsAsync();
+                        await SynchronizeConversationsAsync(true);
                         break;
                     case "BallotsPivotItem":
                         displayIndeterminateProgressIndicator("GroupDetailsSynchronizeBallotStatus");
-                        await SynchronizeBallotsAsync();
+                        await SynchronizeBallotsAsync(true);
                         break;
                     case "GroupDetailsPivotItem":
                         displayIndeterminateProgressIndicator("GroupDetailsSynchronizeGroupDetailsStatus");
-                        await SynchronizeGroupInformationAsync();
+                        await SynchronizeGroupInformationAsync(true);
                         break;
                     case "EventsPivotItem":
                         break;

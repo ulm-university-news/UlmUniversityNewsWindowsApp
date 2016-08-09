@@ -172,6 +172,9 @@ namespace DataHandlingLayer.Database
                     fillLanguageSettings(conn);
                     setDefaultSettings(conn);
 
+                    // Erzeuge Tabelle für AutoSync von Gruppen.
+                    createLastAutoSyncOfGroupTable(conn);
+
                     conn.Dispose();
                 }
                 catch (Exception e)
@@ -210,7 +213,7 @@ namespace DataHandlingLayer.Database
 
                     string[] tableNames = { "User", "LocalUser", "Moderator", "Channel", "Lecture", "Event", "Sports", "SubscribedChannels", "ModeratorChannel",
                                           "Group", "UserGroup", "Ballot", "Option", "UserOption", "Message", "Conversation", "ConversationMessage", "Announcement", "Reminder", "LastUpdateOnChannelsList",
-                                          "Settings", "NotificationSettings", "OrderOptions", "LanguageSettings"};
+                                          "Settings", "NotificationSettings", "OrderOptions", "LanguageSettings", "LastAutoSyncOfGroup"};
                     for (int i = 0; i < tableNames.Length; i++)
                     {
                         // Drop tables.
@@ -664,6 +667,26 @@ namespace DataHandlingLayer.Database
                                         FOREIGN KEY(Channel_Id) REFERENCES Channel(Id) ON DELETE CASCADE,
                                         FOREIGN KEY(Author_Moderator_Id) REFERENCES Moderator(Id)                                        
                             );";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+        }
+
+        /// <summary>
+        /// Erstellt die Tabelle LastAutoSyncOfGroup. Diese Tabelle ist zur lokalen Speicherung
+        /// des Datums, an dem eine Gruppe (identifiziert durch die Id) zuletzt automatisch beim
+        /// Öffnen der Detailansicht synchronisiert wurde.
+        /// </summary>
+        /// <param name="conn">Aktive Verbindung zur Datenbank.</param>
+        private static void createLastAutoSyncOfGroupTable(SQLiteConnection conn)
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS 
+                            LastAutoSyncOfGroup (Group_Id       INTEGER NOT NULL,
+                                                LastSync        DATETIME,
+                                                PRIMARY KEY(Group_Id),
+                                                FOREIGN KEY(Group_Id) REFERENCES ""Group""(Id) ON DELETE CASCADE
+                        );";
             using (var statement = conn.Prepare(sql))
             {
                 statement.Step();

@@ -4801,5 +4801,170 @@ namespace DataHandlingLayer.Database
             }
         }
 
+        #region LastAutoSyncOfGroup
+        /// <summary>
+        /// Aktualisiert die Datensätze zum letzten Zeitpunkt einer automatischen Synchronisation der Gruppendaten.
+        /// Die Daten werden hierbei immer in Referenz zu der getroffenen Gruppe gespeichert.
+        /// </summary>
+        /// <param name="groupId">Die Id der betroffenen Gruppe.</param>
+        /// <param name="lastSyncDate">Das Datum der letzten automatisch vom System ausgeführten Synchronisation.</param>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Aktualisierung nicht erfolgreich war.</exception>
+        public void UpdateLastAutoSyncDate(int groupId, DateTimeOffset lastSyncDate)
+        {
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string checkQuery = @"SELECT COUNT(*) AS amount 
+                            FROM LastAutoSyncOfGroup 
+                            WHERE Group_Id=?;";
+
+                        string insertQuery = @"INSERT INTO LastAutoSyncOfGroup (Group_Id, LastSync) 
+                            VALUES (?,?);";
+
+                        string updateQuery = @"UPDATE LastAutoSyncOfGroup 
+                            SET LastSync=? 
+                            WHERE Group_Id=?;";
+
+                        using (var checkStmt = conn.Prepare(checkQuery))
+                        using (var insertStmt = conn.Prepare(insertQuery))
+                        using (var updateStmt = conn.Prepare(updateQuery))
+                        {
+                            bool isStored = false;
+                            checkStmt.Bind(1, groupId);
+
+                            // Prüfe, ob Eintrag schon in DB.
+                            if (checkStmt.Step() == SQLiteResult.ROW)
+                            {
+                                int amount = Convert.ToInt32(checkStmt["amount"]);
+
+                                if (amount == 1)
+                                {
+                                    isStored = true;
+                                }
+                            }
+
+                            if (isStored)
+                            {
+                                // Case: Update date.
+                                updateStmt.Bind(1, DatabaseManager.DateTimeToSQLite(lastSyncDate));
+                                updateStmt.Bind(2, groupId);
+
+                                if (updateStmt.Step() == SQLiteResult.DONE)
+                                {
+                                    Debug.WriteLine("UpdateLastAutoSyncDate: Successfully updated the last auto sync date of group with id {0}.", groupId);
+                                }
+                                else
+                                {
+                                    Debug.WriteLine("UpdateLastAutoSyncDate: Failed to update the last auto sync date of group with id {0}.", groupId);
+                                }
+                            }
+                            else
+                            {
+                                // Case Insert date.
+                                insertStmt.Bind(1, groupId);
+                                insertStmt.Bind(2, DatabaseManager.DateTimeToSQLite(lastSyncDate));
+
+                                if (insertStmt.Step() == SQLiteResult.DONE)
+                                {
+                                    Debug.WriteLine("UpdateLastAutoSyncDate: Successfully inserted record for the last auto sync date of group with id {0}.", groupId);
+                                }
+                                else
+                                {
+                                    Debug.WriteLine("UpdateLastAutoSyncDate: Failed to insert record for the last auto sync date of group with id {0}.", groupId);
+                                }
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("UpdateLastAutoSyncDate: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("UpdateLastAutoSyncDate: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("UpdateLastAutoSyncDate: Mutex timeout.");
+                throw new DatabaseException("UpdateLastAutoSyncDate: Timeout: Failed to get access to DB.");
+            }
+        }
+
+        /// <summary>
+        /// Ruft das letzte Datum einer automatisch ausgeführten Synchronisation der Gruppe mit der angegebenen Id ab.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <returns>Das Datum der letzten automatisch ausgeführten Synchronsation der Gruppendaten. 
+        ///     Liefert Defaultwert, wenn noch kein Datum festgelegt ist.</returns>
+        /// <exception cref="DatabaseException">Wirft DatabaseException, wenn Datum nicht abgerufen werden kann.</exception>
+        public DateTimeOffset GetLastAutoSyncDateOfGroup(int groupId)
+        {
+            DateTimeOffset lastSync = DateTimeOffset.MinValue;
+
+            // Frage das Mutex Objekt ab.
+            Mutex mutex = DatabaseManager.GetDatabaseAccessMutexObject();
+
+            // Fordere Zugriff auf die Datenbank an.
+            if (mutex.WaitOne(DatabaseManager.MutexTimeoutValue))
+            {
+                using (SQLiteConnection conn = DatabaseManager.GetConnection())
+                {
+                    try
+                    {
+                        string query = @"SELECT * 
+                            FROM LastAutoSyncOfGroup 
+                            WHERE Group_Id=?;";
+
+                        using (var stmt = conn.Prepare(query))
+                        {
+                            stmt.Bind(1, groupId);
+
+                            if (stmt.Step() == SQLiteResult.ROW)
+                            {
+                                lastSync = DatabaseManager.DateTimeFromSQLite(stmt["LastSync"] as string);
+                            }
+                        }
+                    }
+                    catch (SQLiteException sqlEx)
+                    {
+                        Debug.WriteLine("GetLastAutoSyncDateOfGroup: SQLiteException occurred. Msg is {0}.", sqlEx.Message);
+                        throw new DatabaseException(sqlEx.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("GetLastAutoSyncDateOfGroup: Exception occurred. Msg is {0}.", ex.Message);
+                        throw new DatabaseException(ex.Message);
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("GetLastAutoSyncDateOfGroup: Mutex timeout.");
+                throw new DatabaseException("GetLastAutoSyncDateOfGroup: Timeout: Failed to get access to DB.");
+            }
+
+            return lastSync;
+        }
+        #endregion LastAutoSyncOfGroup
+
     }
 }

@@ -4461,5 +4461,47 @@ namespace DataHandlingLayer.Controller
             return hasVoted;
         }
         #endregion LocalBallotMethods
+
+        #region LastAutoSyncDateGroup
+        /// <summary>
+        /// Setzt das Datum der letzten automatisch durchgeführten Synchronisation der Gruppendaten für die
+        /// Gruppe mit der angegebenen Id neu.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe, für die das Datum neu gesetzt wird.</param>
+        /// <param name="lastSync">Das Datum der letzten automatisch durchgeführten Synchronisation.</param>
+        public void SetLastAutoSyncDate(int groupId, DateTimeOffset lastSync)
+        {
+            try
+            {
+                groupDBManager.UpdateLastAutoSyncDate(groupId, lastSync);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("SetLastAutoSyncDate: Failed to set last auto sync date for group with id {0}.", groupId);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Ruft das Datum der letzten automatischen Synchronisation, die für die Gruppe mit der angegebenen Id ausgeführt wurde, ab.
+        /// </summary>
+        /// <param name="groupId">Die Id der Gruppe.</param>
+        /// <returns>Das Datum der letzten automatisch ausgeführten Synchronsation der Gruppendaten. 
+        ///     Liefert Defaultwert, wenn noch kein Datum festgelegt ist.</returns>
+        public DateTimeOffset GetLastAutoSyncDate(int groupId)
+        {
+            DateTimeOffset lastSync = DateTimeOffset.MinValue;
+            try
+            {
+                lastSync = groupDBManager.GetLastAutoSyncDateOfGroup(groupId);
+            }
+            catch (DatabaseException ex)
+            {
+                Debug.WriteLine("GetLastAutoSyncDate: Failed to get last auto sync date for group with id {0}.", groupId);
+                throw new ClientException(ErrorCodes.LocalDatabaseException, ex.Message);
+            }
+            return lastSync;
+        }
+        #endregion LastAutoSyncDateGroup
     }
 }
