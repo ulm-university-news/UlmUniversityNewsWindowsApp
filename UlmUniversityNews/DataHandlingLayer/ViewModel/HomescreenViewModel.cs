@@ -273,7 +273,7 @@ namespace DataHandlingLayer.ViewModel
             Dictionary<int, int> numberOfUnreadAnnouncements =
                 await Task.Run(() => channelController.GetAmountOfUnreadAnnouncementsForMyChannels());
 
-            if (numberOfUnreadAnnouncements != null)
+            if (numberOfUnreadAnnouncements != null && ChannelCollection != null)
             {
                 // Debug.WriteLine("NumberOfUnreadAnnouncements contains {0} entries.", numberOfUnreadAnnouncements.Count);
 
@@ -283,14 +283,9 @@ namespace DataHandlingLayer.ViewModel
                     {
                         // Speichere den Wert aus dem Verzeichnis als neue Anzahl an ungelesenen Announcements.
                         channel.NumberOfUnreadAnnouncements = numberOfUnreadAnnouncements[channel.Id];
-
-                        // Debug.WriteLine("The new value for unreadMsg for channel with id {0} is {1}.",
-                        //    channel.Id, channel.NumberOfUnreadAnnouncements);
                     }
                     else
                     {
-                        // Debug.WriteLine("Channel with id {0} did not appear in NumberOfUnreadAnnouncements, set nrOfUnreadMsg to 0.",
-                        // channel.Id);
                         channel.NumberOfUnreadAnnouncements = 0;
                     }
                 }
@@ -382,6 +377,12 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         private async Task updateViewModelGroupCollectionAsync(List<Group> modifiedGroups, List<int> localGroupSnapshot)
         {
+            if (modifiedGroups == null || localGroupSnapshot == null)
+            {
+                Debug.WriteLine("updateViewModelGroupCollectionAsync: No valid parameters.");
+                return;
+            }
+
             bool requiresReload = false;
 
             Debug.WriteLine("updateViewModelGroupCollection: Start. Collection has {0} elements.", GroupCollection.Count);
@@ -502,6 +503,23 @@ namespace DataHandlingLayer.ViewModel
                 }                
             }
         }
+
+        /// <summary>
+        /// Führt eine lokale Aktualisierung der GroupCollection aus. Diese kann ausgeführt werden,
+        /// wenn die Anwendung aus dem Suspension Zustand fortgesetzt wird.
+        /// </summary>
+        public async Task GroupCollectionUpdateOnAppResumingAsync()
+        {
+            // Führe lokale Synchronisation durch.
+            Task<List<int>> localGroups = Task.Run(() => groupController.GetLocalGroupIdentifiers());
+            List<Group> modifiedGroups = await Task.Run(() => groupController.GetDirtyGroups());
+            List<int> localGroupSnapshot = await localGroups;
+            if (localGroups != null && modifiedGroups != null && 
+                currentGroups != null && GroupCollection != null)
+            {
+                await updateViewModelGroupCollectionAsync(modifiedGroups, localGroupSnapshot);
+            }
+        } 
 
         /// <summary>
         /// Aktualisiert die für die View relevanten Properties der aktuell

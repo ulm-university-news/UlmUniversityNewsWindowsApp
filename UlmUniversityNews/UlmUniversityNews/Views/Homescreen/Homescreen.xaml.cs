@@ -57,9 +57,64 @@ namespace UlmUniversityNews.Views.Homescreen
             // Initialisiere das Drawer Layout.
             DrawerLayout.InitializeDrawerLayout();
             List<DrawerMenuEntry> test = homescreenViewModel.DrawerMenuEntriesStatusNoLogin;
-            ListMenuItems.ItemsSource = test;            
+            ListMenuItems.ItemsSource = test;
+
+            // Registriere Loaded und Unloaded Events.
+            this.Loaded += Homescreen_Loaded;
+            this.Unloaded += Homescreen_Unloaded;
 
             Debug.WriteLine("Finished constructor of Homescreen.");
+        }
+
+        /// <summary>
+        /// Wird gerufen, wenn die Seite erfolgreich aus dem Speicher genommen wurde.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void Homescreen_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("Homescreen: Unloaded.");
+
+            // Deregistrierung, wenn Seite verlassen wird.
+            Application.Current.Resuming -= Current_Resuming;
+        }
+
+        /// <summary>
+        /// Wird gerufen, wenn die Seite erfolgreich geladen wurde.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void Homescreen_Loaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("Homescreen: Loaded.");
+
+            // Registrierung für Behandlung von Resuming Events, um View nach Fortsetzung zu aktualisieren.
+            Application.Current.Resuming += Current_Resuming;
+        }
+
+        /// <summary>
+        /// Wird gerufen, wenn App aus Suspension-Zustand zurückkommt.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private async void Current_Resuming(object sender, object e)
+        {
+            Debug.WriteLine("Homescreen: App resuming ... ");
+            if (HomescreenPivot != null && homescreenViewModel != null)
+            {
+                if (HomescreenPivot.SelectedIndex == 0)
+                {
+                    Debug.WriteLine("Homescreen: Case 'My channels': ");
+                    await homescreenViewModel.UpdateNumberOfUnreadAnnouncementsAsync();
+                    Debug.WriteLine("Homescreen: Performed update.");
+                }
+                else if (HomescreenPivot.SelectedIndex == 1)
+                {
+                    Debug.WriteLine("Homescreen: Case 'My groups': ");
+                    await homescreenViewModel.GroupCollectionUpdateOnAppResumingAsync();
+                    Debug.WriteLine("Homescreen: Performed update.");
+                }
+            }
         }
 
         /// <summary>
@@ -70,7 +125,7 @@ namespace UlmUniversityNews.Views.Homescreen
         /// <param name="e">Eventparameter.</param>
         async void HomescreenPivot_Loaded(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Homescreen_Pivot Loaded.");
+            Debug.WriteLine("Homescreen_Pivot: Loaded.");
             // Prüfe, ob Zugriff auf LockScreen gewährt ist, um Hintergrundaufgaben ausführen zu dürfen.
             await checkLockScreenAccessPermissionAsync();
         }
@@ -96,6 +151,8 @@ namespace UlmUniversityNews.Views.Homescreen
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            Debug.WriteLine("Homescreen: In LoadState.");
+
             // Erforderlich wegen Caching. Falls Seite aus Cache geladen wird und Drawer war offen
             // bleibt er sonst offen.
             if (DrawerLayout.IsDrawerOpen)
@@ -123,6 +180,8 @@ namespace UlmUniversityNews.Views.Homescreen
         /// serialisierbarer Zustand.</param>
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
+            Debug.WriteLine("Homescreen: In SaveState.");
+
             // Deregistriere von PushNotificationEvents beim Verlassen der Seite.
             unsubscribeFromPushManagerEvents();
         }
