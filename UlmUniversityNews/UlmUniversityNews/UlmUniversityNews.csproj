@@ -16,6 +16,9 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{76F1466A-8B6D-4E39-A767-685A06062A39};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <NuGetPackageImportStamp>4e3bed63</NuGetPackageImportStamp>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxPackageDir>C:\Users\Philipp\Documents\Studium\Master Semester 3\Informationssysteme Projekt\Build\</AppxPackageDir>
+    <AppxBundlePlatforms>arm</AppxBundlePlatforms>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -342,6 +345,11 @@
     <Content Include="Assets\app_logo_breit.scale-100.png" />
     <Content Include="Assets\app_logo_breit.scale-140.png" />
     <Content Include="Assets\app_logo_breit.scale-240.png" />
+    <Content Include="Assets\Badge\notification_icon_size24.scale-100.png" />
+    <Content Include="Assets\Badge\notification_icon_size24.scale-140.png" />
+    <Content Include="Assets\Badge\notification_icon_size24.scale-240.png" />
+    <Content Include="Assets\Badge\notification_icon_size33.png" />
+    <Content Include="Assets\Badge\notification_icon_size58.png" />
     <Content Include="Assets\ballotIcons\de-DE\abstimmung.png" />
     <Content Include="Assets\ballotIcons\de-DE\abstimmung_admin.png" />
     <Content Include="Assets\ballotIcons\de-DE\ballot_closed_admin_white.png" />
