@@ -1215,7 +1215,7 @@ namespace DataHandlingLayer.Database
                         {
                             if (statement.Step() == SQLiteResult.DONE)
                             {
-                                Debug.WriteLine("BulkInsertUsers: Added {0} users per bulk insert to group with id {1} + "
+                                Debug.WriteLine("BulkInsertUsers: Added {0} users per bulk insert to group with id {1}, "
                                     + "and updated the active status of {2} many participants.",
                                     amountOfInserts, groupId, amountOfUpdates);
                             }

@@ -3007,8 +3007,15 @@ namespace DataHandlingLayer.Controller
         /// <param name="participants">Die Liste der Nutzer, die als Teilnehmer hinzu-
         ///     gefügt werden sollen.</param>
         ///     <exception cref="ClientException">Wirft ClientException, wenn Aktion fehlschlägt.</exception>
+        ///     <exception cref="ArgumentNullException">Wirft ArgumentNullException, wenn übergebene Liste null ist.</exception>
         public void AddParticipantsToGroup(int groupId, List<User> participants)
         {
+            if (participants == null)
+            {
+                throw new ArgumentNullException();
+            }
+            Debug.WriteLine("AddParticipantsToGroup: Received a list with {0} users.", participants.Count);
+
             if (!groupDBManager.IsGroupStored(groupId))
             {
                 Debug.WriteLine("AddParticipantsToGroup: There is no group with id {0} in the local datasets.",
@@ -3024,7 +3031,19 @@ namespace DataHandlingLayer.Controller
             // Füge die Teilnehmer der Gruppe hinzu.
             try
             {
-                groupDBManager.AddParticipantsToGroup(groupId, participants);
+                // Füge nur die Nutzer hinzu, die nicht bereits Teilnehmer sind.
+                List<User> participantsToAdd = new List<User>();
+                Dictionary<int, User> participantsLookup = GetParticipantsLookupDirectory(groupId);
+                foreach (User participant in participants)
+                {
+                    if (!participantsLookup.ContainsKey(participant.Id))
+                    {
+                        participantsToAdd.Add(participant);
+                    }
+                }
+                Debug.WriteLine("AddParticipantsToGroup: Need to add {0} participants to group.", participantsToAdd.Count);
+
+                groupDBManager.AddParticipantsToGroup(groupId, participantsToAdd);
             }
             catch (DatabaseException ex)
             {
