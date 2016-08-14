@@ -240,6 +240,9 @@ namespace DataHandlingLayer.ViewModel
         /// </summary>
         public void UpdateConversationMessagesCollection()
         {
+            if (ConversationMessages == null)
+                return;
+
             // Die bisher neuste Nachricht ist jetzt nicht mehr die aktuellste.
             ConversationMessage currentFrontMessage = ConversationMessages.FirstOrDefault<ConversationMessage>();
             if (currentFrontMessage != null)

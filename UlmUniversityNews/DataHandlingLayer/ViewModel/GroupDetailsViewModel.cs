@@ -556,7 +556,7 @@ namespace DataHandlingLayer.ViewModel
                         // Setzte Datum der letzten Synchronisation neu.
                         groupController.SetLastAutoSyncDate(SelectedGroup.Id, currentDate);
 
-                        // Synchronisiere Gruppeninformation. Zuerst, um die Teilnehmerinfo als erstes zu aktualisieren.
+                        // Synchronisiere Gruppeninformation zuerst, um die Teilnehmerinfo als erstes zu aktualisieren.
                         await SynchronizeGroupInformationAsync(false);
 
                         // Sychronisiere Konversationen.
@@ -605,14 +605,20 @@ namespace DataHandlingLayer.ViewModel
                 // Aktualisere Anzeige. Rufe synchronisierte Daten ab.
                 List<Conversation> conversations = await Task.Run(() => groupController.GetConversations(SelectedGroup.Id));
 
-                // Sortieren.
-                conversations = sortConversationsByApplicationSettings(conversations);
-
-                ConversationCollection.Clear();
-                foreach (Conversation conv in conversations)
+                if (conversations != null)
                 {
-                    ConversationCollection.Add(conv);
-                }
+                    // Sortieren.
+                    conversations = sortConversationsByApplicationSettings(conversations);
+
+                    if (ConversationCollection != null)
+                    {
+                        ConversationCollection.Clear();
+                        foreach (Conversation conv in conversations)
+                        {
+                            ConversationCollection.Add(conv);
+                        }
+                    }
+                }                
             }
             catch (ClientException ex)
             {
@@ -666,14 +672,6 @@ namespace DataHandlingLayer.ViewModel
                             BallotCollection.Add(ballot);
                         }
                     }
-                    else
-                    {
-                        Debug.WriteLine("SynchronizeBallotsAsync: BallotCollection is null.");
-                    }
-                }
-                else
-                {
-                    Debug.WriteLine("SynchronizeBallotsAsync: Ballots from GetBallots is null.");
                 }
             }
             catch (ClientException ex)
@@ -715,8 +713,11 @@ namespace DataHandlingLayer.ViewModel
                 // Rufe synchronisierte Daten ab.
                 Group group = groupController.GetGroup(SelectedGroup.Id);
 
-                // Aktualisiere Anzeige.
-                updateViewRelatedGroupProperties(SelectedGroup, group);
+                if (group != null)
+                {
+                    // Aktualisiere Anzeige.
+                    updateViewRelatedGroupProperties(SelectedGroup, group);
+                }
             }
             catch (ClientException ex)
             {
@@ -825,7 +826,7 @@ namespace DataHandlingLayer.ViewModel
                 // Sortieren.
                 conversations = sortConversationsByApplicationSettings(conversations);
 
-                if (ConversationCollection != null)
+                if (ConversationCollection != null && conversations != null)
                 {
                     ConversationCollection.Clear();
                     foreach (Conversation conv in conversations)
@@ -858,7 +859,7 @@ namespace DataHandlingLayer.ViewModel
                 // Sortieren.
                 ballots = sortBallotsByApplicationSettings(ballots);
 
-                if (BallotCollection != null)
+                if (BallotCollection != null && ballots != null)
                 {
                     BallotCollection.Clear();
                     foreach (Ballot ballot in ballots)
@@ -871,6 +872,37 @@ namespace DataHandlingLayer.ViewModel
             {
                 Debug.WriteLine("ReloadBallotCollection: Execution failed." +
                     "Error code is: {0}.", ex.ErrorCode);
+            }
+        }
+
+        /// <summary>
+        /// Aktualisiert den Zustand der View, wenn die App aus dem Suspension Zustand kommt.
+        /// Diese Methode kann dann gerufen werden, wenn die GroupDetails Seite vor dem Suspension 
+        /// Zustand die letzte aktive Seite war.
+        /// </summary>
+        public void UpdateViewOnAppResume()
+        {
+            if (SelectedGroup != null && 
+                IsGroupParticipant && 
+                !IsRemovedFromGroup && 
+                !SelectedGroup.Deleted)
+            {
+                Debug.WriteLine("UpdateViewOnAppResume: Performing update.");
+
+                // Lade Gruppendaten neu.
+                ReloadGroupDetails();
+
+                // Lade Abstimmungen neu.
+                ReloadBallotCollection();
+
+                // Lade Konversationen neu.
+                ReloadConversationCollection();
+
+                Debug.WriteLine("UpdateViewOnAppResume: View reloaded.");
+            }
+            else
+            {
+                Debug.WriteLine("UpdateViewOnAppResume: No update for view will be performed.");
             }
         }
 

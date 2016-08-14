@@ -53,17 +53,41 @@ namespace UlmUniversityNews.Views.Group
 
             // Registriere Property-Changed Listener.
             groupDetailsViewModel.PropertyChanged += GroupDetailsViewModel_PropertyChanged;
+
+            // Registriere Loaded und Unloaded Event-Listener.
             this.Loaded += GroupDetails_Loaded;
+            this.Unloaded += GroupDetails_Unloaded;
         }
 
         /// <summary>
-        /// Workaround: Evaluiere Visibility von PivotItems zum Zeitpunkt, an dem 
-        /// die Seite geladen ist.
+        /// Event-Handler für die Behandlung des Unloaded-Events. Wird gerufen, wenn Seite
+        /// erfolgreich aus Speicher genommen wurde.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void GroupDetails_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("GroupDetails: Unloaded.");
+
+            // Deregistrierung, wenn Seite verlassen wird.
+            Application.Current.Resuming -= Current_Resuming;
+        }
+
+        /// <summary>
+        /// Event-Handler für die Behandlung des Loaded-Events. Wird gerufen, wenn Seite
+        /// erfolgreich geladen wurde.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
         private void GroupDetails_Loaded(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("GroupDetails: Loaded.");
+
+            // Registrierung für Behandlung von Resuming Events, um View nach Fortsetzung zu aktualisieren.
+            Application.Current.Resuming += Current_Resuming;
+
+            // Workaround: Evaluiere Visibility von PivotItems zum Zeitpunkt, an dem
+            // die Seite geladen ist.
             // Stoße Evaluierung der PivotItem-Sichtbarkeiten an.
             forceBehaviorEvaluation();
         }
@@ -195,21 +219,36 @@ namespace UlmUniversityNews.Views.Group
             }
         }
 
+        /// <summary>
+        /// Wird gerufen, wenn App aus Suspension-Zustand zurückkommt.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void Current_Resuming(object sender, object e)
+        {
+            Debug.WriteLine("GroupDetails: App resuming.");
+
+            if (groupDetailsViewModel != null)
+            {
+                groupDetailsViewModel.UpdateViewOnAppResume();
+            }
+        }
+
         #region NavigationHelper-Registrierung
 
-        /// <summary>
-        /// Die in diesem Abschnitt bereitgestellten Methoden werden einfach verwendet,
-        /// damit NavigationHelper auf die Navigationsmethoden der Seite reagieren kann.
-        /// <para>
-        /// Platzieren Sie seitenspezifische Logik in Ereignishandlern für  
-        /// <see cref="NavigationHelper.LoadState"/>
-        /// und <see cref="NavigationHelper.SaveState"/>.
-        /// Der Navigationsparameter ist in der LoadState-Methode zusätzlich 
-        /// zum Seitenzustand verfügbar, der während einer früheren Sitzung gesichert wurde.
-        /// </para>
-        /// </summary>
-        /// <param name="e">Stellt Daten für Navigationsmethoden und -ereignisse bereit.
-        /// Handler, bei denen die Navigationsanforderung nicht abgebrochen werden kann.</param>
+            /// <summary>
+            /// Die in diesem Abschnitt bereitgestellten Methoden werden einfach verwendet,
+            /// damit NavigationHelper auf die Navigationsmethoden der Seite reagieren kann.
+            /// <para>
+            /// Platzieren Sie seitenspezifische Logik in Ereignishandlern für  
+            /// <see cref="NavigationHelper.LoadState"/>
+            /// und <see cref="NavigationHelper.SaveState"/>.
+            /// Der Navigationsparameter ist in der LoadState-Methode zusätzlich 
+            /// zum Seitenzustand verfügbar, der während einer früheren Sitzung gesichert wurde.
+            /// </para>
+            /// </summary>
+            /// <param name="e">Stellt Daten für Navigationsmethoden und -ereignisse bereit.
+            /// Handler, bei denen die Navigationsanforderung nicht abgebrochen werden kann.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             this.navigationHelper.OnNavigatedTo(e);

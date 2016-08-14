@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using DataHandlingLayer.ViewModel;
+using System.Diagnostics;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -47,6 +48,38 @@ namespace UlmUniversityNews.Views.Group
             // Initialisiere das Drawer Layout.
             DrawerLayout.InitializeDrawerLayout();
             ListMenuItems.ItemsSource = groupParticipantsViewModel.LoadDrawerMenuEntries();
+
+            // Registriere Seite für Loaded und Unloaded Event.
+            this.Loaded += GroupParticipants_Loaded;
+            this.Unloaded += GroupParticipants_Unloaded;
+        }
+
+        /// <summary>
+        /// Event-Handler für die Behandlung des Unloaded-Events. Wird gerufen, wenn Seite
+        /// erfolgreich aus Speicher genommen wurde.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void GroupParticipants_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("GroupParticipants: Unloaded.");
+
+            // Deregistrierung, wenn Seite verlassen wird.
+            Application.Current.Resuming -= Current_Resuming;
+        }
+
+        /// <summary>
+        /// Event-Handler für die Behandlung des Loaded-Events. Wird gerufen, wenn Seite
+        /// erfolgreich geladen wurde.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void GroupParticipants_Loaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("GroupParticipants: Loaded.");
+
+            // Registrierung für Behandlung von Resuming Events, um View nach Fortsetzung zu aktualisieren.
+            Application.Current.Resuming += Current_Resuming;
         }
 
         /// <summary>
@@ -131,6 +164,23 @@ namespace UlmUniversityNews.Views.Group
             else
             {
                 DrawerLayout.OpenDrawer();
+            }
+        }
+
+        /// <summary>
+        /// Wird gerufen, wenn App aus Suspension-Zustand zurückkommt.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private async void Current_Resuming(object sender, object e)
+        {
+            Debug.WriteLine("GroupParticipants: App resuming.");
+
+            if (groupParticipantsViewModel != null &&
+                groupParticipantsViewModel.SelectedGroup != null)
+            {
+                // Lade Teilnehmerinfo neu.
+                await groupParticipantsViewModel.LoadGroupParticipantsAsync(groupParticipantsViewModel.SelectedGroup.Id);
             }
         }
 

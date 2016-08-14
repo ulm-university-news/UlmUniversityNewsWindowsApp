@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Navigation;
 using DataHandlingLayer.ViewModel;
 using UlmUniversityNews.PushNotifications;
 using Windows.ApplicationModel.Core;
+using System.Diagnostics;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -45,6 +46,38 @@ namespace UlmUniversityNews.Views.Group
             // Initialisiere das Drawer Layout.
             DrawerLayout.InitializeDrawerLayout();
             ListMenuItems.ItemsSource = conversationDetailsViewModel.LoadDrawerMenuEntries();
+
+            // Registriere Seite für Loaded und Unloaded Events.
+            this.Loaded += ConversationDetails_Loaded;
+            this.Unloaded += ConversationDetails_Unloaded;
+        }
+
+        /// <summary>
+        /// Event-Handler für die Behandlung des Unloaded-Events. Wird gerufen, wenn Seite
+        /// erfolgreich aus Speicher genommen wurde.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void ConversationDetails_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("ConversationDetails: Unloaded.");
+
+            // Deregistrierung, wenn Seite verlassen wird.
+            Application.Current.Resuming -= Current_Resuming;
+        }
+
+        /// <summary>
+        /// Event-Handler für die Behandlung des Loaded-Events. Wird gerufen, wenn Seite
+        /// erfolgreich geladen wurde.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void ConversationDetails_Loaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("ConversationDetails: Loaded.");
+
+            // Registrierung für Behandlung von Resuming Events, um View nach Fortsetzung zu aktualisieren.
+            Application.Current.Resuming += Current_Resuming;
         }
 
         /// <summary>
@@ -181,6 +214,22 @@ namespace UlmUniversityNews.Views.Group
             else
             {
                 DrawerLayout.OpenDrawer();
+            }
+        }
+
+        /// <summary>
+        /// Wird gerufen, wenn App aus Suspension-Zustand zurückkommt.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void Current_Resuming(object sender, object e)
+        {
+            Debug.WriteLine("ConversationDetails: App resuming.");
+
+            if (conversationDetailsViewModel != null &&
+                conversationDetailsViewModel.SelectedConversation != null)
+            {
+                conversationDetailsViewModel.UpdateConversationMessagesCollection();
             }
         }
 

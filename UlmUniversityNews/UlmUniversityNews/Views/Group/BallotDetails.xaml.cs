@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using DataHandlingLayer.ViewModel;
 using Windows.ApplicationModel.Core;
+using System.Diagnostics;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -48,6 +49,38 @@ namespace UlmUniversityNews.Views.Group
             // Initialisiere Drawer Layout.
             DrawerLayout.InitializeDrawerLayout();
             ListMenuItems.ItemsSource = ballotDetailsViewModel.LoadDrawerMenuEntries();
+
+            // Registriere Seite für Loaded und Unloaded Events.
+            this.Loaded += BallotDetails_Loaded;
+            this.Unloaded += BallotDetails_Unloaded;
+        }
+
+        /// <summary>
+        /// Event-Handler für die Behandlung des Unloaded-Events. Wird gerufen, wenn Seite
+        /// erfolgreich aus Speicher genommen wurde.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void BallotDetails_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("BallotDetails: Unloaded.");
+
+            // Deregistrierung, wenn Seite verlassen wird.
+            Application.Current.Resuming -= Current_Resuming;
+        }
+
+        /// <summary>
+        /// Event-Handler für die Behandlung des Loaded-Events. Wird gerufen, wenn Seite
+        /// erfolgreich geladen wurde.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void BallotDetails_Loaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("BallotDetails: Loaded.");
+
+            // Registrierung für Behandlung von Resuming Events, um View nach Fortsetzung zu aktualisieren.
+            Application.Current.Resuming += Current_Resuming;
         }
 
         /// <summary>
@@ -200,6 +233,25 @@ namespace UlmUniversityNews.Views.Group
             }
         }
         #endregion
+
+        /// <summary>
+        /// Wird gerufen, wenn App aus Suspension-Zustand zurückkommt.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private async void Current_Resuming(object sender, object e)
+        {
+            Debug.WriteLine("BallotDetails: App resuming.");
+
+            if (ballotDetailsViewModel != null &&
+                ballotDetailsViewModel.AffectedGroup != null && ballotDetailsViewModel.SelectedBallot != null)
+            {
+                // Lade Abstimmungsdetails neu.
+                await ballotDetailsViewModel.LoadBallotAsync(
+                    ballotDetailsViewModel.AffectedGroup.Id, 
+                    ballotDetailsViewModel.SelectedBallot.Id);
+            }
+        }
 
         /// <summary>
         /// Behandelt Klick Events für das Drawer-Layout. Das Menü wird mittels eines Klicks
