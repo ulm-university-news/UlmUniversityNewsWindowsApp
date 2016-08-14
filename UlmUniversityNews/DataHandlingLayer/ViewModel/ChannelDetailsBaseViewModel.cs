@@ -196,38 +196,35 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
-        /// <summary>
-        /// Aktualisiert den View Zustand, wenn eine neue Announcement per PushNachricht empfangen wurde.
-        /// </summary>
-        public async Task UpdateAnnouncementsOnAnnouncementReceivedAsync()
-        {
-            Debug.WriteLine("Update announcements on ReceivedAnnouncement event.");
-            if (Channel != null)
-            {
-                Announcement receivedAnnouncement = await Task.Run(() => channelController.GetLastReceivedAnnouncement(Channel.Id));
-                if (Announcements != null && receivedAnnouncement != null
-                    && Announcements.Count > 0)
-                {
-                    // Prüfe, ob die Announcement schon in der Liste ist.
-                    // Prüfe hier nur die ersten paar Einträge (die neusten).
-                    int maxIndex = 5;
-                    if (Announcements.Count < 5)
-                        maxIndex = Announcements.Count;
+        ///// <summary>
+        ///// Aktualisiert den View Zustand, wenn eine neue Announcement per PushNachricht empfangen wurde.
+        ///// </summary>
+        //public async Task UpdateAnnouncementsOnAnnouncementReceivedAsync()
+        //{
+        //    Debug.WriteLine("Update announcements on ReceivedAnnouncement event.");
+        //    if (Channel != null)
+        //    {
+        //        // Aktualisiere die Anzeige.
+        //        // Bestimme zunächst die höchste Nachrichtennummer, die aktuell in der Collection steht.
+        //        int highestMsgNr = 0;
+        //        if (Announcements != null && Announcements.Count > 0)
+        //            highestMsgNr = Announcements.Max(item => item.MessageNumber);
 
-                    for (int i = 0; i < maxIndex; i++)
-                    {
-                        if (receivedAnnouncement.Id == Announcements[i].Id)
-                        {
-                            // Beende die Methode. Einfügen nicht notwendig.
-                            return;
-                        }
-                    }
+        //        Debug.WriteLine("UpdateAnnouncementsOnAnnouncementReceivedAsync: The current max msg number is: {0}.", highestMsgNr);
 
-                    // Füge die Announcement der Liste hinzu.
-                    Announcements.Insert(0, receivedAnnouncement);
-                }
-            }
-        }
+        //        // Rufe die fehlenden Nachrichten ab.
+        //        List<Announcement> missingAnnouncements = channelController.GetAnnouncementsOfChannel(Channel.Id, highestMsgNr);
+
+        //        // Füge der Collection hinzu.
+        //        foreach (Announcement announcement in missingAnnouncements)
+        //        {
+        //            if (Announcements != null)
+        //            {
+        //                Announcements.Insert(0, announcement);
+        //            }
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Aktualisiere den View-Zustand. Es wurd ein ChannelChanged
@@ -301,21 +298,37 @@ namespace DataHandlingLayer.ViewModel
             await channelController.SynchronizeAnnouncementsWithServerAsync(Channel.Id, withCaching);
 
             // Aktualisiere die Anzeige.
-            // Bestimme zunächst die höchste Nachrichtennummer, die aktuell in der Collection steht.
-            int highestMsgNr = 0;
-            if (Announcements != null && Announcements.Count > 0)
-                highestMsgNr = Announcements.Max(item => item.MessageNumber);
+            UpdateAnnouncementCollection();
+        }
 
-            Debug.WriteLine("updateAnnouncementsAsync: The current max msg number is: {0}.", highestMsgNr);
-
-            // Rufe die fehlenden Nachrichten ab.
-            List<Announcement> missingAnnouncements = channelController.GetAnnouncementsOfChannel(Channel.Id, highestMsgNr);
-            // Füge der Collection hinzu.
-            foreach (Announcement announcement in missingAnnouncements)
+        /// <summary>
+        /// Aktualisiert die Announcement Collection. Prüft, ob 
+        /// es lokal neue Announcement Nachrichten gibt. Falls das der Fall ist, werden
+        /// diese nachgeladen und ebenfalls in die Collection aufgenommen. Die Anzeige wird
+        /// dadurch aktualisiert.
+        /// </summary>
+        public void UpdateAnnouncementCollection()
+        {
+            if (Channel != null)
             {
-                if (Announcements != null)
+                // Aktualisiere die Anzeige.
+                // Bestimme zunächst die höchste Nachrichtennummer, die aktuell in der Collection steht.
+                int highestMsgNr = 0;
+                if (Announcements != null && Announcements.Count > 0)
+                    highestMsgNr = Announcements.Max(item => item.MessageNumber);
+
+                Debug.WriteLine("UpdateAnnouncementCollection: The current max msg number is: {0}.", highestMsgNr);
+
+                // Rufe die fehlenden Nachrichten ab.
+                List<Announcement> missingAnnouncements = channelController.GetAnnouncementsOfChannel(Channel.Id, highestMsgNr);
+
+                // Füge der Collection hinzu.
+                foreach (Announcement announcement in missingAnnouncements)
                 {
-                    Announcements.Insert(0, announcement);
+                    if (Announcements != null)
+                    {
+                        Announcements.Insert(0, announcement);
+                    }
                 }
             }
         }

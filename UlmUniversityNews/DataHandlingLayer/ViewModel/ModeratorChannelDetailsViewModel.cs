@@ -235,6 +235,7 @@ namespace DataHandlingLayer.ViewModel
         /// <summary>
         /// Ruft die neueste Liste von Reminder für den gegebenen Kanal vom Server ab
         /// und prüft, ob lokal entsprechend Reminder hinzugefügt oder aktualisiert werden müssen.
+        /// Falls Reminder inzwischen auf dem Server gelöscht wurden, so werden diese auch lokal gelöscht.
         /// </summary>
         public async Task CheckForMissingRemindersAsync()
         {
@@ -249,7 +250,7 @@ namespace DataHandlingLayer.ViewModel
                     return;
 
                 // Starte Aktualisierung der lokalen Datensätze asynchron.
-                await Task.Run(() => channelController.AddOrUpdateLocalReminders(reminderListServer, Channel.Id));
+                await Task.Run(() => channelController.SynchronizeLocalReminders(reminderListServer, Channel.Id));
 
                 // Aktualisiere die im ViewModel gehaltene Liste von Reminders.
                 await updateRemindersListAsync();

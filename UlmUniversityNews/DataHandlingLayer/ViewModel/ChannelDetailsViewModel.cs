@@ -353,6 +353,7 @@ namespace DataHandlingLayer.ViewModel
             // Zeige Warnhinweis an.
             IsDeletionNotificationOpen = true;
         }
+
         /// <summary>
         /// Zeigt, soweit für den Kanal aktiviert, eine Benachrichtigung über die Löschung
         /// des Kanals für den Nutzer an.

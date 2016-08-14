@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Navigation;
 using DataHandlingLayer.ViewModel;
 using UlmUniversityNews.PushNotifications.EventArgClasses;
 using Windows.ApplicationModel.Core;
+using System.Diagnostics;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -45,6 +46,38 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
             // Initialisiere das Drawer Layout.
             DrawerLayout.InitializeDrawerLayout();
             ListMenuItems.ItemsSource = moderatorChannelDetailsViewModel.DrawerMenuEntriesStatusLoggedIn;
+
+            // Registriere für Loaded und Unloaded Event der Seite.
+            this.Loaded += ModeratorChannelDetails_Loaded;
+            this.Unloaded += ModeratorChannelDetails_Unloaded;
+        }
+
+        /// <summary>
+        /// Event-Handler für die Behandlung des Unloaded-Events. Wird gerufen, wenn Seite
+        /// erfolgreich aus Speicher genommen wurde.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void ModeratorChannelDetails_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("ModeratorChannelDetails: Unloaded.");
+
+            // Deregistrierung, wenn Seite verlassen wird.
+            Application.Current.Resuming -= Current_Resuming;
+        }
+
+        /// <summary>
+        /// Event-Handler für die Behandlung des Loaded-Events. Wird gerufen, wenn Seite
+        /// erfolgreich geladen wurde.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void ModeratorChannelDetails_Loaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("ModeratorChannelDetails: Loaded.");
+
+            // Registrierung für Behandlung von Resuming Events, um View nach Fortsetzung zu aktualisieren.
+            Application.Current.Resuming += Current_Resuming;
         }
 
         /// <summary>
@@ -178,13 +211,13 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
             {
                 // Ausführung auf UI-Thread abbilden.
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
-                    Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                     {
                         // Aktualisiere View, wenn eigener Kanal betroffen.
                         if (moderatorChannelDetailsViewModel.Channel != null
                             && moderatorChannelDetailsViewModel.Channel.Id == e.ChannelId)
                         {
-                            await moderatorChannelDetailsViewModel.UpdateAnnouncementsOnAnnouncementReceivedAsync();
+                            moderatorChannelDetailsViewModel.UpdateAnnouncementCollection();
                         }
                     });
             }
@@ -238,6 +271,24 @@ namespace UlmUniversityNews.Views.ModeratorViews.ChannelDetails
             }
         }
         #endregion PushNotificationManagerEvents
+
+        /// <summary>
+        /// Wird gerufen, wenn App aus Suspension-Zustand zurückkommt.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void Current_Resuming(object sender, object e)
+        {
+            Debug.WriteLine("ModeratorChannelDetails: App resuming.");
+
+            if (moderatorChannelDetailsViewModel != null &&
+                moderatorChannelDetailsViewModel.Channel != null)
+            {
+                moderatorChannelDetailsViewModel.UpdateAnnouncementCollection();
+
+                Debug.WriteLine("ModeratorChannelDetails: Announcement collection updated.");
+            }
+        }
 
         /// <summary>
         /// Behandelt Klick Events für das Drawer-Layout. Das Menü wird mittels eines Klicks

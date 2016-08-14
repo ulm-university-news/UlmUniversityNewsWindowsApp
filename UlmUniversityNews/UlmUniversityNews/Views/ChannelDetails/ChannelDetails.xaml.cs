@@ -43,10 +43,7 @@ namespace UlmUniversityNews.Views.ChannelDetails
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
-
-            ChannelDetailsPivot.Loaded += ChannelDetailsPivot_Loaded;
-            this.Loaded += ChannelDetails_Loaded;
-            
+           
             channelDetailsViewModel = new ChannelDetailsViewModel(App.NavigationService, App.ErrorMapper);
             this.DataContext = channelDetailsViewModel;
 
@@ -54,7 +51,26 @@ namespace UlmUniversityNews.Views.ChannelDetails
             DrawerLayout.InitializeDrawerLayout();
             ListMenuItems.ItemsSource = channelDetailsViewModel.DrawerMenuEntriesStatusNoLogin;
 
+            // Registrierung für Loaded und Unloaded Events.
+            ChannelDetailsPivot.Loaded += ChannelDetailsPivot_Loaded;
+            this.Loaded += ChannelDetails_Loaded;
+            this.Unloaded += ChannelDetails_Unloaded;
+
             channelDetailsViewModel.PropertyChanged += channelDetailsViewModel_PropertyChanged;
+        }
+
+        /// <summary>
+        /// Event-Handler für die Behandlung des Unloaded-Events. Wird gerufen, wenn Seite
+        /// erfolgreich aus Speicher genommen wurde.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void ChannelDetails_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("ChannelDetails: Unloaded.");
+
+            // Deregistrierung, wenn Seite verlassen wird.
+            Application.Current.Resuming -= Current_Resuming;
         }
 
         /// <summary>
@@ -66,13 +82,19 @@ namespace UlmUniversityNews.Views.ChannelDetails
         /// <param name="e">Die Eventparameter.</param>
         async void ChannelDetails_Loaded(object sender, RoutedEventArgs e)
         {
-            if(channelDetailsViewModel != null && channelDetailsViewModel.ChannelSubscribedStatus == true)
+            Debug.WriteLine("ChannelDetails: Loaded.");
+
+            // Registrierung für Behandlung von Resuming Events, um View nach Fortsetzung zu aktualisieren.
+            Application.Current.Resuming += Current_Resuming;
+
+            if (channelDetailsViewModel != null && channelDetailsViewModel.ChannelSubscribedStatus == true)
             {
                 await channelDetailsViewModel.PerformAnnouncementUpdateAsync();
 
                 // Prüfe, ob der Kanal gelöscht wurde und zeige falls notwendig eine Benachrichtigung an.
                 channelDetailsViewModel.CheckWhetherChannelIsDeleted();
             }
+
             await channelDetailsViewModel.LoadModeratorsOfChannelAsync();
         }
 
@@ -222,13 +244,13 @@ namespace UlmUniversityNews.Views.ChannelDetails
             {
                 // Ausführung auf UI-Thread abbilden.
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
-                    Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                    Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                     {
                         // Aktualisiere View, wenn eigener Kanal betroffen.
                         if(channelDetailsViewModel.Channel != null 
                             && channelDetailsViewModel.Channel.Id == e.ChannelId)
                         {
-                            await channelDetailsViewModel.UpdateAnnouncementsOnAnnouncementReceivedAsync();
+                            channelDetailsViewModel.UpdateAnnouncementCollection();
                         }
                     });
             }
@@ -309,6 +331,25 @@ namespace UlmUniversityNews.Views.ChannelDetails
         }
 
         #endregion
+
+        /// <summary>
+        /// Wird gerufen, wenn App aus Suspension-Zustand zurückkommt.
+        /// </summary>
+        /// <param name="sender">Ereignisquelle.</param>
+        /// <param name="e">Ereignisparameter.</param>
+        private void Current_Resuming(object sender, object e)
+        {
+            Debug.WriteLine("ChannelDetails: App resuming.");
+
+            if (channelDetailsViewModel != null &&
+                channelDetailsViewModel.Channel != null && 
+                channelDetailsViewModel.ChannelSubscribedStatus == true)
+            {
+                channelDetailsViewModel.UpdateAnnouncementCollection();
+
+                Debug.WriteLine("ChannelDetails: Announcement collection updated.");
+            }
+        }
 
         /// <summary>
         /// Behandelt Klick Events für das Drawer-Layout. Das Menü wird mittels eines Klicks
