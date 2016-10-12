@@ -175,8 +175,8 @@
     <value>create account</value>
   </data>
   <data name="StartPageUsernameDescription.Text" xml:space="preserve">
-    <value>To use this app you need to create an user account. 
-To do that you just have to enter a username and accept the terms of use. You can find them on </value>
+    <value>To use this app, you need to create an account. 
+To do that, you just have to enter a username and accept the terms of use. You can find them on </value>
   </data>
   <data name="StartPageUsernameTextBox.Header" xml:space="preserve">
     <value>Username</value>
@@ -755,10 +755,10 @@ and Economics</value>
     <value>add channel</value>
   </data>
   <data name="ModeratorChannelDetailsAddAnnounementButton.Label" xml:space="preserve">
-    <value>add message</value>
+    <value>add</value>
   </data>
   <data name="ModeratorChannelDetailsEditChannelButton.Label" xml:space="preserve">
-    <value>edit channel</value>
+    <value>edit</value>
   </data>
   <data name="ValidationErrorStartPageUserNameIsNull" xml:space="preserve">
     <value>Please enter a username.</value>
@@ -882,7 +882,7 @@ date: </value>
     <value>Normal</value>
   </data>
   <data name="ReminderDetailsEditReminderButton.Label" xml:space="preserve">
-    <value>edit reminder</value>
+    <value>edit</value>
   </data>
   <data name="ReminderDetailsHeadline.Text" xml:space="preserve">
     <value>Reminder details</value>
@@ -918,7 +918,7 @@ date: </value>
     <value>Title</value>
   </data>
   <data name="ReminderDetailsRemoveReminderButton.Label" xml:space="preserve">
-    <value>delete reminder</value>
+    <value>delete</value>
   </data>
   <data name="ReminderIntervalConverterStringMultipleDaysDesc1" xml:space="preserve">
     <value>Send reminder every</value>
@@ -945,13 +945,13 @@ date: </value>
     <value>save</value>
   </data>
   <data name="ModeratorChannelDetailsAddReminderButton.Label" xml:space="preserve">
-    <value>add reminder</value>
+    <value>add</value>
   </data>
   <data name="ModeratorChannelDetailsDeleteChannelButton.Label" xml:space="preserve">
-    <value>delete channel</value>
+    <value>delete</value>
   </data>
   <data name="ModeratorChannelDetailsDeleteChannelFlyoutButton.Content" xml:space="preserve">
-    <value>Delete channel</value>
+    <value>Delete</value>
   </data>
   <data name="ModeratorChannelDetailsDeleteChannelWarning.Text" xml:space="preserve">
     <value>Do you really want to delete the channel? This action cannot be reversed.</value>
@@ -1131,7 +1131,7 @@ date: </value>
     <value>Do you want to activate the reminder? Reminder will continue sending announcements.</value>
   </data>
   <data name="ReminderDetailsActivateReminderButton.Label" xml:space="preserve">
-    <value>activate reminder</value>
+    <value>activate</value>
   </data>
   <data name="ReminderDetailsActivateReminderFlyoutButton.Content" xml:space="preserve">
     <value>Activate</value>
@@ -1140,7 +1140,7 @@ date: </value>
     <value>Do you want to deactivate the reminder? The reminder will stop sending announcements.</value>
   </data>
   <data name="ReminderDetailsDeactivateReminderButton.Label" xml:space="preserve">
-    <value>deactivate reminder</value>
+    <value>deactivate</value>
   </data>
   <data name="ReminderDetailsDeactivateReminderFlyoutButton.Content" xml:space="preserve">
     <value>Deactivate</value>
@@ -1155,13 +1155,13 @@ date: </value>
     <value>activating</value>
   </data>
   <data name="StatusBarInformationDataSaved" xml:space="preserve">
-    <value>settings saved</value>
+    <value>Settings saved</value>
   </data>
   <data name="StatusBarInformationDeactivating" xml:space="preserve">
     <value>deactivating</value>
   </data>
-  <data name="StatusBarInformationSaving" xml:space="preserve">
-    <value>saving</value>
+  <data name="StatusBarInformationSavingUserData" xml:space="preserve">
+    <value>Saving user settings</value>
   </data>
   <data name="StatusBarInformationSyncAnnouncements" xml:space="preserve">
     <value>sync announcements</value>
@@ -1829,5 +1829,29 @@ date: </value>
   <data name="ApplicationErrorModeratorForbiddenError" xml:space="preserve">
     <value>The server has rejected the request. You don't have the required permissions to perform this action. It is possible that the privileges for managing the channel have been revoked. Please navigate to the homescreen and synchronize your managed channels.</value>
     <comment>Der Server hat die Anfrage abgelehnt. Sie haben nicht die erforderlichen Rechte für diese Aktion. Es ist möglich, dass Ihnen die Verwaltungsrechte über den Kanal entzogen wurden. Bitte gehen Sie auf die Übersichtsseite der verwalteten Kanäle und führen Sie eine Synchronisation durch.</comment>
+  </data>
+  <data name="ChannelDetailsSyncButton.Label" xml:space="preserve">
+    <value>sync</value>
+  </data>
+  <data name="StatusBarInformationSavedAnnouncementSettings" xml:space="preserve">
+    <value>Saved announcement settings</value>
+  </data>
+  <data name="StatusBarInformationSavedListSettings" xml:space="preserve">
+    <value>Saved list settings</value>
+  </data>
+  <data name="StatusBarInformationSavedUserSettings" xml:space="preserve">
+    <value>Saved user settings</value>
+  </data>
+  <data name="StatusBarInformationSavingAnnouncementSettings" xml:space="preserve">
+    <value>Saving announcement settings</value>
+  </data>
+  <data name="StatusBarInformationSavingListSettings" xml:space="preserve">
+    <value>Saving list settings</value>
+  </data>
+  <data name="SynchronizingAnnouncementsStatus" xml:space="preserve">
+    <value>Synchronizing announcements</value>
+  </data>
+  <data name="SynchronizingChannelInfoStatus" xml:space="preserve">
+    <value>Synchronizing channel info</value>
   </data>
 </root>

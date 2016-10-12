@@ -19,14 +19,14 @@
   <Class Name="UlmUniversityNews.PushNotifications.PushNotificationManager" Collapsed="true">
     <Position X="3" Y="3.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>EAAEAAAAEAAAAAQAAAQAAAAABAAACCAACAAABAABIAA=</HashCode>
+      <HashCode>EAAEAgAIVACQABQAAEQACQAABAAACCAACgEEBAABIQA=</HashCode>
       <FileName>PushNotifications\PushNotificationManager.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="UlmUniversityNews.App" Collapsed="true">
     <Position X="8" Y="5.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>BIAAAABAAAAAAAABAAAQCAAAACAAAAgAQAAAAAAIAEg=</HashCode>
+      <HashCode>AIAAAABAAAAAAAABAAIQCAAAACAAAAgAQAAAAAAIAEg=</HashCode>
       <FileName>App.xaml.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -34,7 +34,7 @@
   <Class Name="UlmUniversityNews.Views.StartPage" Collapsed="true">
     <Position X="8" Y="3.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AQAAAAQAAAACQAAAAAAAAAQAAAAAAAQAAAAAAAEAAkA=</HashCode>
+      <HashCode>AQAAAAAAAAACQAAAAAAAAAQAAAAAAAQAAAAAAAEAAgA=</HashCode>
       <FileName>Views\StartPage.xaml.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -50,7 +50,7 @@
   <Class Name="UlmUniversityNews.Views.Homescreen.Homescreen" Collapsed="true">
     <Position X="10.5" Y="3.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AQACAAQAAAEiQAgACAAAAAYAgAAAAgQAAAACAAEAAgA=</HashCode>
+      <HashCode>AQACAAYAAAEiQAgACAAAEAZAgAAAAkQAAAACAAEAAgA=</HashCode>
       <FileName>Views\Homescreen\Homescreen.xaml.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -58,7 +58,7 @@
   <Class Name="UlmUniversityNews.Views.ChannelSearch.ChannelSearch" Collapsed="true">
     <Position X="8" Y="2" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AQAAAAQAAAACQAAAAAAAAAQAAAAAEgQAAAAQAAEAAEA=</HashCode>
+      <HashCode>AQAAAAAAAAACQAAAAAAAAAQAAACAEgQAAAAQAAEAAAA=</HashCode>
       <FileName>Views\ChannelSearch\ChannelSearch.xaml.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -66,7 +66,7 @@
   <Class Name="UlmUniversityNews.Views.ChannelDetails.ChannelDetails" Collapsed="true">
     <Position X="8" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AQACAAAAAAEiQAAQCAAAAA4AAAAAAgQAAAAAAAEAAgA=</HashCode>
+      <HashCode>AQACAAIAAAMiQAAQCAAAAA4AAAAAAgQAAAAAAAEAAgA=</HashCode>
       <FileName>Views\ChannelDetails\ChannelDetails.xaml.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -82,7 +82,7 @@
   <Class Name="UlmUniversityNews.Views.ApplicationSettings.ApplicationSettings" Collapsed="true">
     <Position X="14.25" Y="3.75" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AQAAAAQAAAACQAAAAAAAEAQAAAAAAgQAAAAAAAEAAEA=</HashCode>
+      <HashCode>AQAAAAAAAAACQAAAAAAAEAQAAAAAAgQAAAAAAAEAAAA=</HashCode>
       <FileName>Views\ApplicationSettings\ApplicationSettings.xaml.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -114,7 +114,7 @@
   <Class Name="UlmUniversityNews.Views.ModeratorViews.ChannelDetails.ModeratorChannelDetails" Collapsed="true">
     <Position X="16.5" Y="1.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AQAAAAAAAAEiQAAASAAAAAYAAAAAAgQAAAAAAAEAAgA=</HashCode>
+      <HashCode>AQAAAAIAgAEiQAAASAAAAAYAAAAAAgQAAAAAAAEAAgg=</HashCode>
       <FileName>Views\ModeratorViews\ChannelDetails\ModeratorChannelDetails.xaml.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -294,65 +294,167 @@
     <TypeIdentifier />
   </Class>
   <Class Name="DataHandlingLayer.ViewModel.AddAndEditChannelViewModel">
-    <Position X="17.75" Y="26" Width="2.5" />
+    <Position X="11.5" Y="33.75" Width="5.75" />
     <TypeIdentifier />
   </Class>
   <Class Name="DataHandlingLayer.ViewModel.AddAndEditReminderViewModel">
-    <Position X="21" Y="26" Width="2.5" />
+    <Position X="19" Y="28.75" Width="5.75" />
     <TypeIdentifier />
   </Class>
   <Class Name="DataHandlingLayer.ViewModel.AddAnnouncementViewModel">
-    <Position X="24.25" Y="26" Width="2.25" />
+    <Position X="23" Y="25" Width="5.75" />
     <TypeIdentifier />
   </Class>
   <Class Name="DataHandlingLayer.ViewModel.ApplicationSettingsViewModel">
-    <Position X="27.75" Y="24.5" Width="2.25" />
+    <Position X="29.25" Y="23.25" Width="5.75" />
+    <InheritanceLine Type="DataHandlingLayer.ViewModel.ViewModel" FixedToPoint="true">
+      <Path>
+        <Point X="20" Y="19.812" />
+        <Point X="20" Y="20.187" />
+        <Point X="33.243" Y="20.187" />
+        <Point X="33.243" Y="23.25" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier />
   </Class>
   <Class Name="DataHandlingLayer.ViewModel.ChannelDetailsViewModel">
-    <Position X="5.25" Y="24.5" Width="2" />
+    <Position X="1.75" Y="24.5" Width="5.5" />
     <TypeIdentifier />
   </Class>
   <Class Name="DataHandlingLayer.ViewModel.ChannelSettingsViewModel">
-    <Position X="12" Y="24.5" Width="2.25" />
+    <Position X="12" Y="30" Width="5.5" />
     <TypeIdentifier />
   </Class>
   <Class Name="DataHandlingLayer.ViewModel.DialogBaseViewModel" Collapsed="true">
-    <Position X="21" Y="24.5" Width="1.75" />
+    <Position X="21.75" Y="21.75" Width="1.75" />
     <TypeIdentifier />
   </Class>
   <Class Name="DataHandlingLayer.ViewModel.HomescreenViewModel">
-    <Position X="30.5" Y="24.5" Width="2" />
+    <Position X="42" Y="29" Width="5.25" />
+    <InheritanceLine Type="DataHandlingLayer.ViewModel.ChannelEnumerationBaseViewModel" ManuallyRouted="true">
+      <Path>
+        <Point X="31" Y="21.191" />
+        <Point X="31" Y="23.062" />
+        <Point X="33.16" Y="23.062" Type="JumpStart" />
+        <Point X="33.326" Y="23.062" Type="JumpEnd" />
+        <Point X="35.167" Y="23.062" Type="JumpStart" />
+        <Point X="35.333" Y="23.062" Type="JumpEnd" />
+        <Point X="35.667" Y="23.062" Type="JumpStart" />
+        <Point X="35.833" Y="23.062" Type="JumpEnd" />
+        <Point X="42.417" Y="23.062" Type="JumpStart" />
+        <Point X="42.583" Y="23.062" Type="JumpEnd" />
+        <Point X="44.625" Y="23.062" />
+        <Point X="44.625" Y="29" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier />
   </Class>
   <Class Name="DataHandlingLayer.ViewModel.LoginViewModel">
-    <Position X="7.5" Y="24.5" Width="1.5" />
+    <Position X="5.75" Y="30.25" Width="5" />
     <TypeIdentifier />
   </Class>
   <Class Name="DataHandlingLayer.ViewModel.ModeratorChannelDetailsViewModel">
-    <Position X="14.75" Y="24.5" Width="2.75" />
+    <Position X="13.75" Y="22.75" Width="6" />
     <TypeIdentifier />
   </Class>
   <Class Name="DataHandlingLayer.ViewModel.ModeratorHomescreenViewModel">
-    <Position X="38.75" Y="24.5" Width="2.5" />
+    <Position X="42.75" Y="24.75" Width="6" />
+    <InheritanceLine Type="DataHandlingLayer.ViewModel.ChannelEnumerationBaseViewModel" ManuallyRouted="true">
+      <Path>
+        <Point X="31" Y="21.191" />
+        <Point X="31" Y="22.854" />
+        <Point X="33.16" Y="22.854" Type="JumpStart" />
+        <Point X="33.326" Y="22.854" Type="JumpEnd" />
+        <Point X="35.167" Y="22.854" Type="JumpStart" />
+        <Point X="35.333" Y="22.854" Type="JumpEnd" />
+        <Point X="35.667" Y="22.854" Type="JumpStart" />
+        <Point X="35.833" Y="22.854" Type="JumpEnd" />
+        <Point X="42.417" Y="22.854" Type="JumpStart" />
+        <Point X="42.583" Y="22.854" Type="JumpEnd" />
+        <Point X="45.75" Y="22.854" />
+        <Point X="45.75" Y="24.75" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier />
   </Class>
   <Class Name="DataHandlingLayer.ViewModel.ReminderDetailsViewModel">
-    <Position X="33.25" Y="24.5" Width="2.25" />
+    <Position X="35.75" Y="29.5" Width="5.5" />
     <TypeIdentifier />
   </Class>
   <Class Name="DataHandlingLayer.ViewModel.SearchChannelsViewModel">
-    <Position X="9.25" Y="24.5" Width="2.25" />
+    <Position X="7.5" Y="25" Width="5.5" />
     <TypeIdentifier />
   </Class>
   <Class Name="DataHandlingLayer.ViewModel.StartPageViewModel">
-    <Position X="36.5" Y="24.5" Width="1.75" />
+    <Position X="36" Y="24.5" Width="5.25" />
+    <InheritanceLine Type="DataHandlingLayer.ViewModel.ViewModel" ManuallyRouted="true" FixedToPoint="true">
+      <Path>
+        <Point X="20" Y="19.812" />
+        <Point X="20" Y="23.427" />
+        <Point X="22.542" Y="23.427" Type="JumpStart" />
+        <Point X="22.708" Y="23.427" Type="JumpEnd" />
+        <Point X="35.167" Y="23.427" Type="JumpStart" />
+        <Point X="35.333" Y="23.427" Type="JumpEnd" />
+        <Point X="35.667" Y="23.427" Type="JumpStart" />
+        <Point X="35.833" Y="23.427" Type="JumpEnd" />
+        <Point X="36" Y="23.427" />
+        <Point X="36" Y="24.875" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier />
   </Class>
   <Class Name="DataHandlingLayer.ViewModel.ViewModel" Collapsed="true">
-    <Position X="18.75" Y="23.25" Width="1.5" />
+    <Position X="19.25" Y="19.25" Width="1.5" />
     <TypeIdentifier />
     <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.AboutUniversityNewsViewModel">
+    <Position X="18.75" Y="41.5" Width="5.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.AddAndEditBallotViewModel">
+    <Position X="32" Y="33.75" Width="5.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.AddAndEditConversationViewModel">
+    <Position X="25.25" Y="31" Width="6" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.AddAndEditGroupViewModel">
+    <Position X="12.25" Y="42.25" Width="5.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.BallotDetailsViewModel">
+    <Position X="35.5" Y="39.75" Width="5.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.ChannelDetailsBaseViewModel">
+    <Position X="43" Y="40" Width="7.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.ChannelEnumerationBaseViewModel" Collapsed="true">
+    <Position X="30.25" Y="20.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.ConversationDetailsViewModel">
+    <Position X="20" Y="44" Width="8.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.GroupDetailsViewModel">
+    <Position X="29" Y="39.75" Width="5.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.GroupParticipantsViewModel">
+    <Position X="35.25" Y="45" Width="5.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.GroupSettingsViewModel">
+    <Position X="42.5" Y="45.5" Width="5.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataHandlingLayer.ViewModel.SearchGroupViewModel">
+    <Position X="50" Y="35.5" Width="5.25" />
+    <TypeIdentifier />
   </Class>
   <Interface Name="DataHandlingLayer.Common.IIncrementalSource&lt;T&gt;" Collapsed="true">
     <Position X="18.75" Y="14" Width="2" />

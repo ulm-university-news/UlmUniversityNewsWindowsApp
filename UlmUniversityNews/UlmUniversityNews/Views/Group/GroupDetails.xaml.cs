@@ -151,14 +151,15 @@ namespace UlmUniversityNews.Views.Group
             // Für den Typvergleich, siehe hier: http://stackoverflow.com/questions/983030/type-checking-typeof-gettype-or-is
             if (e.NavigationParameter != null && e.NavigationParameter.GetType() == typeof(string))
             {
+                Debug.WriteLine("GroupDetails: Starting to load group from temporary storage.");
                await groupDetailsViewModel.LoadGroupFromTemporaryCacheAsync(e.NavigationParameter as string);
             }
             else if (e.NavigationParameter != null && e.NavigationParameter.GetType() == typeof(int))
             {
+                determineLastActivePivotItem(e);
+                Debug.WriteLine("GroupDetails: Starting to load group from local storage.");
                 int groupId = Convert.ToInt32(e.NavigationParameter);
                 await groupDetailsViewModel.LoadGroupFromLocalStorageAsync(groupId);
-
-                determineLastActivePivotItem(e);
 
                 // Lade Konversationen.
                 await groupDetailsViewModel.LoadConversationsAsync(groupId);
@@ -190,8 +191,11 @@ namespace UlmUniversityNews.Views.Group
                 bool successful = int.TryParse(e.PageState["PivotIndex"].ToString(), out selectedIndex);
 
                 // Falls es einen gespeicherten PivotIndex gibt, setze ihn wieder aktiv.
-                if (successful && GroupDetailsPivot != null)
+                if (successful && GroupDetailsPivot != null && 
+                    GroupDetailsPivot.Items != null && GroupDetailsPivot.Items.Count > selectedIndex)
+                {
                     GroupDetailsPivot.SelectedIndex = selectedIndex;
+                }
             }
         }
 

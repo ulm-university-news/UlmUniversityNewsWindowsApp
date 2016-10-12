@@ -30,9 +30,7 @@ namespace DataHandlingLayer.API
         /// Konstruktor zur Erzeugung einer Instanz der API Klasse.
         /// </summary>
         public API(){
-            //baseURL = "https://134.60.71.137/ulm-university-news";
             baseURL = "http://134.60.71.137/ulm-university-news";
-            //baseURL = "http://localhost:8080/";
         }
 
         /// <summary>

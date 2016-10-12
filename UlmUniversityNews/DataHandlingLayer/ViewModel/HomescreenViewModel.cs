@@ -743,11 +743,6 @@ namespace DataHandlingLayer.ViewModel
                 // Restrukturierung der Liste von Gruppen durch neu laden.
                 List<Group> localGroups = await Task.Run(() => groupController.GetAllGroups());
 
-                foreach (Group localGroup in localGroups)
-                {
-                    Debug.WriteLine("executeSynchronizeAllGroupsCommand: HasNewEvent flag: {0}.", localGroup.HasNewEvent);
-                }
-
                 await ReloadGroupCollectionCompletelyAsync(localGroups);
             }
             catch (ClientException ex)

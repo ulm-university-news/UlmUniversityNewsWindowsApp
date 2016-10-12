@@ -92,6 +92,8 @@ namespace UlmUniversityNews.Common
                 }
             }
 
+            Debug.WriteLine("HideablePivotItemBehavior: NewValue: {0}.", change.NewValue);
+
             Pivot parentPivot = behavior._parentPivot;
             // Wenn nun Visibility auf false gesetzt wurde.
             if(!(bool)change.NewValue)      

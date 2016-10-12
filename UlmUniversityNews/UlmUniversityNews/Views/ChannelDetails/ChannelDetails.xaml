@@ -179,22 +179,31 @@
                 </AppBarButton.Flyout>
             </AppBarButton>
 
-            <AppBarButton
+            <AppBarButton 
+                x:Name="ChannelDetailsSyncButton"
+                x:Uid="ChannelDetailsSyncButton"
+                Icon="Sync"
+                Label="sync"
+                Visibility="{Binding ElementName=ChannelDetailsSyncButton, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding SynchronizeChannelDataCommand}"
+                />
+
+            <!--<AppBarButton
                 x:Name="UpdateAnnouncementsButton"
                 x:Uid="ChannelDetailsUpdateAnnouncementsButton"
                 Icon="Sync"
                 Label="update messages"
                 Visibility="{Binding IsUpdateAnnouncementsPossible, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding UpdateAnnouncementsCommand}"
-                />
+                />-->
             
-            <AppBarButton 
+            <!--<AppBarButton 
                 x:Name="SynchronizeChannelInformationButton"
                 x:Uid="ChannelDetailsSynchronizeChannelInformationButton"
                 Icon="Sync"
                 Label="update"
                 Visibility="{Binding IsChannelInfoSynchronisationPossible, Converter={StaticResource BooleanToVisibilityConverter}}"
-                Command="{Binding SynchronizeChannelInformationCommand}"/>
+                Command="{Binding SynchronizeChannelInformationCommand}"/>-->
             
             <AppBarButton
                 x:Name="NotificationSettingsButton"

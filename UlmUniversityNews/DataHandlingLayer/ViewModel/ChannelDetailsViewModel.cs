@@ -70,28 +70,6 @@ namespace DataHandlingLayer.ViewModel
             get { return isDeletionNotificationOpen; }
             set { this.setProperty(ref this.isDeletionNotificationOpen, value); }
         }
-
-        private bool isUpdateAnnouncementsPossible;
-        /// <summary>
-        /// Gibt an, ob mit dem aktuellen Zustand der View eine Online-Aktualisierung der Announcements
-        /// des Kanals möglich ist.
-        /// </summary>
-        public bool IsUpdateAnnouncementsPossible
-        {
-            get { return isUpdateAnnouncementsPossible; }
-            set { this.setProperty(ref this.isUpdateAnnouncementsPossible, value); }
-        }
-
-        private bool isChannelInfoSynchronisationPossible;
-        /// <summary>
-        /// Gibt an, ob mit dem aktuellen Zustand der View eine Synchronisation der Kanal- und
-        /// Moderatoreninformationen des Kanals mit den Serverdaten möglich ist.
-        /// </summary>
-        public bool IsChannelInfoSynchronisationPossible
-        {
-            get { return isChannelInfoSynchronisationPossible; }
-            set { this.setProperty(ref this.isChannelInfoSynchronisationPossible, value); }
-        }
                 
         private bool isDeleteChannelWarningFlyoutOpen;
         /// <summary>
@@ -125,27 +103,6 @@ namespace DataHandlingLayer.ViewModel
             get { return unsubscribeChannelCommand; }
             set { unsubscribeChannelCommand = value; }
         }
-
-        private AsyncRelayCommand updateAnnouncementsCommand;
-        /// <summary>
-        /// Der Befehl löst die Aktualisierung der Announcements des Kanals aus.
-        /// </summary>
-        public AsyncRelayCommand UpdateAnnouncementsCommand
-        {
-            get { return updateAnnouncementsCommand; }
-            set { updateAnnouncementsCommand = value; }
-        }
-
-        private AsyncRelayCommand synchronizeChannelInformationCommand;
-        /// <summary>
-        /// Der Befehl löst die Synchronisation der Kanal- und Moderatoreninformationen des Kanals
-        /// mit den Serverdaten aus.
-        /// </summary>
-        public AsyncRelayCommand SynchronizeChannelInformationCommand
-        {
-            get { return synchronizeChannelInformationCommand; }
-            set { synchronizeChannelInformationCommand = value; }
-        }
         
         private RelayCommand switchToChannelSettingsCommand;
         /// <summary>
@@ -177,6 +134,16 @@ namespace DataHandlingLayer.ViewModel
             get { return deleteChannelLocallyFlyoutCommand; }
             set { deleteChannelLocallyFlyoutCommand = value; }
         }
+
+        private AsyncRelayCommand synchronizeChannelDataCommand;
+        /// <summary>
+        /// Befehl zur Synchronisation der zum Kanal gehörenden Daten (Infos und Benachrichtigungen).
+        /// </summary>
+        public AsyncRelayCommand SynchronizeChannelDataCommand
+        {
+            get { return synchronizeChannelDataCommand; }
+            set { synchronizeChannelDataCommand = value; }
+        }
         #endregion Commands
 
         /// <summary>
@@ -193,12 +160,6 @@ namespace DataHandlingLayer.ViewModel
                 param => canSubscribeChannel());
             UnsubscribeChannelCommand = new AsyncRelayCommand(
                 param => executeUnsubscribeChannel());
-            UpdateAnnouncementsCommand = new AsyncRelayCommand(
-                param => executeUpdateAnnouncementsCommand(),
-                param => canUpdateAnnouncements());
-            SynchronizeChannelInformationCommand = new AsyncRelayCommand(
-                param => executeSynchronizeChannelInformationCommand(),
-                param => canSynchronizeChannelInformation());
             SwitchToChannelSettingsCommand = new RelayCommand(
                 param => executeSwitchToChannelSettingsCommand(),
                 param => canSwitchToChannelSettings());
@@ -208,41 +169,10 @@ namespace DataHandlingLayer.ViewModel
             DeleteChannelLocallyFlyoutCommand = new RelayCommand(
                 param => executeDeleteChannelLocallyCommand(),
                 param => canDeleteChannelLocally());
+            SynchronizeChannelDataCommand = new AsyncRelayCommand(
+                param => executeSynchronizeChannelDataCommandAsync(),
+                param => canSyncChannelData());
         }
-
-        ///// <summary>
-        ///// Lädt die Daten des gewählten Kanals in die Properties der ViewModel Instanz.
-        ///// </summary>
-        ///// <param name="selectedChannel">Der gewählte Kanal als Objekt.</param>
-        //public void LoadSelectedChannel(object selectedChannel)
-        //{
-        //    if (selectedChannel != null)
-        //    {
-        //        Channel = selectedChannel as Channel;
-
-        //        if(Channel != null)
-        //        {
-        //            switch (Channel.Type)
-        //            {
-        //                case ChannelType.LECTURE:
-        //                    Lecture = selectedChannel as Lecture;
-        //                    break;
-        //                case ChannelType.EVENT:
-        //                    EventObj = selectedChannel as Event;
-        //                    break;
-        //                case ChannelType.SPORTS:
-        //                    Sports = selectedChannel as Sports;
-        //                    break;
-        //                default:
-        //                    Debug.WriteLine("It is a channel of type Student_Group or Other with no special properties.");
-        //                    break;
-        //            }
-
-        //            // Prüfe, ob Kanal bereits abonniert wurde.
-        //            ChannelSubscribedStatus = channelController.IsChannelSubscribed(Channel.Id);
-        //        }
-        //    }
-        //}
 
         /// <summary>
         /// Lädt die Daten des Kanals mit der übergebenen Id in das ViewModel
@@ -382,9 +312,8 @@ namespace DataHandlingLayer.ViewModel
         {
             SwitchToChannelSettingsCommand.RaiseCanExecuteChanged();
             SubscribeChannelCommand.OnCanExecuteChanged();
-            UpdateAnnouncementsCommand.OnCanExecuteChanged();
             OpenDeleteChannelLocallyFlyoutCommand.RaiseCanExecuteChanged();
-            SynchronizeChannelInformationCommand.OnCanExecuteChanged();
+            SynchronizeChannelDataCommand.OnCanExecuteChanged();
         }
 
         /// <summary>
@@ -483,94 +412,92 @@ namespace DataHandlingLayer.ViewModel
             }
         }
 
-        /// <summary>
-        /// Gibt an, ob der Befehl UpdateAnnouncements ausgeführt werden kann.
-        /// </summary>
-        /// <returns>Liefert true zurück, wenn das Kommando ausgeführt werden kann, ansonsten false.</returns>
-        private bool canUpdateAnnouncements()
-        {
-            // Wenn Kanal abonniert und nicht als gelöscht markiert ist.
-            if(Channel != null &&
-               SelectedPivotItemIndex == 0 && 
-               channelSubscribedStatus == true &&
-               Channel.Deleted == false)
-            {
-                IsUpdateAnnouncementsPossible = true;
-                return true;
-            }
-            IsUpdateAnnouncementsPossible = false;
-            return false;
-        }
+        ///// <summary>
+        ///// Gibt an, ob der Befehl UpdateAnnouncements ausgeführt werden kann.
+        ///// </summary>
+        ///// <returns>Liefert true zurück, wenn das Kommando ausgeführt werden kann, ansonsten false.</returns>
+        //private bool canUpdateAnnouncements()
+        //{
+        //    // Wenn Kanal abonniert und nicht als gelöscht markiert ist.
+        //    if(Channel != null &&
+        //       SelectedPivotItemIndex == 0 && 
+        //       channelSubscribedStatus == true &&
+        //       Channel.Deleted == false)
+        //    {
+        //        return true;
+        //    }
 
-        /// <summary>
-        /// Wird durch das Kommando UpdateAnnouncements ausgelöst und stößt die Aktualisierung
-        /// der Announcements des Kanals an.
-        /// </summary>
-        private async Task executeUpdateAnnouncementsCommand()
-        {
-            try
-            {
-                displayIndeterminateProgressIndicator();
-                // Kein caching hier. Der Request soll jedes mal auch tatsächlich abgesetzt werden, wenn der Benutzer es will.
-                await updateAnnouncementsAsync(false);   
-            }
-            catch (ClientException ex)
-            {
-                Debug.WriteLine("Something went wrong during updateAnnouncments. The message is: {0}", ex.Message);
-                displayError(ex.ErrorCode);
-            }
-            finally
-            {
-                hideIndeterminateProgressIndicator();
-            }
-        }
+        //    return false;
+        //}
 
-        /// <summary>    
-        /// Gibt an, ob der Befehl SynchronizeChannelInformation ausgeführt werden kann.
-        /// </summary>
-        /// <returns>Liefert true, wenn der Befehl ausgeführt werden kann, ansonsten false.</returns>
-        private bool canSynchronizeChannelInformation()
-        {
-            if (Channel != null && 
-                SelectedPivotItemIndex == 1 &&
-                Channel.Deleted == false)
-            {
-                IsChannelInfoSynchronisationPossible = true;
-                return true;
-            }
-            IsChannelInfoSynchronisationPossible = false;
-            return false;
-        }
+        ///// <summary>
+        ///// Wird durch das Kommando UpdateAnnouncements ausgelöst und stößt die Aktualisierung
+        ///// der Announcements des Kanals an.
+        ///// </summary>
+        //private async Task executeUpdateAnnouncementsCommand()
+        //{
+        //    try
+        //    {
+        //        displayIndeterminateProgressIndicator();
+        //        // Kein caching hier. Der Request soll jedes mal auch tatsächlich abgesetzt werden, wenn der Benutzer es will.
+        //        await updateAnnouncementsAsync(false);   
+        //    }
+        //    catch (ClientException ex)
+        //    {
+        //        Debug.WriteLine("Something went wrong during updateAnnouncments. The message is: {0}", ex.Message);
+        //        displayError(ex.ErrorCode);
+        //    }
+        //    finally
+        //    {
+        //        hideIndeterminateProgressIndicator();
+        //    }
+        //}
 
-        /// <summary>
-        /// Führt den Befehl SynchronizeChannelInformationCommand aus. Stößt die Synchronisation
-        /// der Kanal- und Moderatoreninformationen des gewählten Kanals an.
-        /// </summary>
-        private async Task executeSynchronizeChannelInformationCommand()
-        {
-            try
-            {
-                displayIndeterminateProgressIndicator();
-                await synchroniseChannelInformationAsync();
-            }
-            catch (ClientException ex)
-            {
-                if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
-                {
-                    // Markiere Kanal als gelöscht.
-                    Channel.Deleted = true;
-                    checkCommandExecution();
-                }
+        ///// <summary>    
+        ///// Gibt an, ob der Befehl SynchronizeChannelInformation ausgeführt werden kann.
+        ///// </summary>
+        ///// <returns>Liefert true, wenn der Befehl ausgeführt werden kann, ansonsten false.</returns>
+        //private bool canSynchronizeChannelInformation()
+        //{
+        //    if (Channel != null && 
+        //        SelectedPivotItemIndex == 1 &&
+        //        !Channel.Deleted)
+        //    {
+        //        return true;
+        //    }
 
-                Debug.WriteLine("executeSynchronizeChannelInformationCommand: Something went wrong during execution. " + 
-                    "The message is: {0}", ex.Message);
-                displayError(ex.ErrorCode);
-            }
-            finally
-            {
-                hideIndeterminateProgressIndicator();
-            }
-        }
+        //    return false;
+        //}
+
+        ///// <summary>
+        ///// Führt den Befehl SynchronizeChannelInformationCommand aus. Stößt die Synchronisation
+        ///// der Kanal- und Moderatoreninformationen des gewählten Kanals an.
+        ///// </summary>
+        //private async Task executeSynchronizeChannelInformationCommand()
+        //{
+        //    try
+        //    {
+        //        displayIndeterminateProgressIndicator();
+        //        await synchroniseChannelInformationAsync();
+        //    }
+        //    catch (ClientException ex)
+        //    {
+        //        if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
+        //        {
+        //            // Markiere Kanal als gelöscht.
+        //            Channel.Deleted = true;
+        //            checkCommandExecution();
+        //        }
+
+        //        Debug.WriteLine("executeSynchronizeChannelInformationCommand: Something went wrong during execution. " + 
+        //            "The message is: {0}", ex.Message);
+        //        displayError(ex.ErrorCode);
+        //    }
+        //    finally
+        //    {
+        //        hideIndeterminateProgressIndicator();
+        //    }
+        //}
 
         /// <summary>
         /// Gibt an, ob aktuell auf die ChannelSettings View gewechselt werden kann.
@@ -666,6 +593,62 @@ namespace DataHandlingLayer.ViewModel
             {
                 Debug.WriteLine("executeDeleteChannelLocallyCommand: Command execution failed.");
                 displayError(ex.ErrorCode);
+            }
+        }
+
+        /// <summary>
+        /// Gibt an, ob der Befehl zur Synchronisation der Daten des Kanals (Info bzw. Benachrichtigungen).
+        /// </summary>
+        /// <returns>Liefert true, wenn der Befehl zur Verfügung steht, ansonsten false.</returns>
+        private bool canSyncChannelData()
+        {
+            // Kanal darf nicht gelöscht sein und muss abonniert sein.
+            if (Channel != null &&
+               !Channel.Deleted && 
+               ChannelSubscribedStatus)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Führt den Befehl zur Synchronisation der Daten des Kanals aus.
+        /// </summary>
+        private async Task executeSynchronizeChannelDataCommandAsync()
+        {
+            try
+            {
+                // Fall: Synchronisiere Benachrichtigungen.
+                if (SelectedPivotItemIndex == 0)
+                {
+                    displayIndeterminateProgressIndicator("SynchronizingAnnouncementsStatus");
+                    // Kein Caching hier. Der Request soll jedes mal tatsächlich abgesetzt werden, wenn der Benutzer es will.
+                    await updateAnnouncementsAsync(false);
+                }
+                // Fall: Synchronisiere Kanalinformationen.
+                else if (SelectedPivotItemIndex == 1)
+                {
+                    displayIndeterminateProgressIndicator("SynchronizingChannelInfoStatus");
+                    await synchroniseChannelInformationAsync();
+                }
+            }
+            catch (ClientException ex)
+            {
+                if (ex.ErrorCode == ErrorCodes.ChannelNotFound)
+                {
+                    // Markiere Kanal als gelöscht.
+                    Channel.Deleted = true;
+                    checkCommandExecution();
+                }
+
+                Debug.WriteLine("executeSynchronizeChannelInfoCommandAsync: Something went wrong during execution. " +
+                    "The message is: {0}", ex.Message);
+                displayError(ex.ErrorCode);
+            }
+            finally
+            {
+                hideIndeterminateProgressIndicator();
             }
         }
         #endregion CommandFunctionality

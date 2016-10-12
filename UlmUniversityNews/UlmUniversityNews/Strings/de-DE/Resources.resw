@@ -756,10 +756,10 @@ Wirtschaftswissenschaften</value>
     <value>kanal hinzufügen</value>
   </data>
   <data name="ModeratorChannelDetailsAddAnnounementButton.Label" xml:space="preserve">
-    <value>nachricht hinzufügen</value>
+    <value>hinzufügen</value>
   </data>
   <data name="ModeratorChannelDetailsEditChannelButton.Label" xml:space="preserve">
-    <value>kanal bearbeiten</value>
+    <value>bearbeiten</value>
   </data>
   <data name="ValidationErrorStartPageUserNameIsNull" xml:space="preserve">
     <value>Bitte geben Sie einen Nutzernamen an.</value>
@@ -883,7 +883,7 @@ Nachricht am: </value>
     <value>Normal</value>
   </data>
   <data name="ReminderDetailsEditReminderButton.Label" xml:space="preserve">
-    <value>bearbeite reminder</value>
+    <value>bearbeiten</value>
   </data>
   <data name="ReminderDetailsHeadline.Text" xml:space="preserve">
     <value>Reminderinformationen</value>
@@ -919,7 +919,7 @@ Nachricht am: </value>
     <value>Titel</value>
   </data>
   <data name="ReminderDetailsRemoveReminderButton.Label" xml:space="preserve">
-    <value>entferne reminder</value>
+    <value>löschen</value>
   </data>
   <data name="ReminderIntervalConverterStringMultipleDaysDesc1" xml:space="preserve">
     <value>Sende Reminder-Nachricht alle</value>
@@ -946,13 +946,13 @@ Nachricht am: </value>
     <value>speichern</value>
   </data>
   <data name="ModeratorChannelDetailsAddReminderButton.Label" xml:space="preserve">
-    <value>reminder hinzufügen</value>
+    <value>hinzufügen</value>
   </data>
   <data name="ModeratorChannelDetailsDeleteChannelButton.Label" xml:space="preserve">
-    <value>lösche kanal</value>
+    <value>löschen</value>
   </data>
   <data name="ModeratorChannelDetailsDeleteChannelFlyoutButton.Content" xml:space="preserve">
-    <value>Lösche Kanal</value>
+    <value>Löschen</value>
   </data>
   <data name="ModeratorChannelDetailsDeleteChannelWarning.Text" xml:space="preserve">
     <value>Wollen Sie den Kanal wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.</value>
@@ -1132,7 +1132,7 @@ Nachricht am: </value>
     <value>Wollen Sie den Reminder aktivieren? Der Reminder wird wieder Benachrichtigungen senden.</value>
   </data>
   <data name="ReminderDetailsActivateReminderButton.Label" xml:space="preserve">
-    <value>aktiviere reminder</value>
+    <value>aktivieren</value>
   </data>
   <data name="ReminderDetailsActivateReminderFlyoutButton.Content" xml:space="preserve">
     <value>Aktivieren</value>
@@ -1141,7 +1141,7 @@ Nachricht am: </value>
     <value>Wollen Sie den Reminder deaktivieren? Der Reminder sendet dann keine Benachrichtigungen mehr.</value>
   </data>
   <data name="ReminderDetailsDeactivateReminderButton.Label" xml:space="preserve">
-    <value>deaktiviere reminder</value>
+    <value>deaktivieren</value>
   </data>
   <data name="ReminderDetailsDeactivateReminderFlyoutButton.Content" xml:space="preserve">
     <value>Deaktivieren</value>
@@ -1161,8 +1161,8 @@ Nachricht am: </value>
   <data name="StatusBarInformationDeactivating" xml:space="preserve">
     <value>Deaktivieren</value>
   </data>
-  <data name="StatusBarInformationSaving" xml:space="preserve">
-    <value>Speichern</value>
+  <data name="StatusBarInformationSavingUserData" xml:space="preserve">
+    <value>Nutzereinstellungen speichern</value>
   </data>
   <data name="StatusBarInformationSyncAnnouncements" xml:space="preserve">
     <value>Synchronisiere Benachrichtigungen</value>
@@ -1829,5 +1829,29 @@ Nachricht am: </value>
   </data>
   <data name="ApplicationErrorModeratorForbiddenError" xml:space="preserve">
     <value>Der Server hat die Anfrage abgelehnt. Sie haben nicht die erforderlichen Rechte für diese Aktion. Es ist möglich, dass Ihnen die Verwaltungsrechte über den Kanal entzogen wurden. Bitte gehen Sie auf die Übersichtsseite der verwalteten Kanäle und führen Sie eine Synchronisation durch.</value>
+  </data>
+  <data name="ChannelDetailsSyncButton.Label" xml:space="preserve">
+    <value>synchro-nisieren</value>
+  </data>
+  <data name="StatusBarInformationSavedAnnouncementSettings" xml:space="preserve">
+    <value>Benachrichtigungseinstellungen gespeichert</value>
+  </data>
+  <data name="StatusBarInformationSavedListSettings" xml:space="preserve">
+    <value>Listeneinstellungen gespeichert</value>
+  </data>
+  <data name="StatusBarInformationSavedUserSettings" xml:space="preserve">
+    <value>Nutzereinstellungen gespeichert</value>
+  </data>
+  <data name="StatusBarInformationSavingAnnouncementSettings" xml:space="preserve">
+    <value>Benachrichtigungseinstellungen speichern</value>
+  </data>
+  <data name="StatusBarInformationSavingListSettings" xml:space="preserve">
+    <value>Listeneinstellungen speichern</value>
+  </data>
+  <data name="SynchronizingAnnouncementsStatus" xml:space="preserve">
+    <value>Synchronisiere Benachrichtigungen</value>
+  </data>
+  <data name="SynchronizingChannelInfoStatus" xml:space="preserve">
+    <value>Synchronisiere Kanalinformationen</value>
   </data>
 </root>
